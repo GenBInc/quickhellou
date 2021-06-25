@@ -1,0 +1,6 @@
+Hello {{username}},
+  
+An account has been created in the quickhellou.com service.
+In order to active an account, please go to the {{console_app_url}}/activate/{{user_id}} page.
+Sincerely,
+QuickHellou Team

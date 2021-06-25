@@ -1,0 +1,327 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,500,600');
+@import 'common/settings';
+
+@mixin df() {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+@mixin df-lc() {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+@mixin df-lb() {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+}
+
+@mixin df-col() {
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+@mixin df-f1() {
+  -webkit-flex: 1 !important;
+  -ms-flex: 1 0 auto;
+  flex: 1 0;
+}
+
+@mixin df-c() {
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.qh-root {
+  font-family: 'Raleway';
+
+  background: transparent;
+  border: none;
+  bottom: 16px;
+  height: 104px;
+  position: fixed;
+  right: 16px;
+  top: auto;
+  width: 100px;
+  z-index: 1002;
+
+  p {
+    margin: 0;
+  }
+
+  button,
+  button:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .f1 {
+    @include df;
+    @include df-f1;
+  }
+
+  .fc {
+    @include df;
+    @include df-c;
+  }
+
+  .flc {
+    @include df;
+    @include df-lc;
+  }
+
+  .fcol {
+    @include df;
+    @include df-col;
+  }
+
+  .messages,
+  .errornote {
+    width: 100%;
+    padding: 0;
+  }
+
+  .messages {
+    margin: 0;
+    margin-bottom: 10px;
+  }
+
+  .errornote {
+    color: #c90000;
+    font-size: 0.75rem;
+    text-align: right;
+  }
+
+  .errorlist {
+    margin: 0;
+    padding: 0;
+  }
+
+  .messages li,
+  .errorlist li {
+    list-style: none;
+  }
+
+  .messages li.error {
+    color: #c90000;
+  }
+
+  .messages li.success {
+    color: #00a100;
+  }
+
+  .wrapper--thin {
+    width: 600px;
+    margin-top: 78px;
+  }
+
+  .widget-templates {
+    margin-bottom: 50px;
+  }
+
+  .outlook {
+    position: relative;
+    min-height: 100px;
+    background-color: $color--white-smoke;
+    border: 1px solid $color--light-grey;
+    padding: $spacing-outer;
+  }
+
+  .widget-outlook__graphics {
+    position: relative;
+  }
+
+  .widget-outlook__alert {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .widget-outlook__icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  .widget-outlook__icon img {
+    display: block;
+    height: 40px;
+    max-width: 80px;
+  }
+
+  // EXT
+
+  .widget-extension__messages li {
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .widget-extension__messages li.error {
+    color: #c90000;
+  }
+
+  .widget-extension__messages li.success {
+    color: white;
+  }
+
+  .widget-extension p {
+    color: white;
+    font-size: 0.875rem;
+  }
+
+  .widget-extension a {
+    color: $color--apricot;
+  }
+
+  .widget-closer {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    cursor: pointer;
+  }
+
+  .widget-extension__form-group {
+    margin-bottom: 2px;
+    position: relative;
+  }
+
+  .widget-extension__errornote {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+  }
+  .widget-extension__form-text {
+    font-weight: 600;
+    color: white;
+    font-size: 0.875rem;
+  }
+
+  .widget-extension__label {
+    margin-bottom: 2px;
+  }
+
+  .widget-extension__input {
+    padding: 3px 6px;
+    font-family: 'Raleway';
+    font-weight: 500;
+    color: $color--nero;
+    border: 1px solid lightgreen;
+    border-radius: 4px;
+  }
+
+  .widget-extension__button {
+    cursor: pointer;
+    background-color: transparent;
+    border: 1px solid white;
+    padding: 3px 6px;
+    border-radius: 4px;
+  }
+
+  .widget-extension__button:hover {
+    background-color: white;
+    border-color: $color--light-grey;
+    color: $color--nero;
+  }
+
+  .video-ui__stage {
+    margin-bottom: 10px;
+  }
+
+  .video-ui__stage,
+  .video-ui {
+    display: none;
+  }
+
+  .video-ui__stage.js-enabled,
+  .video-ui.js-enabled {
+    display: flex;
+  }
+
+  p.widget__form-label {
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .widget-extension {
+    position: relative;
+    background-color: $color--lawn-green;
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .widget_base {
+    cursor: pointer;
+    transition: opacity 0.2s linear;
+  }
+
+  .widget_base:hover {
+    opacity: 0.75;
+  }
+
+  .widget-outlook__alert-text {
+    font-family: 'Raleway';
+    font-weight: 500;
+    font-size: 0.75rem;
+    color: white;
+    position: absolute;
+    top: 5px;
+    left: 9px;
+    z-index: 2;
+    margin: 0;
+  }
+}
+
+.st0 {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+}
+.st1 {
+  fill: #ffffff;
+}
+
+#qh_e_frame.js-expanded {
+  bottom: 115px;
+}
+
+#qh_e_frame {
+  background: transparent;
+  border: none;
+  bottom: -260px;
+  position: fixed;
+  right: 112px;
+  top: auto;
+  width: 340px;
+  z-index: 1001;
+  transition: bottom 0.2s ease-in;
+}
+
+#message-input {
+  margin-bottom:10px;
+}
+
+div.qh-root.active {
+  opacity:1!important;
+  transition: opacity .3s ease-out;
+}

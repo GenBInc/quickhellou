@@ -1,0 +1,28 @@
+.mdc-linear-progress--page {
+  display:none;
+}
+
+.mdc-linear-progress--page.active,
+.mdc-linear-progress--page.js-active, {
+  display: flex;
+}
+
+.url__prefix {
+  padding-left:15px;
+  padding-right:15px;
+  background-color: $color--white-smoke-alt;
+  color:$color--dark-grey;
+  line-height:56px;
+  font-weight:500;
+  width:90px;
+}
+
+.form__mdc-text-field--callpage-url {
+  z-index:1;
+  width:100%;
+}
+
+.form__ui div {
+  margin-left:4px;
+  margin-right:4px;
+}

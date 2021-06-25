@@ -1,0 +1,2 @@
+!function(){{const head=document.getElementsByTagName('HEAD')[0];const link=document.createElement('link');link.rel = 'stylesheet'; link.type = 'text/css';link.href='{console_app_url}/static/css/widget.css';head.appendChild(link);const script=document.createElement('script');script.src = '{console_app_url}/static/js/widget.js';document.head.appendChild(script)
+document.body.insertAdjacentHTML( 'beforeend', '{template_code}')}}()

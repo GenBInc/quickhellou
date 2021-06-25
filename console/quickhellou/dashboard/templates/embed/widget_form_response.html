@@ -1,0 +1,32 @@
+{% if widget is not None %}
+  {% if messages %}
+  <ul class="messages widget-extension__messages">
+    {% for message in messages %}
+      <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <div class="fcol widget-extension__form-group">
+    <div class="errornote widget-extension__errornote">
+      {{ form.email.errors }}
+    </div>
+    <label for="email" class="widget-extension__label widget-extension__form-text" >Email</label>
+    <input id="email" name="email" class="widget-extension__input" {% if form.email.value is not None %} value="{{ form.email.value }}" {% endif %}>
+  </div>
+  <div class="fcol widget-extension__form-group">
+    <div class="errornote widget-extension__errornote">
+      {{ form.phone.errors }}
+    </div>
+    <label for="phone-input" class="widget-extension__label widget-extension__form-text">Phone Number</label>
+    <input id="phone-input" name="phone" class="widget-extension__input" {% if form.phone.value is not None %} value="{{ form.phone.value }}" {% endif %} >
+  </div>
+  <div class="fcol widget-extension__form-group">
+    <div class="errornote widget-extension__errornote">
+      {{ form.message.errors }}
+    </div>
+    <label for="message-input" class="widget-extension__label widget-extension__form-text">Message</label>
+    <textarea id="message-input" name="message" class="widget-extension__input">{% if form.message.value is not None %} {{ form.message.value }} {% endif %}</textarea>
+  </div>
+{% else %}
+  <p>Widget not installed.</p>
+{% endif %}

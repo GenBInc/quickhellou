@@ -1,0 +1,98 @@
+@mixin transform($transforms) {
+  -webkit-transform: $transforms;
+  -ms-transform: $transforms;
+  transform: $transforms;
+}
+
+@mixin rotate ($deg) {
+  @include transform(rotate(#{$deg}deg));
+}
+
+@mixin scale($scale) {
+  @include transform(scale($scale));
+}
+
+@mixin translate ($x, $y) {
+  @include transform(translate($x, $y));
+}
+
+@mixin transition($transition...) {
+  -moz-transition: $transition;
+  -webkit-transition: $transition;
+  transition: $transition;
+}
+
+@mixin border-radius($radius) {
+  border-radius: $radius;
+  background-clip: padding-box;
+  /* stops bg color from leaking outside the border: */
+}
+
+@mixin df() {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+@mixin df-lc() {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+@mixin df-lb() {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+}
+
+@mixin df-rc() {
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+@mixin df-col() {
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+@mixin df-row() {
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+}
+
+@mixin df-f1() {
+  -webkit-flex: 1 !important;
+  -ms-flex: 1 0 auto;
+  flex: 1 0;
+}
+
+@mixin df-lt() {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+}
+
+@mixin df-c() {
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}

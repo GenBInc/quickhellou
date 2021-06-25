@@ -1,0 +1,33 @@
+{% for communication in communications %}
+  <div class="flc view-list__entry call-list__entry call-list__entry--{{ communication.status_verbose }}">
+    <div class="widget-list__field widget-list__field--id view-list__field--{{ communication.status_verbose }}">#{{ communication.id }}</div>
+    <div class="flc widget-list__field widget-list__field--url">
+      <div class="fcol">
+        <div class="widget-list__url-label view-list__field--{{ communication.status_verbose }}">{{ communication.widget.url }}</div>
+      </div>
+    </div>
+    <div class="fc widget-list__field view-list__field--status view-list__field--status 
+    view-list__field--{{ communication.status_verbose }}">
+      {{ communication.status_verbose|title }}
+    </div>
+    <div class="fc df-c widget-list__field widget-list__field--last-change">
+      <div class="fcol">
+        <div class="widget-list__change-date">{{ communication.modification_time|date:"m -d-Y H:i:s" }}</div>
+      </div>
+    </div>
+    <div class="f1"></div>
+    <div class="flc widget-list__field widget-list__field--mod-bar">
+      {% if communication.status == 1 and communication.pending_sessions_count > 0 %}
+      <a class="fc df-f1 list-link--accept" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Accept</a>
+      <a class="fc df-f1 list-link--reject" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Reject</a>
+      {% else %}
+      <a class="fc df-f1 list-link--edit" href="{% url 'dashboard:communication_edit' communication_id=communication.id  %}">Edit</a>      
+      <a class="fc df-f1 list-link--delete" href="{% url 'dashboard:communication_delete' communication_id=communication.id  %}">Delete</a>      
+      {% endif %}
+    </div>
+  </div>
+{% empty %}
+  <div class="no-widgets fc">
+    <p>No communications.</p>
+  </div>
+{% endfor %}

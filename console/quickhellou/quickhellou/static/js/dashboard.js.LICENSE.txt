@@ -1,0 +1,702 @@
+/*!
+ * JavaScript Cookie v2.2.1
+ * https://github.com/js-cookie/js-cookie
+ *
+ * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
+ * Released under the MIT license
+ */
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+/*! ../../../genb/base/service/FormService */
+
+/*! ../../../genb/base/utils/BaseUtils */
+
+/*! ../../../genb/base/utils/StringUtils */
+
+/*! ../../genb/base/controller/UIView */
+
+/*! ../../genb/base/utils/HTMLUtils */
+
+/*! ../base/model/ApplicationSettings */
+
+/*! ../base/services/ApiService */
+
+/*! ../base/services/ViewService */
+
+/*! ../base/services/WebSocketService */
+
+/*! ../constants */
+
+/*! ../foundation */
+
+/*! ../model/ComSessionStatus */
+
+/*! ../model/UserType */
+
+/*! ../service/EventEmitter */
+
+/*! ../standard/foundation */
+
+/*! ../utils/HTMLUtils */
+
+/*! ./BaseUtils */
+
+/*! ./DashboardView */
+
+/*! ./EventEmitter */
+
+/*! ./ObservableController */
+
+/*! ./arrayLikeToArray.js */
+
+/*! ./arrayWithHoles.js */
+
+/*! ./assertThisInitialized.js */
+
+/*! ./character-counter/component */
+
+/*! ./character-counter/foundation */
+
+/*! ./com/quickhellou/base/utils/QhUtils */
+
+/*! ./com/quickhellou/dashboard/CallsView */
+
+/*! ./com/quickhellou/dashboard/DashboardView */
+
+/*! ./com/quickhellou/dashboard/WidgetView */
+
+/*! ./constants */
+
+/*! ./fixed/foundation */
+
+/*! ./foundation */
+
+/*! ./helper-text/component */
+
+/*! ./helper-text/foundation */
+
+/*! ./icon/component */
+
+/*! ./iterableToArrayLimit.js */
+
+/*! ./nonIterableRest.js */
+
+/*! ./setPrototypeOf.js */
+
+/*! ./short/foundation */
+
+/*! ./standard/foundation */
+
+/*! ./unsupportedIterableToArray.js */
+
+/*! ./util */
+
+/*! @babel/runtime/helpers/asyncToGenerator */
+
+/*! @babel/runtime/helpers/classCallCheck */
+
+/*! @babel/runtime/helpers/createClass */
+
+/*! @babel/runtime/helpers/defineProperty */
+
+/*! @babel/runtime/helpers/getPrototypeOf */
+
+/*! @babel/runtime/helpers/inherits */
+
+/*! @babel/runtime/helpers/possibleConstructorReturn */
+
+/*! @babel/runtime/helpers/slicedToArray */
+
+/*! @babel/runtime/helpers/typeof */
+
+/*! @babel/runtime/regenerator */
+
+/*! @material/animation/util */
+
+/*! @material/base/component */
+
+/*! @material/base/foundation */
+
+/*! @material/checkbox */
+
+/*! @material/dom/events */
+
+/*! @material/dom/ponyfill */
+
+/*! @material/floating-label/component */
+
+/*! @material/floating-label/foundation */
+
+/*! @material/form-field */
+
+/*! @material/line-ripple/component */
+
+/*! @material/list */
+
+/*! @material/list/component */
+
+/*! @material/list/constants */
+
+/*! @material/list/foundation */
+
+/*! @material/menu-surface/component */
+
+/*! @material/menu-surface/constants */
+
+/*! @material/menu-surface/foundation */
+
+/*! @material/menu/component */
+
+/*! @material/menu/constants */
+
+/*! @material/notched-outline/component */
+
+/*! @material/radio */
+
+/*! @material/ripple/component */
+
+/*! @material/ripple/foundation */
+
+/*! @material/select */
+
+/*! @material/snackbar */
+
+/*! @material/textfield */
+
+/*! @material/top-app-bar/index */
+
+/*! js-cookie */
+
+/*! regenerator-runtime */
+
+/*! tslib */
+
+/*!*************************!*\
+  !*** ./js/dashboard.js ***!
+  \*************************/
+
+/*!*********************************************!*\
+  !*** ../../node_modules/tslib/tslib.es6.js ***!
+  \*********************************************/
+
+/*!*********************************************!*\
+  !*** ./js/com/genb/base/utils/BaseUtils.js ***!
+  \*********************************************/
+
+/*!*********************************************!*\
+  !*** ./js/com/genb/base/utils/HTMLUtils.js ***!
+  \*********************************************/
+
+/*!***********************************************!*\
+  !*** ./js/com/genb/base/controller/UIView.js ***!
+  \***********************************************/
+
+/*!***********************************************!*\
+  !*** ./js/com/genb/base/utils/StringUtils.js ***!
+  \***********************************************/
+
+/*!*************************************************!*\
+  !*** ./js/com/genb/base/service/FormService.js ***!
+  \*************************************************/
+
+/*!**************************************************!*\
+  !*** ../../node_modules/@material/dom/events.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./js/com/genb/base/service/EventEmitter.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./js/com/quickhellou/base/utils/QhUtils.js ***!
+  \**************************************************/
+
+/*!***************************************************!*\
+  !*** ../../node_modules/@material/ripple/util.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./js/com/quickhellou/base/model/UserType.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./js/com/quickhellou/dashboard/CallsView.js ***!
+  \***************************************************/
+
+/*!****************************************************!*\
+  !*** ../../node_modules/@material/dom/ponyfill.js ***!
+  \****************************************************/
+
+/*!****************************************************!*\
+  !*** ./js/com/quickhellou/dashboard/WidgetView.js ***!
+  \****************************************************/
+
+/*!*****************************************************!*\
+  !*** ../../node_modules/@material/snackbar/util.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ../../node_modules/js-cookie/src/js.cookie.js ***!
+  \*****************************************************/
+
+/*!******************************************************!*\
+  !*** ../../node_modules/@material/animation/util.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ../../node_modules/@material/base/component.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ../../node_modules/@material/list/component.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ../../node_modules/@material/list/constants.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ../../node_modules/@material/menu/component.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ../../node_modules/@material/menu/constants.js ***!
+  \******************************************************/
+
+/*!*******************************************************!*\
+  !*** ../../node_modules/@material/base/foundation.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ../../node_modules/@material/list/foundation.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ../../node_modules/@material/menu/foundation.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ../../node_modules/@material/radio/component.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ../../node_modules/@material/radio/constants.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./js/com/quickhellou/dashboard/DashboardView.js ***!
+  \*******************************************************/
+
+/*!********************************************************!*\
+  !*** ../../node_modules/@material/radio/foundation.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ../../node_modules/@material/ripple/component.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ../../node_modules/@material/ripple/constants.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ../../node_modules/@material/select/component.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ../../node_modules/@material/select/constants.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./js/com/quickhellou/base/services/ApiService.js ***!
+  \********************************************************/
+
+/*!*********************************************************!*\
+  !*** ../../node_modules/@material/menu-surface/util.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ../../node_modules/@material/ripple/foundation.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ../../node_modules/@material/select/foundation.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ../../node_modules/regenerator-runtime/runtime.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./js/com/quickhellou/base/services/ViewService.js ***!
+  \*********************************************************/
+
+/*!**********************************************************!*\
+  !*** ../../node_modules/@material/checkbox/component.js ***!
+  \**********************************************************/
+
+/*!**********************************************************!*\
+  !*** ../../node_modules/@material/checkbox/constants.js ***!
+  \**********************************************************/
+
+/*!**********************************************************!*\
+  !*** ../../node_modules/@material/snackbar/component.js ***!
+  \**********************************************************/
+
+/*!**********************************************************!*\
+  !*** ../../node_modules/@material/snackbar/constants.js ***!
+  \**********************************************************/
+
+/*!***********************************************************!*\
+  !*** ../../node_modules/@material/checkbox/foundation.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ../../node_modules/@material/snackbar/foundation.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ../../node_modules/@material/textfield/component.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ../../node_modules/@material/textfield/constants.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./js/com/quickhellou/base/model/ComSessionStatus.js ***!
+  \***********************************************************/
+
+/*!************************************************************!*\
+  !*** ../../node_modules/@material/form-field/component.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ../../node_modules/@material/form-field/constants.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ../../node_modules/@material/textfield/foundation.js ***!
+  \************************************************************/
+
+/*!*************************************************************!*\
+  !*** ../../node_modules/@material/form-field/foundation.js ***!
+  \*************************************************************/
+
+/*!*************************************************************!*\
+  !*** ../../node_modules/@material/line-ripple/component.js ***!
+  \*************************************************************/
+
+/*!*************************************************************!*\
+  !*** ../../node_modules/@material/line-ripple/constants.js ***!
+  \*************************************************************/
+
+/*!*************************************************************!*\
+  !*** ../../node_modules/@material/select/icon/component.js ***!
+  \*************************************************************/
+
+/*!*************************************************************!*\
+  !*** ../../node_modules/@material/select/icon/constants.js ***!
+  \*************************************************************/
+
+/*!*************************************************************!*\
+  !*** ../../node_modules/@material/top-app-bar/component.js ***!
+  \*************************************************************/
+
+/*!*************************************************************!*\
+  !*** ../../node_modules/@material/top-app-bar/constants.js ***!
+  \*************************************************************/
+
+/*!*************************************************************!*\
+  !*** ./js/com/genb/base/controller/ObservableController.js ***!
+  \*************************************************************/
+
+/*!**************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/regenerator/index.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ../../node_modules/@material/line-ripple/foundation.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ../../node_modules/@material/menu-surface/component.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ../../node_modules/@material/menu-surface/constants.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ../../node_modules/@material/select/icon/foundation.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ../../node_modules/@material/top-app-bar/foundation.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./js/com/quickhellou/base/model/ApplicationSettings.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./js/com/quickhellou/base/services/WebSocketService.js ***!
+  \**************************************************************/
+
+/*!***************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/typeof.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ../../node_modules/@material/menu-surface/foundation.js ***!
+  \***************************************************************/
+
+/*!****************************************************************!*\
+  !*** ../../node_modules/@material/floating-label/component.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ../../node_modules/@material/floating-label/constants.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ../../node_modules/@material/textfield/icon/component.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ../../node_modules/@material/textfield/icon/constants.js ***!
+  \****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/inherits.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ../../node_modules/@material/floating-label/foundation.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ../../node_modules/@material/notched-outline/component.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ../../node_modules/@material/notched-outline/constants.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ../../node_modules/@material/textfield/icon/foundation.js ***!
+  \*****************************************************************/
+
+/*!******************************************************************!*\
+  !*** ../../node_modules/@material/notched-outline/foundation.js ***!
+  \******************************************************************/
+
+/*!********************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/createClass.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ../../node_modules/@material/select/helper-text/component.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ../../node_modules/@material/select/helper-text/constants.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ../../node_modules/@material/top-app-bar/fixed/foundation.js ***!
+  \********************************************************************/
+
+/*!********************************************************************!*\
+  !*** ../../node_modules/@material/top-app-bar/short/foundation.js ***!
+  \********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ../../node_modules/@material/select/helper-text/foundation.js ***!
+  \*********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/slicedToArray.js ***!
+  \**********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/classCallCheck.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/defineProperty.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/@material/textfield/helper-text/component.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/@material/textfield/helper-text/constants.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/@material/top-app-bar/standard/foundation.js ***!
+  \***********************************************************************/
+
+/*!************************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/nonIterableRest.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ../../node_modules/@material/textfield/helper-text/foundation.js ***!
+  \************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js ***!
+  \*************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ../../node_modules/@material/textfield/character-counter/component.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ../../node_modules/@material/textfield/character-counter/constants.js ***!
+  \*****************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js ***!
+  \******************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ../../node_modules/@material/textfield/character-counter/foundation.js ***!
+  \******************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js ***!
+  \**********************************************************************************/
+
+/*!***********************************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js ***!
+  \***********************************************************************************/
+
+/**
+ * @license
+ * Copyright 2016 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/**
+ * @license
+ * Copyright 2017 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/**
+ * @license
+ * Copyright 2018 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/**
+ * @license
+ * Copyright 2019 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */

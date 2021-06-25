@@ -1,0 +1,113 @@
+{% extends 'dashboard/base.html' %}
+{% load sekizai_tags static %}
+
+{% block title %}Widgets{% endblock %}
+{% block page_title %}Widgets{% endblock %}
+
+{% block nav %}
+<nav class="fcol mdc-list aside__navi-list">
+  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
+    Dashboard
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:communications' %}">
+    Communications
+  </a>
+  {% if user.is_default_admin %}
+  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:widgets' %}">
+    Widgets<span></span >
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
+    Team
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
+    Billing
+  </a>
+  <a class="aside__navi-item aside__navi-item" href="{% url 'dashboard:settings' %}">
+    Settings
+  </a>
+  {% endif %}
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="flc widgets__top-header">
+          <p>Your widgets: {{ active_widgets_len }}/{{ widgets|length }}</p>
+          <p>Your domains: {{ widgets|length }}</p>
+          <a>Change plan for more</a>
+        </div>
+        <div class="fcol widget-list">
+          <div class="flc widget-list__header">
+            <div class="widget-list__field widget-list__field--id">ID</div>
+            <div class="fc widget-list__field widget-list__field--url">URL</div>
+            <div class="fc widget-list__field widget-list__field--language">Language</div>
+            <div class="fc widget-list__field widget-list__field--status">Status</div>
+            <div class="fc widget-list__field widget-list__field--last-change">Last change</div>
+            <div class="frc widget-list__field widget-list__field--mod-bar">
+              <a class="widget-list__create" href="{% url 'dashboard:widget_create' %}" target="_self">CREATE</a>
+            </div>
+          </div>
+          <div class="fcol view-list__content widget-list__content">
+            {% for widget in widgets %}
+            <div class="flc view-list__entry widget-list__entry">
+              <div class="widget-list__field widget-list__field--id">#{{ widget.id }}</div>
+              <div class="flc widget-list__field widget-list__field--url">
+                <div class="fcol">
+                  <div class="widget-list__url-label">{{ widget.name }}</div>
+                  <a class="widget-list__url-link" href="http://{{ widget.url }}" target="_blank">{{ widget.url }}</a>
+                </div>
+              </div>
+              <div class="fc widget-list__field widget-list__field--language">
+                {% for k, v in widget.LANG_CHOICES %}            
+                {% if k == widget.lang %}
+                {{ v }}
+                {% endif %}
+                {% endfor %}
+              </div>
+              <div class="fc widget-list__field widget-list__field--status">
+                {% if not widget.is_installed %}
+                <div class="widget-list__status-dot widget-list__status-dot--paused"></div>
+                {% else %}
+                <div class="widget-list__status-dot widget-list__status-dot--active"></div>
+                {% endif %}
+                <div class="widget-list__status-dot"></div>
+              </div>
+              <div class="fc df-c widget-list__field widget-list__field--last-change">
+                <div class="fcol">
+                  <div class="widget-list__change-date">{{ widget.last_change|date:"m-d-Y" }}</div>
+                  <div class="widget-list__change-author">by {{ widget.last_editor.get_full_name }}</div>
+                </div>
+              </div>
+              <div class="flc widget-list__field widget-list__field--mod-bar">
+                <a class="fc df-f1 list-link--edit" href="{% url 'dashboard:widget_edit' widget_id=widget.id  %}" target="_self">Edit</a>
+                {% if widget.paused %}
+                <a class="fc df-f1 link--unpause-widget" href="{% url 'dashboard:widget_unpause' widget_id=widget.id  %}">Activate</a>
+                {% else %}
+                <a class="fc df-f1 list-link--pause" href="{% url 'dashboard:widget_pause' widget_id=widget.id  %}">Pause</a>
+                {% endif %}
+                <a class="fc df-f1 list-link--delete" href="{% url 'dashboard:widget_delete' widget_id=widget.id  %}">Delete</a>
+              </div>
+            </div>
+            {% endfor %}
+            {% if widgets|length == 0 %}
+            <div class="no-widgets fc">
+              <p>No widgets.</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+{% endblock %}
+
+
+{% if messages %}
+<ul class="messages messages--widgets">
+  {% for message in messages %}
+  <li {% if message.tags %} class="message {{ message.tags }}" {% endif %}>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+<div class="mdc-snackbar mdc-snackbar--align-start" aria-live="assertive" aria-atomic="true" aria-hidden="false">
+  <div class="mdc-snackbar__text"></div>
+  <div class="mdc-snackbar__action-wrapper">
+    <button type="button" class="mdc-snackbar__action-button"></button>
+  </div>
+</div>

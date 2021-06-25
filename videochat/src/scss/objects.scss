@@ -1,0 +1,260 @@
+.hidden {
+  display: none !important;
+}
+
+.cover {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: block;
+}
+
+.pr {
+  position:relative;
+}
+
+.f1 {
+  display: flex;
+  @include df-f1;  
+}
+
+.flc {
+  display: flex;
+  @include df-lc;
+}
+
+.flt {
+  display: flex;
+  @include df-lt;
+}
+
+.fcol {
+  display: flex;
+  @include df-col;
+}
+
+.df {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.df-col {
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+.df-row {
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+}
+
+.df-f1 {
+  -webkit-flex: 1 !important;
+  -ms-flex: 1 0 auto;
+  flex: 1 0;
+}
+
+.df-space {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex: 1 !important;
+  -ms-flex: 1 0 auto;
+  flex: 1 0 auto;
+}
+
+.df-c {
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.df-lc {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.df-rc {
+  -webkit-align-items: flex-end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.df-tr {
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+.df-ct {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.df-lt {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+}
+
+.df-lb {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+}
+
+a.button span {
+  display: inline-block;
+}
+
+.button {
+  cursor: pointer;
+  @include transition(background-color .2s ease, color .2s ease);
+}
+
+.button--bordered {
+  cursor: pointer;
+  @include transition(background-color .2s ease, color .2s ease);
+  border-style: solid;
+}
+
+.button--light-blue {
+  background-color: $color--cornflower-blue;
+  color: white;
+}
+
+a.button--footer:hover,
+.button--footer.js-active,
+.button--light-blue:hover {
+  background-color: $color--lawn-green;
+  color: white;
+}
+
+.button--footer.js-active {
+  pointer-events: none;
+}
+
+.button--transparent {
+  background-color: transparent;
+  color: $color--dark-blue;
+  border-style: solid;
+  border-color: $color--cornflower-blue;
+}
+
+.button--transparent:hover {
+  background-color: $color--cornflower-blue;
+  color: white;
+}
+
+.button--transparent-red {
+  background-color: transparent;
+  color: $color--dark-blue;
+  border-style: solid;
+  border-color: $color--red-orange;
+}
+
+.button--transparent-red:hover {
+  background-color: $color--red-orange;
+  color: white;
+}
+
+// overlay
+
+.overlay__result-message {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 40px;
+}
+
+.overlay__result-ok {
+  border-color: $color--red-orange;
+  color: white;
+  width: auto;
+  padding: 10px 30px;
+  font-weight: 400;
+  font-size: 1.375rem;
+  border-radius: 30px;
+  background-color: transparent;
+  width: 100px;
+  text-align: center;
+}
+
+.overlay__result-ok:hover {
+  background-color: $color--red-orange;
+}
+
+p.overlay__error {
+  color: $color--red;
+  font-size: 1rem;
+  font-weight: 400;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+.overlay__closer {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  border-radius: 50%;
+  background-color: transparent
+}
+
+.overlay__closer:hover {
+  opacity: .8;
+}
+
+.overlay__closer-icon {
+  height: 34px;
+}
+
+.overlay__closer-button {
+  cursor:pointer;
+  z-index:10;
+}
+
+a.button--footer {
+  cursor:pointer;
+  text-decoration: none;
+}
+
+a.button--footer:hover {
+  text-decoration: underline;
+}
+
+div.button--footer {
+  cursor:pointer;
+  text-decoration: none;
+}
+
+div.button--footer:hover {
+  text-decoration: underline;
+}
