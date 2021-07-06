@@ -48,7 +48,7 @@
 
 .qh-root {
   font-family: 'Raleway';
-
+  font-size:16px;
   background: transparent;
   border: none;
   bottom: 16px;
@@ -101,8 +101,8 @@
   }
 
   .errornote {
-    color: #c90000;
-    font-size: 0.75rem;
+    color: white;
+    font-size: 0.75em;
     text-align: right;
   }
 
@@ -173,7 +173,7 @@
 
   .widget-extension__messages li {
     color: white;
-    font-size: 0.875rem;
+    font-size: 0.875em;
     font-weight: 600;
   }
 
@@ -187,7 +187,7 @@
 
   .widget-extension p {
     color: white;
-    font-size: 0.875rem;
+    font-size: 0.875em;
   }
 
   .widget-extension a {
@@ -199,6 +199,11 @@
     top: 6px;
     right: 6px;
     cursor: pointer;
+  }
+
+  .widget-closer svg {
+    width:20px;
+    height:20px;
   }
 
   .widget-extension__form-group {
@@ -214,20 +219,25 @@
   .widget-extension__form-text {
     font-weight: 600;
     color: white;
-    font-size: 0.875rem;
+    font-size: 0.875em;
   }
 
   .widget-extension__label {
     margin-bottom: 2px;
   }
 
-  .widget-extension__input {
-    padding: 3px 6px;
-    font-family: 'Raleway';
+  input,
+  textarea {
     font-weight: 500;
+    font-size: 0.875em;
+    padding:3px 6px;
     color: $color--nero;
-    border: 1px solid lightgreen;
+    border: 1px solid grey;
     border-radius: 4px;
+  }
+
+  textarea {
+    height:36px;
   }
 
   .widget-extension__button {
@@ -261,6 +271,7 @@
   p.widget__form-label {
     margin-bottom: 10px;
     font-weight: 600;
+    line-height:16px;
   }
 
   .widget-extension {
@@ -280,9 +291,8 @@
   }
 
   .widget-outlook__alert-text {
-    font-family: 'Raleway';
     font-weight: 500;
-    font-size: 0.75rem;
+    font-size: 0.75em;
     color: white;
     position: absolute;
     top: 5px;
@@ -308,7 +318,7 @@
 #qh_e_frame {
   background: transparent;
   border: none;
-  bottom: -260px;
+  bottom: -280px;
   position: fixed;
   right: 112px;
   top: auto;

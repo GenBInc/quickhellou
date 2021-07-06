@@ -20,7 +20,7 @@ Windows:
 ```
 virtualenv env
 env/Scripts/activate
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 Linux:
@@ -28,7 +28,7 @@ Linux:
 ```
 virtualenv env
 source "env/bin/activate"
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 Update DATABASES in `quickhellou/quickhellou/settings.py` with you postgresql db settings
@@ -40,7 +40,7 @@ DATABASES = {
         'NAME': '<your_db_name>',
         'USER': '<your_username>',
         'PASSWORD': '<your_password>',
-        'HOST': 'localhost',
+        'HOST': '<your_host>',
         'PORT': '5432',
     }
 }
