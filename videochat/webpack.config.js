@@ -81,19 +81,14 @@ module.exports = env => {
 		new CopyWebpackPlugin([
 			{
 				from: "**/*",
-				to:"../dist/html",
+				to:"../build/html",
 				context:"./html"
 			},
 			{
 				from: "**/*",
-				to:"../dist/images",
+				to:"../build/images",
 				context:"./images"
-			},
-			{
-				from: "**/*",
-				to:"../dist/py",
-				context:"../src/py"
-			},
+			}
 		])
 	];
 	config.entry = {

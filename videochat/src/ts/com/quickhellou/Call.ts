@@ -1,22 +1,22 @@
-import { ColliderService } from "./application/service/ColliderService";
-import { LoadingParams } from "./LoadingParams";
-import { PeerConnectionClient } from "./PeerConnectionClient";
-import { CallEvent } from "./CallEvent";
-import { Util } from "./Util";
-import { PeerConnectionClientEvent } from "./PeerConnectionClientEvent";
-import { BaseUtils } from "../genb/base/utils/BaseUtils";
-import { FormService } from "../genb/base/services/FormService";
-import { Room } from "./application/model/Room";
-import { PeerConnectionResponseType } from "./application/model/PeerConnectionResponseType";
-import { Log } from "../genb/base/utils/Log";
-import { StringUtils } from "../genb/base/utils/StringUtils";
-import { RegisterOptions } from "./application/model/RegisterOptions";
-import { SessionInit } from "./application/model/SessionInit";
-import { RtcSession } from "./application/model/RtcSession";
-import { SessionOptions } from "./application/model/SessionOptions";
-import { VideoTrackEventOptions } from "./application/model/VideoTrackEventOptions";
-import { RetryConsumeManager } from "./application/controller/RetryConsumeManager";
-import { RetryJobEvent } from "./application/events/RetryJobEvent";
+import { ColliderService } from './application/service/ColliderService'
+import { LoadingParams } from './LoadingParams'
+import { PeerConnectionClient } from './PeerConnectionClient'
+import { CallEvent } from './CallEvent'
+import { Util } from './Util'
+import { PeerConnectionClientEvent } from './PeerConnectionClientEvent'
+import { BaseUtils } from '../genb/base/utils/BaseUtils'
+import { FormService } from '../genb/base/services/FormService'
+import { Room } from './application/model/Room'
+import { PeerConnectionResponseType } from './application/model/PeerConnectionResponseType'
+import { Log } from '../genb/base/utils/Log'
+import { StringUtils } from '../genb/base/utils/StringUtils'
+import { RegisterOptions } from './application/model/RegisterOptions'
+import { SessionInit } from './application/model/SessionInit'
+import { RtcSession } from './application/model/RtcSession'
+import { SessionOptions } from './application/model/SessionOptions'
+import { VideoTrackEventOptions } from './application/model/VideoTrackEventOptions'
+import { RetryConsumeManager } from './application/controller/RetryConsumeManager'
+import { RetryJobEvent } from './application/events/RetryJobEvent'
 
 /**
  * Call facade.
@@ -26,18 +26,18 @@ import { RetryJobEvent } from "./application/events/RetryJobEvent";
  * @extends {FormService}
  */
 export class Call extends FormService {
-  private colliderService: ColliderService;
-  private params: LoadingParams;
-  private pcClients: Map<string, PeerConnectionClient>;
-  private localStream: MediaStream;
-  private startTime: number;
+  private colliderService: ColliderService
+  private params: LoadingParams
+  private pcClients: Map<string, PeerConnectionClient>
+  private localStream: MediaStream
+  private startTime: number
 
-  private cameraTrack: MediaStreamTrack;
-  private displayTrack: MediaStreamTrack;
+  private cameraTrack: MediaStreamTrack
+  private displayTrack: MediaStreamTrack
 
-  private isCertificateGenerated: boolean;
-  private retryConsumeManagers: Map<string, RetryConsumeManager>;
-  private room: Room;
+  private isCertificateGenerated: boolean
+  private retryConsumeManagers: Map<string, RetryConsumeManager>
+  private room: Room
 
   /**
    * Creates an instance of Call.
@@ -46,19 +46,19 @@ export class Call extends FormService {
    * @memberof Call
    */
   constructor(params: LoadingParams) {
-    super();
-    this.params = params;
+    super()
+    this.params = params
 
-    this.colliderService = ColliderService.getInstance();
-    this.retryConsumeManagers = new Map<string, RetryConsumeManager>();
-    this.pcClients = new Map<string, PeerConnectionClient>();
-    this.localStream = null;
-    this.startTime = null;
-    this.cameraTrack = null;
+    this.colliderService = ColliderService.getInstance()
+    this.retryConsumeManagers = new Map<string, RetryConsumeManager>()
+    this.pcClients = new Map<string, PeerConnectionClient>()
+    this.localStream = null
+    this.startTime = null
+    this.cameraTrack = null
 
-    this.isCertificateGenerated = false;
+    this.isCertificateGenerated = false
 
-    this.createCertificate();
+    this.createCertificate()
   }
 
   /**
@@ -68,8 +68,8 @@ export class Call extends FormService {
    * @memberof Call
    */
   public send(message: any, persistant: boolean = true): void {
-    const msgString: string = JSON.stringify(message);
-    this.colliderService.send(msgString, persistant);
+    const msgString: string = JSON.stringify(message)
+    this.colliderService.send(msgString, persistant)
   }
 
   /**
@@ -80,7 +80,7 @@ export class Call extends FormService {
    * @memberof Call
    */
   public broadcast(inputType: string, message: any): void {
-    this.colliderService.broadcast(inputType, message);
+    this.colliderService.broadcast(inputType, message)
   }
 
   /**
@@ -90,16 +90,16 @@ export class Call extends FormService {
    * @memberof Call
    */
   public toggleVideoMute(): void {
-    const videoTracks: MediaStreamTrack[] = this.localStream.getVideoTracks();
+    const videoTracks: MediaStreamTrack[] = this.localStream.getVideoTracks()
     if (videoTracks.length === 0) {
-      Log.log("No local video available.");
-      return;
+      Log.log('No local video available.')
+      return
     }
-    Log.log("Toggling video mute state.");
+    Log.log('Toggling video mute state.')
     for (const videoTrack of videoTracks) {
-      videoTrack.enabled = !videoTrack.enabled;
+      videoTrack.enabled = !videoTrack.enabled
     }
-    Log.log("Video " + (videoTracks[0].enabled ? "unmuted." : "muted."));
+    Log.log('Video ' + (videoTracks[0].enabled ? 'unmuted.' : 'muted.'))
   }
 
   /**
@@ -110,32 +110,32 @@ export class Call extends FormService {
    */
   public addDisplayMediaTracks(track: MediaStreamTrack): void {
     // mute video track
-    this.cameraTrack.enabled = false;
+    this.cameraTrack.enabled = false
 
     // Re-enable video on screen sharing end.
-    track.addEventListener("ended", () => {
-      this.stopDisplayMedia();
-    });
+    track.addEventListener('ended', () => {
+      this.stopDisplayMedia()
+    })
     this.localStream
       .getVideoTracks()
       .forEach((videoTrack: MediaStreamTrack) => {
-        this.localStream.removeTrack(videoTrack);
-      });
-    this.localStream.addTrack(track);
-    this.displayTrack = track;
+        this.localStream.removeTrack(videoTrack)
+      })
+    this.localStream.addTrack(track)
+    this.displayTrack = track
     this.dispatchEvent(
       CallEvent.LOCAL_VIDEO_MEDIA_CHANGE,
       new VideoTrackEventOptions(
         this.displayTrack,
         VideoTrackEventOptions.SCREEN_CAPTURE
       )
-    );
+    )
     try {
       this.pcClients.forEach((pcClient: PeerConnectionClient) => {
-        pcClient.addVideoTrack(this.displayTrack);
-      });
+        pcClient.addVideoTrack(this.displayTrack)
+      })
     } catch (e) {
-      Log.log("error", e);
+      Log.log('error', e)
     }
   }
   /**
@@ -146,20 +146,20 @@ export class Call extends FormService {
    */
   public stopDisplayMedia() {
     if (!this.displayTrack) {
-      return;
+      return
     }
     if (!this.displayTrack.enabled) {
-      return;
+      return
     }
-    this.displayTrack.enabled = false;
-    this.displayTrack.stop();
+    this.displayTrack.enabled = false
+    this.displayTrack.stop()
 
-    this.addCameraTracks();
+    this.addCameraTracks()
 
     this.dispatchEvent(
       CallEvent.LOCAL_VIDEO_MEDIA_CHANGE,
       new VideoTrackEventOptions(this.cameraTrack)
-    );
+    )
   }
 
   /**
@@ -170,16 +170,16 @@ export class Call extends FormService {
    */
 
   public toggleAudioUnMute(): void {
-    const audioTracks: MediaStreamTrack[] = this.localStream.getAudioTracks();
+    const audioTracks: MediaStreamTrack[] = this.localStream.getAudioTracks()
     if (audioTracks.length === 0) {
-      Log.log("No local audio available.");
-      return;
+      Log.log('No local audio available.')
+      return
     }
-    Log.log("Toggling audio to unmute state.");
+    Log.log('Toggling audio to unmute state.')
     for (const audioTrack of audioTracks) {
-      audioTrack.enabled = true;
+      audioTrack.enabled = true
     }
-    Log.log("Audio unmuted.");
+    Log.log('Audio unmuted.')
   }
 
   /**
@@ -189,16 +189,16 @@ export class Call extends FormService {
    * @memberof Call
    */
   public toggleAudioMute(): void {
-    const audioTracks: MediaStreamTrack[] = this.localStream.getAudioTracks();
+    const audioTracks: MediaStreamTrack[] = this.localStream.getAudioTracks()
     if (audioTracks.length === 0) {
-      Log.log("No local audio available.");
-      return;
+      Log.log('No local audio available.')
+      return
     }
-    Log.log("Toggling audio mute state.");
+    Log.log('Toggling audio mute state.')
     for (const audioTrack of audioTracks) {
-      audioTrack.enabled = !audioTrack.enabled;
+      audioTrack.enabled = !audioTrack.enabled
     }
-    Log.log("Audio " + (audioTracks[0].enabled ? "unmuted." : "muted."));
+    Log.log('Audio ' + (audioTracks[0].enabled ? 'unmuted.' : 'muted.'))
   }
 
   /**
@@ -209,7 +209,7 @@ export class Call extends FormService {
    * @memberof Call
    */
   public getStartTime(): number {
-    return this.startTime;
+    return this.startTime
   }
 
   /**
@@ -220,13 +220,13 @@ export class Call extends FormService {
    * @memberof Call
    */
   public setLocalStream(stream: MediaStream) {
-    this.localStream = stream;
+    this.localStream = stream
 
     if (this.localStream.getVideoTracks().length === 0) {
-      return;
+      return
     }
 
-    this.cameraTrack = this.localStream.getVideoTracks().shift();
+    this.cameraTrack = this.localStream.getVideoTracks().shift()
   }
 
   /**
@@ -237,7 +237,7 @@ export class Call extends FormService {
    * @memberof Call
    */
   public setRoom(room: Room) {
-    this.room = room;
+    this.room = room
   }
 
   /**
@@ -247,17 +247,18 @@ export class Call extends FormService {
    * @param {string} message
    * @memberof Call
    */
-  public receiveColliderChannelMessage(message: string): void {
-    const sessionId: string = JSON.parse(message).sessionId;
+  public receiveColliderChannelMessage(messageObj: string): void {
+    const message = JSON.parse(messageObj)
+    const sessionId: string = message.sessionId
     Log.log(
-      "Call::receiveColliderChannelMessage (should create PC Client) ",
+      'Call::receiveColliderChannelMessage (should create PC Client) ',
       sessionId
-    );
-    this.createPcClient(new RtcSession(sessionId, "", message)).then(
+    )
+    this.createPcClient(new RtcSession(sessionId, '', message)).then(
       (pcClient: PeerConnectionClient): void => {
-        pcClient.receiveSignalingMessage(message);
+        pcClient.receiveSignalingMessage(message)
       }
-    );
+    )
   }
 
   /**
@@ -268,13 +269,13 @@ export class Call extends FormService {
    */
   public startRtcSignaling(sessionInit: SessionInit): void {
     sessionInit.sessions.forEach((session: RtcSession) => {
-      Log.log("Call::startRtcSignaling - forward? ", session.isForward);
+      Log.log('Call::startRtcSignaling - forward? ', session.isForward)
       if (!session.isForward) {
-        this.startNewRtcSession(session);
+        this.startNewRtcSession(session)
       } else {
-        this.forwardNewRtcSession(session);
+        this.forwardNewRtcSession(session)
       }
-    });
+    })
   }
 
   /**
@@ -284,32 +285,31 @@ export class Call extends FormService {
    * @memberof Call
    */
   public startNewRtcSession(session: RtcSession): void {
-    this.startTime = window.performance.now();
+    this.startTime = window.performance.now()
 
-    Log.log("Start new session with ID: ", session.id);
+    Log.log('Start new session with ID: ', session.id)
     if (StringUtils.isEmpty(session.id)) {
-      Log.fatal("No sessionId from the remote peer.");
-      return;
+      Log.fatal('No sessionId from the remote peer.')
+      return
     }
 
     this.createPcClient(session)
       .then((pcClient: PeerConnectionClient): void => {
         if (this.localStream) {
-          pcClient.addStream(this.localStream);
+          pcClient.addStream(this.localStream)
         }
         if (session.isInitiator) {
-          this.startupAsInitiator(pcClient);
-          return;
+          this.startupAsInitiator(pcClient)
+          return
         }
-
-        const started: boolean = pcClient.startAsReceiver(session.messages);
+        const started: boolean = pcClient.startAsReceiver(session.messages)
         if (!started) {
-          this.startRetryConsumeManager(pcClient);
+          this.startRetryConsumeManager(pcClient)
         }
       })
       .catch((reason: any): void => {
-        this.onError(`Create PeerConnection exception: ${reason}`);
-      });
+        this.onError(`Create PeerConnection exception: ${reason}`)
+      })
   }
 
   /**
@@ -320,11 +320,10 @@ export class Call extends FormService {
    * @memberof Call
    */
   public getPeerConnectionStats(callback: any, pcClientId: string): void {
-    const pcClient: PeerConnectionClient = this.pcClients.get(pcClientId);
+    const pcClient: PeerConnectionClient = this.pcClients.get(pcClientId)
     if (!BaseUtils.isObjectDefined(pcClient)) {
-      return;
+      return
     }
-    // pcClient.getPeerConnectionStats(callback);
   }
 
   /**
@@ -334,11 +333,11 @@ export class Call extends FormService {
    * @memberof Call
    */
   public getPeerConnectionStates(pcClientId: string) {
-    const pcClient: PeerConnectionClient = this.pcClients.get(pcClientId);
+    const pcClient: PeerConnectionClient = this.pcClients.get(pcClientId)
     if (!BaseUtils.isObjectDefined(pcClient)) {
-      return null;
+      return null
     }
-    return pcClient.getPeerConnectionStates();
+    return pcClient.getPeerConnectionStates()
   }
 
   /**
@@ -350,37 +349,37 @@ export class Call extends FormService {
    * @memberof Call
    */
   public hangup(async: boolean): Promise<any> {
-    this.startTime = null;
-    Log.log("Call::hangup", async);
+    this.startTime = null
+    Log.log('Call::hangup', async)
     if (!!this.localStream) {
-      if (typeof this.localStream.getTracks === "undefined") {
-        this.localStream.stop();
+      if (typeof this.localStream.getTracks === 'undefined') {
+        this.localStream.stop()
       } else {
         this.localStream.getTracks().forEach((track: any): void => {
-          track.stop();
-        });
+          track.stop()
+        })
       }
-      this.localStream = null;
+      this.localStream = null
     }
 
     if (!BaseUtils.isObjectDefined(this.room)) {
-      Log.log("No room defined.");
-      return;
+      Log.log('No room defined.')
+      return
     }
 
     if (!BaseUtils.isObjectDefined(this.room.id)) {
-      Log.log("No room ID defined.");
-      return;
+      Log.log('No room ID defined.')
+      return
     }
 
     // close WebRTC peer client
     this.pcClients.forEach((pcClient: PeerConnectionClient) => {
-      pcClient.close();
-    });
+      pcClient.close()
+    })
 
-    // Send 'leave' to GAE. This must complete before saying BYE to other client.
+    // Send 'leave' to PyApp. This must complete before saying BYE to other client.
     // When the other client sees BYE it attempts to post offer and candidates to
-    // GAE. GAE needs to know that we're disconnected at that point otherwise
+    // PyApp. PyApp needs to know that we're disconnected at that point otherwise
     // it will forward messages to this client instead of storing them.
 
     // This section of code is executed in both sync and async depending on
@@ -391,80 +390,80 @@ export class Call extends FormService {
     // If you modify the steps used to hang up a call, you must also modify
     // the clean up queue steps set up in queueCleanupMessages_.');
 
-    const steps: any[] = [];
+    const steps: any[] = []
     steps.push({
       step: (): any => {
         // Send POST request to /leave.
         if (this.getLeaveUrl().valid) {
-          Log.log("sending leave", this.getLeaveUrl().url);
-          return Util.sendUrlRequest("POST", this.getLeaveUrl().url, async);
+          Log.log('sending leave', this.getLeaveUrl().url)
+          return Util.sendUrlRequest('POST', this.getLeaveUrl().url, async)
         }
       },
-      errorString: "Error sending /leave:",
-    });
+      errorString: 'Error sending /leave:',
+    })
     steps.push({
       step: (): void => {
         // Send bye to the other clients.
         Array.from(this.pcClients).forEach((pcClientPair: any) => {
-          const pcClient: PeerConnectionClient = pcClientPair[1];
+          const pcClient: PeerConnectionClient = pcClientPair[1]
           this.sendToOther(pcClient.getSession().otherClientId, {
             type: PeerConnectionResponseType.BYE,
             clientId: this.params.clientID,
             sessionId: pcClient.getSessionId(),
-          });
-          this.pcClients.delete(pcClient.getId());
-        });
+          })
+          this.pcClients.delete(pcClient.getId())
+        })
         // request current sessons and sends session update for collider applicaion.
       },
-      errorString: "Error sending bye:",
-    });
+      errorString: 'Error sending bye:',
+    })
     steps.push({
       step: (): any => {
         // Close signaling channel.
-        Log.log("close WS collider from hangup ", async);
-        return this.colliderService.close(async);
+        Log.log('close WS collider from hangup ', async)
+        return this.colliderService.close(async)
       },
-      errorString: "Error closing signaling channel:",
-    });
+      errorString: 'Error closing signaling channel:',
+    })
     steps.push({
       step: (): void => {
         // the room stays as it is, no need to introduce new one
         // this.params.previousRoomID = this.room.id;
         // this.params.roomID = this.room.id = null;
-        this.params.clientID = null;
+        this.params.clientID = null
       },
-      errorString: "Error setting params:",
-    });
+      errorString: 'Error setting params:',
+    })
 
     if (async) {
       const errorHandler: any = (errorString: string): void => {
-        Log.warn(errorString);
-      };
-      let promise: Promise<any> = Promise.resolve();
+        Log.warn(errorString)
+      }
+      let promise: Promise<any> = Promise.resolve()
       for (const step of steps) {
         promise = promise
           .then((): void => {
-            step.step.call(this);
+            step.step.call(this)
           })
           .catch((reason: string): void => {
-            Log.log(reason, step.errorString);
-            errorHandler(step.errorString);
-          });
+            Log.log(reason, step.errorString)
+            errorHandler(step.errorString)
+          })
       }
 
-      return promise;
+      return promise
     }
     // Execute the cleanup steps.
     const executeStep = (executor: any, errorString: string): void => {
       try {
-        executor();
+        executor()
       } catch (ex) {
-        Log.log(errorString + " " + ex);
+        Log.log(errorString + ' ' + ex)
       }
-    };
+    }
 
     for (const step of steps) {
-      executeStep(step.step, step.errorString);
+      executeStep(step.step, step.errorString)
     }
 
     if (
@@ -472,14 +471,14 @@ export class Call extends FormService {
       BaseUtils.isObjectDefined(this.params.clientID)
     ) {
       Log.log(
-        "ERROR: sync cleanup tasks did not complete successfully.",
+        'ERROR: sync cleanup tasks did not complete successfully.',
         this.room.id,
         this.params.clientID
-      );
+      )
     } else {
-      Log.log("Cleanup completed.");
+      Log.log('Cleanup completed.')
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   /**
@@ -489,21 +488,21 @@ export class Call extends FormService {
    * @memberof Call
    */
   public onRemoteHangup(sessionId: string): void {
-    this.startTime = null;
+    this.startTime = null
     // On remote hangup this client becomes the new initiator.
-    const pcClient: PeerConnectionClient = this.pcClients.get(sessionId);
+    const pcClient: PeerConnectionClient = this.pcClients.get(sessionId)
     if (!BaseUtils.isObjectDefined(pcClient)) {
       Log.warn(
         `Call::onRemoteHangup pcClient identified by sessionId ${sessionId} doesn't exist.
         Not initializing new connection.`
-      );
-      return;
+      )
+      return
     }
     // this.requestSessionUpdate();
-    pcClient.close();
-    this.pcClients.delete(sessionId);
+    pcClient.close()
+    this.pcClients.delete(sessionId)
 
-    const sessionInit: SessionInit = new SessionInit();
+    const sessionInit: SessionInit = new SessionInit()
     sessionInit.addSession(
       new RtcSession(
         pcClient.getSession().id,
@@ -511,8 +510,8 @@ export class Call extends FormService {
         StringUtils.EMPTY,
         true
       )
-    );
-    this.startRtcSignaling(sessionInit);
+    )
+    this.startRtcSignaling(sessionInit)
   }
 
   /**
@@ -523,15 +522,15 @@ export class Call extends FormService {
    * @memberof Call
    */
   public onRemoteHangupByClientId(clientId: string): string {
-    let sessionId: string = StringUtils.EMPTY;
+    let sessionId: string = StringUtils.EMPTY
     Array.from(this.pcClients).forEach((pcClientPair: any) => {
-      const pcClient: PeerConnectionClient = pcClientPair[1];
+      const pcClient: PeerConnectionClient = pcClientPair[1]
       if (pcClient.getSession().otherClientId === clientId) {
-        this.onRemoteHangup(pcClient.getSession().id);
-        sessionId = pcClient.getSession().id;
+        this.onRemoteHangup(pcClient.getSession().id)
+        sessionId = pcClient.getSession().id
       }
-    });
-    return sessionId;
+    })
+    return sessionId
   }
 
   /**
@@ -546,52 +545,52 @@ export class Call extends FormService {
     return new Promise((resolve: any, reject: any) => {
       const pcClient: PeerConnectionClient = this.pcClients.get(
         registerOptions.sessionId
-      );
-
+      )
+      Log.log('Call::setSessionOtherClientId client?', !!pcClient)
       if (BaseUtils.isObjectDefined(pcClient)) {
-        const session: RtcSession = pcClient.getSession();
-        session.otherClientId = registerOptions.clientId;
-        pcClient.setSession(session);
-
+        const session: RtcSession = pcClient.getSession()
+        session.otherClientId = registerOptions.clientId
+        pcClient.setSession(session)
+        Log.log('Call::setSessionOtherClientId updated')
+      
         if (pcClient.requireDataConsume) {
-          const retryConsumeManager: RetryConsumeManager = this.retryConsumeManagers.get(
-            session.id
-          );
-          retryConsumeManager.next();
+          const retryConsumeManager: RetryConsumeManager =
+            this.retryConsumeManagers.get(session.id)
+          retryConsumeManager.next()
         }
       } else {
-        Log.log("No client.");
+        Log.log('No client.')
       }
 
-      resolve();
-    });
+      resolve()
+    })
   }
 
   public onRemoteIceComplete(data: any) {
-    const sessionId: string = data.sessionId;
-    const candidates: any[] = data.candidates;
-    const pcClient: PeerConnectionClient = this.pcClients.get(sessionId);
-    pcClient.onRemoteIceComplete(candidates);
+    const sessionId: string = data.sessionId
+    const candidates: any[] = data.candidates
+    const pcClient: PeerConnectionClient = this.pcClients.get(sessionId)
+    pcClient.onRemoteIceComplete(candidates)
   }
 
   public consumeRemoteMessages(pcClient: PeerConnectionClient): void {
-    pcClient.requireDataConsume = false;
-    this.colliderService.touch(this.params.roomID, this.params.clientID);
+    pcClient.requireDataConsume = false
+    this.colliderService.touch(this.params.roomID, this.params.clientID)
     this.post(
       `/consume/${this.params.roomID}/${pcClient.getSessionId()}/${
         this.params.clientID
       }`
     ).then((result: any) => {
       if (!result) {
-        return;
+        return
       }
-      const resultJson: any = JSON.parse(result);
-      const messages: any[] = resultJson.messages;
-      Log.log(messages.length);
+      const resultJson: any = JSON.parse(result)
+      const messages: any[] = resultJson.messages
       messages.forEach((message) => {
-        pcClient.receiveSignalingMessage(message);
-      });
-    });
+        Log.log('%%% consumeRemoteMessages %%%', message)
+        pcClient.receiveSignalingMessage(message)
+      })
+    })
   }
 
   /**
@@ -618,14 +617,14 @@ export class Call extends FormService {
    * @memberof Call
    */
   private onLocalIceComplete(data: any): any {
-    const session: RtcSession = data.session;
-    this.post(`/sessions-getter/${this.params.roomID}`);
+    const session: RtcSession = data.session
+    this.post(`/sessions-getter/${this.params.roomID}`)
     Log.log(
-      "onLocalIceComplete requireDataConsume",
+      'onLocalIceComplete requireDataConsume',
       data.pcClient.requireDataConsume
-    );
+    )
     if (data.pcClient.requireDataConsume) {
-      this.startRetryConsumeManager(data.pcClient);
+      this.startRetryConsumeManager(data.pcClient)
     }
   }
 
@@ -637,11 +636,10 @@ export class Call extends FormService {
    * @memberof Call
    */
   private startRetryConsumeManager(pcClient: PeerConnectionClient) {
-    let retryConsumeManager: RetryConsumeManager = this.retryConsumeManagers.get(
-      pcClient.getSessionId()
-    );
+    let retryConsumeManager: RetryConsumeManager =
+      this.retryConsumeManagers.get(pcClient.getSessionId())
     if (BaseUtils.isObjectDefined(retryConsumeManager)) {
-      return;
+      return
     }
 
     retryConsumeManager = new RetryConsumeManager(
@@ -649,18 +647,18 @@ export class Call extends FormService {
       pcClient,
       this.params.roomID,
       this.params.clientID
-    );
+    )
     retryConsumeManager.addEventListener(
       RetryJobEvent.COMPLETE,
       () => {
-        Log.log("Job complete.");
-        this.retryConsumeManagers.delete(pcClient.getSessionId());
+        Log.log('Job complete.')
+        this.retryConsumeManagers.delete(pcClient.getSessionId())
       },
       this
-    );
-    retryConsumeManager.start();
+    )
+    retryConsumeManager.start()
 
-    this.retryConsumeManagers.set(pcClient.getSessionId(), retryConsumeManager);
+    this.retryConsumeManagers.set(pcClient.getSessionId(), retryConsumeManager)
   }
 
   /**
@@ -671,10 +669,10 @@ export class Call extends FormService {
    */
   private setLocalVideoTrackAsCamera() {
     if (!!this.displayTrack) {
-      this.localStream.removeTrack(this.displayTrack);
+      this.localStream.removeTrack(this.displayTrack)
     }
     if (!this.localStream.getTrackById(this.cameraTrack.id)) {
-      this.localStream.addTrack(this.cameraTrack);
+      this.localStream.addTrack(this.cameraTrack)
     }
   }
 
@@ -685,10 +683,10 @@ export class Call extends FormService {
    * @memberof Call
    */
   private addCameraTracks(): void {
-    this.setLocalVideoTrackAsCamera();
+    this.setLocalVideoTrackAsCamera()
     this.pcClients.forEach((pcClient: PeerConnectionClient) => {
-      pcClient.addVideoTrack(this.cameraTrack);
-    });
+      pcClient.addVideoTrack(this.cameraTrack)
+    })
   }
 
   /**
@@ -700,13 +698,13 @@ export class Call extends FormService {
    * @memberof Call
    */
   private sendToOther(otherClientId: string, message: any): void {
-    const msgString: string = JSON.stringify(message);
+    const msgString: string = JSON.stringify(message)
     this.colliderService.sendToOther(
       this.params.roomID,
       this.params.clientID,
       otherClientId,
       msgString
-    );
+    )
   }
 
   /**
@@ -718,14 +716,14 @@ export class Call extends FormService {
    */
   private sendResponse(otherClientId: string, options: any): void {
     const responseOptions: any = {
-      type: "response",
+      type: 'response',
       body: options,
-    };
-    if (StringUtils.isNotEmpty(otherClientId)) {
-      this.sendToOther(otherClientId, responseOptions);
-      return;
     }
-    this.send(responseOptions);
+    if (StringUtils.isNotEmpty(otherClientId)) {
+      this.sendToOther(otherClientId, responseOptions)
+      return
+    }
+    this.send(responseOptions)
   }
 
   /**
@@ -737,9 +735,9 @@ export class Call extends FormService {
    */
   private startupAsInitiator(pcClient: PeerConnectionClient): void {
     if (!this.hasAnyActiveSession()) {
-      this.dispatchEvent(CallEvent.CALLER_STARTED, this.room);
+      this.dispatchEvent(CallEvent.CALLER_STARTED, this.room)
     }
-    pcClient.startAsInitiator(this.params.offerOptions);
+    pcClient.startAsInitiator(this.params.offerOptions)
   }
 
   /**
@@ -750,14 +748,14 @@ export class Call extends FormService {
    * @memberof Call
    */
   private forwardNewRtcSession(session: RtcSession) {
-    const options: SessionOptions = new SessionOptions();
-    const otherClientId: string = session.otherClientId;
+    const options: SessionOptions = new SessionOptions()
+    const otherClientId: string = session.otherClientId
 
-    session.isForward = false;
-    session.otherClientId = this.params.clientID;
-    options.session = session;
+    session.isForward = false
+    session.otherClientId = this.params.clientID
+    options.session = session
 
-    this.sendResponse(otherClientId, options);
+    this.sendResponse(otherClientId, options)
   }
 
   /**
@@ -771,30 +769,30 @@ export class Call extends FormService {
   private createCertificate(): Promise<void> {
     return new Promise((resolve: any, reject: any): void => {
       if (this.isCertificateGenerated) {
-        resolve();
-        return;
+        resolve()
+        return
       }
 
       if (
-        typeof (RTCPeerConnection as any).generateCertificate === "function"
+        typeof (RTCPeerConnection as any).generateCertificate === 'function'
       ) {
-        const certParams: object = { name: "ECDSA", namedCurve: "P-256" };
-        (RTCPeerConnection as any)
+        const certParams: object = { name: 'ECDSA', namedCurve: 'P-256' }
+        ;(RTCPeerConnection as any)
           .generateCertificate(certParams)
           .then((certificate: RTCCertificate): void => {
-            Log.log("ECDSA certificate generated successfully.");
-            this.params.peerConnectionConfig.certificates = [certificate];
-            this.isCertificateGenerated = true;
-            resolve();
+            Log.log('ECDSA certificate generated successfully.')
+            this.params.peerConnectionConfig.certificates = [certificate]
+            this.isCertificateGenerated = true
+            resolve()
           })
           .catch((reason: string): void => {
-            Log.log("ECDSA certificate generation failed.");
-            reject(reason);
-          });
+            Log.log('ECDSA certificate generation failed.')
+            reject(reason)
+          })
       } else {
-        resolve();
+        resolve()
       }
-    });
+    })
   }
 
   /**
@@ -806,27 +804,27 @@ export class Call extends FormService {
    */
   private createPcClient(session: RtcSession): Promise<PeerConnectionClient> {
     return new Promise((resolve: any) => {
-      let pcClient: PeerConnectionClient = this.pcClients.get(session.id);
+      let pcClient: PeerConnectionClient = this.pcClients.get(session.id)
       if (BaseUtils.isObjectDefined(pcClient)) {
         Log.log(
-          "Call::createPcClient ",
+          'Call::createPcClient ',
           session.id,
           pcClient.requireDataConsume,
-          " pc client already exists. resolving."
-        );
-        resolve(pcClient);
-        return;
+          ' pc client already exists. resolving.'
+        )
+        resolve(pcClient)
+        return
       }
       Log.log(
         `Call::createPcClient ${session.id} pc client not exists. creating.`
-      );
-      pcClient = new PeerConnectionClient(this.params, this.startTime, session);
-      this.pcClients.set(session.id, pcClient);
+      )
+      pcClient = new PeerConnectionClient(this.params, this.startTime, session)
+      this.pcClients.set(session.id, pcClient)
       pcClient.init().then(() => {
-        this.addPeerConnectionClientEvents(pcClient);
-        resolve(pcClient);
-      });
-    });
+        this.addPeerConnectionClientEvents(pcClient)
+        resolve(pcClient)
+      })
+    })
   }
 
   /**
@@ -840,91 +838,94 @@ export class Call extends FormService {
     pcClient.addEventListener(
       PeerConnectionClientEvent.SIGNALING_MESSAGE,
       (data: any) => {
+        Log.log("send SIGNALING_MESSAGE", data, pcClient.getSession(), pcClient.ifSendAsPyMessage())
         this.sendSignalingMessage(
           data,
           pcClient.getSession(),
-          pcClient.sendAsGaeMessage()
-        );
+          pcClient.ifSendAsPyMessage()
+        )
       },
       this
-    );
+    )
     pcClient.addEventListener(
       PeerConnectionClientEvent.REMOTE_SDP_PROTOCOL_RECEIVED,
       (data: any) => {
         // TODO identify RTC client as remote session id
-        this.dispatchEvent(CallEvent.REMOTE_SDP_PROTOCOL_RECEIVED, data);
+        this.dispatchEvent(CallEvent.REMOTE_SDP_PROTOCOL_RECEIVED, data)
       },
       this
-    );
+    )
     pcClient.addEventListener(
       PeerConnectionClientEvent.REMOTE_STREAM_ADDED,
       (data: any) => {
-        this.dispatchEvent(CallEvent.REMOTE_STREAM_ADDED, data);
+        this.dispatchEvent(CallEvent.REMOTE_STREAM_ADDED, data)
       },
       this
-    );
+    )
     pcClient.addEventListener(
       PeerConnectionClientEvent.SIGNALING_STATE_CHANGE,
       (): void => {
-        this.dispatchEvent(CallEvent.SIGNALING_STATE_CHANGE);
+        this.dispatchEvent(CallEvent.SIGNALING_STATE_CHANGE)
       },
       this
-    );
+    )
     pcClient.addEventListener(
       PeerConnectionClientEvent.ICE_CONNECTION_STATE_CHANGE,
       (): void => {
-        this.dispatchEvent(CallEvent.ICE_CONNECTION_STATE_CHANGE);
+        this.dispatchEvent(CallEvent.ICE_CONNECTION_STATE_CHANGE)
       },
       this
-    );
+    )
     pcClient.addEventListener(
       PeerConnectionClientEvent.NEW_ICE_CANDIDATE,
       (data: any): void => {
-        this.dispatchEvent(CallEvent.NEW_ICE_CANDIDATE, data);
+        this.dispatchEvent(CallEvent.NEW_ICE_CANDIDATE, data)
       },
       this
-    );
+    )
     pcClient.addEventListener(
       PeerConnectionClientEvent.ICE_GATHERING_COMPLETE,
       (data: any): void => {
-        data.pcClient = pcClient;
-        this.onLocalIceComplete(data);
+        data.pcClient = pcClient
+        this.onLocalIceComplete(data)
       },
       this
-    );
+    )
     pcClient.addEventListener(
       PeerConnectionClientEvent.ERROR,
       (message: string) => {
-        this.onError(message);
+        this.onError(message)
       },
       this
-    );
+    )
     pcClient.addEventListener(
       PeerConnectionClientEvent.CREATE_OFFER_SUCCESS,
       (session: RtcSession) => {
-        const options: RegisterOptions = new RegisterOptions();
-        options.clientId = this.params.clientID;
-        options.sessionId = session.id;
-        options.type = "offer";
-        options.uuid = StringUtils.uuidv4();
-        this.sendResponse(session.otherClientId, options);
+        const options: RegisterOptions = new RegisterOptions()
+        options.clientId = this.params.clientID
+        options.sessionId = session.id
+        options.type = 'offer'
+        options.uuid = StringUtils.uuidv4()
+        Log.log('Call:: sending offer', session.otherClientId, options)
+        this.sendResponse(session.otherClientId, options)
       },
       this
-    );
+    )
     pcClient.addEventListener(
       PeerConnectionClientEvent.CREATE_ANSWER_SUCCESS,
       (session: RtcSession) => {
-        const options: RegisterOptions = new RegisterOptions();
-        options.clientId = this.params.clientID;
-        options.sessionId = session.id;
-        options.type = "answer";
-        options.uuid = StringUtils.uuidv4();
-        if (session.otherClientId !== "") {
-          this.sendResponse(session.otherClientId, options);
+        const options: RegisterOptions = new RegisterOptions()
+        options.clientId = this.params.clientID
+        options.sessionId = session.id
+        options.type = 'answer'
+        options.uuid = StringUtils.uuidv4()
+        if (session.otherClientId !== '') {
+          Log.log('Call:: sending answer', session.otherClientId, options)
+          this.sendResponse(session.otherClientId, options)
         }
       },
       this
-    );
+    )
   }
 
   /**
@@ -937,50 +938,50 @@ export class Call extends FormService {
    */
   private changeBandwidth(bandwidth: string) {
     if (
-      (adapter.browserDetails.browser === "chrome" ||
-        adapter.browserDetails.browser === "safari" ||
-        (adapter.browserDetails.browser === "firefox" &&
+      (adapter.browserDetails.browser === 'chrome' ||
+        adapter.browserDetails.browser === 'safari' ||
+        (adapter.browserDetails.browser === 'firefox' &&
           adapter.browserDetails.version >= 64)) &&
-      "RTCRtpSender" in window &&
-      "setParameters" in window.RTCRtpSender.prototype
+      'RTCRtpSender' in window &&
+      'setParameters' in window.RTCRtpSender.prototype
     ) {
       this.pcClients.forEach((pcClient: PeerConnectionClient) => {
-        pcClient.changeBandwidth(bandwidth);
-      });
+        pcClient.changeBandwidth(bandwidth)
+      })
 
-      return;
+      return
     }
   }
 
   /**
    * Sends signaling message consumed from peer connection client.
-   * Initiator sends to GAE, receiver to Collider.
+   * Initiator sends to PyApp, receiver to Collider.
    *
    * @private
    * @param {*} message
    * @param {RtcSession} session
-   * @param {boolean} [sendAsGaeMessage=false]
+   * @param {boolean} [sendAsPyMessage=false]
    * @memberof Call
    */
   private sendSignalingMessage(
     message: any,
     session: RtcSession,
-    sendAsGaeMessage: boolean = false
+    sendAsPyMessage: boolean = false
   ): void {
-    const msgString: string = JSON.stringify(message);
-    if (sendAsGaeMessage) {
-      // Initiator posts all messages to GAE. GAE will either store the messages
+    const msgString: string = JSON.stringify(message)
+    if (sendAsPyMessage) {
+      // Initiator posts all messages to PyApp. PyApp will either store the messages
       // until the other client connects, or forward the message to Collider if
       // the other client is already connected.
       // Must append query parameters in case we've specified alternate WSS url.
-      let path: string = this.room.server;
+      let path: string = this.room.server
       if (StringUtils.isNotEmpty(session.id)) {
-        path = `${path}/sessionmessage/${this.room.id}/${session.id}`;
+        path = `${path}/sessionmessage/${this.room.id}/${session.id}`
       } else {
-        path = `${path}/message/${this.room.id}`;
+        path = `${path}/message/${this.room.id}`
       }
-      path = `${path}/${this.params.clientID}${window.location.search}`;
-      this.post(path, msgString);
+      path = `${path}/${this.params.clientID}${window.location.search}`
+      this.post(path, msgString)
     } else {
       if (StringUtils.isNotEmpty(session.otherClientId)) {
         this.colliderService.sendToOther(
@@ -988,9 +989,9 @@ export class Call extends FormService {
           this.params.clientID,
           session.otherClientId,
           msgString
-        );
+        )
       } else {
-        this.colliderService.send(msgString);
+        this.colliderService.send(msgString)
       }
     }
   }
@@ -1002,7 +1003,7 @@ export class Call extends FormService {
    * @memberof Call
    */
   private onError(message: any): void {
-    this.dispatchEvent(CallEvent.ERROR, message);
+    this.dispatchEvent(CallEvent.ERROR, message)
   }
 
   /**
@@ -1014,12 +1015,12 @@ export class Call extends FormService {
    */
   private getLeaveUrl(clientId: string = this.params.clientID): any {
     if (!clientId) {
-      return { valid: false };
+      return { valid: false }
     }
     return {
       valid: true,
       url: `${this.room.server}/leave/${this.room.id}/${clientId}`,
-    };
+    }
   }
 
   /**
@@ -1030,10 +1031,10 @@ export class Call extends FormService {
    * @memberof Call
    */
   private hasAnyActiveSession(): boolean {
-    let hasActiveRemoteSdp: boolean = false;
+    let hasActiveRemoteSdp: boolean = false
     this.pcClients.forEach((pcClient: PeerConnectionClient) => {
-      hasActiveRemoteSdp = hasActiveRemoteSdp || pcClient.hasActiveRemoteSdp();
-    });
-    return hasActiveRemoteSdp;
+      hasActiveRemoteSdp = hasActiveRemoteSdp || pcClient.hasActiveRemoteSdp()
+    })
+    return hasActiveRemoteSdp
   }
 }

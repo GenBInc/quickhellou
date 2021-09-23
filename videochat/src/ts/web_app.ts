@@ -9,7 +9,7 @@ import { LoadingParams } from "./com/quickhellou/LoadingParams";
 
 Log.setEnvironment(environment);
 Log.log(
-  `Quick Hellou v. ${version} ${environment} build (webrtc-adapter v. 7.5.1)`
+  `Quick Hellou v. ${version} ${environment} build (webrtc-adapter v. 8.1.0)`
 );
 
 const loadingParams: LoadingParams = new LoadingParams();

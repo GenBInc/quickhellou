@@ -265,7 +265,7 @@ export class ColliderService extends FormService {
    * @memberof ColliderService
    */
   public async close(async: boolean) {
-    Log.log("ColliderService::WS close", async, this.websocket);
+    Log.log("Closing websocket.");
     if (!!this.websocket) {
       this.websocket.close();
       this.websocket = null;

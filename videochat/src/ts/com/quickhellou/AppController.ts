@@ -1,26 +1,26 @@
-import { BaseUtils } from "../genb/base/utils/BaseUtils";
-import { HTMLUtils } from "../genb/base/utils/HTMLUtils";
-import { AppControllerEvent } from "./AppControllerEvent";
-import { CallEvent } from "./CallEvent";
-import { LoadingParams } from "./LoadingParams";
-import { Util } from "./Util";
-import { IconSet } from "./IconSet";
-import { HTMLTemplates } from "./HTMLTemplates";
-import { StringUtils } from "../genb/base/utils/StringUtils";
-import { EventDispatcherService } from "../genb/base/services/EventDispatcherService";
-import { InvitationView } from "./InvitationView";
-import { RemoteVideos } from "./application/RemoteVideos";
-import { Room } from "./application/model/Room";
-import { RemoteVideosEvent } from "./application/model/RemoteVideosEvent";
-import { MediaCommunication } from "./application/controller/MediaCommunication";
-import { MediaEvent } from "./application/model/MediaEvent";
-import { Log } from "../genb/base/utils/Log";
-import { RegisterOptions } from "./application/model/RegisterOptions";
-import { ScreenShareButtonComponent } from "./application/controller/ScreenShareButtonComponent";
-import { ShareScreenEvent } from "./application/model/ShareScreenEvent";
-import { VideoTrackEventOptions } from "./application/model/VideoTrackEventOptions";
-import { RoomSelection } from "./RoomSelection";
-import { UIConstants } from "./UIConstants";
+import { BaseUtils } from '../genb/base/utils/BaseUtils'
+import { HTMLUtils } from '../genb/base/utils/HTMLUtils'
+import { AppControllerEvent } from './AppControllerEvent'
+import { CallEvent } from './CallEvent'
+import { LoadingParams } from './LoadingParams'
+import { Util } from './Util'
+import { IconSet } from './IconSet'
+import { HTMLTemplates } from './HTMLTemplates'
+import { StringUtils } from '../genb/base/utils/StringUtils'
+import { EventDispatcherService } from '../genb/base/services/EventDispatcherService'
+import { InvitationView } from './InvitationView'
+import { RemoteVideos } from './application/RemoteVideos'
+import { Room } from './application/model/Room'
+import { RemoteVideosEvent } from './application/model/RemoteVideosEvent'
+import { MediaCommunication } from './application/controller/MediaCommunication'
+import { MediaEvent } from './application/model/MediaEvent'
+import { Log } from '../genb/base/utils/Log'
+import { RegisterOptions } from './application/model/RegisterOptions'
+import { ScreenShareButtonComponent } from './application/controller/ScreenShareButtonComponent'
+import { ShareScreenEvent } from './application/model/ShareScreenEvent'
+import { VideoTrackEventOptions } from './application/model/VideoTrackEventOptions'
+import { RoomSelection } from './RoomSelection'
+import { UIConstants } from './UIConstants'
 
 /**
  * Quick Hellou controller.
@@ -29,56 +29,56 @@ import { UIConstants } from "./UIConstants";
  * @class AppController
  */
 export class AppController extends EventDispatcherService {
-  private hangupSvg: HTMLElement;
-  private icons: HTMLElement;
-  private localVideo: HTMLVideoElement;
-  private miniVideo: HTMLVideoElement;
-  private sharingDiv: HTMLElement;
-  private videosDiv: HTMLElement;
-  private roomLinkHref: HTMLLinkElement;
-  private roomLinkHrefWaiting: HTMLLinkElement;
-  private rejoinDiv: HTMLElement;
-  private textChatButton: HTMLElement;
-  private rejoinButton: HTMLElement;
-  private newRoomButton: HTMLElement;
-  private fullscreenIcon: HTMLElement;
-  private hellouLogoFooterDiv: HTMLElement;
-  private overlayDiv: HTMLElement;
-  private overlayWaitingDiv: HTMLElement;
-  private closeOverlayButton: HTMLElement;
-  private textChatWindow: HTMLElement;
-  private textChatCloseButton: HTMLElement;
-  private textChatCollapseButton: HTMLElement;
-  private textChatMessageList: HTMLElement;
-  private textChatInput: HTMLInputElement;
+  private hangupSvg: HTMLElement
+  private icons: HTMLElement
+  private localVideo: HTMLVideoElement
+  private miniVideo: HTMLVideoElement
+  private sharingDiv: HTMLElement
+  private videosDiv: HTMLElement
+  private roomLinkHref: HTMLLinkElement
+  private roomLinkHrefWaiting: HTMLLinkElement
+  private rejoinDiv: HTMLElement
+  private textChatButton: HTMLElement
+  private rejoinButton: HTMLElement
+  private newRoomButton: HTMLElement
+  private fullscreenIcon: HTMLElement
+  private hellouLogoFooterDiv: HTMLElement
+  private overlayDiv: HTMLElement
+  private overlayWaitingDiv: HTMLElement
+  private closeOverlayButton: HTMLElement
+  private textChatWindow: HTMLElement
+  private textChatCloseButton: HTMLElement
+  private textChatCollapseButton: HTMLElement
+  private textChatMessageList: HTMLElement
+  private textChatInput: HTMLInputElement
 
-  private loadingParams: LoadingParams;
+  private loadingParams: LoadingParams
 
-  private mediaCommunication: MediaCommunication;
-  private remoteVideos: RemoteVideos;
-  private shareScreenButton: ScreenShareButtonComponent;
+  private mediaCommunication: MediaCommunication
+  private remoteVideos: RemoteVideos
+  private shareScreenButton: ScreenShareButtonComponent
 
   // to revise
 
-  private roomLink: string;
-  private localStream: MediaStream;
+  private roomLink: string
+  private localStream: MediaStream
 
   // helpers
 
-  private hideIconsAfterTimeout: number;
-  private muteAudioIconSet: IconSet;
-  private muteVideoIconSet: IconSet;
-  private fullscreenIconSet: IconSet;
+  private hideIconsAfterTimeout: number
+  private muteAudioIconSet: IconSet
+  private muteVideoIconSet: IconSet
+  private fullscreenIconSet: IconSet
 
   /**
    * Creates an instance of AppController.
    * @memberof AppController
    */
   constructor(loadingParams: LoadingParams) {
-    super();
-    this.loadingParams = loadingParams;
-    this.loadUrlParams();
-    this.createCommunication();
+    super()
+    this.loadingParams = loadingParams
+    this.loadUrlParams()
+    this.createCommunication()
   }
 
   /**
@@ -88,274 +88,272 @@ export class AppController extends EventDispatcherService {
    */
   public init(): void {
     Log.log(
-      "Initializing; Room ID " +
+      'Initializing; Room ID ' +
         (BaseUtils.isObjectDefined(this.loadingParams.roomID)
           ? `= ${this.loadingParams.roomID}`
-          : "not defined") +
-        "."
-    );
+          : 'not defined') +
+        '.'
+    )
 
-    this.hangupSvg = HTMLUtils.get(UIConstants.hangupSvg);
-    this.icons = HTMLUtils.get(UIConstants.icons);
-    this.localVideo = HTMLUtils.get(UIConstants.localVideo) as HTMLVideoElement;
-    this.miniVideo = HTMLUtils.get(UIConstants.miniVideo) as HTMLVideoElement;
-    this.sharingDiv = HTMLUtils.get(UIConstants.sharingDiv);
-    this.initRemoteVideos();
-    this.videosDiv = HTMLUtils.get(UIConstants.videosDiv);
+    this.hangupSvg = HTMLUtils.get(UIConstants.hangupSvg)
+    this.icons = HTMLUtils.get(UIConstants.icons)
+    this.localVideo = HTMLUtils.get(UIConstants.localVideo) as HTMLVideoElement
+    this.miniVideo = HTMLUtils.get(UIConstants.miniVideo) as HTMLVideoElement
+    this.sharingDiv = HTMLUtils.get(UIConstants.sharingDiv)
+    this.initRemoteVideos()
+    this.videosDiv = HTMLUtils.get(UIConstants.videosDiv)
     this.roomLinkHref = HTMLUtils.get(
       UIConstants.roomLinkHref
-    ) as HTMLLinkElement;
+    ) as HTMLLinkElement
     this.roomLinkHrefWaiting = HTMLUtils.get(
       UIConstants.roomLinkHrefWaiting
-    ) as HTMLLinkElement;
-    this.rejoinDiv = HTMLUtils.get(UIConstants.rejoinDiv);
-    this.textChatButton = HTMLUtils.get(UIConstants.textChatButton);
-    this.rejoinButton = HTMLUtils.get(UIConstants.rejoinButton);
-    this.newRoomButton = HTMLUtils.get(UIConstants.newRoomButton);
-    this.fullscreenIcon = HTMLUtils.get(UIConstants.fullscreenSvg);
-    this.hellouLogoFooterDiv = HTMLUtils.get(UIConstants.hellouLogoFooterDiv);
-    this.overlayDiv = HTMLUtils.get(UIConstants.overlayDiv);
-    this.overlayWaitingDiv = HTMLUtils.get(UIConstants.overlayWaitingDiv);
-    this.closeOverlayButton = HTMLUtils.get(UIConstants.closeOverlayButton);
-    this.textChatWindow = HTMLUtils.get(UIConstants.textChat.chatWindow);
-    this.textChatCloseButton = HTMLUtils.get(UIConstants.textChat.closeButton);
+    ) as HTMLLinkElement
+    this.rejoinDiv = HTMLUtils.get(UIConstants.rejoinDiv)
+    this.textChatButton = HTMLUtils.get(UIConstants.textChatButton)
+    this.rejoinButton = HTMLUtils.get(UIConstants.rejoinButton)
+    this.newRoomButton = HTMLUtils.get(UIConstants.newRoomButton)
+    this.fullscreenIcon = HTMLUtils.get(UIConstants.fullscreenSvg)
+    this.hellouLogoFooterDiv = HTMLUtils.get(UIConstants.hellouLogoFooterDiv)
+    this.overlayDiv = HTMLUtils.get(UIConstants.overlayDiv)
+    this.overlayWaitingDiv = HTMLUtils.get(UIConstants.overlayWaitingDiv)
+    this.closeOverlayButton = HTMLUtils.get(UIConstants.closeOverlayButton)
+    this.textChatWindow = HTMLUtils.get(UIConstants.textChat.chatWindow)
+    this.textChatCloseButton = HTMLUtils.get(UIConstants.textChat.closeButton)
     this.textChatCollapseButton = HTMLUtils.get(
       UIConstants.textChat.collapseButton
-    );
-    this.textChatMessageList = HTMLUtils.get(UIConstants.textChat.messageList);
+    )
+    this.textChatMessageList = HTMLUtils.get(UIConstants.textChat.messageList)
     this.textChatInput = HTMLUtils.get(
       UIConstants.textChat.input
-    ) as HTMLInputElement;
+    ) as HTMLInputElement
 
     this.newRoomButton.addEventListener(
-      "click",
+      'click',
       (): void => {
-        this.onNewRoomClick();
+        this.onNewRoomClick()
       },
       false
-    );
+    )
     this.rejoinButton.addEventListener(
-      "click",
+      'click',
       (): void => {
-        this.onRejoinClick();
+        this.onRejoinClick()
       },
       false
-    );
+    )
     this.closeOverlayButton.addEventListener(
-      "click",
+      'click',
       (): void => {
-        this.onCloseOverlayClick();
+        this.onCloseOverlayClick()
       },
       false
-    );
+    )
     this.textChatButton.addEventListener(
-      "click",
+      'click',
       (): void => {
-        this.onTextChatButtonClick();
+        this.onTextChatButtonClick()
       },
       false
-    );
+    )
     this.textChatCloseButton.addEventListener(
-      "click",
+      'click',
       (): void => {
-        this.onTextChatCloseButtonClick();
+        this.onTextChatCloseButtonClick()
       },
       false
-    );
+    )
     this.textChatCollapseButton.addEventListener(
-      "click",
+      'click',
       (event: MouseEvent): void => {
-        this.onTextChatCollapseButtonClick();
+        this.onTextChatCollapseButtonClick()
       },
       false
-    );
+    )
     this.textChatInput.addEventListener(
-      "keyup",
+      'keyup',
       (event: KeyboardEvent): void => {
-        this.onTextChatInputKeyUp(event);
+        this.onTextChatInputKeyUp(event)
       },
       false
-    );
+    )
 
     const sendTextChatMessageButton: HTMLElement = HTMLUtils.get(
-      ".text-chat-window__send-message-button"
-    );
-    sendTextChatMessageButton.addEventListener("click", () => {
-      this.sendTextChatMessageButtonClickHandler();
-    });
+      '.text-chat-window__send-message-button'
+    )
+    sendTextChatMessageButton.addEventListener('click', () => {
+      this.sendTextChatMessageButtonClickHandler()
+    })
 
     const overlayButtonsList: HTMLElement[] = HTMLUtils.array(
-      ".button--send-invitation"
-    );
+      '.button--send-invitation'
+    )
 
     const sendInvitationCloserButtonList: HTMLElement[] = HTMLUtils.array(
-      ".overlay__closer-button"
-    );
+      '.overlay__closer-button'
+    )
     sendInvitationCloserButtonList.forEach(
       (sendInvitationCloserButton: HTMLElement) => {
-        sendInvitationCloserButton.addEventListener("click", (event): void => {
+        sendInvitationCloserButton.addEventListener('click', (event): void => {
           this.closeOverlay(
             HTMLUtils.get(`.${sendInvitationCloserButton.dataset.screen}`),
             HTMLUtils.array(
               `.button--overlay[data-screen='${sendInvitationCloserButton.dataset.screen}']`
             )
-          );
-        });
+          )
+        })
       }
-    );
+    )
 
     overlayButtonsList.forEach((overlayButton: HTMLElement): void => {
-      const screen: string = overlayButton.dataset.screen;
-      const overlaySelector: string = `.${screen}`;
+      const screen: string = overlayButton.dataset.screen
+      const overlaySelector: string = `.${screen}`
       const selectedOverlayButtonsList: HTMLElement[] = HTMLUtils.array(
         `.button--overlay[data-screen='${screen}']`
-      );
+      )
       overlayButton.onclick = (): void => {
-        this.closeAllOverlays();
-        const sendInvitationOverlay: HTMLElement = HTMLUtils.get(
-          overlaySelector
-        );
-        sendInvitationOverlay.classList.remove("hidden");
+        this.closeAllOverlays()
+        const sendInvitationOverlay: HTMLElement =
+          HTMLUtils.get(overlaySelector)
+        sendInvitationOverlay.classList.remove('hidden')
 
         const sendInvitationResult: HTMLElement = HTMLUtils.get(
           `.overlay--${screen}__result`
-        );
-        sendInvitationResult.classList.add("hidden");
+        )
+        sendInvitationResult.classList.add('hidden')
         const sendInvitationResultMessage: HTMLElement = HTMLUtils.get(
           `.overlay--${screen}__result-message`
-        );
-        sendInvitationResultMessage.innerHTML = "";
+        )
+        sendInvitationResultMessage.innerHTML = ''
         const sendInvitationBody: HTMLElement = HTMLUtils.get(
           `.overlay--${screen}__body`
-        );
-        sendInvitationBody.classList.remove("hidden");
+        )
+        sendInvitationBody.classList.remove('hidden')
         selectedOverlayButtonsList.forEach(
           (inviteButton: HTMLElement): void => {
-            inviteButton.classList.add("js-active");
+            inviteButton.classList.add('js-active')
           }
-        );
-      };
-    });
+        )
+      }
+    })
 
     const schedulerButton: HTMLElement = HTMLUtils.get(
-      ".button--setup-future-talk"
-    );
-    schedulerButton.addEventListener("click", (event: any) => {
+      '.button--setup-future-talk'
+    )
+    schedulerButton.addEventListener('click', (event: any) => {
       const setupFutureTalkOverlay: HTMLElement = HTMLUtils.get(
-        ".overlay--setup-future-talk"
-      );
+        '.overlay--setup-future-talk'
+      )
       if (BaseUtils.isObjectDefined(setupFutureTalkOverlay)) {
-        setupFutureTalkOverlay.classList.remove("hidden");
+        setupFutureTalkOverlay.classList.remove('hidden')
       }
-    });
+    })
 
     this.shareScreenButton = new ScreenShareButtonComponent(
-      HTMLUtils.get(".button--share-screen")
-    );
+      HTMLUtils.get('.button--share-screen')
+    )
     if (!Util.isMobile() && !Util.isEdgeHTML()) {
-      this.shareScreenButton.init();
+      this.shareScreenButton.init()
       this.shareScreenButton.addEventListener(
         ShareScreenEvent.START_SHARING,
         () => {
-          this.mediaCommunication.displayMedia();
+          this.mediaCommunication.displayMedia()
         },
         this
-      );
+      )
 
       this.shareScreenButton.addEventListener(
         ShareScreenEvent.STOP_SHARING,
         () => {
-          this.mediaCommunication.stopSendingDisplayMedia();
+          this.mediaCommunication.stopSendingDisplayMedia()
         },
         this
-      );
-
+      )
     } else {
-      this.shareScreenButton.disableSharingState();
+      this.shareScreenButton.disableSharingState()
     }
 
     // send invitation view
     // tslint:disable-next-line:no-unused-expression
-    new InvitationView(HTMLUtils.get(".send-invitation"));
+    new InvitationView(HTMLUtils.get('.send-invitation'))
 
     // chat window handlers
     const chatWindowInput: HTMLInputElement = HTMLUtils.get(
-      ".text-chat-window__message-input"
-    ) as HTMLInputElement;
-    chatWindowInput.addEventListener("focusin", (event): void => {
-      if (chatWindowInput.value === "Type your message here") {
-        chatWindowInput.value = "";
+      '.text-chat-window__message-input'
+    ) as HTMLInputElement
+    chatWindowInput.addEventListener('focusin', (event): void => {
+      if (chatWindowInput.value === 'Type your message here') {
+        chatWindowInput.value = ''
       }
-    });
+    })
 
-    chatWindowInput.addEventListener("focusout", (): void => {
+    chatWindowInput.addEventListener('focusout', (): void => {
       if (StringUtils.isEmpty(chatWindowInput.value)) {
-        chatWindowInput.value = "Type your message here";
+        chatWindowInput.value = 'Type your message here'
       }
-    });
+    })
 
-    this.muteAudioIconSet = new IconSet(UIConstants.muteAudioSvg);
-    this.muteVideoIconSet = new IconSet(UIConstants.muteVideoSvg);
-    this.fullscreenIconSet = new IconSet(UIConstants.fullscreenSvg);
+    this.muteAudioIconSet = new IconSet(UIConstants.muteAudioSvg)
+    this.muteVideoIconSet = new IconSet(UIConstants.muteVideoSvg)
+    this.fullscreenIconSet = new IconSet(UIConstants.fullscreenSvg)
 
-    this.roomLink = StringUtils.EMPTY;
-    this.localStream = null;
+    this.roomLink = StringUtils.EMPTY
+    this.localStream = null
 
-    this.createCall();
+    this.createCall()
 
     // If the params has a roomID specified, we should connect to that room
     // immediately. If not, show the room selection UI.
     if (this.loadingParams.roomID) {
-      this.updateInvitationLinks(this.loadingParams.roomID);
+      this.updateInvitationLinks(this.loadingParams.roomID)
 
-      if (StringUtils.equals(this.loadingParams.additionalParam, "setup")) {
-        this.roomSelectedHander(this.loadingParams.roomID);
+      if (StringUtils.equals(this.loadingParams.additionalParam, 'setup')) {
+        this.roomSelectedHander(this.loadingParams.roomID)
       } else {
         // Ask the user to confirm.
         if (!RoomSelection.matchRandomRoomPattern(this.loadingParams.roomID)) {
           // Show the room name only if it does not match the random room pattern.
           const confirmJoinRoomSpanElement: HTMLElement = HTMLUtils.get(
             UIConstants.confirmJoinRoomSpan
-          );
-          confirmJoinRoomSpanElement.textContent = ` "${this.loadingParams.roomID}"`;
+          )
+          confirmJoinRoomSpanElement.textContent = ` "${this.loadingParams.roomID}"`
         }
         const confirmJoinDiv: HTMLElement = HTMLUtils.get(
           UIConstants.confirmJoinDiv
-        );
-        this.show(confirmJoinDiv);
+        )
+        this.show(confirmJoinDiv)
 
         const confirmJoinButtonElement: HTMLElement = HTMLUtils.get(
           UIConstants.confirmJoinButton
-        );
-        confirmJoinButtonElement.addEventListener("click", (): void => {
-          this.hide(confirmJoinDiv);
-          this.setupCall();
-        });
+        )
+        confirmJoinButtonElement.addEventListener('click', (): void => {
+          this.hide(confirmJoinDiv)
+          this.setupCall()
+        })
 
         if (this.loadingParams.bypassJoinConfirmation) {
-          this.hide(confirmJoinDiv);
-          this.setupCall();
+          this.hide(confirmJoinDiv)
+          this.setupCall()
         }
       }
     } else {
-      Log.warn("Missing RoomID.");
+      Log.warn('Missing RoomID.')
     }
 
-    window.addEventListener("online", (event: Event): void => {
-      this.updateOnlineStatus(event);
-    });
-    window.addEventListener("offline", (event: Event): void => {
-      this.updateOnlineStatus(event);
-    });
+    window.addEventListener('online', (event: Event): void => {
+      this.updateOnlineStatus(event)
+    })
+    window.addEventListener('offline', (event: Event): void => {
+      this.updateOnlineStatus(event)
+    })
 
     if (
       StringUtils.isNotEmpty(this.loadingParams.additionalParam) &&
-      StringUtils.equals(this.loadingParams.additionalParam, "invite")
+      StringUtils.equals(this.loadingParams.additionalParam, 'invite')
     ) {
-      this.openSendInvitationOverlay();
+      this.openSendInvitationOverlay()
     }
 
-    this.dispatchEvent(AppControllerEvent.INITIALIZED);
+    this.dispatchEvent(AppControllerEvent.INITIALIZED)
   }
 
   /**
@@ -365,7 +363,7 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private createCommunication(): void {
-    this.mediaCommunication = new MediaCommunication(this.loadingParams);
+    this.mediaCommunication = new MediaCommunication(this.loadingParams)
   }
 
   /**
@@ -375,35 +373,34 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private openSendInvitationOverlay(): void {
-    const overlayButtonsList: HTMLElement[] = HTMLUtils.array(
-      ".button--overlay"
-    );
+    const overlayButtonsList: HTMLElement[] =
+      HTMLUtils.array('.button--overlay')
     overlayButtonsList.forEach((): void => {
-      const screen: string = "send-invitation";
-      const overlaySelector: string = `.${screen}`;
+      const screen: string = 'send-invitation'
+      const overlaySelector: string = `.${screen}`
       const selectedOverlayButtonsList: HTMLElement[] = HTMLUtils.array(
         `.button--overlay[data-screen='${screen}']`
-      );
-      this.closeAllOverlays();
-      const sendInvitationOverlay: HTMLElement = HTMLUtils.get(overlaySelector);
-      sendInvitationOverlay.classList.remove("hidden");
+      )
+      this.closeAllOverlays()
+      const sendInvitationOverlay: HTMLElement = HTMLUtils.get(overlaySelector)
+      sendInvitationOverlay.classList.remove('hidden')
 
       const sendInvitationResult: HTMLElement = HTMLUtils.get(
         `.overlay--${screen}__result`
-      );
-      sendInvitationResult.classList.add("hidden");
+      )
+      sendInvitationResult.classList.add('hidden')
       const sendInvitationResultMessage: HTMLElement = HTMLUtils.get(
         `.overlay--${screen}__result-message`
-      );
-      sendInvitationResultMessage.innerHTML = "";
+      )
+      sendInvitationResultMessage.innerHTML = ''
       const sendInvitationBody: HTMLElement = HTMLUtils.get(
         `.overlay--${screen}__body`
-      );
-      sendInvitationBody.classList.remove("hidden");
+      )
+      sendInvitationBody.classList.remove('hidden')
       selectedOverlayButtonsList.forEach((inviteButton: HTMLElement): void => {
-        inviteButton.classList.add("js-active");
-      });
-    });
+        inviteButton.classList.add('js-active')
+      })
+    })
   }
 
   /**
@@ -416,7 +413,7 @@ export class AppController extends EventDispatcherService {
     this.closeOverlay(
       HTMLUtils.get(`.send-invitation`),
       HTMLUtils.array(`.button--overlay[data-screen='send-invitation']`)
-    );
+    )
   }
 
   /**
@@ -428,14 +425,14 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private closeOverlay(overlay: HTMLElement, buttons: HTMLElement[]): void {
-    overlay.classList.add("hidden");
+    overlay.classList.add('hidden')
     buttons.forEach((inviteButton: HTMLElement): void => {
-      inviteButton.classList.remove("js-active");
-    });
+      inviteButton.classList.remove('js-active')
+    })
   }
 
   private updateOnlineStatus(event: Event): void {
-    const status: string = navigator.onLine ? "online" : "offline";
+    const status: string = navigator.onLine ? 'online' : 'offline'
   }
 
   /**
@@ -448,25 +445,25 @@ export class AppController extends EventDispatcherService {
   private roomSelectedHander(roomId: string): void {
     const roomSelectionDiv: HTMLElement = HTMLUtils.get(
       UIConstants.roomSelection.div
-    );
+    )
 
     // patch to set room url before local stream initialization
-    const roomLink: string = `${window.location.protocol}//${window.location.host}/r/${roomId}`;
-    this.mediaCommunication.setRoom(roomId, roomLink);
-    this.pushCallNavigation(new Room(roomId, roomLink));
+    const roomLink: string = `${window.location.protocol}//${window.location.host}/r/${roomId}`
+    this.mediaCommunication.setRoom(roomId, roomLink)
+    this.pushCallNavigation(new Room(roomId, roomLink))
 
     if (this.localStream) {
-      this.attachLocalStream();
+      this.attachLocalStream()
     }
 
-    this.hide(roomSelectionDiv);
-    this.createCall();
-    this.setupCall();
+    this.hide(roomSelectionDiv)
+    this.createCall()
+    this.setupCall()
 
     const schedulerLinkElement: HTMLLinkElement = HTMLUtils.get(
-      "footer .button--setup-future-talk"
-    ) as HTMLLinkElement;
-    schedulerLinkElement.href = `/scheduler/${roomId}`;
+      'footer .button--setup-future-talk'
+    ) as HTMLLinkElement
+    schedulerLinkElement.href = `/scheduler/${roomId}`
   }
 
   /**
@@ -476,22 +473,22 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private loadUrlParams(): void {
-    const DEFAULT_VIDEO_CODEC: string = "VP9";
-    const urlParams: any = Util.queryStringToDictionary(window.location.search);
-    this.loadingParams.audioSendBitrate = urlParams.asbr;
-    this.loadingParams.audioSendCodec = urlParams.asc;
-    this.loadingParams.audioRecvBitrate = urlParams.arbr;
-    this.loadingParams.audioRecvCodec = urlParams.arc;
-    this.loadingParams.opusMaxPbr = urlParams.opusmaxpbr;
-    this.loadingParams.opusFec = urlParams.opusfec;
-    this.loadingParams.opusDtx = urlParams.opusdtx;
-    this.loadingParams.opusStereo = urlParams.stereo;
-    this.loadingParams.videoSendBitrate = urlParams.vsbr;
-    this.loadingParams.videoSendInitialBitrate = urlParams.vsibr;
-    this.loadingParams.videoSendCodec = urlParams.vsc;
-    this.loadingParams.videoRecvBitrate = urlParams.vrbr;
-    this.loadingParams.videoRecvCodec = urlParams.vrc || DEFAULT_VIDEO_CODEC;
-    this.loadingParams.videoFec = urlParams.videofec;
+    const DEFAULT_VIDEO_CODEC: string = 'VP9'
+    const urlParams: any = Util.queryStringToDictionary(window.location.search)
+    this.loadingParams.audioSendBitrate = urlParams.asbr
+    this.loadingParams.audioSendCodec = urlParams.asc
+    this.loadingParams.audioRecvBitrate = urlParams.arbr
+    this.loadingParams.audioRecvCodec = urlParams.arc
+    this.loadingParams.opusMaxPbr = urlParams.opusmaxpbr
+    this.loadingParams.opusFec = urlParams.opusfec
+    this.loadingParams.opusDtx = urlParams.opusdtx
+    this.loadingParams.opusStereo = urlParams.stereo
+    this.loadingParams.videoSendBitrate = urlParams.vsbr
+    this.loadingParams.videoSendInitialBitrate = urlParams.vsibr
+    this.loadingParams.videoSendCodec = urlParams.vsc
+    this.loadingParams.videoRecvBitrate = urlParams.vrbr
+    this.loadingParams.videoRecvCodec = urlParams.vrc || DEFAULT_VIDEO_CODEC
+    this.loadingParams.videoFec = urlParams.videofec
   }
 
   /**
@@ -506,15 +503,15 @@ export class AppController extends EventDispatcherService {
       CallEvent.WEBSOCKET_CLOSED,
       this.hangup,
       this
-    );
+    )
 
     this.mediaCommunication.addEventListener(
       CallEvent.REMOTE_HANGUP,
       (sessionId: string) => {
-        this.onRemoteHangup(sessionId);
+        this.onRemoteHangup(sessionId)
       },
       this
-    );
+    )
     this.mediaCommunication.addEventListener(
       CallEvent.REMOTE_SDP_PROTOCOL_RECEIVED,
       (data: any): void => {
@@ -522,108 +519,108 @@ export class AppController extends EventDispatcherService {
           data.sessionId,
           data.isRemoteVideoPlaybackAvailable,
           data.isRemoteDisplayMediaAvailable
-        );
+        )
       },
       this
-    );
+    )
     this.mediaCommunication.addEventListener(
       CallEvent.REMOTE_STREAM_ADDED,
       (data: any): void => {
-        this.onRemoteStreamAdded(data.sessionId, data.stream);
+        this.onRemoteStreamAdded(data.sessionId, data.stream)
       },
       this
-    );
+    )
     this.mediaCommunication.addEventListener(
       CallEvent.LOCAL_STREAM_ADDED,
       (stream: MediaStream): void => {
-        this.onLocalStreamAdded(stream);
+        this.onLocalStreamAdded(stream)
       },
       this
-    );
+    )
     this.mediaCommunication.addEventListener(
       CallEvent.SIGNALING_STATE_CHANGE,
       (): void => {
         // no code
       },
       this
-    );
+    )
     this.mediaCommunication.addEventListener(
       CallEvent.ICE_CONNECTION_STATE_CHANGE,
       (): void => {
         // no code
       },
       this
-    );
+    )
     this.mediaCommunication.addEventListener(
       CallEvent.NEW_ICE_CANDIDATE,
       (data: any): void => {
         // no code
       },
       this
-    );
+    )
     this.mediaCommunication.addEventListener(
       MediaEvent.DISPLAY_MEDIA_DISPLAYED,
       () => {
-        this.shareScreenButton.unlock();
+        this.shareScreenButton.unlock()
       },
       this
-    );
+    )
     this.mediaCommunication.addEventListener(
       CallEvent.REMOTE_TEXT_CHAT_MESSAGE,
       (message: string): void => {
-        this.onRemoteTextChatMessage(message);
+        this.onRemoteTextChatMessage(message)
       },
       this
-    );
+    )
     this.mediaCommunication.addEventListener(
       CallEvent.STATUS_MESSAGE,
       (message: string): void => {
-        Log.log(message);
+        Log.log(message)
       },
       this
-    );
+    )
     this.mediaCommunication.addEventListener(
       CallEvent.ERROR,
       (message: string): void => {
-        this.displayError(message);
+        this.displayError(message)
       },
       this
-    );
+    )
     this.mediaCommunication.addEventListener(
       CallEvent.CALLER_STARTED,
       this.displaySharingInfo,
       this
-    );
+    )
 
     this.mediaCommunication.addEventListener(
       CallEvent.REMOTE_CLIENT_REGISTERED,
       (registerOptions: RegisterOptions) => {
-        this.onRemoteClientRegistered(registerOptions);
+        this.onRemoteClientRegistered(registerOptions)
       },
       this
-    );
+    )
 
     this.mediaCommunication.addEventListener(
       CallEvent.LOCAL_VIDEO_MEDIA_CHANGE,
       (options: VideoTrackEventOptions) => {
-        this.toggleVideoTrack(options);
+        this.toggleVideoTrack(options)
       },
       this
-    );
+    )
 
     this.mediaCommunication.addEventListener(
       ShareScreenEvent.NOT_ALLOWED,
       () => {
-        this.shareScreenButton.enableSharingState();
+        this.shareScreenButton.enableSharingState()
       },
       this
-    );
+    )
 
-    this.mediaCommunication.createCall();
+    this.mediaCommunication.createCall()
 
-    this.show(this.hellouLogoFooterDiv);
-    this.show(this.videosDiv);
-    this.show(this.overlayDiv);
+    this.show(this.hellouLogoFooterDiv)
+    this.show(this.videosDiv)
+    this.show(this.overlayDiv)
   }
 
   /**
@@ -634,27 +631,27 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private toggleVideoTrack(options: VideoTrackEventOptions): void {
-    const enabledTrack: MediaStreamTrack = options.track;
+    const enabledTrack: MediaStreamTrack = options.track
     this.localStream.getTracks().forEach((track: MediaStreamTrack) => {
-      track.enabled = track.id === enabledTrack.id;
-    });
+      track.enabled = track.id === enabledTrack.id
+    })
     const isCaptureScreenTrack: boolean = StringUtils.equals(
       options.type,
       VideoTrackEventOptions.SCREEN_CAPTURE
-    );
-    this.shareScreenButton.toggleScreenSharingWithFlag(isCaptureScreenTrack);
+    )
+    this.shareScreenButton.toggleScreenSharingWithFlag(isCaptureScreenTrack)
     const tracks: MediaStreamTrack[] = [
       ...this.localStream.getAudioTracks(),
       enabledTrack,
-    ];
-    const stream: MediaStream = new MediaStream(tracks);
+    ]
+    const stream: MediaStream = new MediaStream(tracks)
     try {
-      this.miniVideo.srcObject = stream;
+      this.miniVideo.srcObject = stream
     } catch (e) {
-      Log.warn("Unable to attach stream to video element.");
+      Log.warn('Unable to attach stream to video element.')
     }
 
-    this.toggleAudioUnMute();
+    this.toggleAudioUnMute()
   }
 
   /**
@@ -664,27 +661,27 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private setupCall(): void {
-    this.mediaCommunication.connect();
+    this.mediaCommunication.connect()
 
-    this.setupUI();
+    this.setupUI()
 
     // Call hangup with async = false. Required to complete multiple
     // clean up steps before page is closed.
     window.onbeforeunload = (): void => {
-      this.mediaCommunication.hangupCall(false);
-    };
+      this.mediaCommunication.hangupCall(false)
+    }
 
     window.onpopstate = (event: any): void => {
       if (!event.state) {
-        Log.log("Reloading main page.");
-        location.href = location.origin;
+        Log.log('Reloading main page.')
+        location.href = location.origin
       } else {
         // This could be a forward request to open a room again.
         if (event.state.roomLink) {
-          location.href = event.state.roomLink;
+          location.href = event.state.roomLink
         }
       }
-    };
+    }
   }
 
   /**
@@ -695,29 +692,29 @@ export class AppController extends EventDispatcherService {
    */
   private attachLocalStream(): void {
     try {
-      this.localVideo.srcObject = this.localStream;
+      this.localVideo.srcObject = this.localStream
       if (!Util.isMobile() && !Util.isEdgeHTML()) {
-        this.shareScreenButton.enableSharingState();
+        this.shareScreenButton.enableSharingState()
       }
     } catch (e) {
-      Log.log("Unable to attach stream to video element.");
+      Log.log('Unable to attach stream to video element.')
     }
 
-    this.activate(this.localVideo);
-    this.show(this.icons);
-    this.show(this.fullscreenIcon);
+    this.activate(this.localVideo)
+    this.show(this.icons)
+    this.show(this.fullscreenIcon)
 
     if (this.localStream.getVideoTracks().length === 0) {
       const muteVideoSVGElement: HTMLElement = HTMLUtils.get(
         UIConstants.muteVideoSvg
-      );
-      this.hide(muteVideoSVGElement);
+      )
+      this.hide(muteVideoSVGElement)
     }
     if (this.localStream.getAudioTracks().length === 0) {
       const muteAudioSVGElement: HTMLElement = HTMLUtils.get(
         UIConstants.muteAudioSvg
-      );
-      this.hide(muteAudioSVGElement);
+      )
+      this.hide(muteAudioSVGElement)
     }
   }
 
@@ -728,26 +725,26 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private hangup(): void {
-    Log.log("AppController::hangup (true, from WS)");
-    this.hide(this.icons);
-    this.transitionToDone();
+    Log.log('AppController::hangup (true, from WS)')
+    this.hide(this.icons)
+    this.transitionToDone()
 
     // Call hangup with async = true.
-    this.mediaCommunication.hangupCall(true);
+    this.mediaCommunication.hangupCall(true)
     // Reset key and mouse event handlers.
-    document.onkeypress = null;
-    window.onmousemove = null;
+    document.onkeypress = null
+    window.onmousemove = null
   }
 
   private sendTextChatMessageButtonClickHandler(): void {
     const message: string = this.textChatInput.value
       .trim()
-      .replace(/(\r\n|\n|\r)/gm, "");
+      .replace(/(\r\n|\n|\r)/gm, '')
     if (StringUtils.isNotEmpty(message)) {
-      this.addLocalMessageHTML(message);
-      this.mediaCommunication.sendLocalChatMessage(message);
-      this.textChatInput.value = "";
-      this.textChatInput.focus();
+      this.addLocalMessageHTML(message)
+      this.mediaCommunication.sendLocalChatMessage(message)
+      this.textChatInput.value = ''
+      this.textChatInput.focus()
     }
   }
 
@@ -758,7 +755,7 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onNewRoomClick(): void {
-    location.href = location.origin;
+    location.href = location.origin
   }
 
   /**
@@ -768,9 +765,9 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onRejoinClick(): void {
-    this.deactivate(this.rejoinDiv);
-    this.hide(this.rejoinDiv);
-    this.mediaCommunication.restartCall();
+    this.deactivate(this.rejoinDiv)
+    this.hide(this.rejoinDiv)
+    this.mediaCommunication.restartCall()
   }
 
   /**
@@ -779,38 +776,38 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private setupUI(): void {
-    this.iconEventSetup();
-    window.addEventListener("mousemove", (): void => {
-      this.showIcons();
-    });
-    this.overlayDiv.addEventListener("mousemove", (): void => {
-      this.showIcons();
-    });
-    this.overlayDiv.addEventListener("click", (): void => {
-      this.showIcons();
-    });
+    this.iconEventSetup()
+    window.addEventListener('mousemove', (): void => {
+      this.showIcons()
+    })
+    this.overlayDiv.addEventListener('mousemove', (): void => {
+      this.showIcons()
+    })
+    this.overlayDiv.addEventListener('click', (): void => {
+      this.showIcons()
+    })
 
-    document.addEventListener("touchstart", (): void => {
-      this.showIcons();
-    });
+    document.addEventListener('touchstart', (): void => {
+      this.showIcons()
+    })
 
-    document.addEventListener("click", (): void => {
-      this.showIcons();
-    });
+    document.addEventListener('click', (): void => {
+      this.showIcons()
+    })
 
     const muteAudioSVGElement: HTMLElement = HTMLUtils.get(
       UIConstants.muteAudioSvg
-    );
-    muteAudioSVGElement.addEventListener("click", (): void => {
-      this.toggleAudioMute();
-    });
+    )
+    muteAudioSVGElement.addEventListener('click', (): void => {
+      this.toggleAudioMute()
+    })
 
     const muteVideoSVGElement: HTMLElement = HTMLUtils.get(
       UIConstants.muteVideoSvg
-    );
-    muteVideoSVGElement.addEventListener("click", (): void => {
-      this.toggleVideoMute();
-    });
+    )
+    muteVideoSVGElement.addEventListener('click', (): void => {
+      this.toggleVideoMute()
+    })
 
     /*
     const fullscreenSVGElement: HTMLElement = HTMLUtils.get(
@@ -821,14 +818,14 @@ export class AppController extends EventDispatcherService {
     });
 */
 
-    const hangupSVGElement: HTMLElement = HTMLUtils.get(UIConstants.hangupSvg);
-    hangupSVGElement.addEventListener("click", (): void => {
-      Log.log("hangup click");
-      this.hangup();
-      this.shareScreenButton.disableSharingState();
-      this.closeFullScreen();
-    });
-/*
+    const hangupSVGElement: HTMLElement = HTMLUtils.get(UIConstants.hangupSvg)
+    hangupSVGElement.addEventListener('click', (): void => {
+      Log.log('hangup click')
+      this.hangup()
+      this.shareScreenButton.disableSharingState()
+      this.closeFullScreen()
+    })
+    /*
     document.addEventListener(
       "fullscreenchange",
       (): void => {
@@ -851,7 +848,7 @@ export class AppController extends EventDispatcherService {
       false
     );
 */
-    Util.setUpFullScreen();
+    Util.setUpFullScreen()
   }
 
   /**
@@ -861,8 +858,8 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private toggleAudioUnMute(): void {
-    this.mediaCommunication.toggleAudioUnMute();
-    this.muteAudioIconSet.enable();
+    this.mediaCommunication.toggleAudioUnMute()
+    this.muteAudioIconSet.enable()
   }
 
   /**
@@ -872,8 +869,8 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private toggleAudioMute(): void {
-    this.mediaCommunication.toggleAudioMute();
-    this.muteAudioIconSet.toggle();
+    this.mediaCommunication.toggleAudioMute()
+    this.muteAudioIconSet.toggle()
   }
 
   /**
@@ -883,8 +880,8 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private toggleVideoMute(): void {
-    this.mediaCommunication.toggleVideoMute();
-    this.muteVideoIconSet.toggle();
+    this.mediaCommunication.toggleVideoMute()
+    this.muteVideoIconSet.toggle()
   }
 
   /**
@@ -893,14 +890,14 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private closeFullScreen(): void {
-    const footer: HTMLElement = HTMLUtils.get(".footer");
+    const footer: HTMLElement = HTMLUtils.get('.footer')
     const videosWrapList: NodeListOf<HTMLElement> = HTMLUtils.list(
-      ".video-columns-wrap, .videos-wrap, .remote-video-wrap"
-    );
-    footer.classList.remove("hidden");
+      '.video-columns-wrap, .videos-wrap, .remote-video-wrap'
+    )
+    footer.classList.remove('hidden')
     videosWrapList.forEach((elem: HTMLElement) => {
-      elem.classList.remove("js-fullscreen");
-    });
+      elem.classList.remove('js-fullscreen')
+    })
   }
 
   /**
@@ -934,21 +931,21 @@ export class AppController extends EventDispatcherService {
   }
 */
   private iconEventSetup(): void {
-    this.icons.addEventListener("onmouseenter", (): void => {
-      window.clearTimeout(this.hideIconsAfterTimeout);
-    });
-    this.icons.addEventListener("mouseleave", (): void => {
-      this.setIconTimeout();
-    });
+    this.icons.addEventListener('onmouseenter', (): void => {
+      window.clearTimeout(this.hideIconsAfterTimeout)
+    })
+    this.icons.addEventListener('mouseleave', (): void => {
+      this.setIconTimeout()
+    })
   }
 
   private setIconTimeout(): void {
     if (this.hideIconsAfterTimeout) {
-      window.clearTimeout.bind(this, this.hideIconsAfterTimeout);
+      window.clearTimeout.bind(this, this.hideIconsAfterTimeout)
     }
     this.hideIconsAfterTimeout = window.setTimeout((): void => {
-      this.hideIcons();
-    }, 5000);
+      this.hideIcons()
+    }, 5000)
   }
 
   /**
@@ -958,7 +955,7 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onCloseOverlayClick(): void {
-    this.hide(this.overlayWaitingDiv);
+    this.hide(this.overlayWaitingDiv)
   }
 
   /**
@@ -968,7 +965,7 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onTextChatButtonClick(): void {
-    this.show(this.textChatWindow);
+    this.show(this.textChatWindow)
   }
 
   /**
@@ -978,7 +975,7 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onTextChatCloseButtonClick(): void {
-    this.hide(this.textChatWindow);
+    this.hide(this.textChatWindow)
   }
 
   /**
@@ -988,7 +985,7 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onTextChatCollapseButtonClick(): void {
-    this.hide(this.textChatWindow);
+    this.hide(this.textChatWindow)
   }
 
   /**
@@ -1001,11 +998,11 @@ export class AppController extends EventDispatcherService {
   private onTextChatInputKeyUp(event: KeyboardEvent): void {
     const message: string = this.textChatInput.value
       .trim()
-      .replace(/(\r\n|\n|\r)/gm, "");
+      .replace(/(\r\n|\n|\r)/gm, '')
     if (event.keyCode === 13 && message.length > 0) {
-      this.addLocalMessageHTML(message);
-      this.mediaCommunication.sendLocalChatMessage(message);
-      this.textChatInput.value = "";
+      this.addLocalMessageHTML(message)
+      this.mediaCommunication.sendLocalChatMessage(message)
+      this.textChatInput.value = ''
     }
   }
 
@@ -1017,28 +1014,29 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onRemoteClientRegistered(registerOptions: RegisterOptions): void {
-    this.remoteVideos.addRemoteVideo(registerOptions);
+    Log.log('AppCntroller::onRemoteClientRegistered', registerOptions)
+    this.remoteVideos.addRemoteVideo(registerOptions)
   }
 
   private onRemoteTextChatMessage(message: string): void {
-    this.show(this.textChatWindow);
-    this.addRemoteMessageHTML(message);
+    this.show(this.textChatWindow)
+    this.addRemoteMessageHTML(message)
   }
 
   private addRemoteMessageHTML(message: string): void {
-    const messageHTML: string = HTMLTemplates.getRemoteMessageHTML(message);
-    this.textChatMessageList.insertAdjacentHTML("beforeend", messageHTML);
+    const messageHTML: string = HTMLTemplates.getRemoteMessageHTML(message)
+    this.textChatMessageList.insertAdjacentHTML('beforeend', messageHTML)
     this.textChatMessageList.scrollTop =
       this.textChatMessageList.scrollHeight -
-      this.textChatMessageList.clientHeight;
+      this.textChatMessageList.clientHeight
   }
 
   private addLocalMessageHTML(message: string): void {
-    const messageHTML = HTMLTemplates.getLocalMessageHTML(message);
-    this.textChatMessageList.insertAdjacentHTML("beforeend", messageHTML);
+    const messageHTML = HTMLTemplates.getLocalMessageHTML(message)
+    this.textChatMessageList.insertAdjacentHTML('beforeend', messageHTML)
     this.textChatMessageList.scrollTop =
       this.textChatMessageList.scrollHeight -
-      this.textChatMessageList.clientHeight;
+      this.textChatMessageList.clientHeight
   }
 
   /**
@@ -1048,19 +1046,19 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private transitionToDone(): void {
-    this.remoteVideos.removeCanPlayHandlers();
-    this.deactivate(this.localVideo);
-    this.remoteVideos.deactivateAll();
-    this.deactivate(this.miniVideo);
-    this.hide(this.hangupSvg);
-    this.hide(this.textChatButton);
-    this.hide(this.textChatWindow);
-    this.activate(this.rejoinDiv);
-    this.show(this.rejoinDiv);
+    this.remoteVideos.removeCanPlayHandlers()
+    this.deactivate(this.localVideo)
+    this.remoteVideos.deactivateAll()
+    this.deactivate(this.miniVideo)
+    this.hide(this.hangupSvg)
+    this.hide(this.textChatButton)
+    this.hide(this.textChatWindow)
+    this.activate(this.rejoinDiv)
+    this.show(this.rejoinDiv)
   }
 
   private displayError(error: string): void {
-    Log.warn(error);
+    Log.warn(error)
   }
 
   /**
@@ -1071,18 +1069,19 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private displaySharingInfo(room: Room): void {
-    const roomId: string = room.id;
-    let roomLink: string = room.link;
+    const roomId: string = room.id
+    let roomLink: string = room.link
 
-    this.roomLink = roomLink = `${window.location.protocol}//${window.location.host}/r/${roomId}`;
+    this.roomLink =
+      roomLink = `${window.location.protocol}//${window.location.host}/r/${roomId}`
 
-    this.pushCallNavigation(new Room(roomId, roomLink));
+    this.pushCallNavigation(new Room(roomId, roomLink))
 
-    const isRoomAThirdPartyAccesedRoom = /[a-zA-Z0-9]+\-\d+/g.test(roomId);
-    this.activate(this.sharingDiv);
+    const isRoomAThirdPartyAccesedRoom = /[a-zA-Z0-9]+\-\d+/g.test(roomId)
+    this.activate(this.sharingDiv)
 
     if (!isRoomAThirdPartyAccesedRoom) {
-      this.activate(this.overlayWaitingDiv);
+      this.activate(this.overlayWaitingDiv)
     }
   }
 
@@ -1095,38 +1094,38 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private pushCallNavigation(room: Room): void {
-    this.updateInvitationLinks(room.id);
+    this.updateInvitationLinks(room.id)
     window.history.pushState(
       { roomId: room.id, roomLink: room.link },
       room.id,
       room.link
-    );
+    )
   }
 
   private updateInvitationLinks(roomID: string): void {
-    const tmpRoomLink: string = `https://www.quickhellou.com/r/${roomID}`;
+    const tmpRoomLink: string = `https://www.quickhellou.com/r/${roomID}`
 
     const invitationLink: HTMLLinkElement = HTMLUtils.get(
       `.overlay--send-invitation__message-editable a`
-    ) as HTMLLinkElement;
+    ) as HTMLLinkElement
 
-    this.roomLinkHref.href = invitationLink.href = tmpRoomLink;
-    this.roomLinkHref.textContent = invitationLink.innerHTML = tmpRoomLink;
-    this.roomLinkHrefWaiting.textContent = tmpRoomLink;
-    this.roomLinkHrefWaiting.href = tmpRoomLink;
+    this.roomLinkHref.href = invitationLink.href = tmpRoomLink
+    this.roomLinkHref.textContent = invitationLink.innerHTML = tmpRoomLink
+    this.roomLinkHrefWaiting.textContent = tmpRoomLink
+    this.roomLinkHrefWaiting.href = tmpRoomLink
 
     const inviteBySMSButtonElement: HTMLElement = HTMLUtils.get(
-      ".invite-waiting-button--sms"
-    );
+      '.invite-waiting-button--sms'
+    )
     if (Util.isMobile()) {
-      inviteBySMSButtonElement.addEventListener("click", (): void => {
+      inviteBySMSButtonElement.addEventListener('click', (): void => {
         window.open(
-          "sms://?body=Please join talk with me:" + tmpRoomLink,
-          "_self"
-        );
-      });
+          'sms://?body=Please join talk with me:' + tmpRoomLink,
+          '_self'
+        )
+      })
     } else {
-      inviteBySMSButtonElement.style.display = "none";
+      inviteBySMSButtonElement.style.display = 'none'
     }
   }
 
@@ -1137,12 +1136,12 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onRemoteStreamAdded(sessionId: string, stream: MediaStream): void {
-    this.deactivate(this.sharingDiv);
-    this.deactivate(this.overlayWaitingDiv);
+    this.deactivate(this.sharingDiv)
+    this.deactivate(this.overlayWaitingDiv)
     if (!Util.isMobile() && !Util.isEdgeHTML()) {
       // if(!this.shareScreenButton.getIsEnabled) this.shareScreenButton.enableSharingState();
     }
-    this.remoteVideos.addStream(sessionId, stream);
+    this.remoteVideos.addStream(sessionId, stream)
   }
 
   /**
@@ -1153,9 +1152,9 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onLocalStreamAdded(stream: MediaStream): void {
-    Log.log("User has granted access to local media.");
-    this.localStream = stream;
-    this.attachLocalStream();
+    Log.log('User has granted access to local media.')
+    this.localStream = stream
+    this.attachLocalStream()
   }
 
   /**
@@ -1172,10 +1171,10 @@ export class AppController extends EventDispatcherService {
     isRemoteDisplayMediaAvailable: boolean
   ): void {
     if (!isRemoteVideoPlaybackAvailable) {
-      this.transitionToActive(remoteStreamId);
+      this.transitionToActive(remoteStreamId)
     }
     if (isRemoteDisplayMediaAvailable) {
-      Log.log("run display media");
+      Log.log('run display media')
     }
   }
 
@@ -1188,42 +1187,42 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onTransitionToActive(remoteVideoElement: HTMLVideoElement): void {
-    remoteVideoElement.oncanplay = undefined;
-    const connectTime = window.performance.now();
+    remoteVideoElement.oncanplay = undefined
+    const connectTime = window.performance.now()
 
-    this.activate(remoteVideoElement);
-    this.remoteVideos.updateVideoElementsLayout();
+    this.activate(remoteVideoElement)
+    this.remoteVideos.updateVideoElementsLayout()
 
     // Prepare the remote video and PIP elements.
     if (!BaseUtils.isObjectDefined(this.localVideo.srcObject)) {
       Log.log(
-        "AppController::onTransitionToActive: No local video source. Not swapping."
-      );
-      return;
+        'AppController::onTransitionToActive: No local video source. Not swapping.'
+      )
+      return
     }
-    Log.log("AppController::onTransitionToActive swapMediaStream.");
+    Log.log('AppController::onTransitionToActive swapMediaStream.')
     try {
-      this.miniVideo.srcObject = this.localVideo.srcObject;
+      this.miniVideo.srcObject = this.localVideo.srcObject
     } catch (e) {
-      Log.warn("Unable to attach stream to video element.", e);
+      Log.warn('Unable to attach stream to video element.', e)
     }
     // Transition opacity from 0 to 1 for the remote and mini videos.
-    this.activate(this.miniVideo);
+    this.activate(this.miniVideo)
     // Transition opacity from 1 to 0 for the local video.
-    this.deactivate(this.localVideo);
+    this.deactivate(this.localVideo)
     try {
-      this.localVideo.srcObject = null;
+      this.localVideo.srcObject = null
     } catch (e) {
-      Log.warn("Unable to attach stream to video element.", e);
+      Log.warn('Unable to attach stream to video element.', e)
     }
     // Rotate the div containing the videos 180 deg with a CSS transform.
-    this.activate(this.videosDiv);
+    this.activate(this.videosDiv)
 
-    const videosWrapElement: HTMLElement = HTMLUtils.get(".videos-wrap");
-    videosWrapElement.classList.add("active");
+    const videosWrapElement: HTMLElement = HTMLUtils.get('.videos-wrap')
+    videosWrapElement.classList.add('active')
 
-    this.showActiveConnectionControls();
-    Log.success("Connection established.");
+    this.showActiveConnectionControls()
+    Log.success('Connection established.')
   }
 
   /**
@@ -1233,8 +1232,8 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private showActiveConnectionControls() {
-    this.show(this.hangupSvg);
-    this.show(this.textChatButton);
+    this.show(this.hangupSvg)
+    this.show(this.textChatButton)
   }
 
   /**
@@ -1245,41 +1244,40 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private transitionToActive(videoId: string): void {
-    Log.log("AppController::transitionToActive", videoId);
-    const remoteVideoElement: HTMLVideoElement = this.remoteVideos.getElement(
-      videoId
-    );
+    Log.log('AppController::transitionToActive', videoId)
+    const remoteVideoElement: HTMLVideoElement =
+      this.remoteVideos.getElement(videoId)
 
     // Stop waiting for remote video.
-    remoteVideoElement.oncanplay = undefined;
-    const connectTime = window.performance.now();
+    remoteVideoElement.oncanplay = undefined
+    const connectTime = window.performance.now()
 
     // Prepare the remote video and PIP elements.
     try {
-      Log.log(this.localVideo.srcObject);
-      this.miniVideo.srcObject = this.localVideo.srcObject;
+      Log.log(this.localVideo.srcObject)
+      this.miniVideo.srcObject = this.localVideo.srcObject
     } catch (e) {
-      Log.warn("Unable to attach stream to video element.", e);
+      Log.warn('Unable to attach stream to video element.', e)
     }
 
     // Transition opacity from 0 to 1 for the remote and mini videos.
-    this.activate(remoteVideoElement);
-    this.activate(this.miniVideo);
+    this.activate(remoteVideoElement)
+    this.activate(this.miniVideo)
     // Transition opacity from 1 to 0 for the local video.
-    this.deactivate(this.localVideo);
+    this.deactivate(this.localVideo)
 
     try {
-      this.localVideo.srcObject = null;
+      this.localVideo.srcObject = null
     } catch (e) {
-      Log.warn("Unable to attach stream to video element.", e);
+      Log.warn('Unable to attach stream to video element.', e)
     }
     // Rotate the div containing the videos 180 deg with a CSS transform.
-    this.activate(this.videosDiv);
+    this.activate(this.videosDiv)
 
-    const videosWrapElement: HTMLElement = HTMLUtils.get(".videos-wrap");
-    videosWrapElement.classList.add("active");
+    const videosWrapElement: HTMLElement = HTMLUtils.get('.videos-wrap')
+    videosWrapElement.classList.add('active')
 
-    this.showActiveConnectionControls();
+    this.showActiveConnectionControls()
   }
 
   /**
@@ -1290,23 +1288,23 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private transitionToWaiting(): void {
-    this.hide(this.hangupSvg);
-    this.hide(this.textChatButton);
-    this.hide(this.textChatWindow);
+    this.hide(this.hangupSvg)
+    this.hide(this.textChatButton)
+    this.hide(this.textChatWindow)
 
-    this.deactivate(this.videosDiv);
+    this.deactivate(this.videosDiv)
 
     // Set localVideo.srcObject now so that the local stream won't be lost if the
     // call is restarted before the timeout.
     try {
-      this.localVideo.srcObject = this.miniVideo.srcObject;
+      this.localVideo.srcObject = this.miniVideo.srcObject
     } catch (e) {
-      Log.log("Unable to attach stream to video element.", e);
+      Log.log('Unable to attach stream to video element.', e)
     }
     // Transition opacity from 0 to 1 for the local video.
-    this.activate(this.localVideo);
-    this.remoteVideos.deactivateAll();
-    this.deactivate(this.miniVideo);
+    this.activate(this.localVideo)
+    this.remoteVideos.deactivateAll()
+    this.deactivate(this.miniVideo)
   }
 
   /**
@@ -1317,13 +1315,13 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onRemoteHangup(sessionId: string): void {
-    Log.log("The remote side hung up. ", sessionId);
-    this.remoteVideos.removeRemoteVideo(sessionId);
+    Log.log('The remote side hung up. ', sessionId)
+    this.remoteVideos.removeRemoteVideo(sessionId)
     if (this.remoteVideos.isEmpty()) {
-      this.mediaCommunication.stopSendingDisplayMedia();
+      this.mediaCommunication.stopSendingDisplayMedia()
       // this.shareScreenButton.disableSharingState();
-      this.transitionToWaiting();
-      this.closeFullScreen();
+      this.transitionToWaiting()
+      this.closeFullScreen()
     }
   }
 
@@ -1334,10 +1332,10 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private showIcons(): void {
-    if (!this.icons.classList.contains("active")) {
-      this.activate(this.fullscreenIcon);
-      this.activate(this.icons);
-      this.setIconTimeout();
+    if (!this.icons.classList.contains('active')) {
+      this.activate(this.fullscreenIcon)
+      this.activate(this.icons)
+      this.setIconTimeout()
     }
   }
 
@@ -1348,18 +1346,18 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private hideIcons(): void {
-    if (this.icons.classList.contains("active")) {
-      this.deactivate(this.icons);
-      this.deactivate(this.fullscreenIcon);
+    if (this.icons.classList.contains('active')) {
+      this.deactivate(this.icons)
+      this.deactivate(this.fullscreenIcon)
     }
   }
 
   private hide = (element: HTMLElement): void => {
-    element.classList.add("hidden");
+    element.classList.add('hidden')
   }
 
   private show = (element: HTMLElement): void => {
-    element.classList.remove("hidden");
+    element.classList.remove('hidden')
   }
 
   /**
@@ -1370,11 +1368,11 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private activate(element: HTMLElement): void {
-    element.classList.add("active");
+    element.classList.add('active')
   }
 
   private deactivate = (element: HTMLElement): void => {
-    element.classList.remove("active");
+    element.classList.remove('active')
   }
 
   /**
@@ -1384,12 +1382,12 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private initRemoteVideos(): void {
-    this.remoteVideos = RemoteVideos.getInstance();
+    this.remoteVideos = RemoteVideos.getInstance()
 
     this.remoteVideos.addEventListener(
       RemoteVideosEvent.ADD_STREAM_SUCCESS,
       this.onTransitionToActive,
       this
-    );
+    )
   }
 }

@@ -1,24 +1,23 @@
-import { EventDispatcherService } from "../../../genb/base/services/EventDispatcherService";
-import { Call } from "../../Call";
-import { LoadingParams } from "../../LoadingParams";
-import { ColliderService } from "../service/ColliderService";
-import { CallEvent } from "../../CallEvent";
-import { Room } from "../model/Room";
-import { Util } from "../../Util";
-import { ColliderServiceEvent } from "../model/ColliderServiceEvent";
-import { BaseUtils } from "../../../genb/base/utils/BaseUtils";
-import { StringUtils } from "../../../genb/base/utils/StringUtils";
-import { Log } from "../../../genb/base/utils/Log";
-import { PeerConnectionResponseType } from "../model/PeerConnectionResponseType";
-import { RegisterOptions } from "../model/RegisterOptions";
-import { SessionInit } from "../model/SessionInit";
-import { RtcSession } from "../model/RtcSession";
-import { SessionOptions } from "../model/SessionOptions";
-import { MediaConstraints } from "../model/MediaConstraints";
-import { MediaEvent } from "../model/MediaEvent";
-import { VideoTrackEventOptions } from "../model/VideoTrackEventOptions";
-import { ShareScreenEvent } from "../model/ShareScreenEvent";
-import { PeerConnectionClient } from "../../PeerConnectionClient";
+import { EventDispatcherService } from '../../../genb/base/services/EventDispatcherService'
+import { Call } from '../../Call'
+import { LoadingParams } from '../../LoadingParams'
+import { ColliderService } from '../service/ColliderService'
+import { CallEvent } from '../../CallEvent'
+import { Room } from '../model/Room'
+import { Util } from '../../Util'
+import { ColliderServiceEvent } from '../model/ColliderServiceEvent'
+import { BaseUtils } from '../../../genb/base/utils/BaseUtils'
+import { StringUtils } from '../../../genb/base/utils/StringUtils'
+import { Log } from '../../../genb/base/utils/Log'
+import { PeerConnectionResponseType } from '../model/PeerConnectionResponseType'
+import { RegisterOptions } from '../model/RegisterOptions'
+import { SessionInit } from '../model/SessionInit'
+import { RtcSession } from '../model/RtcSession'
+import { SessionOptions } from '../model/SessionOptions'
+import { MediaConstraints } from '../model/MediaConstraints'
+import { MediaEvent } from '../model/MediaEvent'
+import { VideoTrackEventOptions } from '../model/VideoTrackEventOptions'
+import { ShareScreenEvent } from '../model/ShareScreenEvent'
 
 /**
  * MediaCommunication and media facade.
@@ -28,12 +27,12 @@ import { PeerConnectionClient } from "../../PeerConnectionClient";
  * @extends {EventDispatcherService}
  */
 export class MediaCommunication extends EventDispatcherService {
-  public call: Call;
-  private loadingParams: LoadingParams;
-  private colliderService: ColliderService;
-  private room: Room;
-  private getMediaPromise: Promise<any>;
-  private getIceServersPromise: Promise<any>;
+  public call: Call
+  private loadingParams: LoadingParams
+  private colliderService: ColliderService
+  private room: Room
+  private getMediaPromise: Promise<any>
+  private getIceServersPromise: Promise<any>
 
   /**
    * Creates an instance of MediaCommunication.
@@ -42,29 +41,29 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   constructor(loadingParams: LoadingParams) {
-    super();
-    this.loadingParams = loadingParams;
+    super()
+    this.loadingParams = loadingParams
     this.colliderService = ColliderService.setupInstance(
       this.loadingParams.wssUrl,
       this.loadingParams.wssPostUrl
-    );
+    )
 
-    this.setRoom(this.loadingParams.roomID, this.loadingParams.roomLink);
+    this.setRoom(this.loadingParams.roomID, this.loadingParams.roomLink)
 
-    this.colliderService = ColliderService.getInstance();
+    this.colliderService = ColliderService.getInstance()
     this.colliderService.addEventListener(
       ColliderServiceEvent.MESSAGE,
       this.onReceiveColliderChannelMessage,
       this
-    );
+    )
 
     this.colliderService.addEventListener(
       ColliderServiceEvent.CLOSE,
       this.onColliderChannelClose,
       this
-    );
+    )
 
-    this.requestMediaAndIceServers();
+    this.requestMediaAndIceServers()
   }
 
   /**
@@ -75,11 +74,11 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public setRoom(roomId: string, roomLink: string): void {
-    this.room = new Room(roomId, roomLink);
-    this.loadingParams.roomID = roomId;
-    this.loadingParams.roomLink = roomLink;
+    this.room = new Room(roomId, roomLink)
+    this.loadingParams.roomID = roomId
+    this.loadingParams.roomLink = roomLink
     this.room.server = this.room.server =
-      `${window.location.protocol}//${window.location.host}` || "";
+      `${window.location.protocol}//${window.location.host}` || ''
   }
 
   /**
@@ -90,10 +89,10 @@ export class MediaCommunication extends EventDispatcherService {
    */
   public createCall(): Call {
     if (!BaseUtils.isObjectDefined(this.call)) {
-      this.call = new Call(this.loadingParams);
-      this.setupCallEvents();
+      this.call = new Call(this.loadingParams)
+      this.setupCallEvents()
     }
-    return this.call;
+    return this.call
   }
 
   /**
@@ -105,43 +104,41 @@ export class MediaCommunication extends EventDispatcherService {
     // Asynchronously open a WebSocket connection to the Collider service.
     const connectColliderPromise: Promise<any> = this.colliderService
       .open()
-      .catch(
-        (reason: any): Promise<any> => {
-          this.onError(`WebSocket open error: ${reason.message}`);
-          return Promise.reject(reason);
-        }
-      );
+      .catch((reason: any): Promise<any> => {
+        this.onError(`WebSocket open error: ${reason.message}`)
+        return Promise.reject(reason)
+      })
 
     // Asynchronously join the room.
-    const joinGaePromise: Promise<any> = this.joinGaeRoom().catch(
+    const joinSignalingServerPromise: Promise<any> = this.joinRoom().catch(
       (reason: any): Promise<any> => {
-        this.onError(`Room server join error: ${reason.message}`);
-        return Promise.reject(reason);
+        this.onError(`Room server join error: ${reason.message}`)
+        return Promise.reject(reason)
       }
-    );
+    )
 
     // We only register with WSS if the web socket connection is open and if we're
-    // already registered with GAE.
-    Promise.all([connectColliderPromise, joinGaePromise])
+    // already registered with PyApp.
+    Promise.all([connectColliderPromise, joinSignalingServerPromise])
       .then((results: any): void => {
-        const roomGaeParams: any = results[1];
-        this.loadingParams.clientID = roomGaeParams.client_id;
-        const sessions: any[] = roomGaeParams.sessions;
-        const sessionInit: SessionInit = new SessionInit();
+        const roomPyParams: any = results[1]
+        this.loadingParams.clientID = roomPyParams.client_id
+        const sessions: any[] = roomPyParams.sessions
+        const sessionInit: SessionInit = new SessionInit()
         sessions.forEach((sessionObj: any) => {
-          const sessionJson: any = JSON.parse(sessionObj);
+          const sessionJson: any = JSON.parse(sessionObj)
           sessionInit.addSession(
             new RtcSession(
               sessionJson.id,
               sessionJson.messages,
               sessionJson.other_client_id,
-              StringUtils.equals(sessionJson.is_initiator, "True"),
-              StringUtils.equals(sessionJson.is_forward, "True")
+              StringUtils.equals(sessionJson.is_initiator, 'True'),
+              StringUtils.equals(sessionJson.is_forward, 'True')
             )
-          );
-        });
+          )
+        })
 
-        this.colliderService.register(this.room.id, roomGaeParams.client_id);
+        this.colliderService.register(this.room.id, roomPyParams.client_id)
 
         // We only start signaling after we have registered the signaling channel
         // and have media and TURN. Since we send candidates as soon as the peer
@@ -149,15 +146,15 @@ export class MediaCommunication extends EventDispatcherService {
         // ready.
         Promise.all([this.getIceServersPromise, this.getMediaPromise])
           .then((): void => {
-            this.startRtcSignaling(sessionInit);
+            this.startRtcSignaling(sessionInit)
           })
           .catch((reason: any): void => {
-            this.onError(`Failed to start signaling: ${reason.message}`);
-          });
+            this.onError(`Failed to start signaling: ${reason.message}`)
+          })
       })
       .catch((reason: any): void => {
-        this.onError(`WebSocket register error: ${reason.message}`);
-      });
+        this.onError(`WebSocket register error: ${reason.message}`)
+      })
   }
 
   /**
@@ -166,15 +163,15 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public async displayMedia() {
-    (navigator.mediaDevices as any)
+    ;(navigator.mediaDevices as any)
       .getDisplayMedia({ video: true, audio: true })
       .then((stream: MediaStream) => {
-        this.onUserDisplayMediaSuccess(stream);
+        this.onUserDisplayMediaSuccess(stream)
       })
       .catch((reason: any) => {
-        Log.warn(reason);
-        this.dispatchEvent(ShareScreenEvent.NOT_ALLOWED);
-      });
+        Log.warn(reason)
+        this.dispatchEvent(ShareScreenEvent.NOT_ALLOWED)
+      })
   }
 
   /**
@@ -185,7 +182,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public async stopSendingDisplayMedia() {
-    this.call.stopDisplayMedia();
+    this.call.stopDisplayMedia()
   }
 
   /**
@@ -194,8 +191,8 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public restartCall() {
-    this.requestMediaAndIceServers();
-    this.connect();
+    this.requestMediaAndIceServers()
+    this.connect()
   }
 
   /**
@@ -205,8 +202,8 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public hangupCall(async: boolean) {
-    Log.log("MediaCommunication::hangupCall", async);
-    this.call.hangup(async);
+    Log.log('MediaCommunication::hangupCall', async)
+    this.call.hangup(async)
   }
 
   /**
@@ -215,7 +212,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public toggleAudioUnMute() {
-    this.call.toggleAudioUnMute();
+    this.call.toggleAudioUnMute()
   }
 
   /**
@@ -224,7 +221,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public toggleAudioMute() {
-    this.call.toggleAudioMute();
+    this.call.toggleAudioMute()
   }
 
   /**
@@ -233,7 +230,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public toggleVideoMute() {
-    this.call.toggleVideoMute();
+    this.call.toggleVideoMute()
   }
 
   /**
@@ -243,7 +240,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public getCallStartTime() {
-    return this.call.getStartTime();
+    return this.call.getStartTime()
   }
 
   /**
@@ -254,7 +251,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public sendLocalChatMessage(message: string): void {
-    this.call.broadcast(PeerConnectionResponseType.TEXT_CHAT_MESSAGE, message);
+    this.call.broadcast(PeerConnectionResponseType.TEXT_CHAT_MESSAGE, message)
   }
 
   /**
@@ -264,7 +261,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public getCall(): Call {
-    return this.call;
+    return this.call
   }
 
   /**
@@ -276,16 +273,16 @@ export class MediaCommunication extends EventDispatcherService {
    */
   private async onUserDisplayMediaSuccess(displayStream: MediaStream) {
     if (!BaseUtils.isObjectDefined(this.call)) {
-      Log.error("Call instance is not defined.");
-      return;
+      Log.error('Call instance is not defined.')
+      return
     }
     if (displayStream.getTracks().length === 0) {
-      Log.error("Display screen has no tracks attached.");
-      return;
+      Log.error('Display screen has no tracks attached.')
+      return
     }
-    this.dispatchEvent(MediaEvent.DISPLAY_MEDIA_DISPLAYED);
+    this.dispatchEvent(MediaEvent.DISPLAY_MEDIA_DISPLAYED)
 
-    this.call.addDisplayMediaTracks(displayStream.getTracks()[0]);
+    this.call.addDisplayMediaTracks(displayStream.getTracks()[0])
   }
 
   /**
@@ -295,47 +292,47 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private requestMediaAndIceServers(): void {
-    this.getMediaPromise = this.maybeGetMedia();
-    this.getIceServersPromise = this.maybeGetIceServers();
+    this.getMediaPromise = this.maybeGetMedia()
+    this.getIceServersPromise = this.maybeGetIceServers()
   }
 
   /**
-   * Joins room in GAE service.
+   * Joins room in signaling service.
    *
    * @private
    * @returns {Promise<any>}
    * @memberof MediaCommunication
    */
-  private joinGaeRoom(): Promise<any> {
+  private joinRoom(): Promise<any> {
     return new Promise((resolve: any, reject: any): any => {
       if (!BaseUtils.isObjectDefined(this.room.id)) {
-        reject(Error("Missing room ID."));
+        reject(Error('Missing room ID.'))
       }
 
-      const path: string = `${this.room.server}/join/${this.room.id}${window.location.search}`;
-      Util.sendAsyncUrlRequest("POST", path)
+      const path: string = `${this.room.server}/join/${this.room.id}${window.location.search}`
+      Util.sendAsyncUrlRequest('POST', path)
         .then((response: any): void => {
-          const responseObj: any = Util.parseJSON(response);
+          const responseObj: any = Util.parseJSON(response)
           if (!responseObj) {
-            reject(Error("Error parsing response JSON."));
-            return;
+            reject(Error('Error parsing response JSON.'))
+            return
           }
-          if (!StringUtils.equals(responseObj.result, "SUCCESS")) {
-            reject(Error(`Registration error: ${responseObj.result}`));
-            if (StringUtils.equals(responseObj.result, "FULL")) {
-              const getPath: string = `${this.room.server}/r/${this.room.id}${window.location.search}`;
-              window.location.assign(getPath);
+          if (!StringUtils.equals(responseObj.result, 'SUCCESS')) {
+            reject(Error(`Registration error: ${responseObj.result}`))
+            if (StringUtils.equals(responseObj.result, 'FULL')) {
+              const getPath: string = `${this.room.server}/r/${this.room.id}${window.location.search}`
+              window.location.assign(getPath)
             }
-            return;
+            return
           }
-          Log.log("Joined the room.");
-          resolve(responseObj.params);
+          Log.log('Joined the room.')
+          resolve(responseObj.params)
         })
         .catch((reason: any): void => {
-          reject(Error(`Failed to join the room: ${reason.message}`));
-          return;
-        });
-    });
+          reject(Error(`Failed to join the room: ${reason.message}`))
+          return
+        })
+    })
   }
 
   /**
@@ -348,58 +345,58 @@ export class MediaCommunication extends EventDispatcherService {
   private maybeGetMedia(): Promise<any> {
     const needStream: boolean =
       this.loadingParams.mediaConstraints.audio !== false ||
-      this.loadingParams.mediaConstraints.video !== false;
-    let mediaPromise: Promise<any> = null;
+      this.loadingParams.mediaConstraints.video !== false
+    let mediaPromise: Promise<any> = null
     if (needStream) {
-      const mediaConstraints: MediaConstraints = this.loadingParams
-        .mediaConstraints;
+      const mediaConstraints: MediaConstraints =
+        this.loadingParams.mediaConstraints
       mediaPromise = navigator.mediaDevices
         .getUserMedia(mediaConstraints)
         .catch((reason: any): any => {
-          if (reason.name !== "NotFoundError") {
-            throw reason;
+          if (reason.name !== 'NotFoundError') {
+            throw reason
           }
           return navigator.mediaDevices
             .enumerateDevices()
             .then((devices: MediaDeviceInfo[]): any => {
               const cam: MediaDeviceInfo = devices.find(
                 (device: MediaDeviceInfo): boolean => {
-                  return device.kind === "videoinput";
+                  return device.kind === 'videoinput'
                 }
-              );
+              )
               const mic: MediaDeviceInfo = devices.find(
                 (device: MediaDeviceInfo): boolean => {
-                  return device.kind === "audioinput";
+                  return device.kind === 'audioinput'
                 }
-              );
+              )
               const audioConstraint: MediaTrackConstraints = {
                 echoCancellation: true,
-              };
+              }
               const constraints: MediaStreamConstraints = {
                 audio: audioConstraint,
                 video: cam && mediaConstraints.video,
-              };
+              }
               if (!!navigator.mediaDevices.getUserMedia) {
-                return navigator.mediaDevices.getUserMedia(constraints);
+                return navigator.mediaDevices.getUserMedia(constraints)
               } else {
                 Log.warn(
-                  "Feature not supported. Please update your browser to the newest release."
-                );
+                  'Feature not supported. Please update your browser to the newest release.'
+                )
               }
-            });
+            })
         })
         .then((stream: MediaStream): any => {
-          this.onUserMediaSuccess(stream);
+          this.onUserMediaSuccess(stream)
         })
         .catch((reason: any): void => {
-          this.onError(`Error getting local media: ${reason.message}`);
-          this.onUserMediaError(reason);
-        });
+          this.onError(`Error getting local media: ${reason.message}`)
+          this.onUserMediaError(reason)
+        })
     } else {
-      mediaPromise = Promise.resolve();
+      mediaPromise = Promise.resolve()
     }
 
-    return mediaPromise;
+    return mediaPromise
   }
 
   /**
@@ -411,11 +408,11 @@ export class MediaCommunication extends EventDispatcherService {
    */
   private onUserMediaSuccess(stream: MediaStream): void {
     if (!BaseUtils.isObjectDefined(this.call)) {
-      Log.warn("Call instance is not defined.");
-      return;
+      Log.warn('Call instance is not defined.')
+      return
     }
-    this.call.setLocalStream(stream);
-    this.dispatchEvent(CallEvent.LOCAL_STREAM_ADDED, stream);
+    this.call.setLocalStream(stream)
+    this.dispatchEvent(CallEvent.LOCAL_STREAM_ADDED, stream)
   }
 
   /**
@@ -428,9 +425,9 @@ export class MediaCommunication extends EventDispatcherService {
   private onUserMediaError(reason: any): void {
     const errorMessage: string =
       `Failed to get access to local media. Error name was ${reason.name}.` +
-      "Continuing without sending a stream.";
-    this.onError(`getUserMedia error: ${errorMessage}`);
-    alert(errorMessage);
+      'Continuing without sending a stream.'
+    this.onError(`getUserMedia error: ${errorMessage}`)
+    alert(errorMessage)
   }
 
   /**
@@ -445,32 +442,31 @@ export class MediaCommunication extends EventDispatcherService {
       this.loadingParams.iceServerRequestUrl &&
       this.loadingParams.iceServerRequestUrl.length > 0 &&
       this.loadingParams.peerConnectionConfig.iceServers &&
-      this.loadingParams.peerConnectionConfig.iceServers.length === 0;
+      this.loadingParams.peerConnectionConfig.iceServers.length === 0
 
-    let iceServerPromise: Promise<any> = null;
+    let iceServerPromise: Promise<any> = null
     if (shouldRequestIceServers) {
-      const requestURL: string = this.loadingParams.iceServerRequestUrl;
+      const requestURL: string = this.loadingParams.iceServerRequestUrl
       iceServerPromise = Util.requestIceServers(
         requestURL,
         this.loadingParams.iceServerTransports
       )
         .then((iceServers: any): void => {
-          const servers = this.loadingParams.peerConnectionConfig.iceServers;
-          this.loadingParams.peerConnectionConfig.iceServers = servers.concat(
-            iceServers
-          );
+          const servers = this.loadingParams.peerConnectionConfig.iceServers
+          this.loadingParams.peerConnectionConfig.iceServers =
+            servers.concat(iceServers)
         })
         .catch((reason: any): void => {
           // Error retrieving ICE servers.
           const message: string =
-            "No TURN server; unlikely that media will traverse networks.";
-          this.dispatchEvent(CallEvent.STATUS_MESSAGE, message);
-          Log.warn(reason.message);
-        });
+            'No TURN server; unlikely that media will traverse networks.'
+          this.dispatchEvent(CallEvent.STATUS_MESSAGE, message)
+          Log.warn(reason.message)
+        })
     } else {
-      iceServerPromise = Promise.resolve();
+      iceServerPromise = Promise.resolve()
     }
-    return iceServerPromise;
+    return iceServerPromise
   }
 
   /**
@@ -481,8 +477,8 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private startRtcSignaling(sessionInit: SessionInit): void {
-    this.call.setRoom(this.room);
-    this.call.startRtcSignaling(sessionInit);
+    this.call.setRoom(this.room)
+    this.call.startRtcSignaling(sessionInit)
   }
 
   /**
@@ -494,58 +490,58 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onReceiveColliderChannelMessage(message: string): void {
-    let messageJson: any = Util.parseJSON(message);
-    if (typeof messageJson === "string") {
-      messageJson = Util.parseJSON(messageJson);
+    let messageJson: any = Util.parseJSON(message)
+    if (typeof messageJson === 'string') {
+      messageJson = Util.parseJSON(messageJson)
     }
     if (!BaseUtils.isObjectDefined(messageJson)) {
       Log.warn(
-        "MediaCommunication::onReceiveColliderChannelMessage No message defined."
-      );
-      return;
+        'MediaCommunication::onReceiveColliderChannelMessage No message defined.'
+      )
+      return
     }
 
-    const type: string = messageJson.type;
+    const type: string = messageJson.type
     if (PeerConnectionResponseType.isBye(type)) {
-      this.onRemoteHangup(messageJson.sessionId);
-      return;
+      this.onRemoteHangup(messageJson.sessionId)
+      return
     }
 
     if (PeerConnectionResponseType.isPing(type)) {
-      this.onPingRequest();
-      return;
+      this.onPingRequest()
+      return
     }
 
     if (PeerConnectionResponseType.isRemoteIceComplete(type)) {
-      this.onRemoteIceComplete(messageJson);
-      return;
+      this.onRemoteIceComplete(messageJson)
+      return
     }
 
     if (PeerConnectionResponseType.isUnreachableClient(type)) {
-      this.onUnreachableClient(messageJson.body);
-      return;
+      this.onUnreachableClient(messageJson.body)
+      return
     }
 
     if (PeerConnectionResponseType.isTextChatMessage(messageJson)) {
-      this.onRemoteTextChatMessage(Util.parseJSON(messageJson.body));
-      return;
+      this.onRemoteTextChatMessage(Util.parseJSON(messageJson.body))
+      return
     }
 
     if (PeerConnectionResponseType.isResponse(type)) {
-      let body: any = messageJson.body;
-      if (typeof messageJson.body === "string") {
-        body = JSON.parse(messageJson.body);
+      let body: any = messageJson.body
+      if (typeof messageJson.body === 'string') {
+        body = JSON.parse(messageJson.body)
       }
       if (BaseUtils.isObjectDefined(body)) {
-        const name: string = body.name;
-        this.resolveResponseSignalingMessage(name, body);
-        return;
+        const name: string = body.name
+        this.resolveResponseSignalingMessage(name, body)
+        return
       }
     }
 
     // forward the message to the call instance
     // to use it in RTC connection
-    this.call.receiveColliderChannelMessage(message);
+    this.call.receiveColliderChannelMessage(message)
   }
 
   /**
@@ -555,7 +551,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onColliderChannelClose(): void {
-    this.dispatchEvent(CallEvent.WEBSOCKET_CLOSED);
+    this.dispatchEvent(CallEvent.WEBSOCKET_CLOSED)
   }
 
   /**
@@ -565,11 +561,11 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onPingRequest(): void {
-    this.colliderService.respondOnPingRequest();
+    this.colliderService.respondOnPingRequest()
   }
 
   private onRemoteIceComplete(data: any) {
-    this.call.onRemoteIceComplete(data);
+    this.call.onRemoteIceComplete(data)
   }
 
   /**
@@ -580,8 +576,8 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onUnreachableClient(clientId: string): void {
-    const sessionId: string = this.call.onRemoteHangupByClientId(clientId);
-    this.dispatchEvent(CallEvent.REMOTE_HANGUP, sessionId);
+    const sessionId: string = this.call.onRemoteHangupByClientId(clientId)
+    this.dispatchEvent(CallEvent.REMOTE_HANGUP, sessionId)
   }
 
   /**
@@ -594,86 +590,86 @@ export class MediaCommunication extends EventDispatcherService {
     this.call.addEventListener(
       CallEvent.REMOTE_SDP_PROTOCOL_RECEIVED,
       (data: any): void => {
-        this.onRemoteSdpProtocolReceived(data);
+        this.onRemoteSdpProtocolReceived(data)
       },
       this
-    );
+    )
     this.call.addEventListener(
       CallEvent.REMOTE_STREAM_ADDED,
       (data: any): void => {
-        this.onRemoteStreamAdded(data);
+        this.onRemoteStreamAdded(data)
       },
       this
-    );
+    )
     this.call.addEventListener(
       CallEvent.LOCAL_STREAM_ADDED,
       (data: any): void => {
-        this.onLocalStreamAdded(data.stream);
+        this.onLocalStreamAdded(data.stream)
       },
       this
-    );
+    )
 
     this.call.addEventListener(
       CallEvent.SIGNALING_STATE_CHANGE,
       (): void => {
-        this.dispatchEvent(CallEvent.SIGNALING_STATE_CHANGE);
+        this.dispatchEvent(CallEvent.SIGNALING_STATE_CHANGE)
       },
       this
-    );
+    )
 
     this.call.addEventListener(
       CallEvent.ICE_CONNECTION_STATE_CHANGE,
       (): void => {
-        this.dispatchEvent(CallEvent.ICE_CONNECTION_STATE_CHANGE);
+        this.dispatchEvent(CallEvent.ICE_CONNECTION_STATE_CHANGE)
       },
       this
-    );
+    )
     this.call.addEventListener(
       CallEvent.NEW_ICE_CANDIDATE,
       (data: any): void => {
-        this.dispatchEvent(CallEvent.NEW_ICE_CANDIDATE, data);
+        this.dispatchEvent(CallEvent.NEW_ICE_CANDIDATE, data)
       },
       this
-    );
+    )
 
     this.call.addEventListener(
       CallEvent.REMOTE_TEXT_CHAT_MESSAGE,
       (data: any): void => {
-        this.onRemoteTextChatMessage(data.message);
+        this.onRemoteTextChatMessage(data.message)
       },
       this
-    );
+    )
 
     this.call.addEventListener(
       CallEvent.STATUS_MESSAGE,
       (message: string): void => {
-        this.dispatchEvent(CallEvent.STATUS_MESSAGE, message);
+        this.dispatchEvent(CallEvent.STATUS_MESSAGE, message)
       },
       this
-    );
+    )
     this.call.addEventListener(
       CallEvent.ERROR,
       (message: string): void => {
-        this.dispatchEvent(CallEvent.ERROR, message);
+        this.dispatchEvent(CallEvent.ERROR, message)
       },
       this
-    );
+    )
 
     this.call.addEventListener(
       CallEvent.CALLER_STARTED,
       (room: Room) => {
-        this.dispatchEvent(CallEvent.CALLER_STARTED, room);
+        this.dispatchEvent(CallEvent.CALLER_STARTED, room)
       },
       this
-    );
+    )
 
     this.call.addEventListener(
       CallEvent.LOCAL_VIDEO_MEDIA_CHANGE,
       (options: VideoTrackEventOptions) => {
-        this.dispatchEvent(CallEvent.LOCAL_VIDEO_MEDIA_CHANGE, options);
+        this.dispatchEvent(CallEvent.LOCAL_VIDEO_MEDIA_CHANGE, options)
       },
       this
-    );
+    )
   }
 
   /**
@@ -684,8 +680,8 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onRemoteHangup(sessionId: string) {
-    this.dispatchEvent(CallEvent.REMOTE_HANGUP, sessionId);
-    this.call.onRemoteHangup(sessionId);
+    this.dispatchEvent(CallEvent.REMOTE_HANGUP, sessionId)
+    this.call.onRemoteHangup(sessionId)
   }
 
   /**
@@ -696,7 +692,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onRemoteSdpProtocolReceived(data: any) {
-    this.dispatchEvent(CallEvent.REMOTE_SDP_PROTOCOL_RECEIVED, data);
+    this.dispatchEvent(CallEvent.REMOTE_SDP_PROTOCOL_RECEIVED, data)
   }
 
   /**
@@ -707,7 +703,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onRemoteStreamAdded(data: any) {
-    this.dispatchEvent(CallEvent.REMOTE_STREAM_ADDED, data);
+    this.dispatchEvent(CallEvent.REMOTE_STREAM_ADDED, data)
   }
 
   /**
@@ -718,7 +714,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onLocalStreamAdded(stream: MediaStream) {
-    this.dispatchEvent(CallEvent.LOCAL_STREAM_ADDED, stream);
+    this.dispatchEvent(CallEvent.LOCAL_STREAM_ADDED, stream)
   }
 
   /**
@@ -729,7 +725,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onRemoteTextChatMessage(message: any) {
-    this.dispatchEvent(CallEvent.REMOTE_TEXT_CHAT_MESSAGE, message.data);
+    this.dispatchEvent(CallEvent.REMOTE_TEXT_CHAT_MESSAGE, message.data)
   }
 
   /**
@@ -740,9 +736,9 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onRemoteSession(sessionOptions: SessionOptions): void {
-    const sessionInit: SessionInit = new SessionInit();
-    sessionInit.addSession(sessionOptions.session);
-    this.startRtcSignaling(sessionInit);
+    const sessionInit: SessionInit = new SessionInit()
+    sessionInit.addSession(sessionOptions.session)
+    this.startRtcSignaling(sessionInit)
   }
 
   /**
@@ -756,11 +752,11 @@ export class MediaCommunication extends EventDispatcherService {
     this.call
       .setSessionOtherClientId(registerOptions)
       .then(() => {
-        this.dispatchEvent(CallEvent.REMOTE_CLIENT_REGISTERED, registerOptions);
+        this.dispatchEvent(CallEvent.REMOTE_CLIENT_REGISTERED, registerOptions)
       })
       .catch(() => {
-        Log.warn("Remote client cannot be registered.");
-      });
+        Log.warn('Remote client cannot be registered.')
+      })
   }
 
   /**
@@ -771,7 +767,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onError(message: any): void {
-    this.dispatchEvent(CallEvent.ERROR, message);
+    this.dispatchEvent(CallEvent.ERROR, message)
   }
 
   /**
@@ -784,15 +780,15 @@ export class MediaCommunication extends EventDispatcherService {
    */
   private resolveResponseSignalingMessage(name: string, body: any) {
     switch (name) {
-      case "register":
-        this.onRegister(body);
-        break;
-      case "remoteSession":
-        this.onRemoteSession(body);
-        break;
-      case "remoteClientRegistered":
-        this.onRemoteClientRegistered(body);
-        break;
+      case 'register':
+        this.onRegister(body)
+        break
+      case 'remoteSession':
+        this.onRemoteSession(body)
+        break
+      case 'remoteClientRegistered':
+        this.onRemoteClientRegistered(body)
+        break
     }
   }
 
@@ -804,8 +800,8 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onRegister(body: any) {
-    if (StringUtils.equals(body.status, "ok")) {
-      Log.log("Client has successfully registered in the Collider service.");
+    if (StringUtils.equals(body.status, 'ok')) {
+      Log.log('Client has successfully registered in the Collider service.')
     }
     // this.call.consumeRemoteMessages();
   }

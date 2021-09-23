@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="description" content="Quick Hellou: Room full">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+  <meta itemprop="description" content="Quick Hellou: Room full">
+  
+  <meta itemprop="image" content="{% static 'videochat/images/icons/android-icon-192x192.png' %}">
+  
+  <meta itemprop="name" content="Quick Hellou: Room full">
+  <meta name="mobile-web-app-capable" content="yes">
+  
+  <meta id="theme-color" name="theme-color" content="#ffffff">
+
+  <base target="_blank">
+
+  <title>Quick Hellou: Room full</title>
+
+
+  <link rel="manifest" href="{% static 'videochat/manifest.json' %}">
+  <link rel="icon" type="image/svg+xml" href="{% static 'videochat/images/icons/favicon.svg' %}" />
+  <link rel="apple-touch-icon" sizes="57x57" href="{% static 'videochat/images/icons/apple-icon-57x57.png' %}">
+  <link rel="apple-touch-icon" sizes="60x60" href="{% static 'videochat/images/icons/apple-icon-60x60.png' %}">
+  <link rel="apple-touch-icon" sizes="72x72" href="{% static 'videochat/images/icons/apple-icon-72x72.png' %}">
+  <link rel="apple-touch-icon" sizes="76x76" href="{% static 'videochat/images/icons/apple-icon-76x76.png' %}">
+  <link rel="apple-touch-icon" sizes="114x114" href="{% static 'videochat/images/icons/apple-icon-114x114.png' %}">
+  <link rel="apple-touch-icon" sizes="120x120" href="{% static 'videochat/images/icons/apple-icon-120x120.png' %}">
+  <link rel="apple-touch-icon" sizes="144x144" href="{% static 'videochat/images/icons/apple-icon-144x144.png' %}">
+  <link rel="apple-touch-icon" sizes="152x152" href="{% static 'videochat/images/icons/apple-icon-152x152.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'videochat/images/icons/apple-icon-180x180.png' %}">
+  <link rel="icon" type="image/png" sizes="192x192"  href="{% static 'videochat/images/icons/android-icon-192x192.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'videochat/images/icons/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="96x96" href="{% static 'videochat/images/icons/favicon-96x96.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'videochat/images/icons/favicon-16x16.png' %}">
+
+
+  <link rel="stylesheet" type="text/css" href="{% static 'videochat/css/quickhellou.css' %}">
+  <link rel="canonical" href="{{ room_link }}">
+
+  <script src="{% static 'videochat/js/quickhellou.bundle.js' %}"></script>
+</head>
+<body>
+
+  <div class="subpage--wrap full-room">
+	  <h1>Sorry, this room is full.</h1>
+	  <button class="feature-option__button start-new-talk__button">Start a new talk</button>
+  </div>
+
+  <script>
+    document.querySelector("button").onclick = function() {
+      location.href = location.origin;
+    };
+  </script>
+<script type="text/javascript">
+  var inlineLoadingParams = {}
+</script>
+
+</body>
+</html>

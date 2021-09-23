@@ -1,17 +1,17 @@
-import { ColliderService } from "../service/ColliderService";
-import { PeerConnectionClient } from "../../PeerConnectionClient";
-import { Log } from "../../../genb/base/utils/Log";
-import { RetryJobEvent } from "../events/RetryJobEvent";
-import { FormService } from "../../../genb/base/services/FormService";
-import { BaseUtils } from "../../../genb/base/utils/BaseUtils";
+import { ColliderService } from '../service/ColliderService'
+import { PeerConnectionClient } from '../../PeerConnectionClient'
+import { Log } from '../../../genb/base/utils/Log'
+import { RetryJobEvent } from '../events/RetryJobEvent'
+import { FormService } from '../../../genb/base/services/FormService'
+import { BaseUtils } from '../../../genb/base/utils/BaseUtils'
 
 export class RetryConsumeManager extends FormService {
-  private colliderService: ColliderService;
-  private pcClient: PeerConnectionClient;
-  private roomId: string;
-  private clientId: string;
+  private colliderService: ColliderService
+  private pcClient: PeerConnectionClient
+  private roomId: string
+  private clientId: string
 
-  private status: string = "__init__";
+  private status: string = '__init__'
 
   /**
    * Creates an instance of RetryConsumeManager.
@@ -26,11 +26,11 @@ export class RetryConsumeManager extends FormService {
     roomId: string,
     clientId: string
   ) {
-    super();
-    this.colliderService = colliderService;
-    this.pcClient = pcClient;
-    this.roomId = roomId;
-    this.clientId = clientId;
+    super()
+    this.colliderService = colliderService
+    this.pcClient = pcClient
+    this.roomId = roomId
+    this.clientId = clientId
   }
 
   /**
@@ -39,9 +39,9 @@ export class RetryConsumeManager extends FormService {
    * @memberof RetryConsumeManager
    */
   public start(): void {
-    Log.log("************* start");
-    this.status = "touch";
-    this.doJob();
+    Log.log('************* start')
+    this.status = 'touch'
+    this.doJob()
   }
 
   /**
@@ -50,7 +50,7 @@ export class RetryConsumeManager extends FormService {
    * @memberof RetryConsumeManager
    */
   public next() {
-    this.status = "consume";
+    this.status = 'consume'
   }
 
   /**
@@ -60,21 +60,21 @@ export class RetryConsumeManager extends FormService {
    * @memberof RetryConsumeManager
    */
   private doJob(): void {
-    Log.log("**** status", this.status);
+    Log.log('**** status', this.status)
 
     if (!this.pcClient.requireDataConsume) {
-      return;
+      return
     }
 
-    if (this.status === "touch") {
-      this.touch();
-    } else if (this.status === "consume") {
-      this.consume();
+    if (this.status === 'touch') {
+      this.touch()
+    } else if (this.status === 'consume') {
+      this.consume()
     }
-    if (this.status !== "complete") {
+    if (this.status !== 'complete') {
       setTimeout(() => {
-        this.doJob();
-      }, 3000);
+        this.doJob()
+      }, 3000)
     }
   }
 
@@ -85,8 +85,8 @@ export class RetryConsumeManager extends FormService {
    * @memberof RetryConsumeManager
    */
   private touch(): void {
-    Log.log("Touch");
-    this.colliderService.touch(this.roomId, this.clientId);
+    Log.log('Touch')
+    this.colliderService.touch(this.roomId, this.clientId)
   }
 
   /**
@@ -100,21 +100,22 @@ export class RetryConsumeManager extends FormService {
       `/consume/${this.roomId}/${this.pcClient.getSessionId()}/${this.clientId}`
     ).then((result: any) => {
       if (!result) {
-        return;
+        return
       }
-      const resultJson: any = JSON.parse(result);
-      const messages: any[] = resultJson.messages;
+      const resultJson: any = JSON.parse(result)
+      const messages: any[] = resultJson.messages
       if (!BaseUtils.isObjectDefined(messages)) {
-        return;
+        return
       }
       messages.forEach((message) => {
-        this.pcClient.receiveSignalingMessage(message);
-      });
+        Log.log('%%% RETRY CONSUME %%%', message)
+        this.pcClient.receiveSignalingMessage(message)
+      })
       if (messages.length > 0) {
-        this.pcClient.requireDataConsume = false;
-        this.status = "complete";
-        this.dispatchEvent(RetryJobEvent.COMPLETE);
+        this.pcClient.requireDataConsume = false
+        this.status = 'complete'
+        this.dispatchEvent(RetryJobEvent.COMPLETE)
       }
-    });
+    })
   }
 }

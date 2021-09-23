@@ -37,19 +37,3 @@ The TURN server guidelines for relaying the traffic between peers.
 turn
 ```
 
-## Useful links and resources
-
-WebRTC home
-```
-https://webrtc.org/
-```
-
-The video chat demo app based on WebRTC. 
-```
-https://github.com/webrtc/apprtc
-```
-
-WebRTC JavaScript library for peer-to-peer applications
-```
-https://www.webrtc-experiment.com/webrtcpedias
-```
