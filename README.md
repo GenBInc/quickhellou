@@ -6,6 +6,8 @@ The application includes:
 * creating multi-peer video conference sessions
 * create instalable in-page plugins and create customer service communications.
 
+[Demo](https://www.quickhellou.com)
+ 
 The Quick Hellou consists of:
 
 ### Video Chat application
