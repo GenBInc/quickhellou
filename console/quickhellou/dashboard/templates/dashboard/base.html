@@ -18,11 +18,11 @@
   <div class="drawer-frame-root">
     <aside class="aside mdc-drawer">
       <div class="mdc-drawer__header">
-        <div class="m-logo__image drawer__logo">
+        <div class="fc m-logo__image drawer__logo">
           <img src="{% static '/images/hellou-quick-white.svg' %}" alt="quickhellou logo">
         </div>
-        <div class="fc aside__avatar">
-          <img src="/media/{{user.profile.thumbnail}}" alt="user icon">
+        <div class="fc">
+          <div class="aside__avatar avatar" style="background-image:url(/media/{{user.profile.thumbnail}})"></div>
         </div>
         <p class="fc aside__title">{{ user.profile.full_name }}</p>
         <p class="fc aside__subtitle">{{ user.email }}</p>

@@ -31,11 +31,18 @@
 
 {% block content %}
 <div class="flc widgets__top-header">
-          <p>Your communications: {{ communications|length }}</p>
-          <p>Active guests: <span class="active-guests">0</span></p>
-          <a>Change plan for more</a>
-        </div>
-        <div class="fcol widget-list">
+  <p>Your communications: {{ communications|length }}</p>
+  <p>Active guests: <span class="active-guests">0</span></p>
+  <a>Change plan for more</a>
+</div>
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+<div class="fcol widget-list">
           <div class="flc widget-list__header">
             <div class="widget-list__field widget-list__field--id">ID</div>
             <div class="fc widget-list__field widget-list__field--url">URL</div>
@@ -52,6 +59,6 @@
           <div class="fcol view-list__content call-list__content">
             <!-- Call record list. -->      
           </div>
-        </div>
+</div>
 
 {% endblock %}

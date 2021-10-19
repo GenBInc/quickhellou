@@ -1,64 +1,37 @@
 {% spaceless %}
+<script src="{{ video_app_url }}/static/videochat/js/adapter-latest.js"></script>
+<script src="{{ video_app_url }}/static/videochat/js/quickhellou.js" defer></script>
+<link rel="stylesheet" type="text/css" href="{{ video_app_url }}/static/videochat/css/quickhellou.css">
 <div class="qh-root" data-id="{{ widget_id }}" data-url="{{ console_app_url }}" style="opacity:0;">
-<div id="qh_w_frame">
-  <div id="w_test" class="fc qh widget_base" style="width:100px;">
-    <div class="widget-outlook__graphics widget-outlook__graphics--widget">
-      <svg class="outlook--background" width="100" height="100">
-        <circle class="widget-outlook__background-circle outlook--circle" cx="50" cy="50" r="50" fill="#{{ background_color }}" />
-      </svg>
-    </div>
-    <div class="fc widget-outlook__alert">
-      <svg class="outlook--background" width="100" height="100">
-        <circle class="outlook__circle-red" cx="12.5" cy="12.5" r="12.5" fill="#fe2a1c" />
-      </svg>
-      <p class="widget-outlook__alert-text">0</p>
-    </div>
-    <div class="fc widget-outlook__icon">
-      <img src="{{ console_app_url }}{{ icon }}" >
+<div id="qh_w_frame" class="qh-widget-badge js-top">
+  <!-- widget base -->
+  {% include "embed/widget_base.html" %}
+  <!-- widget extension element -->
+  <div id="qh_e_frame" class="qh-widget-ext">
+    <div class="qh qh-widget-ext__content" style="background-color:#{{ background_color }}">
+      <!-- active operator module -->
+      <div class="fcol qh_module qh_module--active-operator">
+        <!-- active operator -> init form -->
+        <div class="fcol qh_submodule qh_submodule--init-form qh-widget-ext__contact-form js-enabled">
+          {% include "embed/active_operator_form.html" %}
+        </div>
+        <!-- active operator -> video -->
+        <div class="fcol qh_submodule qh_submodule--video-chat video-ui__stage ui-view__stage--call-accepted">
+          {% include "embed/video.html" %}
+        </div>
+        <!-- active operator -> rate ux -->
+        <div class="fcol qh_submodule qh_submodule--rate-ux video-ui__stage">
+          {% include "embed/rate_ux.html" %}
+        </div>
+      </div>
+      <!-- inactive operator form -->
+      <div class="qh_module qh_module--inactive-form js-enabled">
+        <div class="contact-form qh-widget-ext__contact-form">
+          {% include "embed/inactive_operator_init_form.html" %}
+        </div>
+      </div>
     </div>
   </div>
 </div>
-<div id="qh_e_frame">
-  <div id="e_test" class="qh widget-extension" style="background-color:#{{ background_color }}">
-    <div class="widget-closer">
-      <svg class="widget-closer__image" viewbox="0, 0, 40, 40">
-        <path class="st0" d="M20.25,0.75c10.77,0,19.5,8.73,19.5,19.5s-8.73,19.5-19.5,19.5s-19.5-8.73-19.5-19.5S9.48,0.75,20.25,0.75z"/>
-        <path class="st1" d="M12.074,29.949L10.925,28.8L28.8,10.925l1.149,1.15L12.074,29.949z"/>
-        <path class="st1" d="M12.074,10.925l-1.149,1.15L28.8,29.949l1.149-1.149L12.074,10.925z"/>
-      </svg>
-    </div>
-    <div class="video-ui">
-      <div class="flc video-ui__stage ui-view__stage--default js-enabled">
-        <button class="widget-extension__button widget-extension__form-text button--video-call" type="submit" >Make a video call</button>
-      </div>
-      <div class="flc video-ui__stage ui-view__stage--call-request">
-        <p class="iu-view__info" >Awaiting assistant response..</p>
-        <div class="f1"></div>
-        <button class="widget-extension__button widget-extension__form-text button--cancel-video-call" type="submit" >Cancel</button>
-      </div>
-      <div class="fcol video-ui__stage ui-view__stage--call-accepted">
-        <p class="iu-view__info" >Assistant is waiting for you under the address:</p>
-        <a class="iu-view__video-app-url" target="_blank" ></a>
-      </div>
-    </div>
-    <p class="widget__form-label">Leave contact information.</p>
-    <div class="fcol">
-      <div class="fcol contact-form">
-        <div class="fcol widget-extension__form-group">
-          <label for="email" class="widget-extension__label widget-extension__form-text" >Email</label>
-          <input id="email" name="email" class="widget-extension__input">
-        </div>
-        <div class="fcol widget-extension__form-group">
-          <label for="phone-input" class="widget-extension__label widget-extension__form-text">Phone Number</label>
-          <input id="phone-input" name="phone" class="widget-extension__input">
-        </div>
-        <div class="fcol widget-extension__form-group">
-          <label for="message-input" class="widget-extension__label widget-extension__form-text">Message</label>
-          <textarea id="message-input" name="message" class="widget-extension__input"></textarea>
-        </div>
-      </div>
-      </div>
-    <button class="widget-extension__button submit widget-extension__form-text">Send Message</button>
-  </div>
-</div>
+{% include "embed/bottom_bar.html" %}
 {% endspaceless %}

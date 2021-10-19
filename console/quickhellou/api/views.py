@@ -84,7 +84,15 @@ class CommunicationSessionViewSet(viewsets.ModelViewSet):
       communication.status = 3
       communication.save()
     return Response({'result':'ok'})
-
+  
+  @action(detail=True, renderer_classes=[JSONRenderer])
+  def set_rate(self, request, *args, **kwargs):
+    communication_session = self.get_object()
+    rate = int(kwargs['rate'])
+    communication_session.rate = rate
+    communication_session.save()
+    return Response({'result':'ok'})
+  
   @action(detail=True, renderer_classes=[JSONRenderer])
   def pending_sessions(self, request, *args, **kwargs):
     sessions = CommunicationSession.objects.filter(status=1)

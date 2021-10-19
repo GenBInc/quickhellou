@@ -139,7 +139,7 @@
 </head>
 
 <body>
-  <main class="df-col" style="opacity:0;">
+  <div class="main df-col" style="opacity:0;">
   <div class="f1 df-c scheduler overlay--setup-future-talk">
     {% if room_link %}
     <a class="send-invitation__closer overlay__closer-button overlay__closer overlay--setup-future-talk__closer" href="/r/{{ room_id }}" target="_self">
@@ -256,7 +256,7 @@
       <div class="info-div hidden">Some info</div>
       <div class="status-div hidden"></div>
     </footer>
-  </main>
+  </div>
   <div class="loader"></div>
 
   {% if not chromeapp %}

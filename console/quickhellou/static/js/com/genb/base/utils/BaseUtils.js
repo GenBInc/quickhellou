@@ -9,18 +9,18 @@ export class BaseUtils {
    */
   static isObjectDefined(s) {
     try {
-      return typeof s !== "undefined" && s !== null;
+      return typeof s !== 'undefined' && s !== null
     } catch (e) {
-      return false;
+      return false
     }
   }
 
   static isPage(urlName) {
-    const meta = document.querySelector("meta[property='emd:page']");
+    const meta = document.querySelector("meta[property='emd:page']")
     if (BaseUtils.isObjectDefined(meta)) {
-      return meta.attributes.content.value === urlName;
+      return meta.attributes.content.value === urlName
     }
-    return false;
+    return false
   }
 
   /**
@@ -31,10 +31,10 @@ export class BaseUtils {
    * @memberof BaseUtils
    */
   static get hostname() {
-    return window.location.hostname;
+    return window.location.hostname
   }
 
   log(message) {
-    console.log(message);
+    console.log(message)
   }
 }

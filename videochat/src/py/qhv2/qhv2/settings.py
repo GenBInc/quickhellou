@@ -38,6 +38,8 @@ else:
     ALLOWED_HOSTS = []
     VERIFY = False
     HOST_URL = 'localhost'
+	
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # Application definition
 
@@ -48,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'corsheaders',
     'rest_framework',
     'videochat'
 ]
@@ -60,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'qhv2.urls'
@@ -222,3 +226,5 @@ RESPONSE_UNKNOWN_CLIENT = 'UNKNOWN_CLIENT'
 RESPONSE_DUPLICATE_CLIENT = 'DUPLICATE_CLIENT'
 RESPONSE_SUCCESS = 'SUCCESS'
 RESPONSE_INVALID_REQUEST = 'INVALID_REQUEST'
+
+CORS_ORIGIN_ALLOW_ALL = True

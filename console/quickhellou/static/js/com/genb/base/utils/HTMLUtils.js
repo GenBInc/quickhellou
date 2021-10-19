@@ -1,15 +1,12 @@
-import {
-  BaseUtils
-} from "./BaseUtils";
+import { BaseUtils } from './BaseUtils'
 
 /**
- * HTML utilities. 
+ * HTML utilities.
  *
  * @export
  * @class HTMLUtils
  */
 export class HTMLUtils {
-
   /**
    * Gets an element by a selector.
    *
@@ -19,11 +16,11 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static get(selector) {
-    const element = document.querySelector(selector);
+    const element = document.querySelector(selector)
     if (!BaseUtils.isObjectDefined(element)) {
-      console.warn(`HTMLUtils::get Element "${selector}" is not defined.`);
+      console.warn(`HTMLUtils::get Element "${selector}" is not defined.`)
     }
-    return element;
+    return element
   }
 
   /**
@@ -35,8 +32,8 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static exists(cssSelector) {
-    const element = document.querySelector(cssSelector);
-    return BaseUtils.isObjectDefined(element);
+    const element = document.querySelector(cssSelector)
+    return BaseUtils.isObjectDefined(element)
   }
 
   /**
@@ -45,7 +42,7 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static getForm() {
-    return HTMLUtils.get("form");
+    return HTMLUtils.get('form')
   }
 
   /**
@@ -57,7 +54,7 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static getValueByName(name) {
-    return this.get(`*[name="${name}"]`).value;
+    return this.get(`*[name="${name}"]`).value
   }
 
   /**
@@ -69,61 +66,61 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static getInputByName(name) {
-    return this.get(`input[name="${name}"]`);
+    return this.get(`input[name="${name}"]`)
   }
 
   static getInputByClassName(name) {
-    return this.get(`input.${name}`);
+    return this.get(`input.${name}`)
   }
 
   static getSelectByName(name) {
-    return this.get(`select[name="${name}"]`);
+    return this.get(`select[name="${name}"]`)
   }
 
   static getSelectByClassName(name) {
-    return this.get(`select.${name}`);
+    return this.get(`select.${name}`)
   }
 
   static getInputValueByName(name) {
-    return this.getInputByName(name).value;
+    return this.getInputByName(name).value
   }
 
   static getCheckboxValueByName(name) {
-    return this.getInputByName(name).checked ? "true" : "false";
+    return this.getInputByName(name).checked ? 'true' : 'false'
   }
 
   static setInputValueByName(name, value) {
-    const inputElement = this.getInputByName(name);
+    const inputElement = this.getInputByName(name)
     if (BaseUtils.isObjectDefined(inputElement)) {
-      inputElement.value = value;
+      inputElement.value = value
     } else {
-      console.warn(`setInputValueByName:: Element '${name}' is not defined.`);
+      console.warn(`setInputValueByName:: Element '${name}' is not defined.`)
     }
   }
 
   static getSelectValueByName(name) {
-    return this.getSelectByName(name).value;
+    return this.getSelectByName(name).value
   }
 
   static getSelectTextByName(name) {
-    return this.getSelectByName(name).selectedOptions[0].text;
+    return this.getSelectByName(name).selectedOptions[0].text
   }
 
   static setSelectValueByName(name, value) {
-    const selectElement = this.getSelectByName(name);
+    const selectElement = this.getSelectByName(name)
     if (BaseUtils.isObjectDefined(selectElement)) {
-      selectElement.value = value;
+      selectElement.value = value
     } else {
-      console.warn(`setSelectValueByName:: Element '${name}' is not defined.`);
+      console.warn(`setSelectValueByName:: Element '${name}' is not defined.`)
     }
   }
 
   static getInputValueByClassName(name) {
-    return this.getInputByClassName(name).value;
+    return this.getInputByClassName(name).value
   }
 
   static getSelectValueByClassName(name) {
-    return this.getSelectByClassName(name).value;
+    return this.getSelectByClassName(name).value
   }
 
   /**
@@ -135,11 +132,11 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static list(selector) {
-    const elementList = document.querySelectorAll(selector);
+    const elementList = document.querySelectorAll(selector)
     if (!BaseUtils.isObjectDefined(elementList)) {
-      console.warn(`Elements "${selector}" are not defined.`);
+      console.warn(`Elements "${selector}" are not defined.`)
     }
-    return elementList;
+    return elementList
   }
 
   /**
@@ -151,12 +148,12 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static array(selector) {
-    return Array.from(HTMLUtils.list(selector));
+    return Array.from(HTMLUtils.list(selector))
   }
 
   static firstToHTMLElement(elements) {
     if (elements.length > 0) {
-      return elements[0];
+      return elements[0]
     }
   }
 
@@ -168,8 +165,8 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static activate(selector) {
-    const element = HTMLUtils.get(selector);
-    HTMLUtils.activateElement(element);
+    const element = HTMLUtils.get(selector)
+    HTMLUtils.activateElement(element)
   }
 
   /**
@@ -180,8 +177,8 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static activateElement(element) {
-    console.log("activateElement", element);
-    element.classList.add("js-active");
+    console.log('activateElement', element)
+    element.classList.add('js-active')
   }
 
   /**
@@ -192,8 +189,8 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static deactivate(selector) {
-    const element = HTMLUtils.get(selector);
-    HTMLUtils.deactivateElement(element);
+    const element = HTMLUtils.get(selector)
+    HTMLUtils.deactivateElement(element)
   }
 
   /**
@@ -204,9 +201,9 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static deactivateElement(element) {
-    console.log("deactivateElement", element);
+    console.log('deactivateElement', element)
 
-    element.classList.remove("js-active");
+    element.classList.remove('js-active')
   }
 
   /**
@@ -218,13 +215,13 @@ export class HTMLUtils {
    */
   static copyToClipboard(s) {
     function listener(e) {
-      e.clipboardData.setData("text/html", s);
-      e.clipboardData.setData("text/plain", s);
-      e.preventDefault();
+      e.clipboardData.setData('text/html', s)
+      e.clipboardData.setData('text/plain', s)
+      e.preventDefault()
     }
-    document.addEventListener("copy", listener);
-    document.execCommand("copy");
-    document.removeEventListener("copy", listener);
+    document.addEventListener('copy', listener)
+    document.execCommand('copy')
+    document.removeEventListener('copy', listener)
   }
 
   /**
@@ -236,8 +233,42 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static decodeHtml(html) {
-    var txt = document.createElement("textarea");
-    txt.innerHTML = html;
-    return txt.value;
+    var txt = document.createElement('textarea')
+    txt.innerHTML = html
+    return txt.value
+  }
+
+  /**
+   * Removes all event listeners frpom an html object.
+   *
+   * @param {string} className the class name
+   */
+  static removeAllEventListeners(className) {
+    const element = document.querySelector(className)
+    const newElement = element.cloneNode(element)
+    element.parentNode.replaceChild(newElement, element)
+  }
+
+  static setCookie(name, value, days = 7, path = '/') {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString()
+    document.cookie =
+      name +
+      '=' +
+      encodeURIComponent(value) +
+      '; expires=' +
+      expires +
+      '; path=' +
+      path
+  }
+
+  static getCookie(name) {
+    return document.cookie.split('; ').reduce((r, v) => {
+      const parts = v.split('=')
+      return parts[0] === name ? decodeURIComponent(parts[1]) : r
+    }, '')
+  }
+
+  static deleteCookie(name, path) {
+    this.setCookie(name, '', -1, path)
   }
 }

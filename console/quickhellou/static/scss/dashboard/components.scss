@@ -38,14 +38,17 @@
   font-size: .75rem;
 }
 
-.aside__avatar {
-  margin-bottom:20px;
+.avatar {
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  background-position: center;
 }
 
-.aside__avatar img {
-  width:80px;
-  height:80px;
-  border-radius:50%;
+.aside__avatar {
+  width: 80px;
+  height: 80px;
+  margin-bottom:20px;
 }
 
 .aside__version {
@@ -353,6 +356,11 @@ a.link--unpause-widget {
   right:0;
   bottom:0;
   z-index: 1;
+  display: none;
+}
+
+.widget-outlook__alert.js-active {
+  display: block;
 }
 
 .widget-outlook__alert-text {
@@ -432,7 +440,7 @@ a.call-list__button--deactivate {
   background-color: azure;
 }
 
-.widget-extension {
+.qh-widget-ext__content {
   position: relative;
   background-color:$color--lawn-green;
   padding:10px;
@@ -453,12 +461,12 @@ a.call-list__button--deactivate {
   color:white;
 }
 
-.widget-extension p {
+.qh-widget-ext__content p {
   color:white;
   font-size:.875rem;
 }
 
-.widget-extension a {
+.qh-widget-ext__content a {
   color:$color--apricot;
 }
 
@@ -476,12 +484,12 @@ a.call-list__button--deactivate {
 }
 
 .video-ui__stage,
-.video-ui {
+.qh_module--active-operator {
   display:none;
 } 
 
 .video-ui__stage.js-enabled,
-.video-ui.js-enabled {
+.qh_module--active-operator.js-enabled {
   display: flex;
 }
 

@@ -1,6 +1,7 @@
 import { DashboardView } from './DashboardView'
 import { WebSocketService } from '../base/services/WebSocketService'
 import { ApplicationSettings } from '../base/model/ApplicationSettings'
+import { QhUtils } from '../base/utils/QhUtils'
 
 /**
  * Pages dashboard view.
@@ -22,8 +23,8 @@ export class CallsView extends DashboardView {
     const connectingTextElement = this.uiGet('.com-list__text--connecting')
     const deactivateButtonElement = this.uiGet('.call-list__button--deactivate')
     activateButtonElement.addEventListener('click', () => {
-      this.webSocketService.registerAdminList(
-        this.user.uuid,
+      this.webSocketService.registerOperatorsList(
+        this.adminId,
         this.user.widget_list
       )
       activateButtonElement.classList.add('js-hidden')
@@ -32,7 +33,7 @@ export class CallsView extends DashboardView {
 
     deactivateButtonElement.addEventListener('click', () => {
       this.webSocketService.deregisterList(
-        this.user.uuid,
+        this.adminId,
         this.user.widget_list
       )
       activateButtonElement.classList.remove('js-hidden')
@@ -81,9 +82,8 @@ export class CallsView extends DashboardView {
       this.onListUsers(e)
     })
 
-    this.webSocketService.addListener('callRequest', (userName, widgetId) => {
-      console.log('callRequest', userName, widgetId)
-      this.onCallRequest(userName, widgetId)
+    this.webSocketService.addListener('callRequest', (userWSId, userId, widgetId) => {
+      this.onCallRequest(userWSId, userId, widgetId)
     })
 
     this.webSocketService.addListener('callCancel', (recordId) => {
@@ -128,7 +128,6 @@ export class CallsView extends DashboardView {
    */
   async clearDroppedSessions(userList) {
     let isChanged = false
-
     let pendingSessionsString = await this.apiService.getPendingSessions()
     const pendingSessions = JSON.parse(pendingSessionsString)
     pendingSessions.forEach((pendingSession) => {
@@ -151,8 +150,8 @@ export class CallsView extends DashboardView {
    * @param {string} widgetUuid
    * @memberof CallsView
    */
-  onCallRequest(calleeName, widgetUuid) {
-    this.createCall(calleeName, widgetUuid)
+  onCallRequest(userWSId, userId, widgetUuid) {
+    this.createCall(userWSId, userId, widgetUuid)
   }
 
   /**
@@ -167,25 +166,25 @@ export class CallsView extends DashboardView {
 
   /**
    * Creates a call record.
-   *
-   * @param {string} calleeName
-   * @param {string} widgetUuid
-   * @memberof CallsView
+   * 
+   * @param {*} userWSId the user ID in the WebSocket
+   * @param {*} userId the user ID
+   * @param {*} widgetUuid the widget UUID
    */
-  async createCall(calleeName, widgetUuid) {
+  async createCall(userWSId, userId, widgetUuid) {
     this.showPageLoader()
     try {
       // create communication
       let comRecordString = await this.apiService.createCall(
-        calleeName,
-        widgetUuid
+        userWSId,
+        userId,
+        widgetUuid,
       )
       const comRecord = JSON.parse(comRecordString)
       // as the communication is newly created, get the first session record
       const sessionRecord = comRecord.sessions[0]
       // pass communication session to remote widget
-      this.passCommunicationRecord(calleeName, comRecord.widget, sessionRecord)
-
+      this.passCommunicationRecord(userWSId, comRecord.widget, sessionRecord)
       this.loadCallViewList()
       this.hidePageLoader()
     } catch (e) {
@@ -266,13 +265,13 @@ export class CallsView extends DashboardView {
     await this.apiService.setComSessionAsAccepted(sessionId)
     // notify remote client
     this.webSocketService.acceptCallRequest(
-      this.user.uuid,
+      this.adminId,
       comRecord.caller_name,
       comRecord.widget,
       uuid
     )
     // open video chat application
-    this.openVideoChat(`${this.appSettings.videoAppUrl}/r/${uuid}`)
+    this.openVideoChat(`${this.appSettings.videoAppUrl}/r/${uuid}?init=instant`)
     this.loadCallViewList()
     this.hidePageLoader()
   }
@@ -295,7 +294,7 @@ export class CallsView extends DashboardView {
     await this.apiService.setComSessionAsRejected(sessionId)
     // notify remote client
     this.webSocketService.rejectCallRequest(
-      this.user.uuid,
+      this.adminId,
       comRecord.caller_name,
       comRecord.widget
     )
@@ -311,10 +310,10 @@ export class CallsView extends DashboardView {
    * @param {string} comSession the com session
    * @memberof CallsView
    */
-  passCommunicationRecord(calleeName, roomId, comSession) {
+  passCommunicationRecord(userWSId, roomId, comSession) {
     this.webSocketService.passCommunicationRecord(
-      this.user.uuid,
-      calleeName,
+      this.adminId,
+      userWSId,
       roomId,
       comSession
     )
@@ -328,5 +327,9 @@ export class CallsView extends DashboardView {
    */
   openVideoChat(url) {
     window.open(url, '_blank')
+  }
+
+  get adminId() {
+    return QhUtils.createUserId(this.user.id)
   }
 }

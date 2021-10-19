@@ -2,6 +2,7 @@ import { EventEmitter } from '../../genb/base/service/EventEmitter'
 import { WebSocketService } from '../base/services/WebSocketService'
 import { ApiService } from '../base/services/ApiService'
 import { ApplicationSettings } from '../base/model/ApplicationSettings'
+import { QhUtils } from '../base/utils/QhUtils'
 
 /**
  * The widget collective service.
@@ -60,6 +61,10 @@ export class WidgetService extends EventEmitter {
                 this.onCallRejected()
               })
 
+              this.webSocketService.addListener('error', (error) => {
+                this.emit('error', error)
+              })
+
               this.webSocketService.addListener(
                 'communicationRecord',
                 (record) => {
@@ -75,6 +80,17 @@ export class WidgetService extends EventEmitter {
                 this.user.uuid,
                 this.widget.uuid
               )
+
+              // attach videochat events
+              console.log()
+              const videochatProxy = videochat.proxy()
+              videochatProxy.addEventListener('close', () => {
+                this.onCloseVideoChat()
+              })
+              videochatProxy.addEventListener('remote_hangup', () => {
+                this.onCloseVideoChat()
+              })
+
               resolve()
             })
           })
@@ -86,6 +102,13 @@ export class WidgetService extends EventEmitter {
   }
 
   /**
+   * Handles videochat session close. 
+   */
+  onCloseVideoChat() {
+    this.emit('videochatSessionClose')
+  }
+
+  /**
    * Requests a call with an active admin.
    *
    * @memberof WidgetService
@@ -94,6 +117,7 @@ export class WidgetService extends EventEmitter {
     const adminUuid = this.admins[0]
     this.webSocketService.requestCall(
       this.user.uuid,
+      this.user.userId,
       adminUuid,
       this.widget.uuid
     )
@@ -133,6 +157,13 @@ export class WidgetService extends EventEmitter {
   onListUsers(a) {
     this.admins = a
     this.emit('listUsers', a)
+
+    if (a.length) {
+      const adminId = QhUtils.extractUserId(a[0])
+      this.getUser(adminId).then((user) => {
+        this.emit('admin', user)
+      })
+    }
   }
 
   /**
@@ -142,8 +173,8 @@ export class WidgetService extends EventEmitter {
    * @memberof WidgetService
    */
   async onCallAccepted(uuid) {
-    const url = `${this.appSettings.videoAppUrl}/r/${uuid}`
-    this.emit('callAccepted', url)
+    // const url = `${this.appSettings.videoAppUrl}/r/${uuid}`
+    this.emit('callAccepted', uuid)
   }
 
   /**
@@ -179,6 +210,21 @@ export class WidgetService extends EventEmitter {
   }
 
   /**
+   * Sends start video chat form.
+   *
+   * @param {object} fieldSet
+   * @returns the response
+   */
+  sendStartVideoChatForm(fieldSet) {
+    const url = `${this.consoleAppUrl}/dashboard/widget_active_admin/${
+      this.widgetId
+    }/${encodeURIComponent(window.location.hostname.toLowerCase())}/${
+      this.widget.uuid
+    }`
+    return this.apiService.postAsXMLHttpRequest(fieldSet, url)
+  }
+
+  /**
    * Installs the widget.
    *
    * @returns true if installed correctly.
@@ -190,5 +236,54 @@ export class WidgetService extends EventEmitter {
       this.widget.uuid
     }`
     return this.apiService.postAsXMLHttpRequest({}, url)
+  }
+
+  /**
+   * Gets user by user ID.
+   * 
+   * @param {*} userId 
+   * @returns 
+   */
+  async getUser(userId) {
+    let userJson = await this.apiService.getUserById(userId)
+    return JSON.parse(userJson)
+  }
+
+  /**
+   * Sets communication session rate.
+   * 
+   * @param {number} rate 
+   * @returns 
+   */
+  async rateComSession(rate) {
+    let resultJson = await this.apiService.rateComSession(this.sessionRecord.id, rate)
+    return JSON.parse(resultJson)
+  }
+
+  /**
+   * Sets local user ID.
+   * 
+   * @param {number} userId 
+   */
+  setUserId(userId) {
+    this.user.userId = userId
+  }
+
+  /**
+   * Gets an active operator init form template.
+   * 
+   * @returns the template string
+   */
+  async getActiveOperatorInitForm() {
+    return await this.apiService.getAsXMLHttpRequest(`${this.consoleAppUrl}/dashboard/active_operator_init_form`)
+  }
+
+  /**
+   * Gets an inactive operator init form template.
+   *  
+   * @returns the template string 
+   */
+  async getInactiveOperatorInitForm() {
+    return await this.apiService.getAsXMLHttpRequest(`${this.consoleAppUrl}/dashboard/inactive_operator_init_form`)
   }
 }

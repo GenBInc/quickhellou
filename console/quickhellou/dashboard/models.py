@@ -11,6 +11,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from accounts.models import User
+from quickhellou import settings
 
 
 def full_domain_validator(hostname):
@@ -45,6 +46,7 @@ def full_domain_validator(hostname):
 
 class ClientBoard(models.Model):
   """Client board."""
+  id = models.AutoField(primary_key=True)
   active = models.BooleanField(default=True)
   creation_date = models.DateTimeField(auto_now_add=True)
   uuid = models.UUIDField(default=uuid.uuid4, editable=False)  
@@ -66,6 +68,7 @@ class WidgetTemplate(models.Model):
         (DEFAULT_COLOR_1, 'DEFAULT_COLOR_1'),
         (DEFAULT_COLOR_2, 'DEFAULT_COLOR_2'),
     )
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256, blank=False)
     code = models.TextField(default=None, null=True, blank=True)
     active = models.BooleanField(default=True)
@@ -86,7 +89,7 @@ class Widget(models.Model):
         (LANG_DE, 'German'),
         (LANG_PL, 'Polish'),
     )
-    
+    id = models.AutoField(primary_key=True)
     name = models.CharField(
         max_length=256, default="Your Domain", blank=False)
     url = models.CharField(max_length=512, validators=[
@@ -126,6 +129,7 @@ class Communication(models.Model):
         (STATUS_CLOSED, 'closed'),
         (STATUS_COMPLETED, 'completed'),
     )
+    id = models.AutoField(primary_key=True)
     client_board = models.ForeignKey('ClientBoard', default=None, blank=True, null=True, on_delete=models.CASCADE)
     caller_name = models.CharField(max_length=256, default="anonymous_guest", blank=False)
     caller = models.ForeignKey(User, default=None, null=True, on_delete=models.CASCADE)
@@ -180,11 +184,12 @@ class CommunicationSessionManager(models.Manager):
     def pending_sessions(self, communication_id):
         return self.get_queryset().pending_sessions(communication_id)
 
-    def create_message(self, communication, message):
-        session = self.model(communication = communication,)
-        session.type = 2
+    def create_message(self, communication, attendant, message, type):
+        session = self.model(communication = communication, attendant = attendant)
+        session.type = type
         session.status = 2
         session.content = message
+        session.rate = 0
         session.save(using=self._db)
         return session
 
@@ -214,6 +219,7 @@ class CommunicationSession(models.Model):
         (STATUS_COMPLETED, 'completed'),
     )
 
+    id = models.AutoField(primary_key=True)
     communication = models.ForeignKey(Communication, default=None, null=True, on_delete=models.CASCADE)
     attendant = models.ForeignKey(User, default=None, null=True, on_delete=models.CASCADE)
     creation_time = models.DateTimeField(auto_now_add=True)    
@@ -229,7 +235,7 @@ class CommunicationSession(models.Model):
         choices=STATUS_CHOICES,
         default=STATUS_CREATED,
     )
-
+    rate = models.SmallIntegerField(default=0)
     objects = CommunicationSessionManager()
 
     def type_verbose(self):
@@ -241,6 +247,16 @@ class CommunicationSession(models.Model):
     def modifier_name(self):
         if self.attendant is not None:
             return self.attendant.profile.full_name
+        else:
+            return self.communication.caller_name
+        return None 
+
+    def contact_data(self):
+        if self.attendant is not None:
+            if self.attendant.email and settings.FAKE_EMAIL_DOMAIN not in self.attendant.email:
+                return self.attendant.email
+            elif self.attendant.profile.phone:
+                return self.attendant.profile.phone
         else:
             return self.communication.caller_name
         return None 
@@ -269,6 +285,7 @@ class ApplicationSettingsManager(models.Manager):
     
 
 class ApplicationSettings(models.Model):
+    id = models.AutoField(primary_key=True)
     property=models.CharField(max_length=256, default='', blank=False)
     value=models.CharField(max_length=256, default='', blank=False)
    

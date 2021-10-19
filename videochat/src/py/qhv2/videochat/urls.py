@@ -18,6 +18,7 @@ urlpatterns = [
     path('policy', views.PolicyPage.as_view(), name='policy'),
     path('scheduler', views.SchedulerPage.as_view(), name='scheduler'),
     path('full', views.FullRoomPage.as_view(), name='full'),
+    path('widget_test', views.WidgetTest.as_view(), name='widget_test'),
     path('join/<slug:room_id>', views.JoinPage.as_view(), name='join'),
     path('leave/<slug:room_id>/<slug:client_id>', views.LeavePage.as_view(), name='leave'),
     path('bye/<slug:room_id>/<slug:client_id>', views.ByePage.as_view(), name='leave'),

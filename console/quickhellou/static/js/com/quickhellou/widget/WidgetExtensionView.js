@@ -1,4 +1,5 @@
 import { UIView } from '../../genb/base/controller/UIView'
+import { HTMLUtils } from '../../genb/base/utils/HTMLUtils'
 
 /**
  * Embed widget view.
@@ -18,7 +19,9 @@ export class WidgetExtensionView extends UIView {
   constructor(service) {
     super()
     this.service = service
+    this.element = this.uiGet('#qh_e_frame')
     this.isExpanded = false
+    this.videoMode = false
   }
 
   /**
@@ -27,8 +30,12 @@ export class WidgetExtensionView extends UIView {
    * @memberof WidgetExtensionView
    */
   async init() {
+    this.service.addListener('admin', (adminUser) => {
+      this.onAdmin(adminUser)
+    })
+
     this.service.addListener('listUsers', (a) => {
-      this.updateVideoCallUi(a.length > 0)
+      this.updateVideoCallUi(!!a.length)
     })
 
     this.service.addListener('callAccepted', (e) => {
@@ -39,19 +46,28 @@ export class WidgetExtensionView extends UIView {
       this.onCallRejected()
     })
 
-    const makeVideoCallButton = this.uiGet('.button--video-call')
-    makeVideoCallButton.addEventListener('click', () => {
-      this.requestCall()
+    this.service.addListener('videochatSessionClose', () => {
+      this.onHangUpVideoChat()
     })
 
-    const cancelVideoCallButton = this.uiGet('.button--cancel-video-call')
-    cancelVideoCallButton.addEventListener('click', () => {
-      this.cancelCall()
-    })
-
-    const collapseViewButtonElement = this.uiGet('.widget-closer')
-    collapseViewButtonElement.addEventListener('click', () => {
-      this.collapseView()
+    const rateButtons = this.uiArray('.qh_rate-star')
+    rateButtons.forEach((rateButton, index) => {
+      rateButton.addEventListener('click', () => {
+        for (let a = 1; a <= rateButtons.length; a++) {
+          const button = this.uiGet(`.qh_rate-star:nth-child(${a})`)
+          button.classList.remove('js-enabled,js-disabled')
+          if (a <= index + 1) {
+            button.classList.add('js-enabled')
+            button.classList.remove('js-disabled')
+          } else {
+            button.classList.remove('js-enabled')
+            button.classList.add('js-disabled')
+          }
+        }
+        this.service.rateComSession(index + 1).then((resolve) => {
+          console.log('resolve', resolve)
+        })
+      })
     })
     this.initContactForm()
   }
@@ -62,9 +78,87 @@ export class WidgetExtensionView extends UIView {
    * @memberof WidgetExtensionView
    */
   initContactForm() {
-    const submitButtonElement = this.uiGet('.widget-extension__button.submit')
-    submitButtonElement.addEventListener('click', () => {
-      this.sendContactForm()
+    const sendButtonClassName = '.widget-extension__button--send'
+    if (this.uiExists(sendButtonClassName)) {
+      HTMLUtils.removeAllEventListeners(sendButtonClassName)
+      const submitButtonElement = this.uiGet(sendButtonClassName)
+      submitButtonElement.addEventListener('click', () => {
+        this.sendContactForm()
+      })
+    }
+    this.initInactiveOperatorCloser()
+  }
+
+  /**
+   * Initializes active operator init form.
+   */
+  initStartVideoChatForm() {
+    const startVideoButtonClassName = '.widget-extension__button--video-call'
+    if (this.uiExists(startVideoButtonClassName)) {
+      HTMLUtils.removeAllEventListeners(startVideoButtonClassName)
+      const submitButtonElement = this.uiGet(startVideoButtonClassName)
+      submitButtonElement.addEventListener('click', () =>
+        this.sendStartVideoChatForm()
+      )
+    }
+    this.initActiveOperatorCloser()
+  }
+
+  /**
+   * Initializes closer button.
+   * 
+   * @memberof WidgetExtensionView
+   */
+  initActiveOperatorCloser() {
+    if (this.uiExists('.qh_widget-closer--active-operator')) {
+      HTMLUtils.removeAllEventListeners('.qh_widget-closer--active-operator')
+      const collapseViewButtonElement = this.uiGet('.qh_widget-closer--active-operator')
+      collapseViewButtonElement.addEventListener('click', () => {
+        this.collapseAndReinitActiveOperatorInitForm()
+      })
+    }
+  }
+
+  /**
+   * Initializes inactive operator form closer.
+   * 
+   * @memberof WidgetExtensionView
+   */
+  initInactiveOperatorCloser() {
+    if (this.uiExists('.qh_widget-closer--inactive-operator')) {
+      HTMLUtils.removeAllEventListeners('.qh_widget-closer--inactive-operator')
+      const collapseViewButtonElement = this.uiGet('.qh_widget-closer--inactive-operator')
+      collapseViewButtonElement.addEventListener('click', () => {
+        this.collapseAndReinitInactiveOperatorInitForm()
+      })
+    }
+  }
+
+  /**
+   * Collapses view and reinits active operator form.
+   * 
+   * @memberof WidgetExtensionView
+   */
+  collapseAndReinitActiveOperatorInitForm() {
+    this.deactivateVideoMode()
+    // TODO: fix videochat reinitialization and enable active operator form
+    this.service.getActiveOperatorInitForm().then((html) => {
+      document.querySelector('.qh_video-ui_replace').innerHTML = html
+      this.activateActiveOperatorInitForm()
+      this.collapseView()
+    })
+  }
+
+  /**
+   * Collapses view and reinits inactive operator form.
+   * 
+   * @memberof WidgetExtensionView
+   */
+  collapseAndReinitInactiveOperatorInitForm() {
+    this.service.getInactiveOperatorInitForm().then((html) => {
+      document.querySelector('.contact-form').innerHTML = html
+      this.initContactForm()
+      this.collapseView()
     })
   }
 
@@ -75,14 +169,73 @@ export class WidgetExtensionView extends UIView {
    */
   sendContactForm() {
     const fieldSet = {
-      email: document.querySelector('input[name=email]').value,
-      phone: document.querySelector('input[name=phone]').value,
+      name: document.querySelector('.qh_module--inactive-form input[name=name]')
+        .value,
+      email_or_phone: document.querySelector(
+        '.qh_module--inactive-form input[name=email_or_phone]'
+      ).value,
       message: document.querySelector('textarea[name=message]').value,
     }
-    this.service.sendContactForm(fieldSet).then((response) => {
-      document.querySelector('.contact-form').innerHTML = response
-    }).catch((reason) => {
-      console.log('reason', reason)
+    this.service
+      .sendContactForm(fieldSet)
+      .then((response) => {
+        document.querySelector('.contact-form').innerHTML = response
+        this.initContactForm()
+      })
+      .catch((reason) => {
+        console.log('reason', reason)
+      })
+  }
+
+  /**
+   * Sends start video chat form.
+   */
+  sendStartVideoChatForm() {
+    const fieldSet = {
+      name: document.querySelector('.qh_active-user-form__input[name=name]')
+        .value,
+      email_or_phone: document.querySelector(
+        '.qh_active-user-form__input[name=email_or_phone]'
+      ).value,
+    }
+    console.log('sendStartVideoChatForm', fieldSet)
+    this.service
+      .sendStartVideoChatForm(fieldSet)
+      .then((response) => {
+        document.querySelector('.qh_video-ui_replace').innerHTML = response
+        if (this.uiExists('.qh_com-status')) {
+          const resultElement = this.uiGet('.qh_com-status')
+          const status = resultElement.dataset.status
+          const userId = resultElement.dataset.userid
+          this.service.setUserId(userId)
+          if (status === 'ok') {
+            this.requestCall()
+          }
+        } else {
+          this.initStartVideoChatForm()
+        }
+      })
+      .catch((reason) => {
+        console.log('reason', reason)
+      })
+  }
+
+  /**
+   * Handles admin user.
+   *
+   * @param {object} adminUser
+   */
+  onAdmin(adminUser) {
+    this.adminUser = adminUser
+    const adminNameElement = this.uiGet('.active-user__admin-name')
+    const firstName = adminUser.full_name.split(' ')[0]
+    adminNameElement.innerHTML = firstName
+  }
+
+  setThumbnails(thumbnailPath) {
+    const adminThumbnailElements = this.uiArray('.active-user-form__thumbnail')
+    adminThumbnailElements.forEach((adminThumbnailElement) => {
+      adminThumbnailElement.style.backgroundImage = `url(${this.service.consoleAppUrl}/media/${thumbnailPath})`
     })
   }
 
@@ -106,9 +259,7 @@ export class WidgetExtensionView extends UIView {
    */
   expandView() {
     this.isExpanded = true
-    window.parent.document
-      .getElementById('qh_e_frame')
-      .classList.add('js-expanded')
+    this.element.classList.add('js-expanded')
   }
 
   /**
@@ -118,22 +269,26 @@ export class WidgetExtensionView extends UIView {
    */
   collapseView() {
     this.isExpanded = false
-    window.parent.document
-      .getElementById('qh_e_frame')
-      .classList.remove('js-expanded')
+    this.element.classList.remove('js-expanded')
+    this.deactivateVideoMode()
   }
 
   /**
    * Enables video call UI when number if any admin is active.
    *
-   * @param {boolean} force
+   * @param {boolean} anyOperatorActive
    * @memberof WidgetExtensionView
    */
-  updateVideoCallUi(force) {
-    const videoUiElement = this.uiGet('.video-ui')
-    videoUiElement.classList.toggle('js-enabled', force)
-    if (!force) {
+  updateVideoCallUi(anyOperatorActive) {
+    const activeOperatorElement = this.uiGet('.qh_module--active-operator')
+    activeOperatorElement.classList.toggle('js-enabled', anyOperatorActive)
+    const inactiveOperatorForm = this.uiGet('.qh_module--inactive-form')
+    inactiveOperatorForm.classList.toggle('js-enabled', !anyOperatorActive)
+    if (!anyOperatorActive) {
       this.activateCallDefaultStage()
+    } else if (!this.videoMode) {
+      this.activateActiveOperatorInitForm()
+      this.bottomBarView.collapseView()
     }
   }
 
@@ -144,7 +299,6 @@ export class WidgetExtensionView extends UIView {
    */
   requestCall() {
     this.service.requestCall()
-    this.activateCallRequestStage()
   }
 
   /**
@@ -163,10 +317,10 @@ export class WidgetExtensionView extends UIView {
    * @param {string} url
    * @memberof WidgetExtensionView
    */
-  onCallAccepted(url) {
-    const urlElement = this.uiGet('.iu-view__video-app-url')
-    urlElement.innerHTML = urlElement.href = url
-    this.activateCallAcceptedStage()
+  onCallAccepted(roomId) {
+    const urlElement = this.uiGet('meta[name=room_id]')
+    urlElement.setAttribute('content', roomId)
+    this.activateVideoChat()
   }
 
   /**
@@ -175,7 +329,7 @@ export class WidgetExtensionView extends UIView {
    * @memberof WidgetExtensionView
    */
   onCallRejected() {
-    this.activateCallDefaultStage()
+    this.collapseAndReinitActiveOperatorInitForm()
   }
 
   /**
@@ -185,8 +339,9 @@ export class WidgetExtensionView extends UIView {
    */
   activateCallDefaultStage() {
     this.deactivateAllStages()
-    const stageElement = this.uiGet('.ui-view__stage--default')
+    const stageElement = this.uiGet('.qh_module--inactive-form')
     stageElement.classList.add('js-enabled')
+    this.deactivateVideoMode()
   }
 
   /**
@@ -194,32 +349,97 @@ export class WidgetExtensionView extends UIView {
    *
    * @memberof WidgetExtensionView
    */
-  activateCallRequestStage() {
+  activateActiveOperatorInitForm() {
     this.deactivateAllStages()
-    const stageElement = this.uiGet('.ui-view__stage--call-request')
+    const stageElement = this.uiGet('.qh_submodule--init-form')
     stageElement.classList.add('js-enabled')
+    this.initStartVideoChatForm()
   }
 
   /**
-   * Activates video call accepted UI stage.
+   * Activates the rate UX form submdule.
    *
    * @memberof WidgetExtensionView
    */
-  activateCallAcceptedStage() {
+  activateRateUxForm() {
     this.deactivateAllStages()
-    const stageElement = this.uiGet('.ui-view__stage--call-accepted')
+    const stageElement = this.uiGet('.qh_submodule--rate-ux')
     stageElement.classList.add('js-enabled')
   }
 
   /**
-   * Deactivates all stages.
+   * Activates video chat.
+   *
+   * @memberof WidgetExtensionView
+   */
+  activateVideoChat() {
+    this.deactivateAllStages()
+    const stageElement = this.uiGet('.qh_submodule--video-chat')
+    stageElement.classList.add('js-enabled')
+    this.activateVideoMode()
+
+    const joinButton = this.uiGet('.confirm-join-button')
+    joinButton.addEventListener('click', () => {
+      this.onJoinVideoChat()
+    })
+
+    const hangupButton = this.uiGet('.button--hangup')
+    hangupButton.addEventListener('click', () => {
+      this.onHangUpVideoChat()
+    })
+  }
+
+  onJoinVideoChat() {}
+
+  /**
+   * Handles call close.
+   */
+  onHangUpVideoChat() {
+    this.deactivateAllStages()
+    const stageElement = this.uiGet('.qh_submodule--rate-ux')
+    stageElement.classList.add('js-enabled')
+    this.activateVideoMode()
+  }
+
+  /**
+   * Deactivates all submodules.
    *
    * @memberof WidgetExtensionView
    */
   deactivateAllStages() {
-    const stageElements = this.uiArray('.video-ui__stage')
+    const stageElements = this.uiArray('.qh_submodule')
     stageElements.forEach((stageElement) => {
       stageElement.classList.remove('js-enabled')
     })
+    this.deactivateVideoMode()
+  }
+
+  /**
+   * Sets bottom bar element.
+   *
+   * @param {WidgetExtensionView} extensionView
+   */
+  setBottomBar(bottomBarView) {
+    this.bottomBarView = bottomBarView
+  }
+
+  /**
+   * Activates video mode.
+   *
+   * @memberof WidgetExtensionView
+   */
+  activateVideoMode() {
+    this.element.classList.add('qh_video-mode')
+    this.videoMode = true  
+  }
+
+  /**
+   * Deactivates video mode.
+   *
+   * @memberof WidgetExtensionView
+   */
+  deactivateVideoMode() {
+    this.element.classList.remove('qh_video-mode')
+    this.videoMode = false
   }
 }

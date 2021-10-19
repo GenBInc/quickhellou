@@ -5,6 +5,8 @@ from rest_framework.serializers import (CharField, IntegerField)
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from quickhellou import settings
+
 import time
 import uuid
 
@@ -23,13 +25,14 @@ class CommunicationSessionSerializer(serializers.ModelSerializer):
 class CommunicationSerializer(serializers.ModelSerializer):
     id = IntegerField(label='id', read_only=True)
     widget_uuid = CharField(write_only=True)
+    caller_id = IntegerField(write_only=True)
     widget = serializers.SlugRelatedField(read_only=True, many=False, slug_field='uuid')
     sessions = CommunicationSessionSerializer(source='communicationsession_set', \
         many=True, read_only=True)
 
     class Meta:
         model = Communication
-        fields = ('id', 'caller_name', 'widget', 'sessions', 'widget_uuid')
+        fields = ('id', 'caller_name', 'caller_id', 'widget', 'sessions', 'widget_uuid')
         read_only_fields = ('sessions',)
 
 
@@ -43,23 +46,22 @@ class CommunicationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         
         widget = Widget.objects.get(uuid=validated_data['widget_uuid'])
-        
-        #create user
-        ts = int(time.time())
-        client_user = User.objects.create(email = '{0}@genb.com'.format(uuid.uuid5(uuid.NAMESPACE_DNS, \
-            str(ts))))
-        client_user.set_as_guest()
-        client_user.client_board = widget.client_board
-        client_user.save()
-        
-        # create user profile
-        profile = Profile.objects.create_profile(client_user, validated_data['caller_name'])
-        
-        #create communication
-        communication = Communication.objects.create(caller=client_user, \
-            caller_name=validated_data['caller_name'], client_board = widget.client_board, \
-                widget=widget)
-        communication.save()
+
+        # get user
+        try:
+            client_user = User.objects.get(id=validated_data['caller_id'])
+        except:
+            print('no user by given id', validated_data['caller_id'])
+
+        # get or create communication
+        try:
+            communication = Communication.objects.get(caller=client_user)
+            communication.caller_name = validated_data['caller_name']
+            communication.save()
+        except:
+            communication = Communication.objects.create(caller=client_user, caller_name=validated_data['caller_name'], \
+            client_board=widget.client_board, widget=widget)
+            communication.save()
 
         # create communication session
         comSession = CommunicationSession.objects.create_session(communication)
@@ -76,9 +78,9 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     client_board_id = CharField(source='client_board.uuid')
-    
+    thumbnail = CharField(source='profile.thumbnail')
+    full_name = CharField(source='profile.full_name')
     widget_list = serializers.SerializerMethodField()
-  
     def get_widget_list(self, instance):
         ids = []
         a = instance.widget_user.all()
@@ -88,4 +90,4 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = User
-        fields = ('id', 'uuid', 'widget_list', 'client_board_id')
+        fields = ('id', 'uuid', 'full_name', 'thumbnail', 'widget_list', 'client_board_id')

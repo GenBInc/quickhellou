@@ -1,11 +1,22 @@
+import re
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.validators import URLValidator, validate_email
+from django.core.validators import URLValidator, RegexValidator, validate_email
 from accounts.models import User, Profile
 from .models import (Widget, WidgetTemplate, Communication, CommunicationSession, \
     ApplicationSettings)
 
-
+class EmailOrPhoneField(forms.CharField):
+    def validate(self, value):
+        """Check if value consists of either email or phone number."""
+        super().validate(value)
+        if '@' in value:
+            return validate_email(value)
+        phone_regex = re.compile('^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
+        if phone_regex.match(value):
+            return True
+        else:
+            raise ValidationError('Incorrect email or phone format.')
 class ProfileMetaForm(forms.Form):
     callpage_url_no_http = forms.CharField()
 
@@ -70,9 +81,13 @@ class WidgetForm(forms.ModelForm):
         model = Widget
         fields = ('name', 'url', 'lang', 'template' , 'header', 'content')
 
+class WidgetActiveUserForm(forms.Form):
+    name = forms.CharField(max_length=256, required=True)
+    email_or_phone = EmailOrPhoneField(max_length=256,required=True)
+
 class WidgetExtensionViewForm(forms.Form):
-    email = forms.CharField(max_length=256, validators=[validate_email], required=True)
-    phone = forms.CharField(max_length=64, required=True)
+    name = forms.CharField(max_length=256, required=True)
+    email_or_phone = EmailOrPhoneField(max_length=256,required=True)
     message = forms.CharField(widget=forms.Textarea(), required=True)
 
 class ApplicationSettingsForm(forms.Form):

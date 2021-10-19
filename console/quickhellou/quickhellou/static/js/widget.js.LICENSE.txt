@@ -8,15 +8,23 @@
 
 /*! ../../../genb/base/service/FormService */
 
+/*! ../../../genb/base/utils/BaseUtils */
+
+/*! ../../../genb/base/utils/StringUtils */
+
 /*! ../../genb/base/controller/UIView */
 
 /*! ../../genb/base/service/EventEmitter */
+
+/*! ../../genb/base/utils/HTMLUtils */
 
 /*! ../base/model/ApplicationSettings */
 
 /*! ../base/services/ApiService */
 
 /*! ../base/services/WebSocketService */
+
+/*! ../base/utils/QhUtils */
 
 /*! ../model/ComSessionStatus */
 
@@ -38,6 +46,8 @@
 
 /*! ./assertThisInitialized.js */
 
+/*! ./com/quickhellou/widget/WidgetBottomBarView */
+
 /*! ./com/quickhellou/widget/WidgetExtensionView */
 
 /*! ./com/quickhellou/widget/WidgetService */
@@ -57,6 +67,8 @@
 /*! @babel/runtime/helpers/classCallCheck */
 
 /*! @babel/runtime/helpers/createClass */
+
+/*! @babel/runtime/helpers/defineProperty */
 
 /*! @babel/runtime/helpers/getPrototypeOf */
 
@@ -90,6 +102,10 @@
   !*** ./js/com/genb/base/controller/UIView.js ***!
   \***********************************************/
 
+/*!***********************************************!*\
+  !*** ./js/com/genb/base/utils/StringUtils.js ***!
+  \***********************************************/
+
 /*!*************************************************!*\
   !*** ./js/com/genb/base/service/FormService.js ***!
   \*************************************************/
@@ -100,6 +116,10 @@
 
 /*!**************************************************!*\
   !*** ./js/com/genb/base/service/EventEmitter.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./js/com/quickhellou/base/utils/QhUtils.js ***!
   \**************************************************/
 
 /*!***************************************************!*\
@@ -121,6 +141,10 @@
 /*!*********************************************************!*\
   !*** ../../node_modules/regenerator-runtime/runtime.js ***!
   \*********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./js/com/quickhellou/widget/WidgetBottomBarView.js ***!
+  \**********************************************************/
 
 /*!**********************************************************!*\
   !*** ./js/com/quickhellou/widget/WidgetExtensionView.js ***!
@@ -168,6 +192,10 @@
 
 /*!***********************************************************************!*\
   !*** ../../node_modules/@babel/runtime/helpers/esm/classCallCheck.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ../../node_modules/@babel/runtime/helpers/esm/defineProperty.js ***!
   \***********************************************************************/
 
 /*!***********************************************************************!*\

@@ -1,0 +1,47 @@
+{
+  "name": "web_application",
+  "version": "0.9.0",
+  "description": "Quick Hellou Web Application",
+  "scripts": {
+    "watch": "webpack --watch --env.NODE_ENV=development --mode=development",
+    "production": "webpack --env.NODE_ENV=production --mode=production"
+  },
+  "license": "",
+  "author": "GenB",
+  "devDependencies": {
+    "@types/karma": "^3.0.8",
+    "@types/pikaday": "^1.7.4",
+    "@types/service_worker_api": "0.0.9",
+    "@types/webrtc": "0.0.26",
+    "ajv": "^6.12.2",
+    "autoprefixer": "^9.7.6",
+    "caniuse-lite": "^1.0.30001052",
+    "copy-webpack-plugin": "^5.1.1",
+    "css-loader": "^3.5.3",
+    "eslint-config-webrtc": ">=1.0.0",
+    "fibers": "^4.0.3",
+    "mini-css-extract-plugin": "^0.9.0",
+    "node-sass": "^4.14.1",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "pikaday": "^1.8.0",
+    "postcss-loader": "^3.0.0",
+    "sass": "^1.26.5",
+    "sass-loader": "^8.0.2",
+    "style-loader": "^1.2.1",
+    "terser-webpack-plugin": "^2.3.6",
+    "travis-multirunner": "^4.6.0",
+    "ts-loader": "^7.0.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.43.0",
+    "webpack-auto-inject-version": "^1.2.2",
+    "webpack-cli": "^3.3.11",
+    "webpack-shell-plugin": "^0.5.0",
+    "webrtc-adapter": "^8.0.0"
+  },
+  "dependencies": {
+    "eslint": "^7.31.0",
+    "expose-loader": "^1.0.3",
+    "prettier": "^2.3.2",
+    "typescript-eslint": "^0.0.1-alpha.0"
+  }
+}

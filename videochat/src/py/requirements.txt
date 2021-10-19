@@ -8,3 +8,4 @@ redis
 oauth2client
 Django==3.2.5
 djangorestframework
+django-cors-headers

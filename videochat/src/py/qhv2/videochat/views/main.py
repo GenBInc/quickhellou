@@ -62,7 +62,7 @@ class JoinPage(View):
       }))
   def generate_uuid(self):
       user_agent = self.request.headers['User-Agent']
-      key = generate_random(8) + str(self.request.COOKIES['_ga'])
+      key = generate_random(8)
       return str(uuid.uuid3(uuid.NAMESPACE_DNS, key))
   def write_room_parameters(self, room_id, client_id, sessions, messages):
       params = get_room_parameters(
@@ -795,6 +795,8 @@ def get_room_parameters(request, room_id, client_id, sessions):
     bypass_join_confirmation = 'BYPASS_JOIN_CONFIRMATION' in os.environ and \
         os.environ['BYPASS_JOIN_CONFIRMATION'] == 'True'
 
+    host_url = settings.HOST_URL
+
     params = {
         'error_messages': error_messages,
         'warning_messages': warning_messages,
@@ -809,6 +811,7 @@ def get_room_parameters(request, room_id, client_id, sessions):
         'include_rtstats_js': '',
         'wss_url': wss_url,
         'wss_post_url': wss_post_url,
+        'host_url': host_url,
         'bypass_join_confirmation': json.dumps(bypass_join_confirmation),
         'version_info': json.dumps(get_version_info())
     }

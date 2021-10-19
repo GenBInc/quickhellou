@@ -5,6 +5,8 @@ import ast
 import datetime
 import io
 import os
+import re
+import hashlib
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -20,7 +22,8 @@ from accounts.models import Profile, User
 from .forms import (ApplicationSettingsForm, AssignedWidgetsForm,
                     AssigneesForm, CommunicationForm, ProfileForm,
                     ProfileMetaForm, UserForm, WidgetExtensionViewForm,
-                    WidgetForm, WidgetTemplateForm, CommunicationSessionForm)
+                    WidgetForm, WidgetTemplateForm, CommunicationSessionForm,
+                    WidgetActiveUserForm)
 from .models import (ApplicationSettings, Communication, CommunicationSession,
                      Widget, WidgetTemplate)
 
@@ -325,7 +328,6 @@ def client_user_edit_view(request, user_id=None):
         profile_meta_form = ProfileMetaForm(request.POST)
         widgets_form = AssignedWidgetsForm(request.POST)
         if user_form.is_valid() and profile_form.is_valid() and widgets_form.is_valid():
-            print(profile_form.cleaned_data['thumbnail'])            
             client_user = user_form.save()
             client_user.is_admin = True
             profile_form.save(profile_form.cleaned_data['full_name'].strip(), client_user)
@@ -437,19 +439,21 @@ def create_widget_embed_script(widget):
             line = line.format(widget_id=widget.id, uuid=widget.uuid, console_app_url=ApplicationSettings.objects.get_console_app_url())
             code += line
     return code
-    
+
 def create_widget_content_script(widget):
     template_params = {'widget_id':widget.id, 'uuid':str(widget.uuid), 'console_app_url':ApplicationSettings.objects.get_console_app_url(),
+            'video_app_url':ApplicationSettings.objects.get_video_app_url(),
             'background_color':widget.template.background_color, 'icon':widget.template.icon.url}
     template_code = render_to_string('embed/widget_content.html', template_params)
     
     widget_source_file = open(os.path.join(settings.STATIC_ROOT, 'js/embed/widget_content_script.js'), 'r', encoding='utf-8')
     widget_source = widget_source_file.readlines()
-   
+    
+
     code = ''
     if widget is not None:        
         for line in widget_source:
-            line = line.format(template_code=template_code, console_app_url=ApplicationSettings.objects.get_console_app_url())
+            line = line.format(template_code=template_code, console_app_url=ApplicationSettings.objects.get_console_app_url(), video_app_url=ApplicationSettings.objects.get_video_app_url())
             code += line
     return code
 
@@ -501,6 +505,15 @@ def install(request, widget_id, domain, uuid):
     return render(request, 'embed/install.html', {'status': status, 'result': result})
 
 
+def test_widget(request):
+    return render(request, 'embed/test_widget_v2.html', {})
+
+def active_operator_init_form(request):
+    return render(request, 'embed/active_operator_init_form.html', {})
+
+def inactive_operator_init_form(request):
+    return render(request, 'embed/inactive_operator_init_form.html', {})
+
 def widget_embed_view(request, widget_id, hostname, uuid):
     widget = Widget.objects.get(id=widget_id, uuid=uuid)
     
@@ -526,6 +539,8 @@ def widget_extension_embed_view(request, widget_id, hostname, uuid):
         raise Http404
     
     domain_match = hostname == widget.url
+
+    user_id = None
     
     if widget is not None and domain_match and not widget.is_installed:
         widget.is_installed = True
@@ -533,38 +548,56 @@ def widget_extension_embed_view(request, widget_id, hostname, uuid):
 
     if request.method == 'POST':
         form = WidgetExtensionViewForm(request.POST)
-        print(form)
         if form.is_valid():
-            clientEmail = form.cleaned_data['email']
-            clientPhone = form.cleaned_data['phone']
+            clientName = form.cleaned_data['name']
+            clientEmailOrPhone = form.cleaned_data['email_or_phone']
             clientMessage = form.cleaned_data['message']
             
-            #create or update user
+            clientEmail = ''
+            clientPhone = ''
+            
+            if '@' in clientEmailOrPhone:
+                clientEmail = clientEmailOrPhone
+            else:
+                clientEmail = hashlib.md5(str(datetime.datetime.now()).encode('utf-8')).hexdigest() + '@' + settings.FAKE_EMAIL_DOMAIN
+            
+            phone_regex = re.compile('^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
+            if phone_regex.match(clientEmailOrPhone):
+                clientPhone = clientEmailOrPhone
+            print('clientEmail', clientEmail)
+            # get or create user
             try:
                 client_user = User.objects.get(email=clientEmail)
             except:
+                print('no such user')
                 client_user = User.objects.create(email=clientEmail, client_board=widget.client_board)
                 client_user.save()
-
-            # create user profile
+            user_id = client_user.id
+            # get or create user profile
             try:
                 profile = Profile.objects.get(user=client_user)
             except:
                 profile = Profile.objects.create(user=client_user)
+                profile.full_name = clientName
                 profile.phone = clientPhone
                 profile.save()
 
-            # update related communication
-            communication = Communication.objects.create(caller=client_user, caller_name=clientEmail, \
-                client_board=widget.client_board, status=2, widget=widget)
-            communication.save()
+
+            # get or create communication
+            try:
+                communication = Communication.objects.get(caller=client_user)
+            except:
+                communication = Communication.objects.create(caller=client_user, caller_name=clientName, \
+                    client_board=widget.client_board, status=2, widget=widget)
+                communication.save()
 
             # create communication session
-            session = CommunicationSession.objects.create_message(communication=communication, message = clientMessage)
+            session = CommunicationSession.objects.create_message(communication=communication, attendant=client_user, message = clientMessage, type = 2)
 
             #send message
             subject = 'QuickHellou - Message'
             recipients = [ApplicationSettings.objects.get_admin_email_address()]
+            # if email address is empty prevent sending email
             email_params = {
                 'email': clientEmail, 'phone': clientPhone, 'message': clientMessage}
             try:
@@ -572,13 +605,17 @@ def widget_extension_embed_view(request, widget_id, hostname, uuid):
                 send_email_notification(subject, recipients, email_params, 'dashboard/email/widget-message-admin.txt', 'dashboard/email/widget-message-admin.html')    
                 
                 #send message notification to client
-                recipients = [clientEmail]
-                send_email_notification(subject, recipients, email_params, 'dashboard/email/widget-message-client.txt', 'dashboard/email/widget-message-client.html')    
+                if settings.FAKE_EMAIL_DOMAIN not in clientEmail:
+                    recipients = [clientEmail]
+                    send_email_notification(subject, recipients, email_params, 'dashboard/email/widget-message-client.txt', 'dashboard/email/widget-message-client.html')    
                 messages.success(
-                    request, "Your message has been sent.")
+                    request, "Thank You!")
+                messages.success(
+                    request, "Message sent successfully.")
             except Exception as e:
-                print(e)
-                messages.error(request, "Error sending email. Please try again later.")
+                print('e', e)
+                messages.error(request, "Error sending email.")
+                messages.error(request, "Please try again later.")
             #set success message
             form = WidgetExtensionViewForm()
     else:
@@ -586,6 +623,69 @@ def widget_extension_embed_view(request, widget_id, hostname, uuid):
     return render(request, 'embed/widget_form_response.html', {
         'widget': widget,
         'form': form,
+        'user_id': user_id,
+        'hostname': hostname})
+
+@csrf_exempt
+def widget_active_admin(request, widget_id, hostname, uuid):
+    widget = Widget.objects.get(id=widget_id, uuid=uuid)
+    
+    if not widget:
+        raise Http404
+    
+    domain_match = hostname == widget.url
+
+    status = ''
+    user_id = None
+    
+    if widget is not None and domain_match and not widget.is_installed:
+        widget.is_installed = True
+        widget.save()
+
+    if request.method == 'POST':
+        form = WidgetActiveUserForm(request.POST)
+        if form.is_valid():
+            clientName = form.cleaned_data['name']
+            clientEmailOrPhone = form.cleaned_data['email_or_phone']
+            
+            clientEmail = ''
+            clientPhone = ''
+            
+            if '@' in clientEmailOrPhone:
+                clientEmail = clientEmailOrPhone
+            else:
+                clientEmail = '{0}@{1}'.format(hashlib.md5(str(datetime.datetime.now()).encode('utf-8')).hexdigest(), \
+                    settings.FAKE_EMAIL_DOMAIN)
+            
+            phone_regex = re.compile('^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
+            if phone_regex.match(clientEmailOrPhone):
+                clientPhone = clientEmailOrPhone
+            print('attempt to get user', clientEmail)
+            # create or update user
+            try:
+                client_user = User.objects.get(email=clientEmail)
+            except Exception as e:
+                client_user = User.objects.create(email=clientEmail, client_board=widget.client_board)
+                client_user.save()
+            user_id = client_user.id
+            # create user profile
+            try:
+                profile = Profile.objects.get(user=client_user)
+            except:
+                profile = Profile.objects.create(user=client_user)
+                profile.full_name = clientName
+                profile.phone = clientPhone
+                profile.save()
+            status = 'ok'  
+            #set success message
+            form = WidgetActiveUserForm()
+    else:
+        form = WidgetActiveUserForm()
+    return render(request, 'embed/active_user_form_response.html', {
+        'widget': widget,
+        'form': form,
+        'status': status,
+        'user_id': user_id,
         'hostname':hostname})
 
 def send_email_notification(subject, recipients, email_params, text_template_url, html_template_url):

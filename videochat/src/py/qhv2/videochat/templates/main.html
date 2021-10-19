@@ -14,7 +14,9 @@
   <meta name="image" content="{% static 'videochat/images/icons/android-icon-192x192.png' %}">
   <meta name="name" content="Quick Hellou">
   <meta name="mobile-web-app-capable" content="yes">
-
+  <meta name="room_id" content="{{ room_id }}">
+  <meta name="init" content="">
+  
   <base target="_blank">
 
   <title>Quick Hellou by GenB, Inc. | video chat made easy</title>
@@ -132,7 +134,7 @@
   </script>
 </head>
 <body>
-  <main style="opacity:0;">
+  <div class="main" style="opacity:0;">
     <!-- Video View -->
     <div class="df df-col view view--videos hidden"> 
       <div class="hidden">
@@ -292,34 +294,8 @@
       </footer>
       <!-- end of VIDEO FOOTER -->
       </div>
-  </main>
+  </div>
   <div class="loader"></div>
-
-  {% if not chromeapp %}
-    <script type="text/javascript">
-      var inlineLoadingParams = {
-        errorMessages: {{ error_messages }},
-        isLoopback: {{ is_loopback }},
-        warningMessages: {{ warning_messages }},
-        roomType:"room",  
-  {% if room_id %}
-        roomID: '{{ room_id }}',
-        roomLink: '{{ room_link }}',
-  {% endif %}
-        mediaConstraints: {{ media_constraints | safe }},
-        offerOptions: {{ offer_options | safe }},
-        peerConnectionConfig: {{ pc_config | safe }},
-        peerConnectionConstraints: {{ pc_constraints | safe }},
-        iceServerRequestUrl: '{{ ice_server_url }}',
-        iceServerTransports: '{{ ice_server_transports }}',
-        wssUrl: '{{ wss_url }}',
-        wssPostUrl: '{{ wss_post_url }}',
-        bypassJoinConfirmation: {{ bypass_join_confirmation }},
-        versionInfo: {{ version_info }},
-        additionalParam: '{{ additional_param }}',
-      };
-    </script>
-  {% endif %}
 </body>
 
 </html>

@@ -2,6 +2,7 @@ const path = require("path")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const TerserPlugin = require("terser-webpack-plugin")
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin")
+const CopyPlugin = require('copy-webpack-plugin')
 
 // eslint-disable-next-line func-names
 var getPath = function (pathToFile) {
@@ -40,6 +41,10 @@ module.exports = () => {
           presets: ["@babel/preset-env"],
         },
       },
+      {
+        test: /\.svg/,
+        type: 'asset/resource'
+      }
     ],
   }
 
@@ -72,6 +77,13 @@ module.exports = () => {
       filename: "[name].css",
       chunkFilename: "[name].css",
     }),
+	new CopyPlugin({
+      patterns: [
+        { from: './js/embed/widget_content_script.js', to: '../quickhellou/static/js/embed' },
+        { from: './js/widget.js', to: '../quickhellou/static/js' },
+        { from: './js/dashboard.js', to: '../quickhellou/static/js' },
+      ]
+    })
   ]
   config.entry = {
     "js/mdc": "./js/mdc.js",
@@ -81,7 +93,7 @@ module.exports = () => {
     "js/dashboard": "./js/dashboard.js",
     "js/widget": "./js/widget.js",
     "js/embed/widget_content_script": "./js/embed/widget_content_script.js",
-    "css/dashboard": "./scss/dashboard.scss",
+    "css/dashboard": "./scss/dashboard.scss"
   }
   config.output = {
     path: getPath("quickhellou/quickhellou/static"),

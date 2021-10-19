@@ -58,6 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             ("is_default_editor","is default editor"),            
             ("is_default_viewer","is default viewer"),            
             ("is_guest","is guest"),)
+    id = models.AutoField(primary_key=True)
     username = None
     email = models.EmailField(_('email address'), unique=True)
     client_board = models.ForeignKey(
@@ -68,6 +69,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+    NAMESPACE_USER = '6c4ff860-bbc2-492d-bbb2-d966846fe21a'
 
     objects = UserManager()
 
@@ -180,9 +183,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def uuid(self):
-        return uuid.uuid5(uuid.NAMESPACE_DNS, self.email)
+        return uuid.uuid5(uuid.NAMESPACE_DNS, str(self.id))
     
-    def permission_required(*perms):
+    def permission_required(self, *perms):
         return user_passes_test(lambda u: any(u.has_perm(perm) for perm in perms), login_url='/login')
 
 class ProfileManager(models.Manager):
@@ -196,6 +199,7 @@ class ProfileManager(models.Manager):
 class Profile(models.Model):
     """ User Profile """
 
+    id = models.AutoField(primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=256, blank=False)
     phone = models.CharField(max_length=32, blank=False)

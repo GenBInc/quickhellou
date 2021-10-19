@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+FAKE_EMAIL_DOMAIN = 'fake.org'
 
 # Application definition
 
@@ -153,3 +156,5 @@ AUTH_USER_MODEL = 'accounts.User'
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
+
+CORS_ALLOW_ALL_ORIGINS = True

@@ -1,6 +1,6 @@
-import { FormService } from "../../../genb/base/service/FormService"
+import { FormService } from '../../../genb/base/service/FormService'
 
-import { ComSessionStatus } from "../model/ComSessionStatus"
+import { ComSessionStatus } from '../model/ComSessionStatus'
 
 /**
  * Application REST API facade.
@@ -90,9 +90,10 @@ export class ApiService extends FormService {
    * @returns
    * @memberof ApiService
    */
-  createCall(callerName, widgetUuid) {
+  createCall(userWSId, userId, widgetUuid) {
     const fieldSet = {
-      caller_name: callerName,
+      caller_name: userWSId,
+      caller_id: userId,
       widget_uuid: widgetUuid,
     }
     return this.postAsXMLHttpRequest(
@@ -102,10 +103,22 @@ export class ApiService extends FormService {
   }
 
   /**
+   * 
+   * @param {*} id the communication session ID 
+   * @param {number} rate the session rate
+   * @returns 
+   */
+  rateComSession(id, rate) {
+    return this.getAsXMLHttpRequest(
+      `${this.baseUrl}/api/comSessions/rate/${id}/${rate}`
+    )
+  }
+
+  /**
    * Cancels call record.
    *
-   * @param {*} callerName
-   * @param {*} widgetUuid
+   * @param {string} callerName
+   * @param {string} widgetUuid
    * @returns
    * @memberof ApiService
    */
@@ -118,7 +131,7 @@ export class ApiService extends FormService {
   /**
    * Gets UUID from string.
    *
-   * @param {*} str
+   * @param {string} str
    * @memberof ApiService
    */
   getUuid(str) {
@@ -169,6 +182,7 @@ export class ApiService extends FormService {
    * @memberof ApiService
    */
   setComSessionAsCompleted(id) {
+    console.log('setComSessionAsCompleted')
     return this.setComSessionStatus(id, ComSessionStatus.STATUS_COMPLETED)
   }
 
@@ -180,6 +194,7 @@ export class ApiService extends FormService {
    * @memberof ApiService
    */
   setComSessionAsEnqueued(id) {
+    console.log('setComSessionAsEnqueued')
     return this.setComSessionStatus(id, ComSessionStatus.STATUS_ENQUEUED)
   }
 

@@ -24,6 +24,10 @@ com_session = views.CommunicationSessionViewSet.as_view({
     'get': 'set_status',
 }, renderer_classes=[JSONRenderer])
 
+rate_com_session = views.CommunicationSessionViewSet.as_view({
+    'get': 'set_rate',
+}, renderer_classes=[JSONRenderer])
+
 pending_sessions = views.CommunicationSessionViewSet.as_view({
     'get': 'pending_sessions',
 }, renderer_classes=[JSONRenderer])
@@ -33,5 +37,6 @@ urlpatterns = [
   path('communications/create-with-session/', com_create_with_session, name='com-create-with-session'),
   path('comSessions/room-uuid/<slug:str>', room_uuid, name='com-sessions-room-uuid'),
   path('comSessions/status/<int:pk>/<int:status>', com_session, name='com-session'),
+  path('comSessions/rate/<int:pk>/<int:rate>', rate_com_session, name='rate-com-session'),
   path('comSessions/pending/<slug:uuid>', pending_sessions, name='pending-sessions'),
 ]
