@@ -54,27 +54,43 @@
             
             <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">
               <input type="text" id="assistant-input" class="mdc-text-field__input form__text"
-                value="{{ session.modifier_name }}" disabled>
+                value="{{ client_user.profile.full_name }}" disabled>
               <div class="mdc-notched-outline">
                 <div class="mdc-notched-outline__leading"></div>
                 <div class="mdc-notched-outline__notch">
-                  <label for="assistant-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Notifier</label>
+                  <label for="assistant-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Customer Name</label>
                 </div>
                 <div class="mdc-notched-outline__trailing"></div>
               </div>
             </div>
 
+            {% if 'fake.org' not in client_user.email %}
             <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">
               <input type="text" id="assistant-input" class="mdc-text-field__input form__text"
-                value="{{ session.contact_data }}" disabled>
+                value="{{ client_user.email }}" disabled>
               <div class="mdc-notched-outline">
                 <div class="mdc-notched-outline__leading"></div>
                 <div class="mdc-notched-outline__notch">
-                  <label for="assistant-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Contact</label>
+                  <label for="assistant-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Email Address</label>
                 </div>
                 <div class="mdc-notched-outline__trailing"></div>
               </div>
             </div>
+            {% endif %}
+
+            {% if client_user.profile.phone_number is not None %}
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">
+              <input type="text" id="assistant-input" class="mdc-text-field__input form__text"
+                value="{{ client_user.profile.phone_number }}" disabled>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="assistant-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Phone Number</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            {% endif %}
 
             <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">
               <input type="text" id="assistant-input" class="mdc-text-field__input form__text"

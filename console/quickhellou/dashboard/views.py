@@ -85,6 +85,7 @@ def communication_edit_view(request, communication_id=None):
     if communication_id is not None:
         communication = Communication.objects.get(id=communication_id)
         com_sessions = communication.communicationsession_set.all()
+        client_user = User.objects.get(id=communication.caller_id)
     else:
         return redirect('dashboard:communications')
     if request.method == 'POST':
@@ -98,12 +99,15 @@ def communication_edit_view(request, communication_id=None):
             return redirect('dashboard:communications')
     return render(request, 'dashboard/communication_edit.html', {
         'communication' : communication,
+        'client_user' : client_user,
         'com_sessions' : com_sessions,
     })
 
 def communication_session_edit_view(request, session_id=None):
     if (session_id is not None):
         session = CommunicationSession.objects.get(id=session_id)
+        communication = session.communication
+        client_user = User.objects.get(id=communication.caller_id)
     form = CommunicationSessionForm(request.POST)
     if form.is_valid():
         instance = form.save()
@@ -115,6 +119,7 @@ def communication_session_edit_view(request, session_id=None):
             request, 'Communication session has been saved.')
     return render(request, 'dashboard/communication_session_edit.html', {
         'session' : session,
+        'client_user' : client_user,
         'statuses': CommunicationSession.STATUS_CHOICES,
     })
 

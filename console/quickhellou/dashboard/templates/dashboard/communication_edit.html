@@ -35,7 +35,7 @@
   <div class="wrapper wrapper--thin wrapper--profile">
     <div class="fcol">
       <div class="form--settings__form-container form-container">
-        <p class="form__header">Client information</p>
+        <p class="form__header">Customer information</p>
         <form class="fcol site-form form--profile" 
         action="{% url 'dashboard:communication_edit' communication_id=communication.id %}" method="post"
           novalidate enctype="multipart/form-data">
@@ -58,11 +58,11 @@
             {% endif %}
             <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
               <input type="text" id="name-input" name="caller_name" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
-                value="{{ communication.caller_name }}" >
+                value="{{ client_user.profile.full_name }}" >
               <div class="mdc-notched-outline">
                 <div class="mdc-notched-outline__leading"></div>
                 <div class="mdc-notched-outline__notch">
-                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Notifier</label>
+                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Name</label>
                 </div>
                 <div class="mdc-notched-outline__trailing"></div>
               </div>
@@ -74,7 +74,7 @@
               <li class="mdc-list-item" tabindex="0">
                 <a class="mdc-list-item__text" href="{% url 'dashboard:communication_session_edit' session_id=com_session.id %}">
                   <span class="mdc-list-item__primary-text"><b>#{{ com_session.id }}</b> {{ com_session.type_verbose|title }}</span>
-                  <span class="mdc-list-item__secondary-text">{{ com_session.status_verbose|title }} by {{ com_session.modifier_name }}</span>
+                  <span class="mdc-list-item__secondary-text">{{ com_session.status_verbose|title }} by <i>{{ com_session.communication.caller.profile.full_name }}</i> on {{ com_session.creation_time|date:"m/d/Y H:i:s" }}</span>
                 </a>
               </li>
             {% empty %}
