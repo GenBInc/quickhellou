@@ -350,7 +350,6 @@ export class Call extends FormService {
    */
   public hangup(async: boolean): Promise<any> {
     this.startTime = null
-    Log.log('Call::hangup', async)
     if (!!this.localStream) {
       if (typeof this.localStream.getTracks === 'undefined') {
         this.localStream.stop()

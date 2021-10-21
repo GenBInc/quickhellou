@@ -230,6 +230,51 @@ export class ColliderService extends FormService {
     })
   }
 
+  /**
+   * Deregisters client form the websocket service.
+   * 
+   * @param roomId the room ID
+   * @param clientId the client ID
+   * @returns the deregistration result
+   */
+  deregister(roomId: string, clientId: string) {
+    return new Promise((resolve, reject) => {
+      
+      if (!BaseUtils.isObjectDefined(this.roomId)) {
+        Log.log('ERROR: Missing roomID. Stopping client registration.')
+        return reject({ code: 0, message: 'Missing roomID.' })
+      }
+
+      if (!BaseUtils.isObjectDefined(this.clientID)) {
+        Log.log('ERROR: Missing clientID. Stopping client registration.')
+        return reject({ code: 0, message: 'Missing clientID.' })
+      }
+
+      if (!this.websocket || this.websocket.readyState !== WebSocket.OPEN) {
+        return reject({ code: 0, message: 'WebSocket not open.' })
+      }
+
+      const registerMessage: object = {
+        cmd: 'deregister',
+        roomid: roomId,
+        roomtype: this.ROOM_TYPE,
+        clientid: clientId,
+      }
+
+      this.websocket.send(JSON.stringify(registerMessage))
+      this.registered = false
+
+      return resolve({ code: 1, message: 'Signaling channel deregistered.' })
+    })
+  }
+
+  /**
+   * Destroy application transmitter.
+   */
+  destroy() {
+    this.dispatchEvent(ColliderServiceEvent.DESTROY)
+  }
+
   public touch(roomId: string, clientID: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.roomId = roomId

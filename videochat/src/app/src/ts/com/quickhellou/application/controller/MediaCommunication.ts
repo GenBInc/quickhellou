@@ -18,6 +18,7 @@ import { MediaConstraints } from '../model/MediaConstraints'
 import { MediaEvent } from '../model/MediaEvent'
 import { VideoTrackEventOptions } from '../model/VideoTrackEventOptions'
 import { ShareScreenEvent } from '../model/ShareScreenEvent'
+import { AppControllerEvent } from '../../AppControllerEvent'
 
 /**
  * MediaCommunication and media facade.
@@ -62,6 +63,12 @@ export class MediaCommunication extends EventDispatcherService {
     this.colliderService.addEventListener(
       ColliderServiceEvent.CLOSE,
       this.onColliderChannelClose,
+      this
+    )
+
+    this.colliderService.addEventListener(
+      ColliderServiceEvent.DESTROY,
+      this.onColliderChannelDestroy,
       this
     )
 
@@ -203,7 +210,6 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public hangupCall(async: boolean) {
-    Log.log('MediaCommunication::hangupCall', async)
     this.call.hangup(async)
   }
 
@@ -553,6 +559,15 @@ export class MediaCommunication extends EventDispatcherService {
    */
   private onColliderChannelClose(): void {
     this.dispatchEvent(CallEvent.WEBSOCKET_CLOSED)
+  }
+
+  /**
+   * Destroy application transmitter.
+   */
+  onColliderChannelDestroy(): void {
+    console.log('onColliderChannelDestroy')
+    // this.hangupCall(false)
+    this.dispatchEvent(ColliderServiceEvent.DESTROY)
   }
 
   /**

@@ -201,6 +201,16 @@ html {
 
   .widget-outlook__graphics {
     position: relative;
+    box-shadow: 0px 0px 10px 3px lightgrey;
+    border-radius: 50%;
+  }
+
+  .qh_widget-bottom__msg--switchable {
+    display: none;
+  }
+
+  .qh_widget-bottom__msg--switchable.js-active {
+    display: flex;
   }
 
   .widget-outlook__alert {
@@ -516,7 +526,6 @@ html {
   
   .widget-bottom__txt {
     font-size:14px;
-    line-height:1em;
     text-align: right;
     width:100%;
   }
@@ -527,7 +536,6 @@ html {
 
   .widget-bottom__button p {
     font-size:1.275rem;
-    line-height:1em;
     color:#08005a;
     pointer-events: none;
     font-weight: 300;

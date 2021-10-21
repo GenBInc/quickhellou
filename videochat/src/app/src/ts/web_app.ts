@@ -8,12 +8,18 @@ import { AppControllerEvent } from './com/quickhellou/AppControllerEvent'
 
 import 'expose-loader?exposes=videochat!./ComProxy'
 
+let appController: AppController
+
 Log.setEnvironment(environment)
 Log.log(
   `Quick Hellou v. ${version} ${environment} build (webrtc-adapter v. 8.1.0)`
 )
 
 window.addEventListener('load', (): void => {
+  preinit()
+})
+
+const preinit = () => {
   const roomIdElement = document.querySelector('meta[name="room_id"]')
   if (roomIdElement !== null) {
     const roomId = roomIdElement.getAttribute('content')
@@ -25,14 +31,11 @@ window.addEventListener('load', (): void => {
   } else {
     Log.warn('No room parameter.')
   }
-})
+}
 
 const init = (roomId: string, initType: string, videoAppUrl: string) => {
-  const appController: AppController = new AppController(
-    roomId,
-    initType,
-    videoAppUrl
-  )
+  appController = new AppController(roomId, initType, videoAppUrl)
+  Log.log('init', roomId, initType, videoAppUrl)
   appController.addEventListener(
     AppControllerEvent.INITIALIZED,
     (): void => {
@@ -41,8 +44,10 @@ const init = (roomId: string, initType: string, videoAppUrl: string) => {
 
       // remove loader after when the main element is visible
       setTimeout((): void => {
-        const loader: HTMLElement = HTMLUtils.get('div.loader')
-        loader.remove()
+        if (HTMLUtils.exists('div.loader')) {
+          const loader: HTMLElement = HTMLUtils.get('div.loader')
+          loader.remove()
+        }
       }, 1000)
 
       // service workers facade
@@ -50,6 +55,16 @@ const init = (roomId: string, initType: string, videoAppUrl: string) => {
     },
     this
   )
+
+  appController.addEventListener(
+    AppControllerEvent.DESTROY,
+    (): void => {
+      appController = null
+      preinit()
+    },
+    this
+  )
+
   appController.init()
 }
 

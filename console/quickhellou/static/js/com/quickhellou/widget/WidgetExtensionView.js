@@ -140,12 +140,13 @@ export class WidgetExtensionView extends UIView {
    * @memberof WidgetExtensionView
    */
   collapseAndReinitActiveOperatorInitForm() {
+    console.log('collapseAndReinitActiveOperatorInitForm')
     this.deactivateVideoMode()
-    // TODO: fix videochat reinitialization and enable active operator form
     this.service.getActiveOperatorInitForm().then((html) => {
       document.querySelector('.qh_video-ui_replace').innerHTML = html
       this.activateActiveOperatorInitForm()
       this.collapseView()
+      this.service.destroyVideoChatApp()
     })
   }
 
@@ -198,7 +199,6 @@ export class WidgetExtensionView extends UIView {
         '.qh_active-user-form__input[name=email_or_phone]'
       ).value,
     }
-    console.log('sendStartVideoChatForm', fieldSet)
     this.service
       .sendStartVideoChatForm(fieldSet)
       .then((response) => {
@@ -323,6 +323,11 @@ export class WidgetExtensionView extends UIView {
     this.activateVideoChat()
   }
 
+  deleteRoomId() {
+    const urlElement = this.uiGet('meta[name=room_id]')
+    urlElement.setAttribute('content', '')
+  }
+
   /**
    * Handles call rejected event.
    *
@@ -395,10 +400,9 @@ export class WidgetExtensionView extends UIView {
    * Handles call close.
    */
   onHangUpVideoChat() {
-    this.deactivateAllStages()
-    const stageElement = this.uiGet('.qh_submodule--rate-ux')
-    stageElement.classList.add('js-enabled')
+    this.activateRateUxForm()
     this.activateVideoMode()
+    this.deleteRoomId()
   }
 
   /**
@@ -441,5 +445,6 @@ export class WidgetExtensionView extends UIView {
   deactivateVideoMode() {
     this.element.classList.remove('qh_video-mode')
     this.videoMode = false
+    // remove connection data from videochat app
   }
 }

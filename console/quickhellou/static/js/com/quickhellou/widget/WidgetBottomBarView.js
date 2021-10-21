@@ -80,6 +80,20 @@ export class WidgetBottomBarView extends UIView {
     } else {
       this.expandView()
     }
+    this.handleDesciptionsOnOperatorListChange(anyOperatorActive)
+  }
+
+  /**
+   * Handles descriptions on operator availability change.
+   *
+   * @param {boolean} anyOperatorActive
+   */
+  handleDesciptionsOnOperatorListChange(anyOperatorActive) {
+    const noOperatorsDescription = this.uiGet('.qh_widget-bottom__msg--no-operators')
+    noOperatorsDescription.classList.toggle('js-active', !anyOperatorActive)
+    const linesDescription = this.uiGet('.qh_widget-bottom__msg--lines')
+    linesDescription.classList.toggle('js-active', anyOperatorActive)
+    // const leaveMessageDescription = this.uiGet('.qh_widget-bottom__msg--leave-message')
   }
 
   /**
@@ -114,7 +128,6 @@ export class WidgetBottomBarView extends UIView {
    * @memberof WidgetBottomBarView
    */
   expandView() {
-    console.log('this.isEnabled()', this.isEnabled())
     if (this.isEnabled()) {
       this.isExpanded = true
       this.element.classList.add('js-active')
@@ -159,7 +172,7 @@ export class WidgetBottomBarView extends UIView {
 
   /**
    * Checks if bottom bar is enabled.
-   * 
+   *
    * @returns true if enabled
    */
   isEnabled() {

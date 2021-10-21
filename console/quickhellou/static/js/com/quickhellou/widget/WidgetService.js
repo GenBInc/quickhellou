@@ -82,12 +82,11 @@ export class WidgetService extends EventEmitter {
               )
 
               // attach videochat events
-              console.log()
-              const videochatProxy = videochat.proxy()
-              videochatProxy.addEventListener('close', () => {
+              this.videochatProxy = videochat.proxy()
+              this.videochatProxy.addEventListener('close', () => {
                 this.onCloseVideoChat()
               })
-              videochatProxy.addEventListener('remote_hangup', () => {
+              this.videochatProxy.addEventListener('remote_hangup', () => {
                 this.onCloseVideoChat()
               })
 
@@ -102,7 +101,16 @@ export class WidgetService extends EventEmitter {
   }
 
   /**
-   * Handles videochat session close. 
+   * Removes connection data in the videochat application.
+   */
+   destroyVideoChatApp() {
+    console.log('destroyVideoChatApp')
+    // this.videochatProxy.deregister(this.user.roomId, this.user.uuid)
+    this.videochatProxy.destroy()
+  }
+
+  /**
+   * Handles videochat session close.
    */
   onCloseVideoChat() {
     this.emit('videochatSessionClose')
@@ -173,7 +181,6 @@ export class WidgetService extends EventEmitter {
    * @memberof WidgetService
    */
   async onCallAccepted(uuid) {
-    // const url = `${this.appSettings.videoAppUrl}/r/${uuid}`
     this.emit('callAccepted', uuid)
   }
 
@@ -184,6 +191,7 @@ export class WidgetService extends EventEmitter {
    */
   onCallRejected() {
     this.emit('callRejected')
+    this.resetVideoChat()
   }
 
   /**
@@ -240,9 +248,9 @@ export class WidgetService extends EventEmitter {
 
   /**
    * Gets user by user ID.
-   * 
-   * @param {*} userId 
-   * @returns 
+   *
+   * @param {*} userId
+   * @returns
    */
   async getUser(userId) {
     let userJson = await this.apiService.getUserById(userId)
@@ -251,19 +259,22 @@ export class WidgetService extends EventEmitter {
 
   /**
    * Sets communication session rate.
-   * 
-   * @param {number} rate 
-   * @returns 
+   *
+   * @param {number} rate
+   * @returns
    */
   async rateComSession(rate) {
-    let resultJson = await this.apiService.rateComSession(this.sessionRecord.id, rate)
+    let resultJson = await this.apiService.rateComSession(
+      this.sessionRecord.id,
+      rate
+    )
     return JSON.parse(resultJson)
   }
 
   /**
    * Sets local user ID.
-   * 
-   * @param {number} userId 
+   *
+   * @param {number} userId
    */
   setUserId(userId) {
     this.user.userId = userId
@@ -271,19 +282,23 @@ export class WidgetService extends EventEmitter {
 
   /**
    * Gets an active operator init form template.
-   * 
+   *
    * @returns the template string
    */
   async getActiveOperatorInitForm() {
-    return await this.apiService.getAsXMLHttpRequest(`${this.consoleAppUrl}/dashboard/active_operator_init_form`)
+    return await this.apiService.getAsXMLHttpRequest(
+      `${this.consoleAppUrl}/dashboard/active_operator_init_form`
+    )
   }
 
   /**
    * Gets an inactive operator init form template.
-   *  
-   * @returns the template string 
+   *
+   * @returns the template string
    */
   async getInactiveOperatorInitForm() {
-    return await this.apiService.getAsXMLHttpRequest(`${this.consoleAppUrl}/dashboard/inactive_operator_init_form`)
+    return await this.apiService.getAsXMLHttpRequest(
+      `${this.consoleAppUrl}/dashboard/inactive_operator_init_form`
+    )
   }
 }

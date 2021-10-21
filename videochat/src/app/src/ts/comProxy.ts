@@ -6,7 +6,6 @@ import { PeerConnectionResponseType } from './com/quickhellou/application/model/
 import { ColliderService } from './com/quickhellou/application/service/ColliderService'
 import { CallEvent } from './com/quickhellou/CallEvent'
 import { Util } from './com/quickhellou/Util'
-
 /**
  * The communication proxy.
  */
@@ -53,6 +52,13 @@ export class ComProxy extends EventDispatcherService {
       this.onColliderChannelClose,
       this
     )
+  }
+
+  destroy(roomId:string, clientId:string) {
+    /*this.colliderService.deregister(roomId, clientId).then(() => {
+      this.dispatchEvent('deregistered')
+    })*/
+    this.colliderService.destroy()
   }
 
   /**

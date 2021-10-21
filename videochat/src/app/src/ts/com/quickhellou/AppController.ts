@@ -22,6 +22,7 @@ import { VideoTrackEventOptions } from './application/model/VideoTrackEventOptio
 import { RoomSelection } from './RoomSelection'
 import { UIConstants } from './UIConstants'
 import { FormService } from '../../com/genb/base/services/FormService'
+import { ColliderServiceEvent } from './application/model/ColliderServiceEvent'
 
 /**
  * Quick Hellou controller.
@@ -77,11 +78,11 @@ export class AppController extends EventDispatcherService {
 
   /**
    * Creates an instance of AppController.
-   * 
-   * @param roomId the room ID 
+   *
+   * @param roomId the room ID
    * @param initType the init type
    * @param videoAppUrl the video app URL
-   * 
+   *
    * @memberof AppController
    */
   constructor(roomId: string, initType: string, videoAppUrl: string) {
@@ -107,6 +108,14 @@ export class AppController extends EventDispatcherService {
         this.onParamsLoaded()
       })
   }
+
+  /**
+   * Destroy application transmitter.
+   */
+  public destroy(): void {
+    this.dispatchEvent(AppControllerEvent.DESTROY)
+  }
+
   public onParamsLoaded(): void {
     this.createCommunication()
 
@@ -630,6 +639,14 @@ export class AppController extends EventDispatcherService {
       CallEvent.LOCAL_VIDEO_MEDIA_CHANGE,
       (options: VideoTrackEventOptions) => {
         this.toggleVideoTrack(options)
+      },
+      this
+    )
+
+    this.mediaCommunication.addEventListener(
+      ColliderServiceEvent.DESTROY,
+      () => {
+        this.destroy()
       },
       this
     )
