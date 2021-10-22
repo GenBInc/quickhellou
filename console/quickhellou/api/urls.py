@@ -4,6 +4,7 @@ from django.urls import path, re_path
 from rest_framework import routers
 from . import views
 from rest_framework.renderers import JSONRenderer
+from django.views.decorators.csrf import csrf_exempt
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
@@ -24,9 +25,9 @@ com_session = views.CommunicationSessionViewSet.as_view({
     'get': 'set_status',
 }, renderer_classes=[JSONRenderer])
 
-rate_com_session = views.CommunicationSessionViewSet.as_view({
+rate_com_session = csrf_exempt(views.CommunicationSessionViewSet.as_view({
     'get': 'set_rate',
-}, renderer_classes=[JSONRenderer])
+}, renderer_classes=[JSONRenderer]))
 
 pending_sessions = views.CommunicationSessionViewSet.as_view({
     'get': 'pending_sessions',
