@@ -10,7 +10,7 @@ try {
     homeController.init();
     const loader: HTMLElement = HTMLUtils.get("div.loader");
     loader.remove();
-    HTMLUtils.get("div.main").classList.add("js-visible");
+    HTMLUtils.get("main").classList.add("js-visible");
   });
 } catch (error) {
   Log.warn(error);

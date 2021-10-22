@@ -1,6 +1,6 @@
-import { RoomSelection } from '../../RoomSelection'
-import { EventDispatcherService } from '../../../../com/genb/base/services/EventDispatcherService'
-import { RoomSelectionEvent } from '../../RoomSelectionEvent'
+import { RoomSelection } from "../../RoomSelection";
+import { EventDispatcherService } from "../../../../com/genb/base/services/EventDispatcherService";
+import { RoomSelectionEvent } from "../../RoomSelectionEvent";
 
 /**
  * Home view controller.
@@ -17,14 +17,14 @@ export class HomeController extends EventDispatcherService {
    * @memberof HomeController
    */
   public init(): void {
-    const roomSelection: RoomSelection = new RoomSelection('room')
+    const roomSelection: RoomSelection = new RoomSelection("room");
     roomSelection.addEventListener(
       RoomSelectionEvent.ROOM_SELECTED,
       (data: any): void => {
-        this.roomSelectedHander(data.roomID)
+        this.roomSelectedHander(data.roomID);
       },
       this
-    )
+    );
   }
 
   /**
@@ -35,7 +35,7 @@ export class HomeController extends EventDispatcherService {
    * @memberof HomeController
    */
   private roomSelectedHander(roomId: string): void {
-    const roomLink: string = `${window.location.protocol}//${window.location.host}/r/${roomId}`
-    document.location.href = roomLink
+    const roomLink: string = `${window.location.protocol}//${window.location.host}/r/${roomId}`;
+    document.location.href = roomLink;
   }
 }

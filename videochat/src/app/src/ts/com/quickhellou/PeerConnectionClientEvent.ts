@@ -1,6 +1,6 @@
 export class PeerConnectionClientEvent {
   public static REMOTE_SDP_PROTOCOL_RECEIVED: string = "remote_sdp_protocol_received";
-  public static PY_MESSAGE: string = "gae_message";
+  public static GAE_MESSAGE: string = "gae_message";
   public static SIGNALING_MESSAGE: string = "signaling_message";
   public static REMOTE_HANGUP: string = "remote_hangup";
   public static REMOTE_TEXT_CHAT_MESSAGE: string = "remote_text_chat_message";

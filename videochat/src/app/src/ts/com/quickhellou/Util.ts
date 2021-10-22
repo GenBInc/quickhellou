@@ -1,6 +1,5 @@
-import { StringUtils } from '../genb/base/utils/StringUtils'
-import { Log } from '../genb/base/utils/Log'
-import { HTMLUtils } from '../genb/base/utils/HTMLUtils'
+import { StringUtils } from "../genb/base/utils/StringUtils";
+import { Log } from "../genb/base/utils/Log";
 
 /**
  * Utilities.
@@ -14,7 +13,7 @@ export class Util {
     url: string,
     body?: string
   ) {
-    return this.sendUrlRequest(method, url, true, body)
+    return this.sendUrlRequest(method, url, true, body);
   }
 
   /**
@@ -36,36 +35,36 @@ export class Util {
   ) {
     return new Promise((resolve: any, reject: any): void => {
       if (!async) {
-        resolve(navigator.sendBeacon(url, body))
-        return
+        resolve(navigator.sendBeacon(url, body));
+        return;
       }
-      let xhr: XMLHttpRequest
+      let xhr: XMLHttpRequest;
       const reportResults = (): void => {
         if (xhr.status !== 200) {
           reject(
-            Error('Status=' + xhr.status + ', response=' + xhr.responseText)
-          )
-          return
+            Error("Status=" + xhr.status + ", response=" + xhr.responseText)
+          );
+          return;
         }
-        resolve(xhr.responseText)
-      }
+        resolve(xhr.responseText);
+      };
 
-      xhr = new XMLHttpRequest()
+      xhr = new XMLHttpRequest();
       if (async) {
         xhr.onreadystatechange = (): void => {
           if (xhr.readyState !== 4) {
-            return
+            return;
           }
-          reportResults()
-        }
+          reportResults();
+        };
       }
-      xhr.open(method, url, async)
-      xhr.send(body)
+      xhr.open(method, url, async);
+      xhr.send(body);
 
       if (!async) {
-        reportResults()
+        reportResults();
       }
-    })
+    });
   }
 
   /**
@@ -78,39 +77,39 @@ export class Util {
    */
   public static parseJSON(json: string): object {
     try {
-      return JSON.parse(json)
+      return JSON.parse(json);
     } catch (e) {
-      Log.log('Error parsing json: ' + json)
+      Log.log("Error parsing json: " + json);
     }
-    return null
+    return null;
   }
 
   public static setCookie(
     name: string,
     value: string,
     days = 7,
-    path = '/'
+    path = "/"
   ): void {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString()
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
     document.cookie =
       name +
-      '=' +
+      "=" +
       encodeURIComponent(value) +
-      '; expires=' +
+      "; expires=" +
       expires +
-      '; path=' +
-      path
+      "; path=" +
+      path;
   }
 
   public static getCookie(name: string): string {
-    return document.cookie.split('; ').reduce((r, v) => {
-      const parts = v.split('=')
-      return parts[0] === name ? decodeURIComponent(parts[1]) : r
-    }, '')
+    return document.cookie.split("; ").reduce((r, v) => {
+      const parts = v.split("=");
+      return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+    }, "");
   }
 
   public static deleteCookie(name: string, path: string): void {
-    this.setCookie(name, '', -1, path)
+    this.setCookie(name, "", -1, path);
   }
 
   /**
@@ -131,9 +130,9 @@ export class Util {
         navigator.userAgent.substr(0, 4)
       )
     ) {
-      return true
+      return true;
     }
-    return false
+    return false;
   }
 
   /**
@@ -144,17 +143,17 @@ export class Util {
    * @memberof Util
    */
   public static isEdgeHTML(): boolean {
-    return /Edge\//g.test(navigator.userAgent)
+    return /Edge\//g.test(navigator.userAgent);
   }
 
   public static randomString(strLength: number): string {
-    const result: string[] = []
-    strLength = strLength || 5
-    const charSet: string = '0123456789'
+    const result: string[] = [];
+    strLength = strLength || 5;
+    const charSet: string = "0123456789";
     while (strLength--) {
-      result.push(charSet.charAt(Math.floor(Math.random() * charSet.length)))
+      result.push(charSet.charAt(Math.floor(Math.random() * charSet.length)));
     }
-    return result.join('')
+    return result.join("");
   }
 
   /**
@@ -166,18 +165,18 @@ export class Util {
    * @memberof Util
    */
   public static queryStringToDictionary(queryString: string): any {
-    const pairs: string[] = queryString.slice(1).split('&')
+    const pairs: string[] = queryString.slice(1).split("&");
 
-    const result: any = {}
+    const result: any = {};
     pairs.forEach((pair: any) => {
       if (pair) {
-        pair = pair.split('=')
+        pair = pair.split("=");
         if (pair[0]) {
-          result[pair[0]] = decodeURIComponent(pair[1] || '')
+          result[pair[0]] = decodeURIComponent(pair[1] || "");
         }
       }
-    })
-    return result
+    });
+    return result;
   }
 
   /**
@@ -201,25 +200,26 @@ export class Util {
     remoteOrLocal: string,
     callback: any
   ): number {
-    let fps: any = 0
+    let fps: any = 0;
     if (
       videoElement &&
       typeof videoElement.webkitDecodedFrameCount !== undefined
     ) {
       if (videoElement.readyState >= videoElement.HAVE_CURRENT_DATA) {
-        const currentTime = new Date().getTime()
-        const deltaTime = (currentTime - startTime) / 1000
-        const startTimeToReturn = currentTime
-        fps = (videoElement.webkitDecodedFrameCount - decodedFrames) / deltaTime
+        const currentTime = new Date().getTime();
+        const deltaTime = (currentTime - startTime) / 1000;
+        const startTimeToReturn = currentTime;
+        fps =
+          (videoElement.webkitDecodedFrameCount - decodedFrames) / deltaTime;
         callback(
           videoElement.webkitDecodedFrameCount,
           startTimeToReturn,
           remoteOrLocal
-        )
+        );
       }
     }
     // tslint:disable-next-line:radix
-    return parseInt(fps)
+    return parseInt(fps);
   }
 
   /**
@@ -238,28 +238,28 @@ export class Util {
     iceTransports: string
   ): any {
     return new Promise((resolve: any, reject: any): void => {
-      this.sendAsyncUrlRequest('POST', iceServerRequestUrl)
+      this.sendAsyncUrlRequest("POST", iceServerRequestUrl)
         .then((response: any): void => {
-          const iceServerRequestResponse: any = this.parseJSON(response)
+          const iceServerRequestResponse: any = this.parseJSON(response);
           if (!iceServerRequestResponse) {
-            reject(Error('Error parsing response JSON: ' + response))
-            return
+            reject(Error("Error parsing response JSON: " + response));
+            return;
           }
           if (StringUtils.isNotEmpty(iceTransports)) {
-            this.filterIceServersUrls(iceServerRequestResponse, iceTransports)
+            this.filterIceServersUrls(iceServerRequestResponse, iceTransports);
           }
-          Log.log('Retrieved ICE server information.')
-          resolve(iceServerRequestResponse.iceServers)
+          Log.log("Retrieved ICE server information.");
+          resolve(iceServerRequestResponse.iceServers);
         })
         .catch((error: any): void => {
-          reject(Error('ICE server request error: ' + error.message))
-          return
-        })
-    })
+          reject(Error("ICE server request error: " + error.message));
+          return;
+        });
+    });
   }
 
   public static isFullScreen(): boolean {
-    return !!(document.isFullScreen || document.fullscreenEnabled) // if any defined and true
+    return !!(document.isFullScreen || document.fullscreenEnabled); // if any defined and true
   }
 
   /**
@@ -270,35 +270,36 @@ export class Util {
    */
   public static setUpFullScreen() {
     document.cancelFullScreen =
-      document.mozCancelFullScreen || document.cancelFullScreen
+      document.mozCancelFullScreen || document.cancelFullScreen;
 
     document.body.requestFullScreen =
-      document.body.mozRequestFullScreen || document.body.requestFullScreen
+      document.body.mozRequestFullScreen || document.body.requestFullScreen;
 
     document.onfullscreenchange = (event: Event): any => {
-      return document.onfullscreenchange
-    }
+      return document.onfullscreenchange;
+    };
   }
 
   public static requestFullscreen(): void {
     if (document.body.requestFullscreen) {
-      document.body.requestFullscreen()
+      document.body.requestFullscreen();
     } else if (document.body.mozRequestFullScreen) {
-      document.body.mozRequestFullScreen()
+      document.body.mozRequestFullScreen();
     } else if (document.body.msRequestFullscreen) {
-      document.body.msRequestFullscreen()
+      document.body.msRequestFullscreen();
     }
   }
 
   public static cancelFullScreen(): void {
+
     if (document.exitFullscreen) {
-      document.exitFullscreen()
+      document.exitFullscreen();
     } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen()
+      document.mozCancelFullScreen();
     } else if (document.msExitFullscreen) {
-      document.msExitFullscreen()
+      document.msExitFullscreen();
     } else if (document.cancelFullScreen) {
-      document.cancelFullScreen()
+      document.cancelFullScreen();
     }
   }
 
@@ -313,26 +314,26 @@ export class Util {
    * @memberof Util
    */
   private static filterIceServersUrls(config: any, protocol: any): void {
-    const transport: string = 'transport=' + protocol
-    const newIceServers: string[] = new Array<string>()
+    const transport: string = "transport=" + protocol;
+    const newIceServers: string[] = new Array<string>();
     // tslint:disable-next-line:prefer-for-of
     for (let i: number = 0; i < config.iceServers.length; ++i) {
-      const iceServer: any = config.iceServers[i]
-      const newUrls: string[] = []
+      const iceServer: any = config.iceServers[i];
+      const newUrls: string[] = [];
       // tslint:disable-next-line:prefer-for-of
       for (let j: number = 0; j < iceServer.urls.length; ++j) {
-        const url: string = iceServer.urls[j]
+        const url: string = iceServer.urls[j];
         if (url.indexOf(transport) !== -1) {
-          newUrls.push(url)
-        } else if (url.indexOf('?transport=') === -1) {
-          newUrls.push(url + '?' + transport)
+          newUrls.push(url);
+        } else if (url.indexOf("?transport=") === -1) {
+          newUrls.push(url + "?" + transport);
         }
       }
       if (newUrls.length !== 0) {
-        iceServer.urls = newUrls
-        newIceServers.push(iceServer)
+        iceServer.urls = newUrls;
+        newIceServers.push(iceServer);
       }
     }
-    config.iceServers = newIceServers
+    config.iceServers = newIceServers;
   }
 }

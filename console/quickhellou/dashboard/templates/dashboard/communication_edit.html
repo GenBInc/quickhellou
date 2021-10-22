@@ -74,7 +74,7 @@
               <li class="mdc-list-item" tabindex="0">
                 <a class="mdc-list-item__text" href="{% url 'dashboard:communication_session_edit' session_id=com_session.id %}">
                   <span class="mdc-list-item__primary-text"><b>#{{ com_session.id }}</b> {{ com_session.type_verbose|title }}</span>
-                  <span class="mdc-list-item__secondary-text">{{ com_session.status_verbose|title }} by <i>{{ com_session.communication.caller.profile.full_name }}</i> on {{ com_session.creation_time|date:"m/d/Y H:i:s" }}</span>
+                  <span class="mdc-list-item__secondary-text">{{ com_session.status_verbose|title }} by <i>{{ com_session.attendant.profile.full_name }}</i> on {{ com_session.creation_time|date:"m/d/Y H:i:s" }}</span>
                 </a>
               </li>
             {% empty %}

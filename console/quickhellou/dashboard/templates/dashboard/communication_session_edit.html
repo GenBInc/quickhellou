@@ -54,7 +54,7 @@
             
             <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">
               <input type="text" id="assistant-input" class="mdc-text-field__input form__text"
-                value="{{ client_user.profile.full_name }}" disabled>
+                value="{{ session.communication.caller.profile.full_name }}" disabled>
               <div class="mdc-notched-outline">
                 <div class="mdc-notched-outline__leading"></div>
                 <div class="mdc-notched-outline__notch">
@@ -137,9 +137,7 @@
               <select class="mdc-select__native-control" name="status" required>
                 <option value="" disabled></option>                
                 {% for value, label in statuses %}
-                  {% if value == 2 or value == 7 %}
-                    <option value="{{ value }}" {% if session.status == value %} selected {% endif %}>{{ label|title }}</option>                
-                  {% endif %}
+                  <option value="{{ value }}" {% if session.status == value %} selected {% endif %}>{{ label|title }}</option>
                 {% endfor %}
               </select>
               <div class="mdc-notched-outline">

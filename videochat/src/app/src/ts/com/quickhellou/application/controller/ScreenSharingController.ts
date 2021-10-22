@@ -65,6 +65,7 @@ export class ScreenSharingController {
   }
   /*
   async startCapturing() {
+    console.log('Start capturing.');
     this.status = 'Screen recording started.';
     this.enableStartCapture = false;
     this.enableStopCapture = true;
@@ -109,6 +110,7 @@ export class ScreenSharingController {
   }
 
   /*downloadRecording() {
+    console.log('Download recording.');
     this.enableStartCapture = true;
     this.enableStopCapture = false;
     this.enableDownloadRecording = false;

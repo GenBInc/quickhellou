@@ -1,104 +1,68 @@
-import '../scss/web_app.scss'
+import "../scss/web_app.scss";
 
-import { HTMLUtils } from './com/genb/base/utils/HTMLUtils'
-import { Log } from './com/genb/base/utils/Log'
-import { StringUtils } from './com/genb/base/utils/StringUtils'
-import { AppController } from './com/quickhellou/AppController'
-import { AppControllerEvent } from './com/quickhellou/AppControllerEvent'
+import { BaseUtils } from "./com/genb/base/utils/BaseUtils";
+import { HTMLUtils } from "./com/genb/base/utils/HTMLUtils";
+import { Log } from "./com/genb/base/utils/Log";
+import { AppController } from "./com/quickhellou/AppController";
+import { AppControllerEvent } from "./com/quickhellou/AppControllerEvent";
+import { LoadingParams } from "./com/quickhellou/LoadingParams";
 
-import 'expose-loader?exposes=videochat!./ComProxy'
-
-let appController: AppController
-
-Log.setEnvironment(environment)
+Log.setEnvironment(environment);
 Log.log(
-  `Quick Hellou v. ${version} ${environment} build (webrtc-adapter v. 8.1.0)`
-)
+  `Quick Hellou v. ${version} ${environment} build (webrtc-adapter v. 7.5.1)`
+);
 
-window.addEventListener('load', (): void => {
-  preinit()
-})
+const loadingParams: LoadingParams = new LoadingParams();
+try {
+  // load inline values
+  if (BaseUtils.isObjectDefined(inlineLoadingParams)) {
+    loadingParams.bypassJoinConfirmation =
+      inlineLoadingParams.bypassJoinConfirmation;
+    loadingParams.iceServerRequestUrl = inlineLoadingParams.iceServerRequestUrl;
+    loadingParams.errorMessages = inlineLoadingParams.errorMessages;
+    loadingParams.warningMessages = inlineLoadingParams.warningMessages;
+    loadingParams.mediaConstraints = inlineLoadingParams.mediaConstraints;
+    loadingParams.offerOptions = inlineLoadingParams.offerOptions;
+    loadingParams.peerConnectionConfig =
+      inlineLoadingParams.peerConnectionConfig;
+    loadingParams.peerConnectionConstraints =
+      inlineLoadingParams.peerConnectionConstraints;
+    loadingParams.roomType = inlineLoadingParams.roomType;
+    loadingParams.wssPostUrl = inlineLoadingParams.wssPostUrl;
+    loadingParams.wssUrl = inlineLoadingParams.wssUrl;
 
-const preinit = () => {
-  const roomIdElement = document.querySelector('meta[name="room_id"]')
-  if (roomIdElement !== null) {
-    const roomId = roomIdElement.getAttribute('content')
-    if (StringUtils.isNotEmpty(roomId)) {
-      init(roomId, getInitType(), getVideoAppUrl())
-    } else {
-      setTimeout(reinit, 1000)
+    if (BaseUtils.isObjectDefined(inlineLoadingParams.roomID)) {
+      loadingParams.roomID = inlineLoadingParams.roomID;
     }
-  } else {
-    Log.warn('No room parameter.')
-  }
-}
-
-const init = (roomId: string, initType: string, videoAppUrl: string) => {
-  appController = new AppController(roomId, initType, videoAppUrl)
-  Log.log('init', roomId, initType, videoAppUrl)
-  appController.addEventListener(
-    AppControllerEvent.INITIALIZED,
-    (): void => {
-      const main: HTMLElement = HTMLUtils.get('div.main')
-      main.classList.add('js-visible')
-
-      // remove loader after when the main element is visible
-      setTimeout((): void => {
-        if (HTMLUtils.exists('div.loader')) {
-          const loader: HTMLElement = HTMLUtils.get('div.loader')
-          loader.remove()
-        }
-      }, 1000)
-
-      // service workers facade
-      // new ServiceWorkers()
-    },
-    this
-  )
-
-  appController.addEventListener(
-    AppControllerEvent.DESTROY,
-    (): void => {
-      appController = null
-      preinit()
-    },
-    this
-  )
-
-  appController.init()
-}
-
-const reinit = () => {
-  const roomId = document
-    .querySelector('meta[name="room_id"]')
-    .getAttribute('content')
-  if (StringUtils.isNotEmpty(roomId)) {
-    init(roomId, getInitType(), getVideoAppUrl())
-  } else {
-    setTimeout(() => reinit(), 2000)
-  }
-}
-
-const getInitType = () => {
-  const metaInitType = document.querySelector('meta[name="init"]')
-  const urlParams = new URLSearchParams(window.location.search)
-  const initType = urlParams.get('init')
-  if (initType !== null) {
-    return initType
+    if (BaseUtils.isObjectDefined(inlineLoadingParams.roomLink)) {
+      loadingParams.roomLink = inlineLoadingParams.roomLink;
+    }
+    if (BaseUtils.isObjectDefined(inlineLoadingParams.additionalParam)) {
+      loadingParams.additionalParam = inlineLoadingParams.additionalParam;
+    }
   }
 
-  if (metaInitType !== null) {
-    return metaInitType.getAttribute('content')
-  }
+  window.addEventListener("load", (): void => {
+    const appController: AppController = new AppController(loadingParams);
+    appController.addEventListener(
+      AppControllerEvent.INITIALIZED,
+      (): void => {
+        const main: HTMLElement = HTMLUtils.get("main");
+        main.classList.add("js-visible");
 
-  return ''
-}
+        // remove loader after when the main element is visible
+        setTimeout((): void => {
+          const loader: HTMLElement = HTMLUtils.get("div.loader");
+          loader.remove();
+        }, 1000);
 
-const getVideoAppUrl = () => {
-  const metaVideoAppUrl = document.querySelector('meta[name="video_app_url"]')
-  if (metaVideoAppUrl !== null) {
-    return metaVideoAppUrl.getAttribute('content')
-  }
-
-  return ''
+        // service workers facade
+        // new ServiceWorkers();
+      },
+      this
+    );
+    appController.init();
+  });
+} catch (error) {
+  Log.warn(error);
 }

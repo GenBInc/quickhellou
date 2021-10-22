@@ -5,8 +5,8 @@
  * @class RemoteVideo
  */
 export class RemoteVideo {
-  public clientId: string
-  public element: HTMLVideoElement
+  public clientId: string;
+  public element: HTMLVideoElement;
 
   /**
    * Creates an instance of RemoteVideo.
@@ -16,7 +16,7 @@ export class RemoteVideo {
    * @memberof RemoteVideo
    */
   constructor(clientId: string, element: HTMLVideoElement) {
-    this.clientId = clientId
-    this.element = element
+    this.clientId = clientId;
+    this.element = element;
   }
 }

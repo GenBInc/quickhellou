@@ -1,9 +1,9 @@
-import { Util } from '../../Util'
-import { ColliderServiceEvent } from '../model/ColliderServiceEvent'
-import { FormService } from '../../../genb/base/services/FormService'
-import { Log } from '../../../genb/base/utils/Log'
-import { BaseUtils } from '../../../genb/base/utils/BaseUtils'
-import { StringUtils } from '../../../genb/base/utils/StringUtils'
+import { Util } from "../../Util";
+import { ColliderServiceEvent } from "../model/ColliderServiceEvent";
+import { FormService } from "../../../genb/base/services/FormService";
+import { Log } from "../../../genb/base/utils/Log";
+import { BaseUtils } from "../../../genb/base/utils/BaseUtils";
+import { StringUtils } from "../../../genb/base/utils/StringUtils";
 
 /**
  * Signaling channel WebSocket facade.
@@ -14,28 +14,26 @@ import { StringUtils } from '../../../genb/base/utils/StringUtils'
  * @extends {EventDispatcherService}
  */
 export class ColliderService extends FormService {
-  public static MESSAGE: string = 'message'
+  public static MESSAGE: string = "message";
 
   /**
    * Setups an instance.
    *
    * @static
-   * @param {string} wssUrl the WebSocket URL
-   * @param {string} wssPostUrl th WebSocket POST URL
-   * @param {boolean} force force instance setup
+   * @param {string} wssUrl
+   * @param {string} wssPostUrl
    * @returns {ColliderService}
    * @memberof ColliderService
    */
   public static setupInstance(
     wssUrl: string,
-    wssPostUrl: string,
-    force: boolean
+    wssPostUrl: string
   ): ColliderService {
-    if (!ColliderService.instance || force) {
-      ColliderService.instance = new ColliderService(wssUrl, wssPostUrl)
-      this.instance.isSet = true
+    if (!ColliderService.instance) {
+      ColliderService.instance = new ColliderService(wssUrl, wssPostUrl);
+      this.instance.isSet = true;
     }
-    return ColliderService.instance
+    return ColliderService.instance;
   }
 
   /**
@@ -46,30 +44,31 @@ export class ColliderService extends FormService {
    * @memberof ColliderService
    */
   public static getInstance() {
-    if (!!ColliderService.instance) {
-      if (BaseUtils.isObjectDefined(this.instance.isSet)) {
-        return ColliderService.instance
-      }
+    if (!ColliderService.instance) {
+      ColliderService.instance = new ColliderService();
     }
-    // Log.warn('ColliderService::getInstance Collider service is not set.')
-    return null
+    if (BaseUtils.isObjectDefined(this.instance.isSet)) {
+      return ColliderService.instance;
+    }
+    Log.warn("ColliderService::getInstance Collider service is not set.");
+    return null;
   }
 
-  private static instance: ColliderService
+  private static instance: ColliderService;
 
-  private websocket: WebSocket
-  public isSet: boolean = false
-  private wssUrl: string
-  private wssPostUrl: string
+  private websocket: WebSocket;
+  private isSet: boolean = false;
+  private wssUrl: string;
+  private wssPostUrl: string;
 
-  private roomId: string
-  private clientID: string
+  private roomId: string;
+  private clientID: string;
 
-  private registered: boolean = false
+  private registered: boolean = false;
 
-  private ROOM_TYPE: string = 'room'
+  private ROOM_TYPE: string = "room";
 
-  private onerror: any
+  private onerror: any;
 
   /**
    * Creates an instance of ColliderService.
@@ -80,12 +79,12 @@ export class ColliderService extends FormService {
    * @memberof ColliderService
    */
   private constructor(wssUrl?: string, wssPostUrl?: string) {
-    super()
+    super();
     if (BaseUtils.isObjectDefined(wssUrl)) {
-      this.wssUrl = wssUrl
+      this.wssUrl = wssUrl;
     }
     if (BaseUtils.isObjectDefined(wssPostUrl)) {
-      this.wssPostUrl = wssPostUrl
+      this.wssPostUrl = wssPostUrl;
     }
   }
 
@@ -98,61 +97,56 @@ export class ColliderService extends FormService {
    */
   public open(): Promise<any> {
     if (BaseUtils.isObjectDefined(this.websocket)) {
-      Log.log('ERROR: ColliderService has been already opened.')
-      return
+      Log.log("ERROR: ColliderService has been already opened.");
+      return;
     }
 
-    if (this.wssUrl === undefined) {
-      Log.error('The WebSocket address is either invalid or unset. Breaking.')
-      return
-    }
-
-    Log.log(`Opening signaling channel: ${this.wssUrl}`)
+    Log.log(`Opening signaling channel: ${this.wssUrl}`);
     return new Promise((resolve: any, reject: any) => {
-      this.websocket = new WebSocket(this.wssUrl)
+      this.websocket = new WebSocket(this.wssUrl);
 
       this.websocket.onopen = (): void => {
-        Log.log('Signaling channel opened.')
+        Log.log("Signaling channel opened.");
 
         this.websocket.onerror = (event: any): void => {
-          reject(`Signaling channel error. ${event}`)
-        }
+          reject(`Signaling channel error. ${event}`);
+        };
         this.websocket.onclose = (event: CloseEvent): void => {
-          Log.log(`Collider channel closed with code:${event.code}`)
-          this.websocket = null
-          this.registered = false
-          this.dispatchEvent(ColliderServiceEvent.CLOSE, event.code)
-        }
+          Log.log(`Collider channel closed with code:${event.code}`);
+          this.websocket = null;
+          this.registered = false;
+          this.dispatchEvent(ColliderServiceEvent.CLOSE, event.code);
+        };
 
         if (
           BaseUtils.isObjectDefined(this.clientID) &&
           BaseUtils.isObjectDefined(this.roomId)
         ) {
-          this.register(this.roomId, this.clientID)
+          this.register(this.roomId, this.clientID);
         }
 
-        resolve()
-      }
+        resolve();
+      };
 
       this.websocket.onmessage = (event: any) => {
-        Log.log('Collider -> Client: ', JSON.parse(event.data))
+        Log.log("Collider -> Client: ", JSON.parse(event.data));
 
-        const message: any = Util.parseJSON(event.data)
+        const message: any = Util.parseJSON(event.data);
         if (!BaseUtils.isObjectDefined(message)) {
-          Log.log('Failed to parse WSS message: ' + event.data)
-          return
+          Log.log("Failed to parse WSS message: " + event.data);
+          return;
         }
         if (!StringUtils.isEmpty(message.error)) {
-          Log.log('Signaling server error message: ' + message.error)
-          return
+          Log.log("Signaling server error message: " + message.error);
+          return;
         }
-        this.dispatchEvent(ColliderServiceEvent.MESSAGE, message.msg)
-      }
+        this.dispatchEvent(ColliderServiceEvent.MESSAGE, message.msg);
+      };
 
       this.websocket.onerror = (ev: Event): void => {
-        reject(Error(`WebSocket error. ${ev}`))
-      }
-    })
+        reject(Error(`WebSocket error. ${ev}`));
+      };
+    });
   }
 
   /**
@@ -163,12 +157,12 @@ export class ColliderService extends FormService {
    */
   public respondOnPingRequest(): void {
     const pingMessage: any = {
-      cmd: 'ping',
+      cmd: "ping",
       roomid: this.roomId,
       roomtype: this.ROOM_TYPE,
       clientid: this.clientID,
-    }
-    this.postMessage(pingMessage)
+    };
+    this.postMessage(pingMessage);
   }
 
   /**
@@ -180,12 +174,12 @@ export class ColliderService extends FormService {
    */
   public updateSession(sessionsList: string): void {
     const message: any = {
-      cmd: 'session-update',
+      cmd: "session-update",
       roomid: this.roomId,
       roomtype: this.ROOM_TYPE,
       msg: sessionsList,
-    }
-    this.postMessage(message)
+    };
+    this.postMessage(message);
   }
 
   /**
@@ -199,112 +193,67 @@ export class ColliderService extends FormService {
    */
   public register(roomId: string, clientID: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.roomId = roomId
-      this.clientID = clientID
+      this.roomId = roomId;
+      this.clientID = clientID;
 
       if (!BaseUtils.isObjectDefined(this.roomId)) {
-        Log.log('ERROR: Missing roomID. Stopping client registration.')
-        return reject({ code: 0, message: 'Missing roomID.' })
+        Log.log("ERROR: Missing roomID. Stopping client registration.");
+        return reject({ code: 0, message: "Missing roomID." });
       }
 
       if (!BaseUtils.isObjectDefined(this.clientID)) {
-        Log.log('ERROR: Missing clientID. Stopping client registration.')
-        return reject({ code: 0, message: 'Missing clientID.' })
+        Log.log("ERROR: Missing clientID. Stopping client registration.");
+        return reject({ code: 0, message: "Missing clientID." });
       }
 
       if (!this.websocket || this.websocket.readyState !== WebSocket.OPEN) {
-        return reject({ code: 0, message: 'WebSocket not open.' })
+        return reject({ code: 0, message: "WebSocket not open." });
       }
 
       const registerMessage: object = {
-        cmd: 'register',
+        cmd: "register",
         roomid: this.roomId,
         roomtype: this.ROOM_TYPE,
         clientid: this.clientID,
-      }
+      };
 
-      this.websocket.send(JSON.stringify(registerMessage))
-      this.registered = true
+      this.websocket.send(JSON.stringify(registerMessage));
+      this.registered = true;
 
-      return resolve({ code: 1, message: 'Signaling channel registered.' })
-    })
-  }
-
-  /**
-   * Deregisters client form the websocket service.
-   * 
-   * @param roomId the room ID
-   * @param clientId the client ID
-   * @returns the deregistration result
-   */
-  deregister(roomId: string, clientId: string) {
-    return new Promise((resolve, reject) => {
-      
-      if (!BaseUtils.isObjectDefined(this.roomId)) {
-        Log.log('ERROR: Missing roomID. Stopping client registration.')
-        return reject({ code: 0, message: 'Missing roomID.' })
-      }
-
-      if (!BaseUtils.isObjectDefined(this.clientID)) {
-        Log.log('ERROR: Missing clientID. Stopping client registration.')
-        return reject({ code: 0, message: 'Missing clientID.' })
-      }
-
-      if (!this.websocket || this.websocket.readyState !== WebSocket.OPEN) {
-        return reject({ code: 0, message: 'WebSocket not open.' })
-      }
-
-      const registerMessage: object = {
-        cmd: 'deregister',
-        roomid: roomId,
-        roomtype: this.ROOM_TYPE,
-        clientid: clientId,
-      }
-
-      this.websocket.send(JSON.stringify(registerMessage))
-      this.registered = false
-
-      return resolve({ code: 1, message: 'Signaling channel deregistered.' })
-    })
-  }
-
-  /**
-   * Destroy application transmitter.
-   */
-  destroy() {
-    this.dispatchEvent(ColliderServiceEvent.DESTROY)
+      return resolve({ code: 1, message: "Signaling channel registered." });
+    });
   }
 
   public touch(roomId: string, clientID: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.roomId = roomId
-      this.clientID = clientID
+      this.roomId = roomId;
+      this.clientID = clientID;
 
       if (!BaseUtils.isObjectDefined(this.roomId)) {
-        Log.log('ERROR: Missing roomID. Stopping client registration.')
-        return reject({ code: 0, message: 'Missing roomID.' })
+        Log.log("ERROR: Missing roomID. Stopping client registration.");
+        return reject({ code: 0, message: "Missing roomID." });
       }
 
       if (!BaseUtils.isObjectDefined(this.clientID)) {
-        Log.log('ERROR: Missing clientID. Stopping client registration.')
-        return reject({ code: 0, message: 'Missing clientID.' })
+        Log.log("ERROR: Missing clientID. Stopping client registration.");
+        return reject({ code: 0, message: "Missing clientID." });
       }
 
       if (!this.websocket || this.websocket.readyState !== WebSocket.OPEN) {
-        return reject({ code: 0, message: 'WebSocket not open.' })
+        return reject({ code: 0, message: "WebSocket not open." });
       }
 
       const registerMessage: object = {
-        cmd: 'touch',
+        cmd: "touch",
         roomid: this.roomId,
         roomtype: this.ROOM_TYPE,
         clientid: this.clientID,
-      }
+      };
 
-      this.websocket.send(JSON.stringify(registerMessage))
+      this.websocket.send(JSON.stringify(registerMessage));
 
-      return resolve({ code: 1, message: 'Touch sent.' })
-    })
+      return resolve({ code: 1, message: "Touch sent." });
+    });
   }
 
   /**
@@ -316,25 +265,25 @@ export class ColliderService extends FormService {
    * @memberof ColliderService
    */
   public async close(async: boolean) {
-    Log.log('Closing websocket.')
+    Log.log("ColliderService::WS close", async, this.websocket);
     if (!!this.websocket) {
-      this.websocket.close()
-      this.websocket = null
+      this.websocket.close();
+      this.websocket = null;
     }
 
     if (!this.clientID || !this.roomId) {
-      return
+      return;
     }
     // Tell Collider that we're done.
-    const path: string = this.getWssPostUrl()
+    const path: string = this.getWssPostUrl();
     try {
-      await Util.sendUrlRequest('POST', path, async, 'DELETE')
+      await Util.sendUrlRequest("POST", path, async, "DELETE");
     } catch (error) {
-      Log.log('Error deleting web socket connection: ' + error.message)
+      Log.log("Error deleting web socket connection: " + error.message);
     }
-    this.clientID = null
-    this.roomId = null
-    this.registered = false
+    this.clientID = null;
+    this.roomId = null;
+    this.registered = false;
   }
 
   /**
@@ -348,16 +297,16 @@ export class ColliderService extends FormService {
    */
   public send(message: any, persistant: boolean = true) {
     if (!this.roomId || !this.clientID) {
-      Log.log('ERROR: ColliderService has not registered.')
-      return
+      Log.log("ERROR: ColliderService has not registered.");
+      return;
     }
 
     const wssMessage: object = {
-      cmd: 'send',
+      cmd: "send",
       msg: message,
       persistant: persistant.toString(),
-    }
-    this.postMessage(wssMessage)
+    };
+    this.postMessage(wssMessage);
   }
 
   /**
@@ -377,17 +326,17 @@ export class ColliderService extends FormService {
     message: any
   ) {
     if (!this.roomId || !this.clientID) {
-      Log.log('ERROR: ColliderService has not registered.')
-      return
+      Log.log("ERROR: ColliderService has not registered.");
+      return;
     }
     const wssMessage: object = {
-      cmd: 'send-to-other',
+      cmd: "send-to-other",
       roomid: roomId,
       clientid: clientId,
       otherid: otherClientId,
       msg: message,
-    }
-    this.postMessage(wssMessage)
+    };
+    this.postMessage(wssMessage);
   }
 
   /**
@@ -399,15 +348,15 @@ export class ColliderService extends FormService {
    */
   public broadcast(inputType: string, inputData: any) {
     const wssMessage: object = {
-      cmd: 'broadcast',
+      cmd: "broadcast",
       msg: JSON.stringify({
         type: inputType,
         roomid: this.roomId,
         clientid: this.clientID,
         data: inputData,
       }),
-    }
-    this.postMessage(wssMessage)
+    };
+    this.postMessage(wssMessage);
   }
 
   /**
@@ -418,7 +367,7 @@ export class ColliderService extends FormService {
    * @memberof ColliderService
    */
   public getWssPostUrl(): string {
-    return `${this.wssPostUrl}/${this.roomId}/${this.clientID}`
+    return `${this.wssPostUrl}/${this.roomId}/${this.clientID}`;
   }
 
   /**
@@ -430,11 +379,11 @@ export class ColliderService extends FormService {
    * @memberof ColliderService
    */
   private postMessage(wssMessage: any): void {
-    const msgString: string = JSON.stringify(wssMessage)
+    const msgString: string = JSON.stringify(wssMessage);
     if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
-      this.websocket.send(msgString)
+      this.websocket.send(msgString);
     } else {
-      this.post(this.getWssPostUrl(), wssMessage.msg)
+      this.post(this.getWssPostUrl(), wssMessage.msg);
     }
   }
 }
