@@ -14,7 +14,7 @@ body {
   padding:0;
 }
 
-main {
+div.main {
   min-height:100%;
   transition: opacity .2s linear; 
 }
@@ -59,7 +59,7 @@ section.js-active {
   display: block;
  }
 
-main.js-visible {
+div.main.js-visible {
   display: flex;
   opacity:1!important;
 }

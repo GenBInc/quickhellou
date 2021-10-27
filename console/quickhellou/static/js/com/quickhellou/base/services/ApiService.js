@@ -182,7 +182,6 @@ export class ApiService extends FormService {
    * @memberof ApiService
    */
   setComSessionAsCompleted(id) {
-    console.log('setComSessionAsCompleted')
     return this.setComSessionStatus(id, ComSessionStatus.STATUS_COMPLETED)
   }
 
@@ -194,7 +193,6 @@ export class ApiService extends FormService {
    * @memberof ApiService
    */
   setComSessionAsEnqueued(id) {
-    console.log('setComSessionAsEnqueued')
     return this.setComSessionStatus(id, ComSessionStatus.STATUS_ENQUEUED)
   }
 

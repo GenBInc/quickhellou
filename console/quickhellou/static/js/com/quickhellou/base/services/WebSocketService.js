@@ -43,7 +43,7 @@ export class WebSocketService extends FormService {
         }
       }
       this.websocket.onerror = (event) => {
-        console.log('#### WS error', event)
+        // console.log('#### WS error', event)
         if (event.currentTarget.readyState === 3) {
           this.emit('connection_failure')
         }
@@ -80,7 +80,7 @@ export class WebSocketService extends FormService {
     }
 
     const responseJson = JSON.parse(response)
-    console.log('response', responseJson)
+    // console.log('response', responseJson)
     if (responseJson.error !== '') {
       this.emit('error', responseJson.error)
       return

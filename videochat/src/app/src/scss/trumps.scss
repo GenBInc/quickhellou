@@ -145,7 +145,7 @@ div.privacy a {
 .remote-video-fullscreen {
   z-index: 3;
   border-radius: 50%;
-  background-image: url('/images/fullscreen.svg');
+  background-image: url('/static/videochat/images/fullscreen.svg');
   display: block;
   /*
   transition: 40ms;
@@ -442,7 +442,7 @@ h1 {
 .button--hangup {
   transition: 280ms;
   background-color: #e20f00 !important;
-  background-image: url('/images/hangup.svg');
+  background-image: url('/static/videochat/images/hangup.svg');
 }
 
 .button--hangup:hover {
@@ -453,7 +453,7 @@ h1 {
   z-index: 1;
   transition: 40ms;
   border-radius: 50%;
-  background-image: url('/images/fullscreen.svg');
+  background-image: url('/static/videochat/images/fullscreen.svg');
   display: none;
   transform: translateX(calc(-100px));
   transition: all .1s;

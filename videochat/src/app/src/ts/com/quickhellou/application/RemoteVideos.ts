@@ -1,10 +1,10 @@
-import { HTMLUtils } from "../../genb/base/utils/HTMLUtils";
-import { RemoteVideo } from "./RemoteVideo";
-import { EventDispatcherService } from "../../genb/base/services/EventDispatcherService";
-import { BaseUtils } from "../../genb/base/utils/BaseUtils";
-import { RemoteVideosEvent } from "./model/RemoteVideosEvent";
-import { Log } from "../../genb/base/utils/Log";
-import { RegisterOptions } from "./model/RegisterOptions";
+import { HTMLUtils } from '../../genb/base/utils/HTMLUtils'
+import { RemoteVideo } from './RemoteVideo'
+import { EventDispatcherService } from '../../genb/base/services/EventDispatcherService'
+import { BaseUtils } from '../../genb/base/utils/BaseUtils'
+import { RemoteVideosEvent } from './model/RemoteVideosEvent'
+import { Log } from '../../genb/base/utils/Log'
+import { RegisterOptions } from './model/RegisterOptions'
 
 /**
  * Remote videos controller
@@ -23,14 +23,14 @@ export class RemoteVideos extends EventDispatcherService {
    */
   public static getInstance() {
     if (!RemoteVideos.instance) {
-      RemoteVideos.instance = new RemoteVideos();
+      RemoteVideos.instance = new RemoteVideos()
     }
-    return RemoteVideos.instance;
+    return RemoteVideos.instance
   }
 
-  private static instance: RemoteVideos;
-  private isFullScreen: boolean = false;
-  private videos: Map<string, RemoteVideo>;
+  private static instance: RemoteVideos
+  private isFullScreen: boolean = false
+  private videos: Map<string, RemoteVideo>
 
   /**
    * Creates an instance of RemoteVideos.
@@ -38,30 +38,30 @@ export class RemoteVideos extends EventDispatcherService {
    * @memberof RemoteVideos
    */
   private constructor() {
-    super();
-    this.videos = new Map();
+    super()
+    this.videos = new Map()
 
     document.addEventListener(
-      "fullscreenchange",
+      'fullscreenchange',
       (): void => {
-        this.onFullScreenChange();
+        this.onFullScreenChange()
       },
       false
-    );
+    )
     document.addEventListener(
-      "webkitfullscreenchange",
+      'webkitfullscreenchange',
       (): void => {
-        this.onFullScreenChange();
+        this.onFullScreenChange()
       },
       false
-    );
+    )
     document.addEventListener(
-      "mozfullscreenchange",
+      'mozfullscreenchange',
       (event: MouseEvent): void => {
-        this.onFullScreenChange();
+        this.onFullScreenChange()
       },
       false
-    );
+    )
   }
 
   /**
@@ -72,7 +72,7 @@ export class RemoteVideos extends EventDispatcherService {
    * @memberof RemoteVideos
    */
   public remove(videoId: string) {
-    this.videos.delete(videoId);
+    this.videos.delete(videoId)
   }
 
   /**
@@ -83,8 +83,8 @@ export class RemoteVideos extends EventDispatcherService {
    * @memberof RemoteVideos
    */
   public get(videoId: string): RemoteVideo {
-    const video = this.videos.get(videoId);
-    return video;
+    const video = this.videos.get(videoId)
+    return video
   }
 
   /**
@@ -94,7 +94,7 @@ export class RemoteVideos extends EventDispatcherService {
    * @memberof RemoteVideos
    */
   public getAll(): Map<string, RemoteVideo> {
-    return this.videos;
+    return this.videos
   }
 
   /**
@@ -104,7 +104,7 @@ export class RemoteVideos extends EventDispatcherService {
    * @memberof RemoteVideos
    */
   public isEmpty(): boolean {
-    return Array.from(this.videos).length === 0;
+    return Array.from(this.videos).length === 0
   }
 
   /**
@@ -115,14 +115,14 @@ export class RemoteVideos extends EventDispatcherService {
    * @memberof RemoteVideos
    */
   public getElement(videoId: string): HTMLVideoElement {
-    const remoteVideo: RemoteVideo = this.videos.get(videoId);
+    const remoteVideo: RemoteVideo = this.videos.get(videoId)
     if (BaseUtils.isObjectDefined(remoteVideo)) {
-      return remoteVideo.element;
+      return remoteVideo.element
     } else {
-      Log.warn("RemoteVideos::getElement No remote video by given video ID.");
+      Log.warn('RemoteVideos::getElement No remote video by given video ID.')
     }
 
-    return null;
+    return null
   }
 
   /**
@@ -136,22 +136,22 @@ export class RemoteVideos extends EventDispatcherService {
     // Wait for the actual video to start arriving before moving to the active
     // call state.
 
-    const remoteVideo: RemoteVideo = this.videos.get(streamId);
-    const remoteVideoElement: HTMLVideoElement = remoteVideo.element;
+    const remoteVideo: RemoteVideo = this.videos.get(streamId)
+    const remoteVideoElement: HTMLVideoElement = remoteVideo.element
 
     if (remoteVideoElement.readyState >= 2) {
       // i.e. can play
       Log.log(
-        "Remote video started; currentTime: " + remoteVideoElement.currentTime
-      );
+        'Remote video started; currentTime: ' + remoteVideoElement.currentTime
+      )
       this.dispatchEvent(
         RemoteVideosEvent.ADD_STREAM_SUCCESS,
         remoteVideo.element
-      );
+      )
     } else {
       remoteVideoElement.oncanplay = (): void => {
-        this.waitForRemoteVideo(streamId);
-      };
+        this.waitForRemoteVideo(streamId)
+      }
     }
   }
 
@@ -162,8 +162,8 @@ export class RemoteVideos extends EventDispatcherService {
    */
   public removeCanPlayHandlers() {
     this.videos.forEach((remoteVideo) => {
-      remoteVideo.element.oncanplay = undefined;
-    });
+      remoteVideo.element.oncanplay = undefined
+    })
   }
 
   /**
@@ -174,10 +174,10 @@ export class RemoteVideos extends EventDispatcherService {
    */
   public deactivateAll() {
     this.videos.forEach((remoteVideo) => {
-      remoteVideo.element.classList.remove("active");
-    });
+      remoteVideo.element.classList.remove('active')
+    })
 
-    this.removeAllRemoteVideo();
+    this.removeAllRemoteVideo()
   }
 
   /**
@@ -188,11 +188,12 @@ export class RemoteVideos extends EventDispatcherService {
    * @memberof RemoteVideos
    */
   public addRemoteVideo(registerOptions: RegisterOptions) {
-    this.add(registerOptions.clientId, registerOptions.sessionId);
+    Log.log('RemoteVideos::addRemoteVideo', registerOptions.clientId, registerOptions.sessionId)
+    this.add(registerOptions.clientId, registerOptions.sessionId)
 
-    this.updateVideoElementsLayout();
+    this.updateVideoElementsLayout()
 
-    this.dispatchEvent(RemoteVideosEvent.REMOTE_VIDEO_ADDED);
+    this.dispatchEvent(RemoteVideosEvent.REMOTE_VIDEO_ADDED)
   }
 
   /**
@@ -203,36 +204,35 @@ export class RemoteVideos extends EventDispatcherService {
    * @memberof RemoteVideos
    */
   public addStream(sessionId: string, stream: MediaStream) {
-    const remoteVideo: RemoteVideo = this.get(sessionId);
+    const remoteVideo: RemoteVideo = this.get(sessionId)
     if (!BaseUtils.isObjectDefined(remoteVideo)) {
       setTimeout(() => {
-        this.addStream(sessionId, stream);
-      }, 2000);
-      return;
+        this.addStream(sessionId, stream)
+      }, 2000)
+      return
     }
 
-    const remoteVideoElement: HTMLVideoElement = remoteVideo.element;
+    const remoteVideoElement: HTMLVideoElement = remoteVideo.element
 
     if (!BaseUtils.isObjectDefined(remoteVideoElement)) {
-      this.dispatchEvent(RemoteVideosEvent.ADD_STREAM_FAILURE);
-      return;
+      this.dispatchEvent(RemoteVideosEvent.ADD_STREAM_FAILURE)
+      return
     }
 
     if (!BaseUtils.isObjectDefined(remoteVideoElement.srcObject)) {
-      remoteVideoElement.srcObject = stream;
+      remoteVideoElement.srcObject = stream
     }
-
     if (remoteVideoElement.readyState >= 2) {
       this.dispatchEvent(
         RemoteVideosEvent.ADD_STREAM_SUCCESS,
         remoteVideoElement
-      );
-      return;
+      )
+      return
     }
 
     setTimeout(() => {
-      this.addStream(sessionId, stream);
-    }, 2000);
+      this.addStream(sessionId, stream)
+    }, 2000)
   }
 
   /**
@@ -242,21 +242,21 @@ export class RemoteVideos extends EventDispatcherService {
    * @memberof RemoteVideos
    */
   public removeRemoteVideo(sessionId: string) {
-    const remoteVideo: RemoteVideo = this.get(sessionId);
+    const remoteVideo: RemoteVideo = this.get(sessionId)
     if (BaseUtils.isObjectDefined(remoteVideo)) {
-      remoteVideo.element.srcObject = null;
-      remoteVideo.element.oncanplay = undefined;
-      this.remove(sessionId);
+      remoteVideo.element.srcObject = null
+      remoteVideo.element.oncanplay = undefined
+      this.remove(sessionId)
 
       // document.querySelectorAll(this.getRemoteVideoClassName(sessionId)).forEach((e) => e.parentNode.removeChild(e));
 
-      const wrapVideo: HTMLElement = remoteVideo.element.parentElement;
+      const wrapVideo: HTMLElement = remoteVideo.element.parentElement
       if (BaseUtils.isObjectDefined(wrapVideo)) {
-        wrapVideo.remove();
+        wrapVideo.remove()
       }
-      this.dispatchEvent(RemoteVideosEvent.REMOTE_VIDEO_REMOVED);
+      this.dispatchEvent(RemoteVideosEvent.REMOTE_VIDEO_REMOVED)
     }
-    this.updateVideoElementsLayout();
+    this.updateVideoElementsLayout()
   }
 
   /**
@@ -267,7 +267,7 @@ export class RemoteVideos extends EventDispatcherService {
    * @memberof RemoteVideos
    */
   public getRemoteVideoClassName(sessionId: string): string {
-    return `remote-video--${sessionId}`;
+    return `remote-video--${sessionId}`
   }
 
   /**
@@ -278,28 +278,28 @@ export class RemoteVideos extends EventDispatcherService {
    */
   public updateVideoElementsLayout(): void {
     const activeVideoElementsSize: number = HTMLUtils.list(
-      "video.remote-video.active"
-    ).length;
+      'video.remote-video.active'
+    ).length
 
     this.videos.forEach((video: RemoteVideo, sessionId: string) => {
-      const videoElement: HTMLElement = video.element.parentElement;
+      const videoElement: HTMLElement = video.element.parentElement
       videoElement.classList.remove(
-        "size--single",
-        "size--double",
-        "size--multi"
-      );
-      let sizeClass: string = "size--single";
+        'size--single',
+        'size--double',
+        'size--multi'
+      )
+      let sizeClass: string = 'size--single'
       if (activeVideoElementsSize === 2) {
-        sizeClass = "size--double";
+        sizeClass = 'size--double'
       }
       if (activeVideoElementsSize > 2 && activeVideoElementsSize <= 4) {
-        sizeClass = "size--multi";
+        sizeClass = 'size--multi'
       }
       if (activeVideoElementsSize > 4) {
-        sizeClass = "size--large";
+        sizeClass = 'size--large'
       }
-      videoElement.classList.add(sizeClass);
-    });
+      videoElement.classList.add(sizeClass)
+    })
   }
 
   /**
@@ -311,61 +311,60 @@ export class RemoteVideos extends EventDispatcherService {
    * @memberof RemoteVideos
    */
   private add(remoteClientId: string, sessionId: string): RemoteVideo {
-    const videoElementClassName = this.getRemoteVideoClassName(sessionId);
+    const videoElementClassName = this.getRemoteVideoClassName(sessionId)
 
     if (HTMLUtils.exists(videoElementClassName)) {
-      this.removeRemoteVideo(sessionId);
+      this.removeRemoteVideo(sessionId)
     }
 
     if (!HTMLUtils.exists(videoElementClassName)) {
-      const videoElementHtml: string =
-        `<div class="remote-video-wrap ${videoElementClassName}--wrap">
+      const videoElementHtml: string = `<div class="remote-video-wrap ${videoElementClassName}--wrap">
         <div class="remote-video-fullscreen ${videoElementClassName}--fullscreen">
         </div><div class="video-loader js-active">
-        </div><video class="remote-video ${videoElementClassName}" autoplay playsinline></video></div>`;
+        </div><video class="remote-video ${videoElementClassName}" autoplay playsinline></video></div>`
       const videoElementContainerElement = HTMLUtils.get(
-        ".videos-wrap"
-      ) as HTMLElement;
+        '.videos-wrap'
+      ) as HTMLElement
 
       videoElementContainerElement.insertAdjacentHTML(
-        "afterbegin",
+        'afterbegin',
         videoElementHtml
-      );
+      )
 
       const fullscreenButton: HTMLElement = HTMLUtils.get(
         `.${videoElementClassName}--fullscreen`
-      );
+      )
 
       fullscreenButton.addEventListener(
-        "click",
+        'click',
         (): void => {
-          this.toggleFullScreen(`.${videoElementClassName}--wrap`);
+          this.toggleFullScreen(`.${videoElementClassName}--wrap`)
         },
         false
-      );
+      )
     }
 
     const videoElement: HTMLVideoElement = HTMLUtils.get(
       `.${videoElementClassName}`
-    ) as HTMLVideoElement;
+    ) as HTMLVideoElement
 
     const remoteVideo: RemoteVideo = new RemoteVideo(
       remoteClientId,
       videoElement
-    );
-    this.videos.set(sessionId, remoteVideo);
+    )
+    this.videos.set(sessionId, remoteVideo)
 
     const videoLoader: HTMLElement = HTMLUtils.get(
       `.${videoElementClassName}--wrap .video-loader`
-    );
+    )
 
     videoElement.oncanplay = (): void => {
-      videoLoader.classList.remove("js-active");
-      videoElement.oncanplay = undefined;
-    };
+      videoLoader.classList.remove('js-active')
+      videoElement.oncanplay = undefined
+    }
 
-    Log.info("RemoteVideos::add Remote video added ", sessionId);
-    return remoteVideo;
+    Log.info('RemoteVideos::add Remote video added ', sessionId)
+    return remoteVideo
   }
 
   /**
@@ -375,15 +374,15 @@ export class RemoteVideos extends EventDispatcherService {
    */
   private onFullScreenChange(): void {
     if (this.isFullScreen) {
-      const footer: HTMLElement = HTMLUtils.get(".footer");
+      const footer: HTMLElement = HTMLUtils.get('.footer')
       const videosWrapList: NodeListOf<HTMLElement> = HTMLUtils.list(
-        ".video-columns-wrap, .videos-wrap, .remote-video-wrap"
-      );
-      footer.classList.remove("hidden");
+        '.video-columns-wrap, .videos-wrap, .remote-video-wrap'
+      )
+      footer.classList.remove('hidden')
       videosWrapList.forEach((elem: HTMLElement) => {
-        elem.classList.remove("js-fullscreen");
-      });
-      this.isFullScreen = false;
+        elem.classList.remove('js-fullscreen')
+      })
+      this.isFullScreen = false
     }
   }
 
@@ -395,24 +394,24 @@ export class RemoteVideos extends EventDispatcherService {
    */
 
   private toggleFullScreen(videoElementName: string): void {
-    const footer: HTMLElement = HTMLUtils.get(".footer");
+    const footer: HTMLElement = HTMLUtils.get('.footer')
     const videosWrapList: NodeListOf<HTMLElement> = HTMLUtils.list(
-      ".video-columns-wrap, .videos-wrap, " + videoElementName
-    );
+      '.video-columns-wrap, .videos-wrap, ' + videoElementName
+    )
     if (!this.isFullScreen) {
-      Log.log("Entering fullscreen.");
-      footer.classList.add("hidden");
-      videosWrapList.item(0).classList.add("js-fullscreen");
-      videosWrapList.item(1).classList.add("js-fullscreen");
-      videosWrapList.item(2).classList.add("js-fullscreen");
-      this.isFullScreen = true;
+      Log.log('Entering fullscreen.')
+      footer.classList.add('hidden')
+      videosWrapList.item(0).classList.add('js-fullscreen')
+      videosWrapList.item(1).classList.add('js-fullscreen')
+      videosWrapList.item(2).classList.add('js-fullscreen')
+      this.isFullScreen = true
     } else {
-      Log.log("Exiting fullscreen.");
-      footer.classList.remove("hidden");
+      Log.log('Exiting fullscreen.')
+      footer.classList.remove('hidden')
       videosWrapList.forEach((elem: HTMLElement) => {
-        elem.classList.remove("js-fullscreen");
-      });
-      this.isFullScreen = false;
+        elem.classList.remove('js-fullscreen')
+      })
+      this.isFullScreen = false
     }
   }
 
@@ -424,7 +423,7 @@ export class RemoteVideos extends EventDispatcherService {
    */
   private removeAllRemoteVideo(): void {
     this.videos.forEach((video: RemoteVideo, sessionId: string) => {
-      this.removeRemoteVideo(sessionId);
-    });
+      this.removeRemoteVideo(sessionId)
+    })
   }
 }

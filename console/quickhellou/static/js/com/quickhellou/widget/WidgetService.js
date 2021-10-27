@@ -104,8 +104,6 @@ export class WidgetService extends EventEmitter {
    * Removes connection data in the videochat application.
    */
    destroyVideoChatApp() {
-    console.log('destroyVideoChatApp')
-    // this.videochatProxy.deregister(this.user.roomId, this.user.uuid)
     this.videochatProxy.destroy()
   }
 

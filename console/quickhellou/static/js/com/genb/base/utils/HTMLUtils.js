@@ -177,7 +177,6 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static activateElement(element) {
-    console.log('activateElement', element)
     element.classList.add('js-active')
   }
 
@@ -201,8 +200,6 @@ export class HTMLUtils {
    * @memberof HTMLUtils
    */
   static deactivateElement(element) {
-    console.log('deactivateElement', element)
-
     element.classList.remove('js-active')
   }
 
@@ -239,12 +236,22 @@ export class HTMLUtils {
   }
 
   /**
-   * Removes all event listeners frpom an html object.
+   * Removes all event listeners from an html element by a class name.
    *
    * @param {string} className the class name
    */
   static removeAllEventListeners(className) {
     const element = document.querySelector(className)
+    const newElement = element.cloneNode(element)
+    element.parentNode.replaceChild(newElement, element)
+  }
+
+  /**
+   * Removes all event listeners from an html element by a class name.
+   *
+   * @param {string} className the class name
+   */
+   static removeAllEventListenersFromElement(element) {
     const newElement = element.cloneNode(element)
     element.parentNode.replaceChild(newElement, element)
   }

@@ -25,6 +25,11 @@
   @include df-lc;
 }
 
+.flb {
+  display: flex;
+  @include df-lb;
+}
+
 .flt {
   display: flex;
   @include df-lt;

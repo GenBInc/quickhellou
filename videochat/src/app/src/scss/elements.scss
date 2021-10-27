@@ -1,8 +1,9 @@
-main {
+div.main {
   position: relative;
+  height:100%;
 }
 
-main.js-visible {
+div.main.js-visible {
   z-index:2;
   opacity:1!important;
   @include transition(opacity .2s linear);

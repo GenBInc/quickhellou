@@ -47,7 +47,6 @@ class WidgetViewSet(viewsets.ModelViewSet):
   queryset = Widget.objects.all()
   serializer_class = WidgetSerializer
 
-@permission_classes((IsAuthenticated, ))
 class CommunicationSessionViewSet(viewsets.ModelViewSet):
   """
   API endpoint that allows communication sessions to be viewed or edited.
@@ -76,13 +75,15 @@ class CommunicationSessionViewSet(viewsets.ModelViewSet):
     # complete communication if session is accepted
     if (status in [6]):
       communication = communication_session.communication
-      communication.status = 4
-      communication.save()
+      if communication is not None:
+        communication.status = 4
+        communication.save()
     # close communication if session is rejected or cancelled
     if (status in [4,5]):
       communication = communication_session.communication
-      communication.status = 3
-      communication.save()
+      if communication is not None:
+        communication.status = 3
+        communication.save()
     return Response({'result':'ok'})
   
   @action(detail=True, renderer_classes=[JSONRenderer])
@@ -98,10 +99,13 @@ class CommunicationSessionViewSet(viewsets.ModelViewSet):
     sessions = CommunicationSession.objects.filter(status=1)
     objs = []
     for session in sessions:
+      caller_name = None
+      if session.communication is not None:
+        caller_name = session.communication.caller_name
       objs.append({
         'id':session.id,
         'uuid':session.uuid,
-        'client':session.communication.caller_name
+        'client':caller_name
       })
     return Response(objs)
 

@@ -2,7 +2,7 @@ import { WidgetService } from './com/quickhellou/widget/WidgetService'
 import { WidgetView } from './com/quickhellou/widget/WidgetView'
 import { WidgetExtensionView } from './com/quickhellou/widget/WidgetExtensionView'
 import { WidgetBottomBarView } from './com/quickhellou/widget/WidgetBottomBarView'
-console.log('dupa4')
+
 // data
 const consoleAppUrl = document.querySelector('.qh-root').dataset.url
 const widgetId = document.querySelector('.qh-root').dataset.id

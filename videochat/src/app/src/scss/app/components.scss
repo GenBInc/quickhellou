@@ -49,7 +49,7 @@
 }
 
 .view--room-selection {
-  background: url(/images/room-selection-background.jpg) no-repeat center center fixed;
+  background: url(/static/videochat/images/room-selection-background.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   background-size: cover;
   @media (min-width: $s-lg) {
@@ -157,7 +157,7 @@
 }
 
 .open-quick-talk {
-  background-image: url('/images/quick-talk.svg');
+  background-image: url('/static/videochat/images/quick-talk.svg');
   background-color: $color--lawn-green;
 }
 

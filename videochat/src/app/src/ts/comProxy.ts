@@ -10,7 +10,6 @@ import { Util } from './com/quickhellou/Util'
  * The communication proxy.
  */
 export class ComProxy extends EventDispatcherService {
-  
   /** the Collider service */
   private colliderService: ColliderService
 
@@ -54,10 +53,12 @@ export class ComProxy extends EventDispatcherService {
     )
   }
 
-  destroy(roomId:string, clientId:string) {
-    /*this.colliderService.deregister(roomId, clientId).then(() => {
-      this.dispatchEvent('deregistered')
-    })*/
+  /**
+   * Destroys the application and reinitializes and reactivates it after getting a new room ID.
+   *
+   * @memberof ComProxy
+   */
+  destroy() {
     this.colliderService.destroy()
   }
 
@@ -91,7 +92,7 @@ export class ComProxy extends EventDispatcherService {
    *
    * @private
    * @param {string} sessionId
-   * 
+   *
    * @memberof ComProxy
    */
   private onRemoteHangup(sessionId: string) {
@@ -110,7 +111,7 @@ export class ComProxy extends EventDispatcherService {
 
 /**
  * Proxy expose function.
- * 
+ *
  * @returns the ComProxy instance.
  */
 export function proxy() {
