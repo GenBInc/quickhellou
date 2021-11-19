@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib import admin
 from django.contrib.auth.models import (PermissionsMixin, Permission)
 
+from quickhellou import settings
+
 import uuid
 import profile
 
@@ -207,5 +209,11 @@ class Profile(models.Model):
     available = models.BooleanField(default=True)
     thumbnail = models.FileField(
         default='images/user.svg', blank=True, upload_to='users/images')
-
     objects = ProfileManager()
+    @property
+    def email_or_phone(self):
+        if settings.FAKE_EMAIL_DOMAIN not in self.user.email:
+            return self.user.email
+        if self.phone:
+            return self.phone
+        return 'No contact information.'

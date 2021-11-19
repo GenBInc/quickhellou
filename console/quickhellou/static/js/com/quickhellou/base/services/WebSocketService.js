@@ -35,7 +35,7 @@ export class WebSocketService extends FormService {
   openWebSocketConnection() {
     return new Promise((resolve) => {
       this.websocket = new WebSocket(this.url)
-      this.websocket.onopen = (e) => {
+      this.websocket.onopen = () => {
         if (this.websocket.readyState === WebSocket.OPEN) {
           this.isOpen = true
           this.attachWebSocketEventHandlers()
@@ -131,7 +131,7 @@ export class WebSocketService extends FormService {
         )
         break
       case WebSocketService.CANCEL_CALL:
-        this.emit('callCancel', responseJson.record)
+        this.emit('callCancel', responseJson.recordId)
         break
       case WebSocketService.ACCEPT_CALL_REQUEST:
         this.emit('callAccepted', responseJson.uuid)
@@ -343,15 +343,18 @@ export class WebSocketService extends FormService {
   }
 
   /**
-   * Sends a cancel call request.
+   * Sends a cancel call request. Sent by customer.
    *
-   * @param {string} userWSId
-   * @param {string} roomId
-   * @param {string} recordId
+   * @param {string} recordId the call record id
+   * @param {string} userId the user id
+   * @param {string} adminId the admin id
+   * @param {string} roomId the room id
    * @memberof WebSocketService
    */
-  cancelCall(userWSId, roomId, recordId) {
-    this.sendWebSocketMessage({
+  cancelCall(recordId, userId, adminId, roomId) {
+    console.log('cancel call', recordId, userId, adminId, roomId)
+    // cancelCall(userWSId, roomId, recordId) {
+    /** this.sendWebSocketMessage({
       cmd: WebSocketService.SEND,
       clientid: userWSId,
       clienttype: UserType.GUEST,
@@ -365,7 +368,19 @@ export class WebSocketService extends FormService {
           record: recordId,
         },
       }),
-    })
+    })*/
+    this.sendToOther(
+      userId,
+      adminId,
+      roomId,
+      JSON.stringify({
+        type: 'send',
+        body: {
+          name: WebSocketService.CANCEL_CALL,
+          recordId: recordId
+        },
+      })
+    )
   }
 
   /**

@@ -45,10 +45,33 @@
   background-position: center;
 }
 
+.aside__avatar-content {
+  position: relative;
+}
+
 .aside__avatar {
   width: 80px;
   height: 80px;
   margin-bottom:20px;
+}
+
+.button--add-photo svg {
+  width:14px;
+  height:14px;
+}
+
+label.button--add-photo {
+  position: absolute;
+  right:35px;
+  bottom:20px;
+  width:30px;
+  height:30px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+input.input--add-avatar {
+  display: none;
 }
 
 .aside__version {
@@ -206,11 +229,18 @@ a.aside__navi-item--activated {
 }
 
 .widget-list__field--id {
-  width:10%;
+  width:40px;
 }
 
 .widget-list__field--url {
-  width:20%;
+  width:120px;
+}
+
+.widget-list__field--contact {
+  min-width: 160px;
+  @media (min-width: $s-xl) {
+    width: 200px;
+  }
 }
 
 .widget-list__field--language {
@@ -218,15 +248,19 @@ a.aside__navi-item--activated {
 }
 
 .widget-list__field--status {
-  width:10%;
+  width:90px;
 }
 
 .widget-list__field--last-change {
-  width:20%;
+  width:120px;
+  display: none;
+  @media (min-width: $s-xl) {
+    display: flex;
+  }
 }
 
 .widget-list__field--mod-bar {
-  width:20%;
+  width:14%;
 }
 
 .view-list__content {
@@ -250,7 +284,7 @@ a.list-link--accept {
 
 .list-link--reject,
 .list-link--delete {
-  color:$color--red-orange;
+  color:#c90000;
 }
 
 a.list-link--pause {
@@ -540,8 +574,7 @@ a.call-list__button--deactivate {
   color:$color--green;
 }
 
-.client-list__field--role,
-.view-list__field--status {
+.client-list__field--role {
   min-width:65px;
 }
 
@@ -551,4 +584,39 @@ a.call-list__button--deactivate {
 
 .main-view__messages {
   padding:10px;
+}
+
+.com-session-list-item--2 {
+  background-color: #aae1fa;
+}
+
+.com-session-list-item--5 {
+  background-color: #efefef;
+}
+
+.com-session-list-item--7 {
+  background-color: #90ee90;
+}
+
+.com-session-list-item--7 b,
+.com-session-list-item--7 span {
+  font-weight: 400;
+}
+
+.widget-list__field--name {
+  width:160px;
+}
+
+
+.call-list__entry--closed {
+  background-color: #feefef;
+}
+
+.call-list__entry--open,
+.call-list__entry--pending {
+  background-color: #aae1fa;
+}
+
+.call-list__entry--completed {
+  background-color: #90ee90;
 }

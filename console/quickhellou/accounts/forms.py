@@ -65,7 +65,10 @@ class ProfileForm(forms.ModelForm):
         if commit:
             profile.save()
         return profile
-
+class ProfileThumbnailForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ('id', 'thumbnail')
 
 class ForgotPasswordForm(forms.Form):
     email = forms.CharField(required=True, validators=[validate_email])

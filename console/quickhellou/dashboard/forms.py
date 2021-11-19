@@ -143,7 +143,7 @@ class WidgetTemplateForm(forms.ModelForm):
 class CommunicationForm(forms.ModelForm):
     class Meta:
         model = Communication
-        fields = ('caller_name',)
+        fields = ('caller_name', 'status')
 class CommunicationSessionForm(forms.ModelForm):
     class Meta:
         model = CommunicationSession

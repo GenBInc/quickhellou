@@ -9,11 +9,11 @@ import { AppControllerEvent } from './com/quickhellou/AppControllerEvent'
 import 'expose-loader?exposes=videochat!./ComProxy'
 
 let appController: AppController
-
-Log.setEnvironment(environment)
+// TODO: checkout
+/*Log.setEnvironment(environment)
 Log.log(
   `Quick Hellou v. ${version} ${environment} build (webrtc-adapter v. 8.1.0)`
-)
+)*/
 
 window.addEventListener('load', (): void => {
   preinit()

@@ -18,7 +18,6 @@ import { MediaConstraints } from '../model/MediaConstraints'
 import { MediaEvent } from '../model/MediaEvent'
 import { VideoTrackEventOptions } from '../model/VideoTrackEventOptions'
 import { ShareScreenEvent } from '../model/ShareScreenEvent'
-import { AppControllerEvent } from '../../AppControllerEvent'
 
 /**
  * MediaCommunication and media facade.

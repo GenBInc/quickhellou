@@ -104,7 +104,11 @@ export class WidgetService extends EventEmitter {
    * Removes connection data in the videochat application.
    */
    destroyVideoChatApp() {
-    this.videochatProxy.destroy()
+    try {
+      this.videochatProxy.destroy()
+    } catch (e) {
+      console.log('e', e)
+    }
   }
 
   /**
@@ -135,10 +139,12 @@ export class WidgetService extends EventEmitter {
    * @memberof WidgetService
    */
   cancelCall() {
+    const adminUuid = this.admins[0]
     this.webSocketService.cancelCall(
-      this.user.uuid,
-      this.widget.uuid,
-      this.sessionRecord.id
+      this.sessionRecord.id,
+      this.user.userId,
+      adminUuid,
+      this.widget.uuid
     )
   }
 
@@ -189,7 +195,7 @@ export class WidgetService extends EventEmitter {
    */
   onCallRejected() {
     this.emit('callRejected')
-    this.resetVideoChat()
+    // this.destroyVideoChatApp()
   }
 
   /**
@@ -222,7 +228,7 @@ export class WidgetService extends EventEmitter {
    * @returns the response
    */
   sendStartVideoChatForm(fieldSet) {
-    const url = `${this.consoleAppUrl}/dashboard/widget_active_admin/${
+    const url = `${this.consoleAppUrl}/dashboard/widget_active_operator/${
       this.widgetId
     }/${encodeURIComponent(window.location.hostname.toLowerCase())}/${
       this.widget.uuid

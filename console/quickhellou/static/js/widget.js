@@ -1,5 +1,5 @@
 import { WidgetService } from './com/quickhellou/widget/WidgetService'
-import { WidgetView } from './com/quickhellou/widget/WidgetView'
+import { BadgeView } from './com/quickhellou/widget/BadgeView'
 import { WidgetExtensionView } from './com/quickhellou/widget/WidgetExtensionView'
 import { WidgetBottomBarView } from './com/quickhellou/widget/WidgetBottomBarView'
 
@@ -12,18 +12,30 @@ widgetService
   .init()
   .then(() => {
     // views
-    const widgetBadgeView = new WidgetView(widgetService)
-    const widgetExtView = new WidgetExtensionView(widgetService)
-    widgetBadgeView.setExtension(widgetExtView)
-    const widgetBottomBarView = new WidgetBottomBarView(widgetService)
-    widgetBottomBarView.setExtension(widgetExtView)
-    widgetBottomBarView.setBadge(widgetBadgeView)
-    widgetExtView.setBottomBar(widgetBottomBarView)
-    widgetBadgeView.setBottomBar(widgetBottomBarView)
+    const badgeView = new BadgeView(widgetService)
+    const extView = new WidgetExtensionView(widgetService)
+    const bottomBarView = new WidgetBottomBarView(widgetService)
+    // event handlers
+    extView.addListener('collapse', () => {
+      bottomBarView.collapseView()
+    })
+    badgeView.addListener('collapse', () => {
+      extView.toggleView()
+      bottomBarView.collapseView()
+    })
+    badgeView.addListener('setThumbnail', (path) => {
+      extView.setThumbnails(path)
+    })
+    bottomBarView.addListener('toggleBadgeTopState', (force) => {
+      badgeView.toggleTopState(force)
+    })
+    bottomBarView.addListener('expandExtView', () => {
+      extView.expandView()
+    })
     // init widget modules
-    widgetBadgeView.init()
-    widgetExtView.init()
-    widgetBottomBarView.init()
+    badgeView.init()
+    extView.init()
+    bottomBarView.init()
 
     // init
     document.querySelector('.qh-root').classList.add('active')

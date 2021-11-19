@@ -259,7 +259,9 @@ export class Util {
   }
 
   public static isFullScreen(): boolean {
-    return !!(document.isFullScreen || document.fullscreenEnabled) // if any defined and true
+    // TODO: checkout
+    return !!document.fullscreenEnabled // if any defined and true
+    // return !!(document.isFullScreen || document.fullscreenEnabled) // if any defined and true
   }
 
   /**

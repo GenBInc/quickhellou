@@ -82,6 +82,7 @@
               {{ form.lang.errors }}
             </div>
             <div class="mdc-select mdc-select--outlined form--widget-create__name form__field--upper">
+              <i class="mdc-select__dropdown-icon"></i>
               <select class="mdc-select__native-control" name="lang" required>
                 <option value="" disabled></option>                
                 {% for value, label in languages %}

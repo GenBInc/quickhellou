@@ -37,7 +37,7 @@ export class WidgetBottomBarView extends UIView {
     const agreeButton = this.uiGet('.widget-bottom__button--yes')
     agreeButton.addEventListener('click', () => {
       this.collapseView()
-      this.extensionView.expandView()
+      this.emit('expandExtView')
     })
     const disagreeButton = this.uiGet('.widget-bottom__button--no')
     disagreeButton.addEventListener('click', () => {
@@ -101,7 +101,7 @@ export class WidgetBottomBarView extends UIView {
    *
    * @param {string} error
    */
-  onError(error) {
+  onError() {
     const contentElement = this.uiGet('.qh_widget-bottom__content')
     contentElement.classList.add('js-hidden')
     const errorElement = this.uiGet('.widget-bottom__error')
@@ -142,25 +142,7 @@ export class WidgetBottomBarView extends UIView {
   collapseView() {
     this.isExpanded = false
     this.element.classList.remove('js-active')
-    this.badgeView.toggleTopState(false)
-  }
-
-  /**
-   * Sets extension element.
-   *
-   * @param {WidgetExtensionView} extensionView
-   */
-  setExtension(extensionView) {
-    this.extensionView = extensionView
-  }
-
-  /**
-   * Sets badge element.
-   *
-   * @param {WidgetView} badgeView
-   */
-  setBadge(badgeView) {
-    this.badgeView = badgeView
+    this.emit('toggleBadgeTopState', false)
   }
 
   /**

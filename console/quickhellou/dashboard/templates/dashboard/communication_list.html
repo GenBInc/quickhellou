@@ -1,20 +1,21 @@
 {% for communication in communications %}
   <div class="flc view-list__entry call-list__entry call-list__entry--{{ communication.status_verbose }}">
-    <div class="widget-list__field widget-list__field--id view-list__field--{{ communication.status_verbose }}">#{{ communication.id }}</div>
+    <div class="widget-list__field widget-list__field--id">{{ communication.id }}</div>
+    <div class="flc widget-list__field widget-list__field--name">
+      <div class="fcol">
+        <div class="widget-list__url-label">{{ communication.caller.profile.full_name|truncatechars:32 }}</div>
+      </div>
+    </div>
+    <div class="flc widget-list__field widget-list__field--contact">
+        {{ communication.caller.profile.email_or_phone|truncatechars:32 }}
+    </div>
     <div class="flc widget-list__field widget-list__field--url">
       <div class="fcol">
-        <div class="widget-list__url-label view-list__field--{{ communication.status_verbose }}">{{ communication.widget.url }}</div>
+        <div class="widget-list__url-label">{{ communication.widget.url|truncatechars:24 }}</div>
       </div>
     </div>
-    <div class="fc widget-list__field view-list__field--status view-list__field--status 
-    view-list__field--{{ communication.status_verbose }}">
-      {{ communication.status_verbose|title }}
-    </div>
-    <div class="fc df-c widget-list__field widget-list__field--last-change">
-      <div class="fcol">
-        <div class="widget-list__change-date">{{ communication.modification_time|date:"m -d-Y H:i:s" }}</div>
-      </div>
-    </div>
+    <div class="widget-list__field widget-list__field--status">{{ communication.status_verbose|title }}</div>
+    <div class="widget-list__field widget-list__field--last-change">{{ communication.modification_time|date:"m/d/Y H:i:s" }}</div>
     <div class="f1"></div>
     <div class="flc widget-list__field widget-list__field--mod-bar">
       {% if communication.status == 1 and communication.pending_sessions_count > 0 %}

@@ -57,12 +57,13 @@ class CommunicationSerializer(serializers.ModelSerializer):
         try:
             communication = Communication.objects.get(caller=client_user)
             communication.caller_name = validated_data['caller_name']
+            communication.status = 1
             communication.save()
         except:
             communication = Communication.objects.create(caller=client_user, caller_name=validated_data['caller_name'], \
             client_board=widget.client_board, widget=widget)
             communication.save()
-
+        
         # create communication session
         comSession = CommunicationSession.objects.create_session(communication)
         

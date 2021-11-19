@@ -134,6 +134,7 @@
               {{ form.status.errors }}
             </div>
             <div class="mdc-select mdc-select--outlined form--widget-create__name form__field--upper">
+              <i class="mdc-select__dropdown-icon"></i>
               <select class="mdc-select__native-control" name="status" required>
                 <option value="" disabled></option>                
                 {% for value, label in statuses %}

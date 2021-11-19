@@ -88,7 +88,7 @@ def communication_edit_view(request, communication_id=None):
     else:
         return redirect('dashboard:communications')
     if request.method == 'POST':
-        form = CommunicationForm(request.POST)
+        form = CommunicationForm(request.POST, instance=communication)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.modification_time = datetime.datetime.now()
@@ -99,6 +99,7 @@ def communication_edit_view(request, communication_id=None):
     return render(request, 'dashboard/communication_edit.html', {
         'communication' : communication,
         'client_user' : communication.caller,
+        'statuses': Communication.STATUS_CHOICES,
         'com_sessions' : com_sessions,
     })
 
@@ -107,8 +108,15 @@ def communication_session_edit_view(request, session_id):
     form = CommunicationSessionForm(request.POST or None, instance=instance)
     if form.is_valid():
         instance = form.save(commit=False)
-        if (form.cleaned_data['status'] == 7):
+        if (form.cleaned_data['status'] == instance.STATUS_COMPLETED):
             instance.attendant = request.user
+            communication = instance.communication
+            is_com_open = False
+            for session in communication.communicationsession_set.all():
+                is_com_open = is_com_open or session.status is not session.STATUS_COMPLETED
+            if is_com_open is False:
+                communication.status = Communication.STATUS_COMPLETED
+                communication.save()
         instance.save()
         messages.success(
             request, 'Communication session has been saved.')
@@ -564,12 +572,10 @@ def widget_extension_embed_view(request, widget_id, hostname, uuid):
             phone_regex = re.compile('^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
             if phone_regex.match(clientEmailOrPhone):
                 clientPhone = clientEmailOrPhone
-            print('clientEmail', clientEmail)
             # get or create user
             try:
                 client_user = User.objects.get(email=clientEmail)
             except:
-                print('no such user')
                 client_user = User.objects.create(email=clientEmail, client_board=widget.client_board)
                 client_user.save()
             user_id = client_user.id
@@ -578,18 +584,19 @@ def widget_extension_embed_view(request, widget_id, hostname, uuid):
                 profile = Profile.objects.get(user=client_user)
             except:
                 profile = Profile.objects.create(user=client_user)
-                profile.full_name = clientName
                 profile.phone = clientPhone
-                profile.save()
 
+            profile.full_name = clientName
+            profile.save()
 
             # get or create communication
             try:
                 communication = Communication.objects.get(caller=client_user)
+                communication.status = 2
             except:
                 communication = Communication.objects.create(caller=client_user, caller_name=clientName, \
                     client_board=widget.client_board, status=2, widget=widget)
-                communication.save()
+            communication.save()
 
             # create communication session
             session = CommunicationSession.objects.create_message(communication=communication, attendant=client_user, message = clientMessage, type = 2)
@@ -598,8 +605,9 @@ def widget_extension_embed_view(request, widget_id, hostname, uuid):
             subject = 'QuickHellou - Message'
             recipients = [ApplicationSettings.objects.get_admin_email_address()]
             # if email address is empty prevent sending email
+            console_app_url = ApplicationSettings.objects.get_console_app_url()
             email_params = {
-                'email': clientEmail, 'phone': clientPhone, 'message': clientMessage}
+                'name': clientName, 'email': clientEmail, 'phone': clientPhone, 'message': clientMessage, 'console_app_url': console_app_url}
             try:
                 #send message notification to admin
                 send_email_notification(subject, recipients, email_params, 'dashboard/email/widget-message-admin.txt', 'dashboard/email/widget-message-admin.html')    
@@ -627,7 +635,7 @@ def widget_extension_embed_view(request, widget_id, hostname, uuid):
         'hostname': hostname})
 
 @csrf_exempt
-def widget_active_admin(request, widget_id, hostname, uuid):
+def widget_active_operator(request, widget_id, hostname, uuid):
     widget = Widget.objects.get(id=widget_id, uuid=uuid)
     
     if not widget:
@@ -660,7 +668,6 @@ def widget_active_admin(request, widget_id, hostname, uuid):
             phone_regex = re.compile('^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
             if phone_regex.match(clientEmailOrPhone):
                 clientPhone = clientEmailOrPhone
-            print('attempt to get user', clientEmail)
             # create or update user
             try:
                 client_user = User.objects.get(email=clientEmail)
@@ -676,12 +683,17 @@ def widget_active_admin(request, widget_id, hostname, uuid):
                 profile.full_name = clientName
                 profile.phone = clientPhone
                 profile.save()
-            status = 'ok'  
+            
+            # update profile data
+            profile.full_name = form.cleaned_data['name']
+            profile.save()
+
+            status = 'ok'
             #set success message
             form = WidgetActiveUserForm()
     else:
         form = WidgetActiveUserForm()
-    return render(request, 'embed/active_user_form_response.html', {
+    return render(request, 'embed/active_operator_form_response.html', {
         'widget': widget,
         'form': form,
         'status': status,

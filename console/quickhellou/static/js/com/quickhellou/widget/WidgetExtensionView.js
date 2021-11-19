@@ -22,6 +22,7 @@ export class WidgetExtensionView extends UIView {
     this.element = this.uiGet('#qh_e_frame')
     this.isExpanded = false
     this.videoMode = false
+    this.anyOperatorActive = false
   }
 
   /**
@@ -35,7 +36,8 @@ export class WidgetExtensionView extends UIView {
     })
 
     this.service.addListener('listUsers', (a) => {
-      this.updateVideoCallUi(!!a.length)
+      this.anyOperatorActive = !!a.length 
+      this.updateVideoCallUi()
     })
 
     this.service.addListener('callAccepted', (e) => {
@@ -99,25 +101,33 @@ export class WidgetExtensionView extends UIView {
         this.sendStartVideoChatForm()
       )
     }
-    this.initActiveOperatorCloser()
+    this.initActiveOperatorFormCloser()
   }
 
   /**
    * Initializes closer button.
-   * 
+   *
    * @memberof WidgetExtensionView
    */
-  initActiveOperatorCloser() {
-    const initFormCloserClass = '.qh_video-ui_form .qh_widget-closer--active-operator' 
-    if (this.uiExists(initFormCloserClass)) {
-      HTMLUtils.removeAllEventListeners(initFormCloserClass)
-      const collapseViewButtonElement = this.uiGet(initFormCloserClass)
+  initActiveOperatorFormCloser() {
+    const activeOperatorFormCloserClass =
+      '.qh_widget-closer--active-operator-form'
+    if (this.uiExists(activeOperatorFormCloserClass)) {
+      HTMLUtils.removeAllEventListeners(activeOperatorFormCloserClass)
+      const collapseViewButtonElement = this.uiGet(
+        activeOperatorFormCloserClass
+      )
       collapseViewButtonElement.addEventListener('click', () => {
         this.collapseAndReinitActiveOperatorInitForm(false)
       })
     }
-    
-    const rateUXCloserClass = '.qh_rate-ux-content .qh_widget-closer--active-operator' 
+  }
+
+  /**
+   * Initializes rate UX closer.
+   */
+  initRateUXCloser() {
+    const rateUXCloserClass = '.qh_widget-closer--rate-ux'
     if (this.uiExists(rateUXCloserClass)) {
       HTMLUtils.removeAllEventListeners(rateUXCloserClass)
       const collapseViewButtonElement = this.uiGet(rateUXCloserClass)
@@ -125,18 +135,47 @@ export class WidgetExtensionView extends UIView {
         this.collapseAndReinitActiveOperatorInitForm()
       })
     }
-    
+  }
+
+  /**
+   * Intializes await video call closer.
+   */
+  initAwaitVideoCallCloser() {
+    const awaitVideoCallCloserClass = '.qh_widget-closer--await-video-call'
+    if (this.uiExists(awaitVideoCallCloserClass)) {
+      HTMLUtils.removeAllEventListeners(awaitVideoCallCloserClass)
+      const awaitVideoCallCloserElement = this.uiGet(awaitVideoCallCloserClass)
+      awaitVideoCallCloserElement.addEventListener('click', () => {
+        this.cancelCall()
+      })
+    }
+  }
+
+  /**
+   * Intializes video closer.
+   */
+  initVideoCloser() {
+    const videoCloserClass = '.qh_widget-closer--video'
+    if (this.uiExists(videoCloserClass)) {
+      HTMLUtils.removeAllEventListeners(videoCloserClass)
+      const videoCloserElement = this.uiGet(videoCloserClass)
+      videoCloserElement.addEventListener('click', () => {
+        this.onHangUpVideoChat()
+      })
+    }
   }
 
   /**
    * Initializes inactive operator form closer.
-   * 
+   *
    * @memberof WidgetExtensionView
    */
   initInactiveOperatorCloser() {
     if (this.uiExists('.qh_widget-closer--inactive-operator')) {
       HTMLUtils.removeAllEventListeners('.qh_widget-closer--inactive-operator')
-      const collapseViewButtonElement = this.uiGet('.qh_widget-closer--inactive-operator')
+      const collapseViewButtonElement = this.uiGet(
+        '.qh_widget-closer--inactive-operator'
+      )
       collapseViewButtonElement.addEventListener('click', () => {
         this.collapseAndReinitInactiveOperatorInitForm()
       })
@@ -145,9 +184,9 @@ export class WidgetExtensionView extends UIView {
 
   /**
    * Collapses view and reinits active operator form.
-   * 
-   * @param {*} forceDestroyVideoChat 
-   * 
+   *
+   * @param {*} forceDestroyVideoChat
+   *
    * @memberof WidgetExtensionView
    */
   collapseAndReinitActiveOperatorInitForm(forceDestroyVideoChat = true) {
@@ -164,7 +203,7 @@ export class WidgetExtensionView extends UIView {
 
   /**
    * Collapses view and reinits inactive operator form.
-   * 
+   *
    * @memberof WidgetExtensionView
    */
   collapseAndReinitInactiveOperatorInitForm() {
@@ -220,7 +259,8 @@ export class WidgetExtensionView extends UIView {
         const userId = resultElement.dataset.userid
         this.service.setUserId(userId)
         if (status === 'ok') {
-            this.requestCall()
+          this.requestCall()
+          this.initAwaitVideoCallCloser()
         } else {
           this.initStartVideoChatForm()
         }
@@ -289,16 +329,16 @@ export class WidgetExtensionView extends UIView {
    * @param {boolean} anyOperatorActive
    * @memberof WidgetExtensionView
    */
-  updateVideoCallUi(anyOperatorActive) {
+  updateVideoCallUi() {
     const activeOperatorElement = this.uiGet('.qh_module--active-operator')
-    activeOperatorElement.classList.toggle('js-enabled', anyOperatorActive)
+    activeOperatorElement.classList.toggle('js-enabled', this.anyOperatorActive)
     const inactiveOperatorForm = this.uiGet('.qh_module--inactive-form')
-    inactiveOperatorForm.classList.toggle('js-enabled', !anyOperatorActive)
-    if (!anyOperatorActive) {
+    inactiveOperatorForm.classList.toggle('js-enabled', !this.anyOperatorActive)
+    if (!this.anyOperatorActive) {
       this.activateCallDefaultStage()
     } else if (!this.videoMode) {
       this.activateActiveOperatorInitForm()
-      this.bottomBarView.collapseView()
+      this.emit('collapse')
     }
   }
 
@@ -318,7 +358,11 @@ export class WidgetExtensionView extends UIView {
    */
   cancelCall() {
     this.service.cancelCall()
-    this.activateCallDefaultStage()
+    if (!this.anyOperatorActive) {
+      this.activateCallDefaultStage()
+    } else if (!this.videoMode) {
+      this.collapseAndReinitActiveOperatorInitForm(false)
+    }
   }
 
   /**
@@ -344,7 +388,15 @@ export class WidgetExtensionView extends UIView {
    * @memberof WidgetExtensionView
    */
   onCallRejected() {
-    this.collapseAndReinitActiveOperatorInitForm()
+    this.activateCallRejectedStage()
+  }
+
+  activateCallRejectedStage() {
+    const line1Element = this.uiGet('.qh_video-ui_awating--line1')
+    line1Element.classList.add('qh_tight')
+    line1Element.innerHTML = 'Sorry, all of our operators are busy, we will email you shortly!'
+    const line2Element = this.uiGet('.qh_video-ui_awating--line2')
+    line2Element.remove()
   }
 
   /**
@@ -380,6 +432,7 @@ export class WidgetExtensionView extends UIView {
     this.deactivateAllStages()
     const stageElement = this.uiGet('.qh_submodule--rate-ux')
     stageElement.classList.add('js-enabled')
+    this.initRateUXCloser()
   }
 
   /**
@@ -402,6 +455,8 @@ export class WidgetExtensionView extends UIView {
     hangupButton.addEventListener('click', () => {
       this.onHangUpVideoChat()
     })
+
+    this.initVideoCloser()
   }
 
   onJoinVideoChat() {}
@@ -429,22 +484,13 @@ export class WidgetExtensionView extends UIView {
   }
 
   /**
-   * Sets bottom bar element.
-   *
-   * @param {WidgetExtensionView} extensionView
-   */
-  setBottomBar(bottomBarView) {
-    this.bottomBarView = bottomBarView
-  }
-
-  /**
    * Activates video mode.
    *
    * @memberof WidgetExtensionView
    */
   activateVideoMode() {
     this.element.classList.add('qh_video-mode')
-    this.videoMode = true  
+    this.videoMode = true
   }
 
   /**

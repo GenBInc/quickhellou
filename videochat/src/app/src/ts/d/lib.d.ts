@@ -1,41 +1,45 @@
 interface Document {
-  cancelFullScreen: boolean | any;
-  mozFullScreen: boolean;
-  isFullScreen: boolean;
-  webkitFullscreenElement: Element;
-  mozCancelFullScreen(): void;
-  msExitFullscreen(): void;
+  cancelFullScreen: boolean | any
+  mozFullScreen: boolean
+  isFullScreen: boolean
+  webkitFullscreenElement: Element
+  mozCancelFullScreen(): void
+  msExitFullscreen(): void
 }
 
 interface HTMLElement {
-  requestFullScreen: boolean | any;
-  msRequestFullscreen(): void;
-  mozRequestFullScreen(): void;
+  requestFullScreen: boolean | any
+  msRequestFullscreen(): void
+  mozRequestFullScreen(): void
 }
 
 interface RTCPeerConnection extends EventTarget {
-  generateCertificate: (certParams: any) => any;
+  generateCertificate: (certParams: any) => any
 }
 
 interface Navigator {
-  getDisplayMedia: any;
+  getDisplayMedia: any
 }
 
 interface MediaDevices {
-  getDisplayMedia: any;
+  getDisplayMedia: any
 }
 
 interface MediaTrackSupportedConstraints {
-  mediaSource: any;
+  mediaSource: any
 }
 
 interface MediaStreamConstraints {
-  mediaSource?: string | boolean | MediaTrackConstraints;
+  mediaSource?: string | boolean | MediaTrackConstraints
 }
 
-declare var adapter: any;
-declare var apprtc: any;
-declare var chrome: any;
-declare var inlineLoadingParams: any;
-declare var version: any;
-declare var environment: any;
+interface RTCPeerConnection {
+  onstatsended: any
+}
+
+declare var adapter: any
+declare var apprtc: any
+declare var chrome: any
+declare var inlineLoadingParams: any
+declare var version: any
+declare var environment: any

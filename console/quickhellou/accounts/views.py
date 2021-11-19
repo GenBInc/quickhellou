@@ -11,9 +11,9 @@ from django.db import transaction
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 
-from .models import User
+from .models import User, Profile
 from .forms import ForgotPasswordForm, ProfileForm, ProfileMetaForm, \
-    ResetPasswordForm, UserForm, WidgetForm
+    ResetPasswordForm, UserForm, WidgetForm, ProfileThumbnailForm
 from dashboard.models import (Widget, ClientBoard, ApplicationSettings)
 
 # Create your views here.
@@ -139,6 +139,20 @@ def reset_password_view(request, user_id):
     else:
         form = ResetPasswordForm(data=request.POST)
     return render(request, 'accounts/reset-password.html', context={'user_id': user_id, 'form': form})
+
+def upload_thumbnail(request, profile_id):
+    if request.method == 'POST':
+        form = ProfileThumbnailForm(request.POST, request.FILES)
+        if form.is_valid():
+            profile = Profile.objects.get(id=profile_id)
+            profile.thumbnail = request.FILES['thumbnail']
+            profile.save()
+            return redirect('dashboard:home')
+        else:
+            form = ProfileThumbnailForm()
+    else:
+        form = ProfileThumbnailForm()
+    return redirect('dashboard:home')
 
 def activate_user_view(request, user_id):
     user = User.objects.get(id=user_id)

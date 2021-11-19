@@ -119,12 +119,12 @@ class CommunicationManager(models.Manager):
         return super(CommunicationManager, self).get_queryset()
 
 class Communication(models.Model):
-    STATUS_CREATED = 1
+    STATUS_OPEN = 1
     STATUS_PENDING = 2
     STATUS_CLOSED = 3
     STATUS_COMPLETED = 4
     STATUS_CHOICES = (
-        (STATUS_CREATED, 'created'),
+        (STATUS_OPEN, 'open'),
         (STATUS_PENDING, 'pending'),
         (STATUS_CLOSED, 'closed'),
         (STATUS_COMPLETED, 'completed'),
@@ -139,7 +139,7 @@ class Communication(models.Model):
     active = models.BooleanField(default=True)
     status = models.SmallIntegerField(
         choices=STATUS_CHOICES,
-        default=STATUS_CREATED,
+        default=STATUS_OPEN,
     )
 
     objects = CommunicationManager()
