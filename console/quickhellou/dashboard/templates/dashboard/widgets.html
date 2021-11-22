@@ -42,6 +42,7 @@
             <div class="fc widget-list__field widget-list__field--language">Language</div>
             <div class="fc widget-list__field widget-list__field--status">Status</div>
             <div class="fc widget-list__field widget-list__field--last-change">Last change</div>
+            <div class="f1"></div>
             <div class="frc widget-list__field widget-list__field--mod-bar">
               <a class="widget-list__create" href="{% url 'dashboard:widget_create' %}" target="_self">CREATE</a>
             </div>
@@ -49,7 +50,7 @@
           <div class="fcol view-list__content widget-list__content">
             {% for widget in widgets %}
             <div class="flc view-list__entry widget-list__entry">
-              <div class="widget-list__field widget-list__field--id">#{{ widget.id }}</div>
+              <div class="widget-list__field widget-list__field--id">{{ widget.id }}</div>
               <div class="flc widget-list__field widget-list__field--url">
                 <div class="fcol">
                   <div class="widget-list__url-label">{{ widget.name }}</div>
@@ -73,18 +74,19 @@
               </div>
               <div class="fc df-c widget-list__field widget-list__field--last-change">
                 <div class="fcol">
-                  <div class="widget-list__change-date">{{ widget.last_change|date:"m-d-Y" }}</div>
+                  <div class="widget-list__change-date">{{ widget.last_change|date:"m/d/Y" }}</div>
                   <div class="widget-list__change-author">by {{ widget.last_editor.get_full_name }}</div>
                 </div>
               </div>
+              <div class="f1"></div>
               <div class="flc widget-list__field widget-list__field--mod-bar">
-                <a class="fc df-f1 list-link--edit" href="{% url 'dashboard:widget_edit' widget_id=widget.id  %}" target="_self">Edit</a>
+                <a class="fc df-f1 widgets__list-link list-link--edit" href="{% url 'dashboard:widget_edit' widget_id=widget.id  %}" target="_self">Edit</a>
                 {% if widget.paused %}
-                <a class="fc df-f1 link--unpause-widget" href="{% url 'dashboard:widget_unpause' widget_id=widget.id  %}">Activate</a>
+                <a class="fc df-f1 widgets__list-link link--unpause-widget" href="{% url 'dashboard:widget_unpause' widget_id=widget.id  %}">Activate</a>
                 {% else %}
-                <a class="fc df-f1 list-link--pause" href="{% url 'dashboard:widget_pause' widget_id=widget.id  %}">Pause</a>
+                <a class="fc df-f1 widgets__list-link list-link--pause" href="{% url 'dashboard:widget_pause' widget_id=widget.id  %}">Pause</a>
                 {% endif %}
-                <a class="fc df-f1 list-link--delete" href="{% url 'dashboard:widget_delete' widget_id=widget.id  %}">Delete</a>
+                <a class="fc df-f1 widgets__list-link list-link--delete" href="{% url 'dashboard:widget_delete' widget_id=widget.id  %}">Delete</a>
               </div>
             </div>
             {% endfor %}

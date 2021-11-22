@@ -19,11 +19,11 @@
     <div class="f1"></div>
     <div class="flc widget-list__field widget-list__field--mod-bar">
       {% if communication.status == 1 and communication.pending_sessions_count > 0 %}
-      <a class="fc df-f1 list-link--accept" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Accept</a>
-      <a class="fc df-f1 list-link--reject" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Reject</a>
+      <a class="fc df-f1 com__list-link list-link--accept" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Accept</a>
+      <a class="fc df-f1 com__list-link list-link--reject" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Reject</a>
       {% else %}
-      <a class="fc df-f1 list-link--edit" href="{% url 'dashboard:communication_edit' communication_id=communication.id  %}">Edit</a>      
-      <a class="fc df-f1 list-link--delete" href="{% url 'dashboard:communication_delete' communication_id=communication.id  %}">Delete</a>      
+      <a class="fc df-f1 com__list-link list-link--edit" href="{% url 'dashboard:communication_edit' communication_id=communication.id  %}">Edit</a>      
+      <a class="fc df-f1 com__list-link list-link--delete" href="{% url 'dashboard:communication_delete' communication_id=communication.id  %}">Delete</a>      
       {% endif %}
     </div>
   </div>
