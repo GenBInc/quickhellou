@@ -1,5 +1,0 @@
-New user has registered:
-Email:{{email}}
-Full Name:{{full_name}}
-Phone:{{phone}}
-CallPage URL:{{callpage_url}}

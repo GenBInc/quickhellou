@@ -1,0 +1,38 @@
+version: "3"
+   
+services:
+  console_db:
+    container_name: console_db
+    image: postgres:alpine
+    volumes: 
+      - ./temp/db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    networks:
+      - console_network
+  console_pyserver:
+    container_name: console_pyserver
+    build:
+      context: ./console/pyserver
+      args:
+        DJANGO_ALLOWED_HOSTS: '*'
+        DJANGO_SECRET_KEY: '*'
+    command: bash -c "while !</dev/tcp/console_db/5432; do sleep 1; done; python manage.py migrate && gunicorn --reload console.wsgi --bind 0.0.0.0:8081"
+    ports:
+      - "8081:8081"
+    volumes:
+      - "./console/pyserver:/pyserver"
+    networks:
+      - console_network
+      - go_network
+    depends_on:
+      - console_db
+      - goserver
+networks:
+  console_network:
+    driver: bridge

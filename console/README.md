@@ -18,7 +18,7 @@ Run in the `root` folder
 Windows:
 
 ```
-virtualenv env
+python -m venv env
 env/Scripts/activate
 pip install -r requirements.txt
 ```

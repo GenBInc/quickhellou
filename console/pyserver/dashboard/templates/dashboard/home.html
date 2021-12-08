@@ -1,0 +1,39 @@
+{% extends 'dashboard/base.html' %}
+{% load sekizai_tags static %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Home{% endblock %}
+
+{% block nav %}
+<nav class="fcol mdc-list aside__navi-list">
+  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:home' %}">
+    Dashboard<span></span>
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:communications' %}">
+    Communications
+  </a>
+  {% if user.is_default_admin %}
+  <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
+    Widgets
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
+    Team
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
+    Billing
+  </a>
+  <a class="aside__navi-item aside__navi-item" href="{% url 'dashboard:settings' %}">
+    Settings
+  </a>
+  {% endif %}
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="fc">
+  <div class="fcol welcome">
+    <img src="{% static '/images/hellou-quick.svg' %}" alt="quickhellou logo">
+    <p class="welcome__text">Welcome to the QuickHellou console.</p>
+  </div>
+</div>
+{% endblock %}

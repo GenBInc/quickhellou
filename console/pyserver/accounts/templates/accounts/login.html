@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load sekizai_tags static %}
+
+{% block title %}QuickHellou | Login{% endblock %}
+
+{% block content %}
+
+{% addtoblock "css" %}
+<link rel="stylesheet" type="text/css" href="{% static '/css/accounts.css' %}" />
+{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script src="{% static '/js/accounts.js' %}"></script>
+{% endaddtoblock %}
+
+<div class="fct container">
+  <div class="fcol wrapper wrapper--thin wrapper--login login">
+    <div class="m-logo">
+      <div class="m-logo__image">
+        <img src="{% static '/images/hellou-quick.svg' %}" alt="quickhellou logo">
+      </div>
+      <div class="m-logo__description">
+        <p><span>login in</span>&nbsp;to your account</p>
+      </div>
+    </div>
+    <div class="">
+      <div class="m-form form__container form--login__container">
+        <form class="fcol site-form" action="{% url 'accounts:login' %}" method="post" novalidate>
+          {% csrf_token %}
+          {% if request.GET.next %}
+            <input type="hidden" name="next" value="{{request.GET.next}}">
+          {% endif %}
+          {% if messages %}
+          <ul class="messages">
+              {% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+              {% endfor %}
+          </ul>
+          {% endif %}
+
+          <div class="mdc-text-field mdc-text-field--outlined login__email">
+            <input type="text" id="login-input" name="username" class="mdc-text-field__input form__text form--login__text form__input form--login__input "
+              required>
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="tf-outlined" class="mdc-floating-label form__text form--login__text  form__label form--login__label">Work e-mail</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+          <div class="mdc-text-field mdc-text-field--outlined login__password">
+            <input type="password" id="password-input" name="password" class="mdc-text-field__input form__text form--login__text form__input form--login__input "
+              required>
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="password-input" class="mdc-floating-label form__text form--login__text  form__label form--login__label">Password</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="m-form__space"></div>
+          <input type="submit" class="m-form__button--login form__submit login__submit" value="Log In">
+          <div class="flc m-form__forgot-password">
+            <a class="m-form__link--forgot-password login__forgot-password" href="{% url 'accounts:signup' %}">Sign Up</a>
+            <div class="f1"></div>
+            <a class="m-form__link--forgot-password login__forgot-password" href="{% url 'accounts:forgot-password' %}">Forgot
+              Password?</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

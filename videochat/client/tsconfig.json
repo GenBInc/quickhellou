@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./js/",
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "module": "commonjs",
+    "target": "es5",
+    "lib": ["es5", "es6", "es7", "dom"], 
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "pretty": true,
+    "skipLibCheck": true,
+    "paths": {
+        "*" : ["./node_modules/@types/*", "*"]
+    },
+    "typeRoots": [
+      "./node_modules/@types/"
+    ]
+  },
+  "exclude": [
+    "misc"
+  ],
+  "include": ["./src/ts/d/lib.d.ts"]
+}

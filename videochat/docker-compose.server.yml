@@ -1,0 +1,37 @@
+version: "3"
+   
+services:
+  redis:
+    container_name: redis
+    build:
+      context: ./redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./redis:/redis"
+    networks:
+      - redis_network
+  videochat_pyserver:
+    container_name: videochat_pyserver
+    build:
+      context: ./videochat/pyserver
+      args:
+        DJANGO_ALLOWED_HOSTS: '*'
+        DJANGO_SECRET_KEY: '*'
+    command: bash -c "python manage.py migrate && gunicorn --reload qhv2.wsgi --bind 0.0.0.0:8080"
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./videochat/pyserver:/pyserver"
+    networks:
+      - videochat_network
+      - redis_network
+      - go_network
+    depends_on:
+      - goserver
+      - redis
+networks:
+  videochat_network:
+    driver: bridge
+  redis_network:
+    driver: bridge

@@ -1,0 +1,151 @@
+{% extends 'dashboard/base.html' %}
+{% load sekizai_tags static %}
+
+{% block title %}Edit Communication{% endblock %}
+{% block page_title %}Edit Communication{% endblock %}
+
+{% block nav %}
+<nav class="fcol mdc-list aside__navi-list">
+  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
+    Communications
+  </a>
+  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:communications' %}">
+    Communications
+  </a>
+  {% if user.is_default_admin %}
+  <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
+    Widgets<span></span>
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
+    Team<span></span>
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
+    Billing
+  </a>
+  <a class="aside__navi-item aside__navi-item" href="{% url 'dashboard:settings' %}">
+    Settings
+  </a>
+  {% endif %}
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="fc">
+  <div class="wrapper wrapper--thin wrapper--profile">
+    <div class="fcol">
+      <div class="form--settings__form-container form-container">
+        <p class="form__header">Customer information</p>
+        <form class="fcol site-form form--profile" 
+        action="{% url 'dashboard:communication_edit' communication_id=communication.id %}" method="post"
+          novalidate enctype="multipart/form-data">
+          {% csrf_token %}
+          {% if request.GET.next %}
+          <input type="hidden" name="next" value="{{request.GET.next}}">
+          {% endif %}
+          {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <div class="fcol form__content">
+            {% if form.caller_name.errors %}
+            <div class="errornote">
+              {{ form.caller_name.errors }}
+            </div>
+            {% endif %}
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+              <input type="text" id="name-input" name="caller_name" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+                value="{{ client_user.profile.full_name }}" >
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Name</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            {% if 'fake.org' not in client_user.email %}
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+              <input type="text" id="name-input" name="caller_name" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+                value="{{ client_user.email }}" >
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">E-mail Address</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            {% endif %}
+            {% if client_user.profile.phone %}
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+              <input type="text" id="name-input" name="caller_name" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+                value="{{ client_user.profile.phone }}" >
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Phone Number</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="errornote">
+              {{ form.status.errors }}
+            </div>
+            <div class="mdc-select mdc-select--outlined form--widget-create__name form__field--upper">
+              <i class="mdc-select__dropdown-icon"></i>
+              <select class="mdc-select__native-control" name="status" required>
+                <option value="" disabled></option>                
+                {% for value, label in statuses %}
+                  <option value="{{ value }}" {% if communication.status == value %} selected {% endif %}>{{ label|title }}</option>
+                {% endfor %}
+              </select>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                   <label class="mdc-floating-label">Status</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+
+            <p class="form__subheader">Sessions</p>
+            <ul class="mdc-list mdc-list--two-line" role="group" >
+            {% for com_session in com_sessions %}
+              <li class="mdc-list-item com-session-list-item--{{ com_session.status }}" tabindex="0">
+                <a class="mdc-list-item__text" href="{% url 'dashboard:communication_session_edit' session_id=com_session.id %}">
+                  <span class="mdc-list-item__primary-text"><b>#{{ com_session.id }}</b> {{ com_session.type_verbose|title }}</span>
+                  <span class="mdc-list-item__secondary-text">{{ com_session.status_verbose|title }} by <i>{{ com_session.attendant.profile.full_name }}</i> on {{ com_session.creation_time|date:"m/d/Y H:i:s" }}</span>
+                </a>
+              </li>
+            {% empty %}
+              No sessions found.
+            {% endfor %}
+            </ul>
+
+            <div class="form__field--upper">
+            </div>
+          </div>
+          <div class="fc">
+            <div class="flc form__ui">
+              <div>
+                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
+              </div>
+              <div>
+                <a href="{% url 'dashboard:communications' %}">
+                  <input type="button" class="form__button" value="Back">
+                </a>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

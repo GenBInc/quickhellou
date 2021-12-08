@@ -1,1 +1,0 @@
-C:\Python27\python "c:\Program Files (x86)\Google\Cloud SDK\google-cloud-sdk\bin\dev_appserver.py" dist

@@ -1,0 +1,282 @@
+.df {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.df-col {
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+.df-row {
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+}
+
+.df-f1 {
+  -webkit-flex: 1 !important;
+  -ms-flex: 1 0 auto;
+  flex: 1 0;
+}
+
+.df-space {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex: 1 !important;
+  -ms-flex: 1 0 auto;
+  flex: 1 0 auto;
+}
+
+.df-c {
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.df-lc {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.df-rc {
+  -webkit-align-items: flex-end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.df-cr {
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+
+
+.df-tr {
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+.df-ct {
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+}
+
+.df-lt {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+}
+
+.df-lb {
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+}
+
+.f1 {
+  @include df;
+  @include df-f1;
+}
+
+.fc {
+  @include df;
+  @include df-c;
+}
+
+.fct {
+  @include df;
+  @include df-ct;
+}
+
+.flc {
+  @include df;
+  @include df-lc;
+}
+
+.frc {
+  @include df;
+  @include df-rc;
+}
+
+.flt {
+  @include df;
+  @include df-lt;
+}
+
+.fcol {
+  @include df;
+  @include df-col;
+}
+
+.markup {
+	clip: rect(1px, 1px, 1px, 1px);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+$mdc-typography-styles-button: (
+  font-family:'Raleway',
+  font-weight:700
+);
+
+.messages,
+.errornote {
+  width:100%;
+  padding:0;
+}
+
+.messages {
+  margin:0;
+  margin-bottom:20px;
+}
+
+.errornote {
+  color:#c90000;
+  font-size:.75rem;
+  text-align:right;
+}
+
+.errorlist {
+  margin:0;
+  padding:0;
+}
+
+.messages li,
+.errorlist li {
+  list-style: none;
+}
+
+.messages li.error {
+  color:#c90000;
+}
+
+.messages li.success {
+  color:#00a100;
+}
+
+.wrapper--thin {
+  width:600px;
+  margin-top:78px;
+}
+
+.form__content {
+  margin-bottom:50px;
+  flex-direction: column;   
+}
+
+.form__content_widget,
+.form__content_user_edit,
+.form__content_settings,
+.form__content_widget_create,
+.form__content_widget_edit {
+
+ margin-bottom: 20px;
+ 
+}
+
+.form__header {
+  color:$color--resolution-blue;
+  font-weight:600;
+  margin-bottom:20px;
+}
+
+.form__subheader {
+  color:$color--resolution-blue;
+  font-weight:600;
+}
+
+.form {
+  margin-bottom:40px;
+}
+
+.form__submit {
+  cursor: pointer;
+  font-family:'Raleway';
+  font-weight:600;
+  font-size:1.125rem;
+  background-color: white;
+  border-color:$color--green;
+  color:$color--green;
+  border-width: 1px;
+  border-style: solid;
+  /*margin-bottom:40px;*/
+  transition: background-color .2s ease, color .2s ease;
+}
+
+.form__button {
+  font-size:1.125rem;
+  cursor: pointer;
+  font-family:'Raleway';
+  font-weight:600;
+  padding: 10px 30px;
+  border-radius: 20px;
+  border-width: 1px;
+  border-style: solid;
+  background-color: white;  
+}
+
+.form__button:hover {
+  background-color:$color--white;
+  border-color:black;
+  color:black;
+}
+
+.form__submit:hover {
+  background-color:$color--white;
+  border-color:black;
+  color:black;
+}
+
+.form__input {
+  background-color: white;
+  border-color:lightgray;
+  border-radius:2px;
+  width:100%; 
+}
+
+.form__text {
+  font-family:'Raleway';
+}
+
+.form__field--upper {
+  margin-bottom:15px;
+}
+
+.form__phone {
+  z-index:2;
+}

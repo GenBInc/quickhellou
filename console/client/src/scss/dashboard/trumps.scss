@@ -1,0 +1,32 @@
+
+.mdc-snackbar {
+  z-index:6;
+}
+
+.mdc-snackbar__text {
+  color:$color--green;
+}
+
+.mdc-snackbar__action-button {
+  color:white;
+}
+
+.mdc-list-item a {
+  color:$color--resolution-blue;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.mdc-radio .mdc-radio__native-control:enabled:not(:checked) + .mdc-radio__background .mdc-radio__outer-circle {
+  border-color:transparent;
+}
+
+.mdc-radio .mdc-radio__native-control:enabled:checked + .mdc-radio__background .mdc-radio__outer-circle {
+  border-color:$color--dark-orange;
+  border-width: 2px;
+}
+
+.mdc-radio__outer-circle, 
+.mdc-radio__inner-circle {
+  border-radius:0;
+} 

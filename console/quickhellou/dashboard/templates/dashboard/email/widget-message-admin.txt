@@ -1,4 +1,0 @@
-New message has been received.
-Email:{{email}}
-Phone:{{phone}}
-Message:{{message}}

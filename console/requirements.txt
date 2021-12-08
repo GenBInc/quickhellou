@@ -1,6 +1,0 @@
-Django==3.2.4
-django-classy-tags==2.0.0
-django-sekizai==2.0.0
-djangorestframework==3.12.4
-psycopg2==2.8.6
-django-cors-headers==3.7.0

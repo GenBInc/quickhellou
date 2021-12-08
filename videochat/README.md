@@ -63,7 +63,7 @@ pip install -r requirements.txt
 
 if WSTLS:
     ALLOWED_HOSTS = ['<your_app_url>']
-    VERIFY = '<your_ssl_ceertificate_file_url>'
+    VERIFY = '<your_ssl_certificate_file_url>'
     HOST_URL = '<your_host_url>'
 
 ICE_SERVER_BASE_URL = '<turn_server_name:port>'
@@ -85,8 +85,6 @@ if WSTLS:
         WSS_INSTANCE_ZONE_KEY: 'us-central1-f'
     }]
     WSS_HOST_ACTIVE_HOST_KEY = '<host_name:port>'
-
-REDIRECT_URL = '<your_app_url>'
 
 ICE_SERVER_OVERRIDE = [
     {
