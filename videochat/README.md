@@ -2,62 +2,18 @@
 
 The WebRTC based video chat application. It allows:
 * multi-peer video chat conferences
-* share screen
-* schedule meetings
+* share screen between peers
 
 ## References
 
 Initially based on the [AppRTC project](https://github.com/webrtc/apprtc).
-Currently it's a Py3/Django application that uses the Redis server as an in-memory data structure store. 
-
-## External services
-
-In order to run video chat application it's required to have a working signaling server.
-```
-collider
-```
-
-## Requirements
-
-[Python 3.7](https://www.python.org/downloads/release/python-3712)
-
-[PIP 3](https://pip.pypa.io/en/stable/installation)
-
-[Redis](https://redis.io/)
-
-[Node.js](https://nodejs.org/en)
-
-[npm](https://www.npmjs.com/get-npm)
+Currently it's a Py3/Django application that uses the Redis server for memory caching.
 
 ## Python application installation guide
 
 ### Windows
 
-1. Install dependencies in the application `root` folder
-
-```
-virtualenv env
-env/Scripts/activate
-pip install -r requirements.txt
-```
-2. Run development server
-
-```
-cd ./qhv2
-python manage.py runserver 8080
-```
-
-### Unix
-
-1. Install dependencies in the application `root` folder
-
-```
-virtualenv env
-source "env/bin/activate"
-pip install -r requirements.txt
-```
-
-2. Update keys in the `qhv2/qhv2/settings.py` configuration file with your settings.
+Update keys in the `qhv2/qhv2/settings.py` configuration file with your settings.
 
 ```javascript
 
