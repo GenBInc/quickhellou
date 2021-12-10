@@ -72,23 +72,6 @@ WSGIDaemonProcess qhv2 python-path=/{path_to_project}/env/lib/python3.7/site-pac
 ``` 
 3. Restart Apache instance.
 
-## Front application
-
-1. Install dependencies
-```
-npm i
-```
-
-2. Compile and watch for developmment purposes
-```
-npm run watch
-```
-
-3. Compile and for production purposes
-```
-npm run production
-```
-
 ### Useful links
 
 AppRTC

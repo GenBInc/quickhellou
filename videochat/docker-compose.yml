@@ -4,11 +4,11 @@ services:
   redis:
     container_name: redis
     build:
-      context: ./redis
+      context: ./videochat/redis
     ports:
       - "6379:6379"
     volumes:
-      - "./redis:/redis"
+      - "./videochat/redis:/redis"
     networks:
       - redis_network
   videochat_pyserver:

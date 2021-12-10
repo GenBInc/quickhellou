@@ -57,32 +57,32 @@ docker-compose -f docker-compose.yml -f videochat/docker-compose.yml -f console/
 
 Run the videochat services.
 ```
-docker-compose -f docker-compose.yml -f -f videochat/docker-compose.yml up
+docker-compose -f docker-compose.yml -f videochat/docker-compose.yml up
 ```
 
 Run the console services.
 ```
-docker-compose -f docker-compose.yml -f -f console/docker-compose.yml up
+docker-compose -f docker-compose.yml -f console/docker-compose.yml up
 ```
 
 Run the videochat server services.
 ```
-docker-compose -f docker-compose.yml -f -f videochat/docker-compose.server.yml up
+docker-compose -f docker-compose.yml -f videochat/docker-compose.server.yml up
 ```
 
 Run the videochat client services.
 ```
-docker-compose -f docker-compose.yml -f -f videochat/docker-compose.client.yml up
+docker-compose -f docker-compose.yml -f videochat/docker-compose.client.yml up
 ```
 
 Run the console server services.
 ```
-docker-compose -f docker-compose.yml -f -f console/docker-compose.server.yml up
+docker-compose -f docker-compose.yml -f console/docker-compose.server.yml up
 ```
 
 Run the console client services.
 ```
-docker-compose -f docker-compose.yml -f -f console/docker-compose.client.yml up
+docker-compose -f docker-compose.yml -f console/docker-compose.client.yml up
 ```
 
 
