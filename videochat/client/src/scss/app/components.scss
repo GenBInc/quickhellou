@@ -132,7 +132,6 @@
 
 .feature-option__icon-button {
   border-radius: 50%;
-  display: block;
   width: 100px;
   height: 100px;
   background-size: 50% 50%;
@@ -157,8 +156,12 @@
 }
 
 .open-quick-talk {
-  /*background-image: url('/static/images/quick-talk.svg');*/
   background-color: $color--lawn-green;
+}
+
+div.open-quick-talk img {
+  width:60%;
+  height:auto;
 }
 
 .feature-option__icon-button:hover {
