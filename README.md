@@ -46,7 +46,7 @@ turn
 
 ## Development
 
-In order to install the development environment it's required to install the [Docker](https://www.docker.com/) service. 
+In order to install the development environment it's required to install the [Docker](https://www.docker.com) service. 
 \
 ### Install and run
 \
@@ -85,6 +85,6 @@ Run the console client services.
 docker-compose -f docker-compose.yml -f console/docker-compose.client.yml up
 ```
 
+## Partners
 
-
-Quick Hellou source code is completely free and released under the [MIT License] (https://github.com/GenBInc/quickhellou/blob/main/LICENSE.md).
+Quick Hellou source code is completely free and released under the [MIT License](https://github.com/GenBInc/quickhellou/blob/main/LICENSE.md).
