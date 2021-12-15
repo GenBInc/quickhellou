@@ -85,6 +85,10 @@ Run the console client services.
 docker-compose -f docker-compose.yml -f console/docker-compose.client.yml up
 ```
 
-## Partners
+## Contributing
 
-Quick Hellou source code is completely free and released under the [MIT License](https://github.com/GenBInc/quickhellou/blob/main/LICENSE.md).
+Please read our [Contributing Guide](https://github.com/GenBInc/quickhellou/blob/main/CONTRIBUTING.md) before submitting a Pull Request to the project.
+
+## Licensing
+
+Quick Hellou source code is released under the [MIT License](https://github.com/GenBInc/quickhellou/blob/main/LICENSE.md).
