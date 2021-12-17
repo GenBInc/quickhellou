@@ -1,3 +1,8 @@
+<div align="center">
+  <img src="" height="60px" alt="Quick Hellou"/>
+</div>
+
+
 # Quick Hellou
 
 The application provides helpdesk solution based on WebRTC video communications.
@@ -47,9 +52,9 @@ turn
 ## Development
 
 In order to install the development environment it's required to install the [Docker](https://www.docker.com) service. 
-\
+
 ### Install and run
-\
+
 Run all services for both the videochat and the console applications.
 ```
 docker-compose -f docker-compose.yml -f videochat/docker-compose.yml -f console/docker-compose.yml up
