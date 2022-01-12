@@ -551,7 +551,7 @@ class SendInvitation(View):
       attachment = MIMEText(calendarData)
       attachment.add_header('Content-Disposition', 'attachment', filename='calendar.csv')
       msg.attach(attachment)
-    smtp = smtplib.SMTP("localhost", 2525)
+    smtp = smtplib.SMTP("localhost", 25)
     smtp.set_debuglevel(True)
     try:
       smtp.sendmail("no-reply@quickhellou.com", receiver, msg.as_string())
