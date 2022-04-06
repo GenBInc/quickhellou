@@ -46,7 +46,7 @@
 }
 
 .view--room-selection {
-  background: url(/static/images/room-selection-background.jpg) no-repeat center center fixed;
+  background: white;
   -webkit-background-size: cover;
   background-size: cover;
   @media (min-width: $s-lg) {
