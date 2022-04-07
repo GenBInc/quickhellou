@@ -11,6 +11,6 @@ ENV DJANGO_CORS_ORIGIN_WHITELIST $DJANGO_CORS_ORIGIN_WHITELIST
 
 RUN mkdir /pyserver
 WORKDIR /pyserver
-EXPOSE 8080
+EXPOSE 8081
 COPY . /pyserver/
 RUN pip install -r requirements.txt
