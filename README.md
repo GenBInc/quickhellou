@@ -33,6 +33,14 @@ It provides installable in-page client plugins and the customer-operator communi
 console
 ```
 
+## Execution environment
+
+In order to install the execution environment it's required to install the [Docker](https://www.docker.com) service. 
+
+!!! Please read also for configurion guides!!!
+[Read /videochat/README.md] (https://github.com/GenBInc/quickhellou/blob/main/videochat/README.md)
+
+
 ### Websocket server
 
 Server application to manage user-to-user communications.
@@ -46,19 +54,12 @@ The TURN server guidelines for relaying the traffic between peers.
 ```
 turn
 ```
-Read /turn/README.md for installation guidelines.
-
-## Execution environment
-
-In order to install the execution environment it's required to install the [Docker](https://www.docker.com) service. 
-
-!!! Please read also for configurion guides!!!
-/videochat/README.md
+[Read /turn/README.md](https://github.com/GenBInc/quickhellou/blob/main/turn/README.md) for installation guidelines.
 
 
-### Install and run
+## Quick Hellou Install and run
 
-Edit .env file
+Edit [.env](https://github.com/GenBInc/quickhellou/blob/main/.env) file
 https://github.com/GenBInc/quickhellou/blob/main/.env
 
 
