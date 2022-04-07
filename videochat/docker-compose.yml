@@ -1,13 +1,5 @@
 version: "3"
-
-networks:
-  videochat_network:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.170.0.0/24
-   
+  
 services:
 
   videochat_pyserver:
@@ -51,20 +43,6 @@ services:
       - goserver
       - redis
 
-  videochat_client:
-    container_name: videochat_client
-    build:
-      context: ./videochat/client
-    command: npm run watch
-    environment: 
-      - NODE_ENV=development
-    networks:
-      videochat_network:
-        ipv4_address: 192.170.0.11
-
-    volumes:
-      - "./videochat/client:/client/"
-
   redis:
     container_name: redis
     build:
@@ -79,3 +57,25 @@ services:
       videochat_network:
         ipv4_address: 192.170.0.12
 
+
+  videochat_client:
+    container_name: videochat_client
+    build:
+      context: ./videochat/client
+    command: npm run watch
+    environment: 
+      - NODE_ENV=development
+    networks:
+      videochat_network:
+        ipv4_address: 192.170.0.11
+
+    volumes:
+      - "./videochat/client:/client/"
+
+networks:
+  videochat_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.170.0.0/24

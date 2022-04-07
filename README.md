@@ -100,7 +100,7 @@ Run the videochat server services.
 docker-compose -f docker-compose.yml -f videochat/docker-compose.server.yml --env-file ./your-file.env up
 ```
 
-Run the videochat client services.
+Run the videochat client services (collider).
 ```
 docker-compose -f docker-compose.yml -f videochat/docker-compose.client.yml --env-file ./your-file.env up
 ```
