@@ -9,9 +9,9 @@ services:
       args:
         DJANGO_ALLOWED_HOSTS: '*'
         DJANGO_SECRET_KEY: '*'
-    command: bash -c "while !</dev/tcp/console_db/${POSTGRES_PORT}; do sleep 1; done; python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload console.wsgi --bind 0.0.0.0:{$HELPDESK_APP_PORT}"
+    command: bash -c "while !</dev/tcp/console_db/${POSTGRES_PORT}; do sleep 1; done; python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload console.wsgi --bind 0.0.0.0:${HELPDESK_APP_PORT}"
     ports:
-      - "{$HELPDESK_APP_PORT}:{$HELPDESK_APP_PORT}"
+      - "${HELPDESK_APP_PORT}:${HELPDESK_APP_PORT}"
     volumes:
       - "./console/pyserver:/pyserver"
     networks:
@@ -21,6 +21,17 @@ services:
     environment:
       - HELPDESK_APP_PORT=${HELPDESK_APP_PORT}
       - HELPDESK_APP_HOST=${HELPDESK_APP_HOST}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - EMAIL_USE_SSL=${EMAIL_USE_SSL}
+
+      - CERT_FILE=${CERT_FILE}
+      - KEY_FILE=${KEY_FILE}
+
+      - SUPPORT_EMAIL=${SUPPORT_EMAIL}      
+      - SECRET_KEY=${SECRET_KEY}
 
     depends_on:
       - console_db
