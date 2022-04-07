@@ -26,22 +26,18 @@ SECRET_KEY = 'django-insecure-gv*^x*l!1v6w0@^*x!i0w1j(5&m*aph)k(*!a*3z#=tr6#@5u^
 #strtobool(os.environ.get('EMAIL_USE_SSL'))
 
 
-WSTLS = os.environ.get('SERVER_GATEWAY_INTERFACE') == 'Web'
-if not WSTLS:
-    WSTLS = False
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-WSTLS = False
+WSTLS = True # Needs to be True to access camera/mic on production #
 
 ALLOWED_HOSTS = ['*']
 
 if WSTLS:
     VERIFY = os.environ.get('CERT_FILE')
-    HOST_URL = os.environ.get('APP_URL')
+    HOST_URL = 'https://'+str(os.environ.get('APP_HOST'))
 else:
     VERIFY = False
-    HOST_URL = os.environ.get('APP_URL')
+    HOST_URL = 'https://'+str(os.environ.get('APP_HOST'))
 	
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -163,45 +159,45 @@ REST_FRAMEWORK = {
 # Deprecated domains which we should to redirect to REDIRECT_URL.
 REDIRECT_DOMAINS = []
 # URL which we should redirect to if matching in REDIRECT_DOMAINS.
-REDIRECT_URL = '<app_url>'
+REDIRECT_URL = str(os.environ.get('APP_HOST'))
 
-ICE_SERVER_BASE_URL = os.environ.get('TURN_SERVER_BASE_URL')
+ICE_SERVER_BASE_URL = str(os.environ.get('TURN_SERVER_BASE_URL'))
 ICE_SERVER_URL_TEMPLATE = '%s/turn?key=%s&username='+str(os.environ.get('TURN_SERVER_USERNAME'))
-ICE_SERVER_API_KEY = os.environ.get('TURN_SERVER_USERNAME')
-CEOD_KEY = os.environ.get('TURN_SERVER_USERNAME')
+ICE_SERVER_API_KEY = str(os.environ.get('TURN_SERVER_USERNAME'))
+CEOD_KEY = str(os.environ.get('TURN_SERVER_USERNAME'))
 
 
 # COLLIDER SERVER CONF
 # Dictionary keys in the collider instance info constant.
 if WSTLS:
-    WSS_INSTANCE_HOST_KEY = os.environ.get('COLLIDER_SERVER_BASE_URL')
+    WSS_INSTANCE_HOST_KEY = str(os.environ.get('COLLIDER_SERVER_BASE_URL'))
     WSS_INSTANCE_NAME_KEY = 'vm_name'
     WSS_INSTANCE_ZONE_KEY = 'zone'
     WSS_INSTANCES = [{
-        WSS_INSTANCE_HOST_KEY: os.environ.get('COLLIDER_SERVER_BASE_URL'),
+        WSS_INSTANCE_HOST_KEY: str(os.environ.get('COLLIDER_SERVER_BASE_URL')),
         WSS_INSTANCE_NAME_KEY: 'wsserver-std',
         WSS_INSTANCE_ZONE_KEY: 'us-central1-a'
     }, {
-        WSS_INSTANCE_HOST_KEY: os.environ.get('COLLIDER_SERVER_BASE_URL'),
+        WSS_INSTANCE_HOST_KEY: str(os.environ.get('COLLIDER_SERVER_BASE_URL')),
         WSS_INSTANCE_NAME_KEY: 'wsserver-std-2',
         WSS_INSTANCE_ZONE_KEY: 'us-central1-f'
     }]
-    WSS_HOST_ACTIVE_HOST_KEY = os.environ.get('COLLIDER_SERVER_BASE_URL')
+    WSS_HOST_ACTIVE_HOST_KEY = str(os.environ.get('COLLIDER_SERVER_BASE_URL'))
 else:
-    WSS_INSTANCE_HOST_KEY = os.environ.get('COLLIDER_SERVER_BASE_URL')
+    WSS_INSTANCE_HOST_KEY = str(os.environ.get('COLLIDER_SERVER_BASE_URL'))
     WSS_INSTANCE_NAME_KEY = 'vm_name'
     WSS_INSTANCE_ZONE_KEY = 'zone'
     WSS_INSTANCES = [{
-        WSS_INSTANCE_HOST_KEY: os.environ.get('COLLIDER_SERVER_BASE_URL'),
+        WSS_INSTANCE_HOST_KEY: str(os.environ.get('COLLIDER_SERVER_BASE_URL')),
         WSS_INSTANCE_NAME_KEY: 'wsserver-std',
         WSS_INSTANCE_ZONE_KEY: 'us-central1-a'
     }, {
-        WSS_INSTANCE_HOST_KEY: os.environ.get('COLLIDER_SERVER_BASE_URL'),
+        WSS_INSTANCE_HOST_KEY: str(os.environ.get('COLLIDER_SERVER_BASE_URL')),
         WSS_INSTANCE_NAME_KEY: 'wsserver-std-2',
         WSS_INSTANCE_ZONE_KEY: 'us-central1-f'
     }]
     # memcache key for the active collider host.
-    WSS_HOST_ACTIVE_HOST_KEY = os.environ.get('COLLIDER_SERVER_BASE_URL')
+    WSS_HOST_ACTIVE_HOST_KEY = str(os.environ.get('COLLIDER_SERVER_BASE_URL'))
 
 WSS_HOST_PORT_PAIRS = [ins[WSS_INSTANCE_HOST_KEY] for ins in WSS_INSTANCES]
 
@@ -216,8 +212,8 @@ WSS_HOST_ERROR_MESSAGE_KEY = 'error_message'
 
 ICE_SERVER_OVERRIDE = [
     {
-        "credential": os.environ.get('TURN_SERVER_USERNAME'),
-        "username": os.environ.get('TURN_SERVER_USERNAME'),
+        "credential": str(os.environ.get('TURN_SERVER_USERNAME')),
+        "username": str(os.environ.get('TURN_SERVER_USERNAME')),
         "urls": [
             "turn:"+str(os.environ.get('TURN_SERVER_BASE_URL'))+"?transport=udp",
             "turn:"+str(os.environ.get('TURN_SERVER_BASE_URL'))+"?transport=tcp"
@@ -225,7 +221,7 @@ ICE_SERVER_OVERRIDE = [
     },
     {
         "urls": [
-            "stun:www.quickhellou.com:3479"
+            "stun:"+str(os.environ.get('TURN_SERVER_BASE_URL'))
         ]
     }
 
