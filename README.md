@@ -57,7 +57,7 @@ turn
 [Read /turn/README.md](https://github.com/GenBInc/quickhellou/blob/main/turn/README.md) for installation guidelines.
 
 
-## Quick Hellou Install and run
+## Quick Hellou Install and Run
 
 ##UPDATE/EDIT PARAMS
 
@@ -68,6 +68,7 @@ https://github.com/GenBInc/quickhellou/blob/main/.env
 ##BUILD VIDEOCHAT & HELPDESK
 
 //////////////////////////////////////////////////////////////////////
+
 Build all services for both the videochat and the helpdesk applications.
 ```
 docker-compose -f docker-compose.yml -f videochat/docker-compose.yml -f console/docker-compose.yml --env-file ./your-file.env build
@@ -78,6 +79,7 @@ docker-compose -f docker-compose.yml -f videochat/docker-compose.yml -f console/
 ##RUN VIDEOCHAT & HELPDESK
 
 //////////////////////////////////////////////////////////////////////
+
 Run all services for both the videochat and the helpdesk applications.
 ```
 docker-compose -f docker-compose.yml -f videochat/docker-compose.yml -f console/docker-compose.yml --env-file ./your-file.env up
@@ -88,6 +90,7 @@ docker-compose -f docker-compose.yml -f videochat/docker-compose.yml -f console/
 ##RUN VIDEOCHAT ONLY
 
 ///////////////////////////////////
+
 Run the videochat services only.
 ```
 docker-compose -f docker-compose.yml -f videochat/docker-compose.yml --env-file ./your-file.env up
