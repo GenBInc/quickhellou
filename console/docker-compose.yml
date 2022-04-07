@@ -1,20 +1,7 @@
 version: "3"
    
 services:
-  console_db:
-    container_name: console_db
-    image: postgres:alpine
-    volumes: 
-      - ./temp/db:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST_AUTH_METHOD=trust
-    networks:
-      - console_network
+
   console_pyserver:
     container_name: console_pyserver
     build:
@@ -22,17 +9,40 @@ services:
       args:
         DJANGO_ALLOWED_HOSTS: '*'
         DJANGO_SECRET_KEY: '*'
-    command: bash -c "while !</dev/tcp/console_db/5432; do sleep 1; done; python manage.py migrate && gunicorn --reload console.wsgi --bind 0.0.0.0:8081"
+    command: bash -c "while !</dev/tcp/console_db/${POSTGRES_PORT}; do sleep 1; done; python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload console.wsgi --bind 0.0.0.0:{$HELPDESK_APP_PORT}"
     ports:
-      - "8081:8081"
+      - "{$HELPDESK_APP_PORT}:{$HELPDESK_APP_PORT}"
     volumes:
       - "./console/pyserver:/pyserver"
     networks:
-      - console_network
-      - go_network
+      console_network:
+        ipv4_address: 192.180.0.20
+
+    environment:
+      - HELPDESK_APP_PORT=${HELPDESK_APP_PORT}
+      - HELPDESK_APP_HOST=${HELPDESK_APP_HOST}
+      - SECRET_KEY=${SECRET_KEY}
+
     depends_on:
       - console_db
       - goserver
+
+  console_db:
+    container_name: console_db
+    image: postgres:alpine
+    volumes: 
+      - ./temp/db:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    environment:
+      - POSTGRES_NAME=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}      
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    networks:
+      console_network:
+        ipv4_address: 192.180.0.21     
+
   console_client:
     build:
       context: ./console/client
@@ -42,7 +52,13 @@ services:
     volumes:
       - "./console/client:/client/"
     networks:
-      - console_network
+      console_network:
+         ipv4_address: 192.180.0.22
+
 networks:
   console_network:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.180.0.0/24

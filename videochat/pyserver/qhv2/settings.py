@@ -21,10 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gv*^x*l!1v6w0@^*x!i0w1j(5&m*aph)k(*!a*3z#=tr6#@5u^'
-
-#strtobool(os.environ.get('EMAIL_USE_SSL'))
-
+SECRET_KEY = str(os.environ.get('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -34,10 +31,10 @@ ALLOWED_HOSTS = ['*']
 
 if WSTLS:
     VERIFY = str(os.environ.get('CERT_FILE'))
-    HOST_URL = 'https://'+str(os.environ.get('APP_HOST'))
+    HOST_URL = 'https://'+str(os.environ.get('VIDEOCHAT_APP_HOST'))
 else:
     VERIFY = False
-    HOST_URL = 'http://'+str(os.environ.get('APP_HOST'))
+    HOST_URL = 'http://'+str(os.environ.get('VIDEOCHAT_APP_HOST'))
 	
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -159,7 +156,7 @@ REST_FRAMEWORK = {
 # Deprecated domains which we should to redirect to REDIRECT_URL.
 REDIRECT_DOMAINS = []
 # URL which we should redirect to if matching in REDIRECT_DOMAINS.
-REDIRECT_URL = str(os.environ.get('APP_HOST'))
+REDIRECT_URL = str(os.environ.get('VIDEOCHAT_APP_HOST'))
 
 ICE_SERVER_BASE_URL = str(os.environ.get('TURN_SERVER_BASE_URL'))
 ICE_SERVER_URL_TEMPLATE = '%s/turn?key=%s&username='+str(os.environ.get('TURN_SERVER_USERNAME'))

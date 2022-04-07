@@ -9,9 +9,9 @@ services:
       args:
         DJANGO_ALLOWED_HOSTS: '*'
         DJANGO_SECRET_KEY: '*'
-    command: bash -c "python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload qhv2.wsgi --bind 0.0.0.0:${APP_PORT}"
+    command: bash -c "python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload qhv2.wsgi --bind 0.0.0.0:${VIDEOCHAT_APP_PORT}"
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - "${VIDEOCHAT_APP_PORT}:${VIDEOCHAT_APP_PORT}"
     volumes:
       - "./videochat/pyserver:/pyserver"
     networks:
@@ -19,8 +19,8 @@ services:
           ipv4_address: 192.170.0.10
 
     environment:
-      - APP_PORT=${APP_PORT}
-      - APP_HOST=${APP_HOST}
+      - VIDEOCHAT_APP_PORT=${VIDEOCHAT_APP_PORT}
+      - VIDEOCHAT_APP_HOST=${VIDEOCHAT_APP_HOST}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
       - TURN_SERVER_BASE_URL=${TURN_SERVER_BASE_URL}
@@ -37,7 +37,7 @@ services:
       - KEY_FILE=${KEY_FILE}
 
       - SUPPORT_EMAIL=${SUPPORT_EMAIL}
-      - SECRET_KEY=${SECRET_KEY}
+      - SECRET_KEY=${SECRET_KEY}      
 
     depends_on:
       - goserver

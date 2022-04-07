@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '<secret_key>'
+SECRET_KEY = str(os.environ.get('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -32,7 +32,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 FAKE_EMAIL_DOMAIN = 'fake.org'
 
 # Host for sending email.
-EMAIL_HOST = '<mail_server_host>'
+EMAIL_HOST = str(os.environ.get('EMAIL_HOST'))
 
 # Port for sending email.
 EMAIL_PORT = 465
@@ -41,10 +41,10 @@ EMAIL_PORT = 465
 EMAIL_USE_LOCALTIME = False
 
 # Optional SMTP authentication information for EMAIL_HOST.
-EMAIL_HOST_USER = '<mail_user>'
-EMAIL_HOST_PASSWORD = '<mail_password>'
+EMAIL_HOST_USER = str(os.environ.get('EMAIL_HOST_USER'))
+EMAIL_HOST_PASSWORD = str(os.environ.get('EMAIL_PASSWORD'))
 EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
+EMAIL_USE_SSL = strtobool(os.environ.get('EMAIL_USE_SSL'))
 EMAIL_SSL_CERTFILE = None
 EMAIL_SSL_KEYFILE = None
 EMAIL_TIMEOUT = None
@@ -109,7 +109,7 @@ DATABASES = {
         'USER': '',
         'PASSWORD': '',
         'HOST': '',
-        'PORT': '5432',
+        'PORT': str(os.environ.get('POSTGRES_PORT')),
     }
 }
 
