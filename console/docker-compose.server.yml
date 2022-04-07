@@ -9,7 +9,7 @@ services:
       args:
         DJANGO_ALLOWED_HOSTS: '*'
         DJANGO_SECRET_KEY: '*'
-    command: bash -c "while !</dev/tcp/console_db/${POSTGRES_PORT}; do sleep 1; done; python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload console.wsgi --bind 0.0.0.0:${HELPDESK_APP_PORT}"
+    command: bash -c "while !</dev/tcp/${POSTGRES_HOST}/${POSTGRES_PORT}; do sleep 1; done; python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload console.wsgi --bind 0.0.0.0:${HELPDESK_APP_PORT}"
     ports:
       - "${HELPDESK_APP_PORT}:${HELPDESK_APP_PORT}"
     volumes:
@@ -32,6 +32,12 @@ services:
 
       - SUPPORT_EMAIL=${SUPPORT_EMAIL}      
       - SECRET_KEY=${SECRET_KEY}
+
+      - POSTGRES_NAME=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_HOST=${POSTGRES_HOST}
 
     depends_on:
       - console_db

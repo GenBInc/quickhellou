@@ -79,7 +79,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'quickhellou.urls'
+ROOT_URLCONF = 'console.urls'
 
 TEMPLATES = [
     {
@@ -98,7 +98,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'quickhellou.wsgi.application'
+WSGI_APPLICATION = 'console.wsgi.application'
 
 
 # Database
@@ -107,13 +107,15 @@ WSGI_APPLICATION = 'quickhellou.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': str(os.environ.get('POSTGRES_PORT')),
+        'NAME': os.environ.get('POSTGRES_NAME'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT'),
     }
 }
+
+#'ENGINE': 'django.db.backends.postgresql_psycopg2',
 
 
 # Password validation
@@ -165,10 +167,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_ROOT = os.path.join(BASE_DIR, 'console/static')
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'console', 'static'),
-)
-
 AUTH_USER_MODEL = 'accounts.User'
 
 AUTHENTICATION_BACKENDS = (
@@ -176,3 +174,5 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
