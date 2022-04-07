@@ -1,54 +1,35 @@
-# Quick Hellou helpdesk application.
+# Quick Hellou Helpdesk application.
 
 Manages helpdesk application:
 * installable in-page plugins
 * adminstration console
 
-## Deployment
+# Configuration
 
-Run in the `root` folder
+## Environment params
 
-```
-virtualenv env
-source "env/bin/activate"
-pip install -r requirements.txt
-```
+Update keys in the `.env` configuration file.
 
-Update DATABASES in `quickhellou/quickhellou/settings.py` with you postgresql db settings
+## App port
+[/console/pyserver/Dockerfile](https://github.com/GenBInc/quickhellou/blob/main/console/pyserver/Dockerfile)
 
-```javascript
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '<your_db_name>',
-        'USER': '<your_username>',
-        'PASSWORD': '<your_password>',
-        'HOST': '<your_host>',
-        'PORT': '5432',
-    }
-}
-```
+EXPOSE 8081 -> should be the same as in .env file
 
-Once in env scope (there should be a (env) prefix in the command prompt), run:
-```
-cd quickhellou
-python manage.py migrate
-```
-#### WSGI and Apache
 
-1. Install [mod_wsgi](https://modwsgi.readthedocs.io/en/develop/) Apache module.
-2. Update the configuration file
-```
-WSGIScriptAlias / /{path_to_project}/quickhellou/quickhellou/wsgi.py
-WSGIProcessGroup quickhellou
-WSGIApplicationGroup %{GLOBAL}
+## App ssl_cert/key paths
+Place your SSL cert and matching key here -> [/console/pyserver/ssl](https://github.com/GenBInc/quickhellou/tree/main/console/pyserver/ssl)
+Files should match cert & key names in .env file
 
-WSGIDaemonProcess quickhellou python-path=/{path_to_project}/env/lib/python3.7/site-packages:/{path_to_project}/quickhellou display-name=%{GLOBAL}
-``` 
-3. Restart Apache instance.
+## Collider port/tls
+[/goserver/src/collidermain/main.go](https://github.com/GenBInc/quickhellou/blob/main/goserver/src/collidermain/main.go)
 
-#### External Resources
+var port -> -> should be the same as in .env file
+var tls -> true/false (recommended true)
 
-[mod_wsgi Installation Guide](https://modwsgi.readthedocs.io/en/develop/user-guides/quick-installation-guide.html)
+## Collider ssl_cert/key paths
 
-[How to use Django with Apache and mod_wsgi](https://docs.djangoproject.com/en/3.2/howto/deployment/wsgi/modwsgi/)
+[/goserver/src/collider/collider.go](https://github.com/GenBInc/quickhellou/blob/main/goserver/src/collider/collider.go)
+
+e = server.ListenAndServeTLS("/goserver/ssl/your.crt", "/goserver/ssl/your.key")
+
+Place your SSL cert and matching key here -> [/goserver/ssl](https://github.com/GenBInc/quickhellou/tree/main/goserver/ssl)
