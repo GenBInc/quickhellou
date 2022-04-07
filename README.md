@@ -59,11 +59,23 @@ turn
 
 ## Quick Hellou Install and run
 
+##UPDATE/EDIT PARAMS
+
 Edit [.env](https://github.com/GenBInc/quickhellou/blob/main/.env) file
 https://github.com/GenBInc/quickhellou/blob/main/.env
 
 
-##VIDEOCHAT & CONSOLE
+##BUILD VIDEOCHAT & CONSOLE
+
+//////////////////////////////////////////////////////////////////////
+Build all services for both the videochat and the console applications.
+```
+docker-compose -f docker-compose.yml -f videochat/docker-compose.yml -f console/docker-compose.yml --env-file ./your-file.env build
+```
+//////////////////////////////////////////////////////////////////////
+
+
+##RUN VIDEOCHAT & CONSOLE
 
 //////////////////////////////////////////////////////////////////////
 Run all services for both the videochat and the console applications.
