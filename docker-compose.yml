@@ -7,6 +7,11 @@ services:
       context: ./goserver
     ports:
       - "${GO_SERVER_PORT}:${GO_SERVER_PORT}"
+    expose:
+      - "${GO_SERVER_PORT}"
+
+    restart: on-failure
+
     volumes:
       - "./goserver:/goserver"
     networks:
