@@ -4,7 +4,7 @@ The WebRTC based video chat application. It allows:
 * multi-peer video chat conferences
 * share screen between peers
 
-### Configuration
+# Configuration
 
 ## Environment params
 
