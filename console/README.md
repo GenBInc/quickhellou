@@ -1,4 +1,4 @@
-# Quick Hellou Helpdesk application.
+# Quick Hellou Helpdesk application
 
 Manages helpdesk application:
 * installable in-page plugins
