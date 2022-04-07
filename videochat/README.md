@@ -1,4 +1,4 @@
-# QuickHellou Video Chat application.
+# QuickHellou Video Chat application
 
 The WebRTC based video chat application. It allows:
 * multi-peer video chat conferences
