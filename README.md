@@ -17,7 +17,7 @@ The application includes:
 
 The application is built upon two modular applications connected with a shared communication server.  
 ``
-videochat <-> goserver <-> console
+videochat <-> {goserver - collider}{turn server} <-> console
 ``
 ### Video Chat application
 
@@ -53,41 +53,63 @@ turn
 
 In order to install the development environment it's required to install the [Docker](https://www.docker.com) service. 
 
+!!! Please read also !!!
+/videochat/README.md
+
+
 ### Install and run
 
+Edit .env file
+https://github.com/GenBInc/quickhellou/blob/main/.env
+
+
+##VIDEOCHAT & CONSOLE
+
+//////////////////////////////////////////////////////////////////////
 Run all services for both the videochat and the console applications.
 ```
-docker-compose -f docker-compose.yml -f videochat/docker-compose.yml -f console/docker-compose.yml up
+docker-compose -f docker-compose.yml -f videochat/docker-compose.yml -f console/docker-compose.yml --env-file ./your-file.env up
 ```
+//////////////////////////////////////////////////////////////////////
 
-Run the videochat services.
-```
-docker-compose -f docker-compose.yml -f videochat/docker-compose.yml up
-```
 
-Run the console services.
+##VIDEOCHAT
+
+///////////////////////////////////
+Run the videochat services only.
 ```
-docker-compose -f docker-compose.yml -f console/docker-compose.yml up
+docker-compose -f docker-compose.yml -f videochat/docker-compose.yml --env-file ./your-file.env up
 ```
+///////////////////////////////////
+
 
 Run the videochat server services.
 ```
-docker-compose -f docker-compose.yml -f videochat/docker-compose.server.yml up
+docker-compose -f docker-compose.yml -f videochat/docker-compose.server.yml --env-file ./your-file.env up
 ```
 
 Run the videochat client services.
 ```
-docker-compose -f docker-compose.yml -f videochat/docker-compose.client.yml up
+docker-compose -f docker-compose.yml -f videochat/docker-compose.client.yml --env-file ./your-file.env up
 ```
+
+##CONSOLE
+
+///////////////////////////////////
+Run the console services only.
+```
+docker-compose -f docker-compose.yml -f console/docker-compose.yml --env-file ./your-file.env up
+```
+///////////////////////////////////
 
 Run the console server services.
 ```
-docker-compose -f docker-compose.yml -f console/docker-compose.server.yml up
+docker-compose -f docker-compose.yml -f console/docker-compose.server.yml --env-file ./your-file.env up
 ```
 
 Run the console client services.
 ```
-docker-compose -f docker-compose.yml -f console/docker-compose.client.yml up
+docker-compose -f docker-compose.yml -f console/docker-compose.client.yml --env-file ./your-file.env up
 ```
 
 ## Contributing

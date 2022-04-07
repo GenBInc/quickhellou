@@ -1,81 +1,42 @@
-# Video chat application.
+# QuickHellou Video Chat application.
 
 The WebRTC based video chat application. It allows:
 * multi-peer video chat conferences
 * share screen between peers
 
-## References
+### Configuration
 
-Initially based on the [AppRTC project](https://github.com/webrtc/apprtc).
-Currently it's a Py3/Django application that uses the Redis server for memory caching.
+## Environment params
 
-## Python application installation guide
+Update keys in the `.env` configuration file.
 
-### Windows
+## Redis port
+/videochat/redis/redis.conf
 
-Update keys in the `qhv2/qhv2/settings.py` configuration file with your settings.
+port 6380 -> should be the same as in .env file
 
-```javascript
 
-if WSTLS:
-    ALLOWED_HOSTS = ['<your_app_url>']
-    VERIFY = '<your_ssl_certificate_file_url>'
-    HOST_URL = '<your_host_url>'
+## App port
+/videochat/pyserver/Dockerfile
 
-ICE_SERVER_BASE_URL = '<turn_server_name:port>'
-ICE_SERVER_URL_TEMPLATE = '%s/turn?key=%s&username=<username>'
-ICE_SERVER_API_KEY = '<username>'
-CEOD_KEY = '<username>'
+EXPOSE 8080 -> should be the same as in .env file
 
-if WSTLS:
-    WSS_INSTANCE_HOST_KEY = '<host_name:port>'
-    WSS_INSTANCE_NAME_KEY = 'vm_name'
-    WSS_INSTANCE_ZONE_KEY = 'zone'
-    WSS_INSTANCES = [{
-        WSS_INSTANCE_HOST_KEY: '<host_name:port>',
-        WSS_INSTANCE_NAME_KEY: 'wsserver-std',
-        WSS_INSTANCE_ZONE_KEY: 'us-central1-a'
-    }, {
-        WSS_INSTANCE_HOST_KEY: '<host_name:port>',
-        WSS_INSTANCE_NAME_KEY: 'wsserver-std-2',
-        WSS_INSTANCE_ZONE_KEY: 'us-central1-f'
-    }]
-    WSS_HOST_ACTIVE_HOST_KEY = '<host_name:port>'
+## App ssl_cert/key paths
+Place your SSL cert and matching key here -> /videochat/pyserver/ssl
+Files should match cert & key names in .env file
 
-ICE_SERVER_OVERRIDE = [
-    {
-        "credential": "<username>",
-        "username": "<username>",
-        "urls": [
-            "turn:<turn_server_name:port>?transport=udp",
-            "turn:<turn_server_name:port>?transport=tcp"
-        ]
-    },
-    {
-        "urls": [
-            "stun:<sturn_server_name:stun_port>"
-        ]
-    }
-]
-```
+## Collider port/tls
+/goserver/src/collidermain/main.go
 
-### Configure Django WSGI application in the Apache server.
+var port -> -> should be the same as in .env file
+var tls -> true/false (recommended true)
 
-1. Install [mod_wsgi](https://modwsgi.readthedocs.io/en/develop/) Apache module.
-2. Update the configuration file
-```
-WSGIScriptAlias / /{path_to_project}/qhv2/qhv2/wsgi.py
-WSGIProcessGroup qhv2
-WSGIApplicationGroup %{GLOBAL}
+## Collider ssl_cert/key paths
 
-WSGIDaemonProcess qhv2 python-path=/{path_to_project}/env/lib/python3.7/site-packages:/{path_to_project}/qhv2 display-name=%{GLOBAL}
-``` 
-3. Restart Apache instance.
+/goserver/src/collider/collider.go
 
-### Useful links
+e = server.ListenAndServeTLS("/goserver/ssl/your.crt", "/goserver/ssl/your.key")
 
-AppRTC
-[AppRTC project (based on GAE/Py2)](https://github.com/webrtc/apprtc)
+Place your SSL cert and matching key here -> /goserver/ssl
 
-RTCMultiConnection - WebRTC JavaScript Library
-[RTCMultiConnection](https://github.com/muaz-khan/RTCMultiConnection)
+
