@@ -27,7 +27,7 @@ SECRET_KEY = str(os.environ.get('SECRET_KEY'))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = ['*']
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -37,7 +37,7 @@ FAKE_EMAIL_DOMAIN = 'fake.org'
 EMAIL_HOST = str(os.environ.get('EMAIL_HOST'))
 
 # Port for sending email.
-EMAIL_PORT = 465
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT'))
 
 # Whether to send SMTP 'Date' header in the local time zone or in UTC.
 EMAIL_USE_LOCALTIME = False
@@ -142,8 +142,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     )
 }
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
