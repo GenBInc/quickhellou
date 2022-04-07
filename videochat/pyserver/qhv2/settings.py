@@ -37,7 +37,7 @@ if WSTLS:
     HOST_URL = 'https://'+str(os.environ.get('APP_HOST'))
 else:
     VERIFY = False
-    HOST_URL = 'https://'+str(os.environ.get('APP_HOST'))
+    HOST_URL = 'http://'+str(os.environ.get('APP_HOST'))
 	
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
