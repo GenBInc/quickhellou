@@ -30,7 +30,7 @@ WSTLS = True # Needs to be True to access camera/mic on production #
 ALLOWED_HOSTS = ['*']
 
 if WSTLS:
-    VERIFY = str(os.environ.get('CERT_FILE'))
+    VERIFY = str(os.environ.get('CERT_CHAIN_FILE'))
     HOST_URL = 'https://'+str(os.environ.get('VIDEOCHAT_APP_HOST'))
 else:
     VERIFY = False
