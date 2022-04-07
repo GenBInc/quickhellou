@@ -18,6 +18,10 @@ The application is built upon two modular applications connected with a shared c
 ``
 videochat <-> {goserver - collider}{turn server} <-> helpdesk
 ``
+
+### Tech Stack
+Docker, Redis, Collider(Goserver), Coturn, Python (Django), PostgreSQL
+
 ### Video Chat application
 
 The WebRTC based video chat application.
