@@ -38,7 +38,7 @@ console
 In order to install the execution environment it's required to install the [Docker](https://www.docker.com) service. 
 
 !!! Please read also for configurion guides!!!
-[Read /videochat/README.md] (https://github.com/GenBInc/quickhellou/blob/main/videochat/README.md)
+[Read /videochat/README.md](https://github.com/GenBInc/quickhellou/blob/main/videochat/README.md)
 
 
 ### Websocket server
