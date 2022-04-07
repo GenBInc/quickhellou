@@ -6,7 +6,9 @@ services:
     build:
       context: ./videochat/redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    expose:
+      - "${REDIS_PORT}"
     volumes:
       - "./videochat/redis:/redis"
     networks:
@@ -18,15 +20,37 @@ services:
       args:
         DJANGO_ALLOWED_HOSTS: '*'
         DJANGO_SECRET_KEY: '*'
-    command: bash -c "python manage.py migrate && gunicorn --reload qhv2.wsgi --bind 0.0.0.0:8080"
+    command: bash -c "python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload qhv2.wsgi --bind 0.0.0.0:${APP_PORT}"
     ports:
-      - "8080:8080"
+      - "${APP_PORT}:${APP_PORT}"
     volumes:
       - "./videochat/pyserver:/pyserver"
     networks:
       - videochat_network
       - redis_network
       - go_network
+
+    environment:
+      - APP_PORT=${APP_PORT}
+      - APP_URL=${APP_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - GO_SERVER_PORT=${GO_SERVER_PORT}
+      - TURN_SERVER_BASE_URL=${TURN_SERVER_BASE_URL}
+      - TURN_SERVER_USERNAME=${TURN_SERVER_USERNAME}
+      - COLLIDER_SERVER_BASE_URL=${COLLIDER_SERVER_BASE_URL}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - EMAIL_USE_SSL=${EMAIL_USE_SSL}
+
+      - CERT_FILE=${CERT_FILE}
+      - KEY_FILE=${KEY_FILE}
+
+      - SUPPORT_EMAIL=${SUPPORT_EMAIL}
+      - SECRET_KEY=${SECRET_KEY}
+
     depends_on:
       - goserver
       - redis

@@ -43,8 +43,8 @@ else:
 
 ###
 
-redis_host = os.environ.get('REDISHOST', 'redis')
-redis_port = int(os.environ.get('REDISPORT', 6379))
+redis_host = str(os.environ.get('REDIS_HOST'))
+redis_port = int(os.environ.get('REDIS_PORT'))
 redis_client = redis.Redis(host=redis_host, port=redis_port, db=0)
 
 class MainPage(View):

@@ -23,22 +23,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-gv*^x*l!1v6w0@^*x!i0w1j(5&m*aph)k(*!a*3z#=tr6#@5u^'
 
+#strtobool(os.environ.get('EMAIL_USE_SSL'))
+
+
 WSTLS = os.environ.get('SERVER_GATEWAY_INTERFACE') == 'Web'
 if not WSTLS:
     WSTLS = False
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = WSTLS == False
+DEBUG = True
+WSTLS = False
 
-ALLOWED_HOSTS = ['<your_app_url> OR * ']
+ALLOWED_HOSTS = ['*']
 
 if WSTLS:
-    VERIFY = '<your_ssl_certificate_file_url>'
-    HOST_URL = '<your_host_url>'
+    VERIFY = os.environ.get('CERT_FILE')
+    HOST_URL = os.environ.get('APP_URL')
 else:
-    ALLOWED_HOSTS = []
     VERIFY = False
-    HOST_URL = 'localhost'
+    HOST_URL = os.environ.get('APP_URL')
 	
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -162,41 +165,43 @@ REDIRECT_DOMAINS = []
 # URL which we should redirect to if matching in REDIRECT_DOMAINS.
 REDIRECT_URL = '<app_url>'
 
-ICE_SERVER_BASE_URL = '<turn_server_name:port>'
-ICE_SERVER_URL_TEMPLATE = '%s/turn?key=%s&username=<username>'
-ICE_SERVER_API_KEY = '<username>'
-CEOD_KEY = '<username>'
+ICE_SERVER_BASE_URL = os.environ.get('TURN_SERVER_BASE_URL')
+ICE_SERVER_URL_TEMPLATE = '%s/turn?key=%s&username='+str(os.environ.get('TURN_SERVER_USERNAME'))
+ICE_SERVER_API_KEY = os.environ.get('TURN_SERVER_USERNAME')
+CEOD_KEY = os.environ.get('TURN_SERVER_USERNAME')
 
+
+# COLLIDER SERVER CONF
 # Dictionary keys in the collider instance info constant.
 if WSTLS:
-    WSS_INSTANCE_HOST_KEY = '<host_name:port>'
+    WSS_INSTANCE_HOST_KEY = os.environ.get('COLLIDER_SERVER_BASE_URL')
     WSS_INSTANCE_NAME_KEY = 'vm_name'
     WSS_INSTANCE_ZONE_KEY = 'zone'
     WSS_INSTANCES = [{
-        WSS_INSTANCE_HOST_KEY: '<host_name:port>',
+        WSS_INSTANCE_HOST_KEY: os.environ.get('COLLIDER_SERVER_BASE_URL'),
         WSS_INSTANCE_NAME_KEY: 'wsserver-std',
         WSS_INSTANCE_ZONE_KEY: 'us-central1-a'
     }, {
-        WSS_INSTANCE_HOST_KEY: '<host_name:port>',
+        WSS_INSTANCE_HOST_KEY: os.environ.get('COLLIDER_SERVER_BASE_URL'),
         WSS_INSTANCE_NAME_KEY: 'wsserver-std-2',
         WSS_INSTANCE_ZONE_KEY: 'us-central1-f'
     }]
-    WSS_HOST_ACTIVE_HOST_KEY = '<host_name:port>'
+    WSS_HOST_ACTIVE_HOST_KEY = os.environ.get('COLLIDER_SERVER_BASE_URL')
 else:
-    WSS_INSTANCE_HOST_KEY = 'localhost:8089'
+    WSS_INSTANCE_HOST_KEY = os.environ.get('COLLIDER_SERVER_BASE_URL')
     WSS_INSTANCE_NAME_KEY = 'vm_name'
     WSS_INSTANCE_ZONE_KEY = 'zone'
     WSS_INSTANCES = [{
-        WSS_INSTANCE_HOST_KEY: 'localhost:8089',
+        WSS_INSTANCE_HOST_KEY: os.environ.get('COLLIDER_SERVER_BASE_URL'),
         WSS_INSTANCE_NAME_KEY: 'wsserver-std',
         WSS_INSTANCE_ZONE_KEY: 'us-central1-a'
     }, {
-        WSS_INSTANCE_HOST_KEY: 'localhost:8089',
+        WSS_INSTANCE_HOST_KEY: os.environ.get('COLLIDER_SERVER_BASE_URL'),
         WSS_INSTANCE_NAME_KEY: 'wsserver-std-2',
         WSS_INSTANCE_ZONE_KEY: 'us-central1-f'
     }]
     # memcache key for the active collider host.
-    WSS_HOST_ACTIVE_HOST_KEY = 'localhost:8089'
+    WSS_HOST_ACTIVE_HOST_KEY = os.environ.get('COLLIDER_SERVER_BASE_URL')
 
 WSS_HOST_PORT_PAIRS = [ins[WSS_INSTANCE_HOST_KEY] for ins in WSS_INSTANCES]
 
@@ -207,20 +212,23 @@ WSS_HOST_ERROR_MESSAGE_KEY = 'error_message'
 
 # Turn/Stun server override. This allows AppRTC to connect to turn servers
 # directly rather than retrieving them from an ICE server provider.
+
+
 ICE_SERVER_OVERRIDE = [
     {
-        "credential": "<username>",
-        "username": "<username>",
+        "credential": os.environ.get('TURN_SERVER_USERNAME'),
+        "username": os.environ.get('TURN_SERVER_USERNAME'),
         "urls": [
-            "turn:<turn_server_name:port>?transport=udp",
-            "turn:<turn_server_name:port>?transport=tcp"
+            "turn:"+str(os.environ.get('TURN_SERVER_BASE_URL'))+"?transport=udp",
+            "turn:"+str(os.environ.get('TURN_SERVER_BASE_URL'))+"?transport=tcp"
         ]
     },
     {
         "urls": [
-            "stun:<sturn_server_name:stun_port>"
+            "stun:www.quickhellou.com:3479"
         ]
     }
+
 ]
 
 RESPONSE_ERROR = 'ERROR'
