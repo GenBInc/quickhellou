@@ -1,18 +1,15 @@
 version: "3"
+
+networks:
+  videochat_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.170.0.0/24
    
 services:
-  redis:
-    container_name: redis
-    build:
-      context: ./videochat/redis
-    ports:
-      - "${REDIS_PORT}:${REDIS_PORT}"
-    expose:
-      - "${REDIS_PORT}"
-    volumes:
-      - "./videochat/redis:/redis"
-    networks:
-      - redis_network
+
   videochat_pyserver:
     container_name: videochat_pyserver
     build:
@@ -26,9 +23,8 @@ services:
     volumes:
       - "./videochat/pyserver:/pyserver"
     networks:
-      - videochat_network
-      - redis_network
-      - go_network
+       videochat_network:
+          ipv4_address: 192.170.0.10
 
     environment:
       - APP_PORT=${APP_PORT}
@@ -54,6 +50,7 @@ services:
     depends_on:
       - goserver
       - redis
+
   videochat_client:
     container_name: videochat_client
     build:
@@ -62,11 +59,23 @@ services:
     environment: 
       - NODE_ENV=development
     networks:
-      - videochat_network
+      videochat_network:
+        ipv4_address: 192.170.0.11
+
     volumes:
       - "./videochat/client:/client/"
-networks:
-  videochat_network:
-    driver: bridge
-  redis_network:
-    driver: bridge
+
+  redis:
+    container_name: redis
+    build:
+      context: ./videochat/redis
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    expose:
+      - "${REDIS_PORT}"
+    volumes:
+      - "./videochat/redis:/redis"
+    networks:
+      videochat_network:
+        ipv4_address: 192.170.0.12
+

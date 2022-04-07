@@ -14,7 +14,7 @@ export class HTMLTemplates {
         return `<div class="text-chat-window__message text-chat-window__message--outgoing">
         <div class="df df-lt text-chat-window__message-content-wrap text-chat-window__message-content-wrap--outgoing">
           <div class="df df-c  text-chat-window__message-icon-wrap text-chat-window__message-icon-wrap--outcoming">
-            <img class="text-chat-window__message-icon" src="/images/user.svg" alt="">
+            <img class="text-chat-window__message-icon" src="/static/images/user.svg" alt="">
           </div>
           <div class="df df-f1 text-chat-window__message-content text-chat-window__message-content--outgoing">
             <div>${message.trim()}</div>
