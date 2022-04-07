@@ -13,7 +13,6 @@ The application includes:
 
 [Demo](https://www.quickhellou.com)
  
-## The application
 
 The application is built upon two modular applications connected with a shared communication server.  
 ``
@@ -47,13 +46,13 @@ The TURN server guidelines for relaying the traffic between peers.
 ```
 turn
 ```
+Read /turn/README.md for installation guidelines.
 
+## Execution environment
 
-## Development
+In order to install the execution environment it's required to install the [Docker](https://www.docker.com) service. 
 
-In order to install the development environment it's required to install the [Docker](https://www.docker.com) service. 
-
-!!! Please read also !!!
+!!! Please read also for configurion guides!!!
 /videochat/README.md
 
 
