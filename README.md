@@ -26,7 +26,7 @@
   <img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/qh-screens.png" alt="Quick Hellou Stay Connected"/>
 </div>
 
-The application provides helpdesk solution based on WebRTC video communications.
+The application provides direct video chat and helpdesk solution based on WebRTC video communications.
 
 The application includes:
 * creating multi-peer video conference sessions
