@@ -28,7 +28,7 @@ The application includes:
 * creating multi-peer video conference sessions
 * create instalable in-page plugins and create customer service communications.
 
-[Demo](https://www.quickhellou.com)
+[Demo](https://www.quickhellou.com)https://www.quickhellou.com
  
 
 The application is built upon two modular applications connected with a shared communication server.  
