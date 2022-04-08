@@ -43,6 +43,7 @@
     margin-bottom: 5px;
   }
   @media (min-width: $s-xl) {
+    margin-top: 25px;
     margin-bottom: 36px;
   }
 }
@@ -185,6 +186,11 @@ div.open-quick-talk img {
   font-weight: 600;
   font-style: italic;
   @include transition(all .2s ease);
+
+  @media (min-width: $s-sm) {
+    font-size: 1.25rem;
+  }
+
   @media (min-width: $s-xxl) {
     border-radius:30px;
     padding: 15px 30px;
