@@ -145,14 +145,13 @@
                   <img class="logo-image" src="{% static '/images/hellou-quick-white.svg' %}" alt="Quick Hellou">
                 </div>
                 <div class="df df-f1 df-col df-rc room-selection-column--left__top-texts home__column-hw">
-                  <div class="df df-col df-c">
+                  <div class="df df-col df-c safe_proc">
                     <p>100% free</p>
                     <p>and secure</p>
                   </div>
                 </div>
               </div>
-              <div class="df df-f1 df-col df-ct room-id-input-buttons">
-                <div class="df df-f1"></div>
+              <div class="df df-f1 df-col df-ct room-id-input-buttons">                
                 <div class="df df-col df-c feature-option feature-option--quick-talk">
                   <div class="df df-c feature-option__icon-button open-quick-talk button--quick-talk">
                     <img src="{% static '/images/quick-talk.svg' %}" alt="Quick Hellou">
@@ -167,39 +166,16 @@
                   </p>
                 </div>
                 <div class="df df-f1"></div>
-                <div class="df df-col df-c feature-option feature-option--future-talk">
-                <a class="feature-option__icon-button button--scheduler setup-future-talk" href="/scheduler" target="_self">
-                </a>
-                <a class="feature-option__button join-button button--scheduler" href="/scheduler" target="_self">
-                  <label>  	
-                    Setup future talk
-                  </label>
-                </a>
-                <p class="desc-invite">
-                    add to calendar<br/>and invite
-                </p>
-              </div>
-                <div class="df df-f1"></div>
               </div>
               <p class="copyright-note copyright-note--desktop">
-                Quick Hellou by <a href="http://www.genb.com" target="_blank" rel="noopener">GenB, Inc</a>. Open Source (MIT License). <a href="https://github.com/genbinc/quickhellou">Check out @ Github</a>.
+                Quick Hellou by <a href="http://www.genb.com" target="_blank" rel="noopener">GenB, Inc</a>.<br/>Open Source (MIT License). <a href="https://github.com/genbinc/quickhellou">Check out @ Github</a>.
               </p>
             </div>
             <div class="df df-ct df-col df-f1 view-column room-selection-column--right">
               <div class="df df-col df-f1 home__column--rt">
                 <div class="df df-f1"></div>
                 <div class="df df-col home__g1 home__group room-selection-column--right__group-texts">
-                  <p class="home__text1">Make a</p>
-                  <p class="home__text2 home__text--need-quick">video chat with friends!</p>
-                </div>
-                <div class="df df-f1"></div>
-                <div class="df df-col home__g2 home__group room-selection-column--right__group-texts">
-                  <p class="home__text1">Or even a</p>
-                  <p class="home__text2 home__text--g2t1">video conference</p>
-                  <p class="home__text2 home__text--g2t2">between offices!</p>
-                  <div class="home__arrow-wrap">
-                    <img class="home__arrow" src="{% static '/images/arrow.svg' %}" alt="arrow">
-                  </div>
+                  <img class="open-source-chat-image" src="{% static '/images/open-source-videochat.svg' %}" alt="Open Source">                    
                 </div>
                 <div class="df df-f1"></div>
                 <div class="df df-col home__g3 home__group room-selection-column--right__group-texts">
@@ -213,56 +189,51 @@
                   </div>
                 </div>
                 <div class="df df-f1"></div>
-                <div class="df df-col df-c home__g4 home__group room-selection-column--right__group--bottom">
-                  <div class="df df-lc enjoy-quick-hellou">
-                    <p class="enjoy-quick-hellou__text">enjoy a</p>
-                    <div class="enjoy-quick-hellou__span"></div>
-                    <div class="enjoy-quick-hellou__icon-wrap">
-                      <img class="enjoy-quick-hellou__icon" src="{% static '/images/hellou-quick.svg' %}" alt="quick hellou icon">
-                    </div>
-                  </div>
-  
-                  <div class="df df-lc room-selection-column--right__bottom-right">
-                    <div class="df df-col df-c room-selection-column--right__bottom-right-desc">
-                      <p class="home__text5">Works in every modern browser</p>
-                      <p class="home__text6">on and across any device
-                        <br/>no installation, configuration or
-                        <br/> registration required,</p>
-                      <a class="home__link2 button--quick-talk">just one click</a>
-                    </div>
-                    <div class="df df-lc">
-                      <div class="mobile">
-                        <img class="home__platform-icon home__platform-icon--mobile" src="{% static '/images/mobile.svg' %}" alt="mobile icon">
-                      </div>
-                      <div class="desktop">
-                        <img class="home__platform-icon home__platform-icon--desktop" src="{% static '/images/desktop.svg' %}" alt="desktop icon">
-                      </div>
-                    </div>
-                  </div>
+                <div class="df df-col home__g2 home__group room-selection-column--right__group-texts">
+                  <p class="techstack-header"></p>
+                  <img class="techstack-image" src="{% static '/images/techstack-logos.png' %}" alt="Open Source">                    
+                    
                 </div>
+                <div class="df df-f1"></div>
+                <a href="https://github.com/GenBInc/quickhellou" target="_blank" class="df flc df-row home__g2 home__group github-texts">
+                  <p class="checkout-header">Check Out at</p>
+                  <img class="github-image" src="{% static '/images/githib-logo.png' %}" alt="Github">                    
+                    
+                </a>
+                
                 <div class="df df-f1"></div>
               </div>
               <div class="home__bottom-bar">
                 <div class="df df-col home__bottom-bar--top">
-                  <div class="home__bottom-bar--left">
-                    <p class="home__bottom-bar-text1">
-                      <b>For Enterprise:</b>
-                    </p>
-                    <p class="home__bottom-bar-text1">
-                      Do you need to
-                      <b>enhance your existing digital product</b>
-                      with easy to use and powerful video chat features?</p>
-                    <p>Or maybe
-                      <b>you need to build a new digital product</b> from the ground up utilizing video communication?</p>
+
+                  <div class="df df-col df-c home__g4 home__group room-selection-column--right__group--bottom">
+                    <div class="df df-lc enjoy-quick-hellou">
+                      <p class="enjoy-quick-hellou__text">enjoy a</p>
+                      <div class="enjoy-quick-hellou__span"></div>
+                      <div class="enjoy-quick-hellou__icon-wrap">
+                        <img class="enjoy-quick-hellou__icon" src="{% static '/images/hellou-quick.svg' %}" alt="quick hellou icon">
+                      </div>
+                    </div>
+    
+                    <div class="df df-lc room-selection-column--right__bottom-right">
+                      <div class="df df-col df-c room-selection-column--right__bottom-right-desc">
+                        <p class="home__text5">Works in every modern browser</p>
+                        <p class="home__text6">on and across any device
+                          <br/>no installation, configuration or
+                          <br/> registration required,</p>
+                        <a class="home__link2 button--quick-talk">just one click</a>
+                      </div>
+                      <div class="df df-lc">
+                        <div class="mobile">
+                          <img class="home__platform-icon home__platform-icon--mobile" src="{% static '/images/mobile.svg' %}" alt="mobile icon">
+                        </div>
+                        <div class="desktop">
+                          <img class="home__platform-icon home__platform-icon--desktop" src="{% static '/images/desktop.svg' %}" alt="desktop icon">
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="df df df-f1 df-rc home__bottom-bar--right">
-                    <a class="df df-col df-c home__bottom-bar-link" href="/contact" target="_blank" rel="noopener">
-                      <span class="home__bottom-bar-link-text home__bottom-bar-link-text1">Get in touch</span>
-                      <span class="home__bottom-bar-link-text home__bottom-bar-link-text2">
-                        We’re happy to
-                        <u>help you</u>!</span>
-                    </a>
-                  </div>
+  
                 </div>
                 <div class="privacy home__bottom-bar--bottom">
                   <a class="link--found-bug" href="/problem" rel="noopener">Have a problem or found a bug?</a>
@@ -270,7 +241,7 @@
                 </div>
   
                 <p class="copyright-note copyright-note--mobile">
-                  Quick Hellou by <a href="http://www.genb.com" target="_blank" rel="noopener">GenB, Inc</a>. Open Source (MIT License). <a href="https://github.com/genbinc/quickhellou">Check out @ Github</a>.
+                  Quick Hellou by <a href="http://www.genb.com" target="_blank" rel="noopener">GenB, Inc</a>.<br/>Open Source (MIT License). <a href="https://github.com/genbinc/quickhellou">Check out @ Github</a>.
                 </p>
               </div>
             </div>

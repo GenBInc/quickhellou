@@ -26,7 +26,8 @@
 }
 
 .logo-image {
-  width: 125px;
+  width: 70%;
+  max-width: 225px;
   @media (min-width: $s-lg) {
     width: 160px;
   }
@@ -36,6 +37,7 @@
 }
 
 .logo-image-wrap {
+  margin-top: 15px;
   margin-bottom: 5px;
   @media (min-width: $s-sm) {
     margin-bottom: 5px;
@@ -83,14 +85,14 @@
   @media (min-width: $s-lg) {
     width: 285px;
     height: 100%;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 10px;
+    padding-right: 10px;
   }
   @media (min-width: $s-xxl) {
     width: 485px;
     height: 100%;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 }
 
@@ -237,8 +239,10 @@ div.open-quick-talk img {
 }
 
 .copyright-note {
-  font-weight: 200;
-  font-size: 0.6875rem;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  font-style: italic;
 }
 
 .home__g2 {
@@ -263,9 +267,7 @@ div.open-quick-talk img {
 }
 
 .home__g3tg {
-  @media (min-width: $s-lg) {
-    height:36px;
-  }
+
 }
 
 .home__arrow {
@@ -289,7 +291,6 @@ div.open-quick-talk img {
 
 .home__group p {
   color: $color--dark-blue;
-  line-height: 1em;
 }
 
 .home__text1 {
@@ -322,12 +323,9 @@ div.open-quick-talk img {
 }
 
 .home__text3 {
-  font-size: 1.875rem;
-  @media (min-width: $s-lg) {
-    font-size:2.25rem;
-  }
-  @media (min-width: $s-xxl) {
-    font-size: 3.25rem;
+  font-size:2.55rem;
+  @media (min-width: $s-sm) {
+    font-size:3.25rem;
   }
 }
 
@@ -335,7 +333,7 @@ div.open-quick-talk img {
   font-size: 1.5rem;
   font-weight: 200;
   margin-right: 10px;
-  width: 132px;
+  width: auto;
   @media (min-width: $s-lg) {
     width:auto;
   }
@@ -386,7 +384,7 @@ p.home__text6 {
 
 .home__text--g3t1 {
   @media (min-width: $s-lg) {
-    margin-left:175px;
+    margin-left:75px;
   }
 }
 
@@ -441,7 +439,9 @@ p.home__text6 {
 
 .room-selection-column--right__group-texts {
   margin-bottom: 30px;
+  text-align: center;
   @media (min-width: $s-lg) {
+    text-align: left;
     margin-bottom:0;
   }
 }
@@ -456,9 +456,9 @@ p.home__text6 {
 }
 
 .room-selection-column--right__bottom-right {
-  border: 2px solid $color--cornflower-blue;
-  border-radius: 4em;
+  border: none;
   padding: 15px 30px;
+
 }
 
 .room-selection-column--right__bottom-right-desc p {
@@ -470,6 +470,7 @@ p.home__text6 {
 }
 
 .room-selection-column--right__group--bottom {
+  margin: 0 auto;
   @media (min-width: $s-lg) {
     @include df-row();
     @include df-lc();
@@ -517,11 +518,14 @@ p.home__text6 {
   background-color: white;
   border-top: 6px solid $color--cornflower-blue;
   width: 100%;
-  padding-top: 22px;
+  padding-top: 42px;
   padding-right: 20px;
   padding-left: 20px;
   padding-bottom: 22px;
+  margin-top:40px;
+
   @media (min-width: $screen-WXGA) {
+    padding-top: 22px;
     padding-right:30px;
     padding-left: 30px;
   }
@@ -567,8 +571,10 @@ p.home__text6 {
 }
 
 .home__bottom-bar--bottom {
-  margin-bottom: 20px;
+  margin-top: 40px;
+  margin-bottom: 40px;
   @media (min-width: $s-md) {
+    margin-top: 0px;
     margin-bottom:0;
     padding-left: 25px;
     padding-right: 25px;
@@ -1196,4 +1202,78 @@ body.subpage {
 
 .info-div {
   background-color: white;
+}
+
+.techstack-image {
+  max-width: 500px;
+  width: 90%;
+  margin: 0 auto;
+  margin-top:20px;
+}
+
+.techstack-header{
+  margin:0 auto;
+  font-size: 24px;
+  color: #4285f4 !important;
+  font-style: italic;
+  font-weight: 700;
+  margin-bottom: 10px;
+  margin-top:40px;
+
+  @media (min-width: $s-md) {    
+    margin-top:0px;
+  }  
+
+}
+
+.open-source-chat-image {
+  max-width: 600px;
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 41px;
+}
+
+.home__g3tg {
+  
+  flex-direction: column;
+  text-align: center;
+
+  @media (min-width: $s-md) {    
+    flex-direction: row;
+  }
+}
+
+.checkout-header {
+  font-weight: 700;
+  color: black !important;
+  font-style: italic;
+  font-size: 20px;
+}
+
+.github-image {
+  width: 130px;
+  margin: 10px;  
+}
+
+.github-texts {
+  margin: 0 auto;
+  flex-direction: column;
+  margin-top:30px;
+
+  @media (min-width: $s-md) {    
+    flex-direction: row;
+  }  
+}
+
+.github-texts:hover .checkout-header {
+  text-decoration: none;
+  color: #4285f4 !important;
+}
+
+.safe_proc p {
+  font-size:1.5rem;
+
+  @media (min-width: $s-md) {    
+    font-size:2.5rem;
+  }    
 }
