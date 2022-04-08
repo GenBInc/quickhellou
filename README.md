@@ -1,7 +1,9 @@
 <div align="center">
   <img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/repo_header_cropped.png" alt="Quick Hellou"/>
 </div>
-
+<h3 align="center">
+  Quick Hellou, lets you do just that: connect for a quick hello with anyone you like!
+</h3>
 
 # Quick Hellou
 
@@ -22,7 +24,9 @@ videochat <-> {goserver - collider}{turn server} <-> helpdesk
 ### Tech Stack
 Docker, WebRTC, Redis, Collider(Goserver), Coturn, Python (Django), PostgreSQL
 
-<img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/techstack.png" alt="Tech Stack"/>
+<div align="center">
+  <img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/techstack.png" alt="Tech Stack"/>
+</div>
 
 
 ### Video Chat application
