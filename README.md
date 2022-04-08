@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/repo_header.png" height="120px" alt="Quick Hellou"/>
+  <img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/repo_header_cropped.png" height="120px" alt="Quick Hellou"/>
 </div>
 
 
