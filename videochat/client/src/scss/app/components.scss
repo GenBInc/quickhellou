@@ -178,8 +178,8 @@ div.open-quick-talk img {
   font-size: 1rem;
   border: 2px solid #4285f4;
   color: white;
-  border-radius: 30px;
-  padding: 10px 20px;
+  border-radius: 60px;
+  padding: 15px 20px;
   background: none;
   cursor: pointer;
   margin-bottom: 6px;
@@ -192,8 +192,8 @@ div.open-quick-talk img {
   }
 
   @media (min-width: $s-xxl) {
-    border-radius:30px;
-    padding: 15px 30px;
+    border-radius:60px;
+    padding: 20px 30px;
   }
 }
 
@@ -211,6 +211,7 @@ div.open-quick-talk img {
 .desc-invite {
   color: $color--cornflower-blue;
   text-align: center;
+  margin-top:10px;
 }
 
 .feature-option--fake {
