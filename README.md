@@ -4,24 +4,20 @@
 <h3 align="center">
   Quick Hellou, lets you do just that: connect for a quick hello with anyone you like!
 </h3>
+
 <p align="center">
     Super easy for integrations! No accounts to setup and no hoops to jump through, with a single click of the mouse, you’re up and running with a sharable link to a private video chat room.
 </p>
-
 <p align="center">
-
     <a href="https://github.com/GenBInc/quickhellou">
         <img alt="License" src="https://img.shields.io/github/license/genbinc/quickhellou" />
     </a>
-
     <a href="https://github.com/GenBInc/quickhellou/pulls">
         <img alt="Contribs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" />
     </a>
-
     <a href="http://commitizen.github.io/cz-cli/">
         <img alt="Commitizen friendly" src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" />
     </a>
-
 </p>
 
 # Quick Hellou
