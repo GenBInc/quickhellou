@@ -1,2 +1,2 @@
 Not big idea :) ... but HUGE IDEA! :)
-Just give us ping at say@quickhellou.com
+Just give us a ping at say@quickhellou.com
