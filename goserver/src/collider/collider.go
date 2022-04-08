@@ -68,7 +68,7 @@ func (c *Collider) Run(p int, useTLS bool) {
 		}
 		server := &http.Server{Addr: pstr, Handler: nil, TLSConfig: config}
 
-		e = server.ListenAndServeTLS("/goserver/ssl/qhellouwild.crt", "/goserver/ssl/qhellouwild.key")
+		e = server.ListenAndServeTLS("/goserver/ssl/localhost.crt", "/goserver/ssl/localhost.key")
 	} else {
 		e = http.ListenAndServe(pstr, nil)
 	}
