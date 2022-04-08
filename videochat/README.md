@@ -13,7 +13,7 @@ Update keys in the `.env` configuration file.
 ## Redis port
 [/videochat/redis/redis.conf](https://github.com/GenBInc/quickhellou/blob/main/videochat/redis/redis.conf)
 
-port 6380 -> should be the same as in .env file
+port 6379 -> should be the same as in .env file
 
 
 ## App port
