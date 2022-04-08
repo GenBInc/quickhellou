@@ -59,6 +59,12 @@ videochat
 ### Helpdesk application
 
 It provides installable in-page client plugins and the customer-operator communication services.
+
+<div align="center">
+  <img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/helpdesk.png" alt="Quick Hellou Help Desk"/>
+</div>
+
+
 ```
 helpdesk
 ```
