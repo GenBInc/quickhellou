@@ -22,6 +22,10 @@
 
 # Quick Hellou
 
+<div align="center">
+  <img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/qh-screens.png" alt="Quick Hellou Stay Connected"/>
+</div>
+
 The application provides helpdesk solution based on WebRTC video communications.
 
 The application includes:
