@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/repo_header_cropped.png" height="200px" alt="Quick Hellou"/>
+  <img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/repo_header_cropped.png" alt="Quick Hellou"/>
 </div>
 
 
@@ -22,7 +22,7 @@ videochat <-> {goserver - collider}{turn server} <-> helpdesk
 ### Tech Stack
 Docker, WebRTC, Redis, Collider(Goserver), Coturn, Python (Django), PostgreSQL
 
-<img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/techstack.png" height="200px" alt="Tech Stack"/>
+<img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/techstack.png" alt="Tech Stack"/>
 
 
 ### Video Chat application
