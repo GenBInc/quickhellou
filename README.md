@@ -20,7 +20,10 @@ videochat <-> {goserver - collider}{turn server} <-> helpdesk
 ``
 
 ### Tech Stack
-Docker, Redis, Collider(Goserver), Coturn, Python (Django), PostgreSQL
+Docker, WebRTC, Redis, Collider(Goserver), Coturn, Python (Django), PostgreSQL
+
+<img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/techstack.png" height="200px" alt="Tech Stack"/>
+
 
 ### Video Chat application
 
