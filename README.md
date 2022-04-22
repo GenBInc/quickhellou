@@ -32,7 +32,7 @@ The application includes:
 * creating multi-peer video conference sessions
 * create instalable in-page plugins and create customer service communications.
 
-[Demo https://qhellou.com](https://qhellou.com)
+[Demo qhellou.com](http://qhellou.com)
  
 
 The application is built upon two modular applications connected with a shared communication server.  
