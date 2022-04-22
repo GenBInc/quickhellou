@@ -1,8 +1,10 @@
 # Quick Hellou Helpdesk application
 
 Manages helpdesk application:
-* installable in-page plugins
-* adminstration console
+* add video chat help desk dot on every page using js bundle
+* manage coming video chats requests using admin help desk console
+* more to come soon, we're working on improvements and new features ... stay tuned.
+
 
 # Configuration
 
