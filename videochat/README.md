@@ -1,8 +1,11 @@
 # Quick Hellou Video Chat & Help Desk application
 
-The WebRTC based video chat & help desk application . It allows:
+The WebRTC based Video Chat & Help Desk application . It allows:
 * multi-peer video chat conferences
 * share screen between peers
+* add video chat help desk dot on every page using js bundle
+* manage coming video chats requests from help desk console
+* more to come soon, we're working on improvements and new features ... stay tuned.
 
 # Configuration
 
