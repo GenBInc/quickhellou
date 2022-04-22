@@ -1,6 +1,6 @@
-# Quick Hellou Video Chat application
+# Quick Hellou Video Chat & Help Desk application
 
-The WebRTC based video chat application. It allows:
+The WebRTC based video chat & help desk application . It allows:
 * multi-peer video chat conferences
 * share screen between peers
 
