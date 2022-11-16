@@ -33,6 +33,8 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 FAKE_EMAIL_DOMAIN = 'fake.org'
 
+ADMIN_EMAIL = 'jmrowczynski@genb.com'
+
 # Session timeout - 60min
 
 SESSION_COOKIE_AGE = 60*60

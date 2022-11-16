@@ -23,12 +23,20 @@ export class CallsView extends DashboardView {
     const connectingTextElement = this.uiGet('.com-list__text--connecting')
     const deactivateButtonElement = this.uiGet('.call-list__button--deactivate')
     activateButtonElement.addEventListener('click', () => {
-      this.webSocketService.registerOperatorsList(
-        this.adminId,
-        this.user.widget_list
-      )
-      activateButtonElement.classList.add('js-hidden')
-      connectingTextElement.classList.remove('js-hidden')
+      const installedWidgets = this.user.widget_list.filter((widget) => widget.is_installed)
+      if (!installedWidgets.length) {
+        const failureTextElement = this.uiGet('.com-list__text--failure')
+        failureTextElement.innerHTML = 'No installed widgets.'
+        failureTextElement.classList.remove('js-hidden')
+      }
+      if (installedWidgets.length) {
+        this.webSocketService.registerOperatorsList(
+          this.adminId,
+          installedWidgets
+          )
+          activateButtonElement.classList.add('js-hidden')
+          connectingTextElement.classList.remove('js-hidden')
+      }
     })
 
     deactivateButtonElement.addEventListener('click', () => {
@@ -55,6 +63,7 @@ export class CallsView extends DashboardView {
     const activateButtonElement = this.uiGet('.call-list__button--activate')
     const connectingTextElement = this.uiGet('.com-list__text--connecting')
     const failureTextElement = this.uiGet('.com-list__text--failure')
+    failureTextElement.innerHTML = 'Connection failure.'
     activateButtonElement.classList.add('js-hidden')
     connectingTextElement.classList.add('js-hidden')
     failureTextElement.classList.remove('js-hidden')

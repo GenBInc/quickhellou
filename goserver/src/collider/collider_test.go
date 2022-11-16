@@ -25,7 +25,7 @@ var once sync.Once
 var registerTimeout = time.Second
 var cl *Collider
 
-var port = flag.Int("port", 8089, "The port that Collider listens to")
+var port = flag.Int("port", 8099, "The port that Collider listens to")
 
 func startCollider() {
 	serverAddr = "localhost:" + strconv.Itoa(*port)

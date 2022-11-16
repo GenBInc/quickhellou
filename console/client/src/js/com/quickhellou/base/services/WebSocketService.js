@@ -171,7 +171,6 @@ export class WebSocketService extends FormService {
    * @memberof WebSocketService
    */
   registerOperatorsList(userId, widgets) {
-    widgets = widgets.filter((widget) => widget.is_installed === true)
     this.registerList(userId, UserType.ADMIN, widgets)
   }
 
