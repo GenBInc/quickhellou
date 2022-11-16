@@ -33,6 +33,14 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 FAKE_EMAIL_DOMAIN = 'fake.org'
 
+# Session timeout - 60min
+
+SESSION_COOKIE_AGE = 60*60
+
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
 # Host for sending email.
 EMAIL_HOST = str(os.environ.get('EMAIL_HOST'))
 
@@ -44,12 +52,9 @@ EMAIL_USE_LOCALTIME = False
 
 # Optional SMTP authentication information for EMAIL_HOST.
 EMAIL_HOST_USER = str(os.environ.get('EMAIL_HOST_USER'))
-EMAIL_HOST_PASSWORD = str(os.environ.get('EMAIL_PASSWORD'))
+EMAIL_HOST_PASSWORD = str(os.environ.get('EMAIL_HOST_PASSWORD'))
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = strtobool(os.environ.get('EMAIL_USE_SSL'))
-EMAIL_SSL_CERTFILE = None
-EMAIL_SSL_KEYFILE = None
-EMAIL_TIMEOUT = None
 
 # Application definition
 

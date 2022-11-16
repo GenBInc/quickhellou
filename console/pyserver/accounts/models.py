@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager)
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import admin
 from django.contrib.auth.models import (PermissionsMixin, Permission)

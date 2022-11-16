@@ -178,5 +178,5 @@ def activate_user_view(request, user_id):
 def send_email_notification(subject, recipients, email_params, text_template_url, html_template_url):
     message_plain = render_to_string(text_template_url, email_params)
     message_html = render_to_string(html_template_url, email_params)
-    send_mail(subject, message_plain, 'support@<your_company.com>',
+    send_mail(subject, message_plain, 'support@genb.com',
               recipients, html_message=message_html)

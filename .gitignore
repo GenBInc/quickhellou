@@ -1,1 +1,5 @@
+/temp
+/console/pyserver/media
+local.env
+debug.log
 *.pyc
