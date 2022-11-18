@@ -5,7 +5,11 @@ import datetime
 import re
 import hashlib
 from io import BytesIO
-from django.http.request import HttpRequest
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseRedirect
+)
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.mail import send_mail
@@ -13,30 +17,45 @@ from django.http import FileResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-
-from console import settings
+from django.conf import settings
 from accounts.models import Profile, User
 
-from .forms import (ApplicationSettingsForm, AssignedWidgetsForm,
-                    AssigneesForm, CommunicationForm, ProfileForm,
-                    ProfileMetaForm, UserForm, WidgetExtensionViewForm,
-                    WidgetForm, WidgetTemplateForm, CommunicationSessionForm,
-                    WidgetActiveUserForm)
-from .models import (ApplicationSettings, Communication, CommunicationSession,
-                     Widget, WidgetTemplate)
+from dashboard.forms import (
+    ApplicationSettingsForm,
+    AssignedWidgetsForm,
+    AssigneesForm,
+    CommunicationForm,
+    ProfileForm,
+    ProfileMetaForm,
+    UserForm,
+    WidgetExtensionViewForm,
+    WidgetForm,
+    WidgetTemplateForm,
+    CommunicationSessionForm,
+    WidgetActiveUserForm
+)
+from dashboard.models import (
+    ApplicationSettings,
+    Communication,
+    CommunicationSession,
+    Widget,
+    WidgetTemplate
+)
 
 
-@login_required(login_url="/accounts/login")
-def home_view(request):
+@login_required
+def home_view(request: HttpRequest):
     user = request.user
     return render(request, 'dashboard/home.html', {'user': request.user})
 
 
-@login_required(login_url="/accounts/login")
-def widgets_view(request):
-    widgets = Widget.objects.filter(
+@login_required
+def widgets_view(
+    request: HttpRequest
+) -> HttpResponse:
+    widgets: list[Widget] = Widget.objects.filter(
         active=True, client_board=request.user.client_board).order_by('id')
-    active_widgets_len = len(widgets.filter(paused=False))
+    active_widgets_len: int = len(widgets.filter(paused=False))
     return render(request, 'dashboard/widgets.html', {
         'user': request.user,
         'widgets': widgets,
@@ -46,14 +65,18 @@ def widgets_view(request):
 
 @permission_required("is_default_admin")
 @permission_required("is_default_editor")
-@login_required(login_url="/accounts/login")
-def settings_view(request):
-    widget_templates = WidgetTemplate.objects.all()
-    video_app_url = ApplicationSettings.objects.get(property='video_app_url')
-    console_app_url = ApplicationSettings.objects.get(
+@login_required
+def settings_view(
+    request: HttpRequest
+) -> HttpResponse:
+    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.all()
+    video_app_url: str = ApplicationSettings.objects.get(
+        property='video_app_url')
+    console_app_url: str = ApplicationSettings.objects.get(
         property='console_app_url')
-    ws_service_url = ApplicationSettings.objects.get(property='ws_service_url')
-    admin_email_address = ApplicationSettings.objects.get(
+    ws_service_url: str = ApplicationSettings.objects.get(
+        property='ws_service_url')
+    admin_email_address: str = ApplicationSettings.objects.get(
         property='admin_email_address')
     if request.method == 'POST':
         form = ApplicationSettingsForm(request.POST)
@@ -83,8 +106,11 @@ def settings_view(request):
 
 
 @permission_required("is_default_editor")
-@login_required(login_url="/accounts/login")
-def communication_edit_view(request, communication_id=None):
+@login_required
+def communication_edit_view(
+    request: HttpRequest,
+    communication_id: int = None
+) -> HttpResponse:
     if communication_id is not None:
         communication = Communication.objects.get(id=communication_id)
         com_sessions = communication.communicationsession_set.all()
@@ -107,7 +133,10 @@ def communication_edit_view(request, communication_id=None):
     })
 
 
-def communication_session_edit_view(request, session_id):
+def communication_session_edit_view(
+    request: HttpRequest,
+    session_id: int
+) -> HttpResponse:
     instance = get_object_or_404(CommunicationSession, id=session_id)
     form = CommunicationSessionForm(request.POST or None, instance=instance)
     if form.is_valid():
@@ -133,8 +162,10 @@ def communication_session_edit_view(request, session_id):
 
 @permission_required("is_default_admin")
 @permission_required("is_default_editor")
-@login_required(login_url="/accounts/login")
-def widget_create_view(request):
+@login_required
+def widget_create_view(
+    request: HttpRequest
+) -> HttpResponse:
     users = User.objects.filter(client_board=request.user.client_board)
     widget_templates = WidgetTemplate.objects.all()
     if request.method == 'POST':
@@ -165,8 +196,11 @@ def widget_create_view(request):
         'users': users})
 
 
-@login_required(login_url="/accounts/login")
-def widget_edit_view(request, widget_id=None):
+@login_required
+def widget_edit_view(
+    request: HttpRequest,
+    widget_id: int = None
+) -> HttpResponse:
     widget_templates = WidgetTemplate.objects.all()
     users = User.objects.filter(
         client_board=request.user.client_board, is_admin=True)
@@ -208,8 +242,10 @@ def widget_edit_view(request, widget_id=None):
 
 
 @permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def widget_template_create_view(request):
+@login_required
+def widget_template_create_view(
+    request: HttpRequest
+) -> HttpResponse:
     if request.method == 'POST':
         form = WidgetTemplateForm(request.POST, request.FILES)
         if form.is_valid():
@@ -228,8 +264,11 @@ def widget_template_create_view(request):
 
 
 @permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def widget_template_edit_view(request, widget_template_id=None):
+@login_required
+def widget_template_edit_view(
+    request: HttpRequest,
+    widget_template_id: int = None
+) -> HttpResponse:
     if widget_template_id is not None:
         widget_template = WidgetTemplate.objects.get(id=widget_template_id)
     else:
@@ -253,9 +292,13 @@ def widget_template_edit_view(request, widget_template_id=None):
     })
 
 
-@login_required(login_url="/accounts/login")
-def communication_delete(request, communication_id):
-    communication = Communication.objects.get(id=communication_id)
+@login_required
+def communication_delete(
+    request: HttpRequest,
+    communication_id: int,
+) -> HttpResponseRedirect:
+    communication: Communication = Communication.objects.get(
+        id=communication_id)
     communication.active = False
     communication.save()
     messages.success(
@@ -263,8 +306,11 @@ def communication_delete(request, communication_id):
     return redirect('dashboard:communications')
 
 
-@login_required(login_url="/accounts/login")
-def widget_delete(request, widget_id):
+@login_required
+def widget_delete(
+    request: HttpRequest,
+    widget_id: int
+) -> HttpResponseRedirect:
     widget = Widget.objects.get(id=widget_id)
     widget.active = False
     widget.save()
@@ -273,8 +319,11 @@ def widget_delete(request, widget_id):
     return redirect('dashboard:widgets')
 
 
-@login_required(login_url="/accounts/login")
-def widget_pause(request, widget_id):
+@login_required
+def widget_pause(
+    request: HttpRequest,
+    widget_id: int
+) -> HttpResponseRedirect:
     widget = Widget.objects.get(id=widget_id)
     widget.paused = True
     widget.save()
@@ -283,8 +332,11 @@ def widget_pause(request, widget_id):
     return redirect('dashboard:widgets')
 
 
-@login_required(login_url="/accounts/login")
-def widget_unpause(request, widget_id):
+@login_required
+def widget_unpause(
+    request: HttpRequest,
+    widget_id: int
+) -> HttpResponseRedirect:
     widget = Widget.objects.get(id=widget_id)
     widget.paused = False
     widget.save()
@@ -293,8 +345,10 @@ def widget_unpause(request, widget_id):
     return redirect('dashboard:widgets')
 
 
-@login_required(login_url="/accounts/login")
-def communications_view(request):
+@login_required
+def communications_view(
+    request: HttpRequest
+) -> HttpResponse:
     communications = Communication.objects.filter(
         client_board=request.user.client_board).filter(active=True)
     return render(request, 'dashboard/communications.html', {
@@ -302,8 +356,10 @@ def communications_view(request):
         'user': request.user, })
 
 
-@login_required(login_url="/accounts/login")
-def communication_list_view(request):
+@login_required
+def communication_list_view(
+    request: HttpRequest
+) -> HttpResponse:
     communications = Communication.objects.filter(
         client_board=request.user.client_board).filter(active=True).order_by('-modification_time')
     if communications.count() > 0:
@@ -317,16 +373,20 @@ def communication_list_view(request):
     })
 
 
-@login_required(login_url="/accounts/login")
-def call_create_view(request):
+@login_required
+def call_create_view(
+    request: HttpRequest
+) -> HttpResponse:
     return render(request, 'dashboard/call_create.html', {
         'user': request.user,
     })
 
 
 @permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def team_view(request):
+@login_required
+def team_view(
+    request: HttpRequest
+) -> HttpResponse:
     users = User.objects.filter(
         is_active=True, is_admin=True, is_superuser=False,
         client_board=request.user.client_board).order_by('id')
@@ -334,14 +394,19 @@ def team_view(request):
 
 
 @permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def billing_view(request):
+@login_required
+def billing_view(
+    request: HttpRequest
+) -> HttpResponse:
     return render(request, 'dashboard/billing.html', {'user': request.user})
 
 
 @permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def client_user_edit_view(request, user_id=None):
+@login_required
+def client_user_edit_view(
+    request: HttpRequest,
+    user_id: int = None
+) -> HttpResponse:
     if user_id is not None:
         client_user = User.objects.get(id=user_id)
         board_widgets = Widget.objects.filter(
@@ -384,8 +449,10 @@ def client_user_edit_view(request, user_id=None):
 
 
 @permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def client_user_create_view(request):
+@login_required
+def client_user_create_view(
+    request: HttpRequest
+) -> HttpResponse:
     client_board = request.user.client_board
     widgets = Widget.objects.filter(client_board=client_board)
     if request.method == 'POST':
@@ -433,8 +500,11 @@ def client_user_create_view(request):
         'profile_meta_form': profile_meta_form, })
 
 
-@login_required(login_url="/accounts/login")
-def user_delete(request, user_id):
+@login_required
+def user_delete(
+    request: HttpRequest,
+    user_id: int
+) -> HttpResponseRedirect:
     user = User.objects.get(id=user_id)
     user.is_active = False
     user.save()
@@ -443,8 +513,11 @@ def user_delete(request, user_id):
     return redirect('dashboard:team')
 
 
-@login_required(login_url="/accounts/login")
-def user_deactivate(request, user_id):
+@login_required
+def user_deactivate(
+    request: HttpRequest,
+    user_id: int
+) -> HttpResponseRedirect:
     profile = Profile.objects.get(user_id=user_id)
     profile.available = False
     profile.save()
@@ -453,8 +526,11 @@ def user_deactivate(request, user_id):
     return redirect('dashboard:team')
 
 
-@login_required(login_url="/accounts/login")
-def user_activate(request, user_id):
+@login_required
+def user_activate(
+    request: HttpRequest,
+    user_id: int
+) -> HttpResponseRedirect:
     profile = Profile.objects.get(user_id=user_id)
     profile.available = True
     profile.save()
@@ -463,7 +539,9 @@ def user_activate(request, user_id):
     return redirect('dashboard:team')
 
 
-def create_widget_embed_script(widget):
+def create_widget_embed_script(
+    widget: Widget
+) -> str:
     widget_source_file = open(
         'console/static/js/embed/widget_embed_script.js', "r", encoding="utf-8")
     widget_source = widget_source_file.readlines()
@@ -477,10 +555,12 @@ def create_widget_embed_script(widget):
     return code
 
 
-def create_widget_content_script(widget):
-    template_params = {'widget_id': widget.id, 'uuid': str(widget.uuid), 'console_app_url': ApplicationSettings.objects.get_console_app_url(),
-                       'video_app_url': ApplicationSettings.objects.get_video_app_url(),
-                       'background_color': widget.template.background_color, 'icon': widget.template.icon.url}
+def create_widget_content_script(
+    widget: Widget
+) -> str:
+    template_params: dict = {'widget_id': widget.id, 'uuid': str(widget.uuid), 'console_app_url': ApplicationSettings.objects.get_console_app_url(),
+                             'video_app_url': ApplicationSettings.objects.get_video_app_url(),
+                             'background_color': widget.template.background_color, 'icon': widget.template.icon.url}
     template_code = render_to_string(
         'embed/widget_content.html', template_params)
 
@@ -497,15 +577,18 @@ def create_widget_content_script(widget):
     return code
 
 
-def widget_embed_script_file(request, widget_id):
-    widget = Widget.objects.get(id=widget_id)
+def widget_embed_script_file(
+    request: HttpRequest,
+    widget_id: int
+) -> FileResponse:
+    widget: Widget = Widget.objects.get(id=widget_id)
 
     if not widget:
         raise Http404
 
-    code = create_widget_embed_script(widget)
+    code: str = create_widget_embed_script(widget)
 
-    buffer = BytesIO(code.encode())
+    buffer: BytesIO = BytesIO(code.encode())
 
     return FileResponse(buffer, as_attachment=False)
 
@@ -525,7 +608,12 @@ def widget_content_script_file(
 
 
 @csrf_exempt
-def install(request, widget_id, domain, uuid):
+def install(
+    request: HttpRequest,
+    widget_id: int,
+    domain: str,
+    uuid: str
+) -> HttpResponse:
     widget = Widget.objects.get(id=widget_id, uuid=uuid)
 
     if not widget:
@@ -549,19 +637,30 @@ def install(request, widget_id, domain, uuid):
 
 
 @csrf_exempt
-def test_widget(request):
+def test_widget(
+    request: HttpRequest
+) -> HttpResponse:
     return render(request, 'embed/test_widget_v2.html', {})
 
 
-def active_operator_init_form(request):
+def active_operator_init_form(
+    request: HttpRequest
+) -> HttpResponse:
     return render(request, 'embed/active_operator_init_form.html', {})
 
 
-def inactive_operator_init_form(request):
+def inactive_operator_init_form(
+    request: HttpRequest
+) -> HttpResponse:
     return render(request, 'embed/inactive_operator_init_form.html', {})
 
 
-def widget_embed_view(request, widget_id, hostname, uuid):
+def widget_embed_view(
+    request: HttpRequest,
+    widget_id: int,
+    hostname: str,
+    uuid: str
+) -> HttpResponse:
     widget = Widget.objects.get(id=widget_id, uuid=uuid)
 
     if not widget:
@@ -580,7 +679,12 @@ def widget_embed_view(request, widget_id, hostname, uuid):
 
 
 @csrf_exempt
-def widget_extension_embed_view(request, widget_id, hostname, uuid):
+def widget_extension_embed_view(
+    request: HttpRequest,
+    widget_id: int,
+    hostname: str,
+    uuid: str
+) -> HttpResponse:
     widget = Widget.objects.get(id=widget_id, uuid=uuid)
 
     if not widget:
@@ -683,7 +787,12 @@ def widget_extension_embed_view(request, widget_id, hostname, uuid):
 
 
 @csrf_exempt
-def widget_active_operator(request, widget_id, hostname, uuid):
+def widget_active_operator(
+    request: HttpRequest,
+    widget_id: int,
+    hostname: str,
+    uuid: str
+) -> HttpResponse:
     widget = Widget.objects.get(id=widget_id, uuid=uuid)
 
     if not widget:
@@ -751,8 +860,19 @@ def widget_active_operator(request, widget_id, hostname, uuid):
         'hostname': hostname})
 
 
-def send_email_notification(subject, recipients, email_params, text_template_url, html_template_url):
-    message_plain = render_to_string(text_template_url, email_params)
-    message_html = render_to_string(html_template_url, email_params)
-    send_mail(subject, message_plain, settings.ADMIN_EMAIL,
-              recipients, html_message=message_html)
+def send_email_notification(
+    subject: str,
+    recipients: list[str],
+    email_params: dict,
+    text_template_url: str,
+    html_template_url: str
+) -> int:
+    message_plain: str = render_to_string(text_template_url, email_params)
+    message_html: str = render_to_string(html_template_url, email_params)
+    return send_mail(
+        subject,
+        message_plain,
+        settings.ADMIN_EMAIL,
+        recipients,
+        html_message=message_html
+    )

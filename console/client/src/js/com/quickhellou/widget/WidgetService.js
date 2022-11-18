@@ -82,13 +82,15 @@ export class WidgetService extends EventEmitter {
               )
 
               // attach videochat events
-              this.videochatProxy = videochat.proxy()
-              this.videochatProxy.addEventListener('close', () => {
-                this.onCloseVideoChat()
-              })
-              this.videochatProxy.addEventListener('remote_hangup', () => {
-                this.onCloseVideoChat()
-              })
+              if (!!videochat) {
+                this.videochatProxy = videochat.proxy()
+                this.videochatProxy.addEventListener('close', () => {
+                  this.onCloseVideoChat()
+                })
+                this.videochatProxy.addEventListener('remote_hangup', () => {
+                  this.onCloseVideoChat()
+                })
+              }
 
               resolve()
             })

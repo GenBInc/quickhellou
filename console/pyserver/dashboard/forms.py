@@ -1,10 +1,15 @@
 import re
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.validators import URLValidator, RegexValidator, validate_email
+from django.core.validators import validate_email
 from accounts.models import User, Profile
-from .models import (Widget, WidgetTemplate, Communication, CommunicationSession, \
-    ApplicationSettings)
+from dashboard.models import (
+    Widget,
+    WidgetTemplate,
+    Communication,
+    CommunicationSession,
+)
+
 
 class EmailOrPhoneField(forms.CharField):
     def validate(self, value):
@@ -12,11 +17,14 @@ class EmailOrPhoneField(forms.CharField):
         super().validate(value)
         if '@' in value:
             return validate_email(value)
-        phone_regex = re.compile('^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
+        phone_regex = re.compile(
+            '^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
         if phone_regex.match(value):
             return True
         else:
             raise ValidationError('Incorrect email or phone format.')
+
+
 class ProfileMetaForm(forms.Form):
     callpage_url_no_http = forms.CharField()
 
@@ -40,7 +48,7 @@ class ProfileForm(forms.ModelForm):
 
     def is_valid(self):
         valid = super(ProfileForm, self).is_valid()
-        
+
         if not valid:
             return valid
 
@@ -63,7 +71,7 @@ def get_first_name(fullname):
     try:
         firstname = fullname.split()[0]
     except Exception as e:
-        print (e)
+        print(e)
     return firstname
 
 
@@ -72,29 +80,34 @@ def get_last_name(fullname):
     try:
         return " ".join(fullname.split()[1:])
     except Exception as e:
-        print (e)
+        print(e)
     return lastname
 
 
 class WidgetForm(forms.ModelForm):
     class Meta:
         model = Widget
-        fields = ('name', 'url', 'lang', 'template' , 'header', 'content')
+        fields = ('name', 'url', 'lang', 'template', 'header', 'content')
+
 
 class WidgetActiveUserForm(forms.Form):
     name = forms.CharField(max_length=256, required=True)
-    email_or_phone = EmailOrPhoneField(max_length=256,required=True)
+    email_or_phone = EmailOrPhoneField(max_length=256, required=True)
+
 
 class WidgetExtensionViewForm(forms.Form):
     name = forms.CharField(max_length=256, required=True)
-    email_or_phone = EmailOrPhoneField(max_length=256,required=True)
+    email_or_phone = EmailOrPhoneField(max_length=256, required=True)
     message = forms.CharField(widget=forms.Textarea(), required=True)
+
 
 class ApplicationSettingsForm(forms.Form):
     video_app_url = forms.CharField(max_length=256)
     console_app_url = forms.CharField(max_length=256)
     ws_service_url = forms.CharField(max_length=256)
-    admin_email_address = forms.CharField(max_length=256, validators=[validate_email])
+    admin_email_address = forms.CharField(
+        max_length=256, validators=[validate_email])
+
 
 class AssigneesForm(forms.Form):
     assignee = forms.ModelMultipleChoiceField(
@@ -107,6 +120,7 @@ class AssigneesForm(forms.Form):
         super(AssigneesForm, self).__init__(*args, **kwargs)
         self.fields['assignee'].queryset = User.objects.all()
 
+
 class AssignedWidgetsForm(forms.Form):
     widget = forms.ModelMultipleChoiceField(
         queryset=Widget.objects.all(),
@@ -118,32 +132,38 @@ class AssignedWidgetsForm(forms.Form):
         super(AssignedWidgetsForm, self).__init__(*args, **kwargs)
         self.fields['widget'].queryset = Widget.objects.all()
 
+
 def generate_template_code(widget_template):
-    code = "<div><div>{}</div><div>{}</div></div>"#.format(widget_template.header,widget_template.content)
+    # .format(widget_template.header,widget_template.content)
+    code = "<div><div>{}</div><div>{}</div></div>"
     return code
+
 
 class WidgetTemplateForm(forms.ModelForm):
     """ Widget template form. """
     class Meta:
         model = WidgetTemplate
         fields = ['name', 'background_color', 'icon']
-    
+
     def is_valid(self):
         valid = super(WidgetTemplateForm, self).is_valid()
         return valid
-    
+
     def save(self, user, commit=True):
         widget_template = super(WidgetTemplateForm, self).save(commit=False)
         widget_template.code = generate_template_code(widget_template)
-        widget_template.last_editor = user;
+        widget_template.last_editor = user
         if commit:
             widget_template.save()
         return widget_template
+
 
 class CommunicationForm(forms.ModelForm):
     class Meta:
         model = Communication
         fields = ('caller_name', 'status')
+
+
 class CommunicationSessionForm(forms.ModelForm):
     class Meta:
         model = CommunicationSession

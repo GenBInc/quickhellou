@@ -1,18 +1,18 @@
 from django import forms
-from django.core.exceptions import ValidationError
-from django.core.validators import URLValidator, validate_email
+from django.core.validators import validate_email
 
-from .models import User, Profile
-from dashboard.models import (Widget, ClientBoard)
+from accounts.models import User, Profile
+from dashboard.models import Widget
+
 
 class ProfileMetaForm(forms.Form):
-    """ User Profile Helpers """ 
-    
+    """ User Profile Helpers """
+
     password = forms.CharField(required=True)
     confirm_password = forms.CharField(required=True)
     recaptcha = forms.CharField(required=True)
     phone_raw = forms.CharField(required=True)
-   
+
     def is_valid(self):
         valid = super(ProfileMetaForm, self).is_valid()
         if not valid:
@@ -65,13 +65,17 @@ class ProfileForm(forms.ModelForm):
         if commit:
             profile.save()
         return profile
+
+
 class ProfileThumbnailForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('id', 'thumbnail')
 
+
 class ForgotPasswordForm(forms.Form):
     email = forms.CharField(required=True, validators=[validate_email])
+
 
 class ResetPasswordForm(forms.Form):
     new_password = forms.CharField(required=True)
@@ -92,7 +96,7 @@ class WidgetForm(forms.ModelForm):
     class Meta:
         model = Widget
         fields = ['url']
-    
+
     def is_valid(self):
         valid = super(WidgetForm, self).is_valid()
         return valid
@@ -103,7 +107,7 @@ class WidgetForm(forms.ModelForm):
         widget.client_board = client_board
         if commit:
             widget.save()
-            widget.assignees.add(user)        
+            widget.assignees.add(user)
         return widget
 
 
@@ -112,7 +116,7 @@ def get_first_name(fullname):
     try:
         firstname = fullname.split()[0]
     except Exception as e:
-        print (e)
+        print(e)
     return firstname
 
 
@@ -121,6 +125,5 @@ def get_last_name(fullname):
     try:
         return " ".join(fullname.split()[1:])
     except Exception as e:
-        print (e)
+        print(e)
     return lastname
-

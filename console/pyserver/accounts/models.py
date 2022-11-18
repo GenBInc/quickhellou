@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager)
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager
+)
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib import admin
-from django.contrib.auth.models import (PermissionsMixin, Permission)
+from django.contrib.auth.models import (
+    PermissionsMixin,
+    Permission
+)
 
-from console import settings
+from django.conf import settings
 
 import uuid
-import profile
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
