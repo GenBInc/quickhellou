@@ -1,0 +1,188 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Edit Communication Session{% endblock %}
+{% block page_title %}Edit Communication Session{% endblock %}
+
+{% block nav %}
+<nav class="fcol mdc-list aside__navi-list">
+  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
+    Dashboard
+  </a>
+  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:communications' %}">
+    Communications
+  </a>
+  {% if user.is_default_admin %}
+  <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
+    Widgets<span></span>
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
+    Team<span></span>
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
+    Billing
+  </a>
+  <a class="aside__navi-item aside__navi-item" href="{% url 'dashboard:settings' %}">
+    Settings
+  </a>
+  {% endif %}
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="fc">
+  <div class="wrapper wrapper--thin wrapper--profile">
+    <div class="fcol">
+      <div class="form--settings__form-container form-container">
+        <p class="form__header">Session information</p>
+        <form class="fcol site-form form--profile" 
+        action="{% url 'dashboard:communication_session_edit' session_id=session.id %}" method="post"
+          novalidate enctype="multipart/form-data">
+          {% csrf_token %}
+          {% if request.GET.next %}
+          <input type="hidden" name="next" value="{{request.GET.next}}">
+          {% endif %}
+          {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <div class="fcol form__content">
+            
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">
+              <input type="text" id="assistant-input" class="mdc-text-field__input form__text"
+                value="{{ session.communication.caller.profile.full_name }}" disabled>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="assistant-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Customer Name</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+
+            {% if 'fake.org' not in client_user.email %}
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">
+              <input type="text" id="assistant-input" class="mdc-text-field__input form__text"
+                value="{{ client_user.email }}" disabled>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="assistant-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Email Address</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if client_user.profile.phone_number is not None %}
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">
+              <input type="text" id="assistant-input" class="mdc-text-field__input form__text"
+                value="{{ client_user.profile.phone_number }}" disabled>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="assistant-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Phone Number</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">
+              <input type="text" id="assistant-input" class="mdc-text-field__input form__text"
+                value="{{ session.communication.widget.url }}" disabled>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="assistant-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">URL</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">
+              <input type="text" id="type-input" class="mdc-text-field__input form__text"
+                value="{{ session.type_verbose|title }}" disabled>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="type-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Type</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+
+            {% if session.rate is not 0 %}
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">
+              <input type="text" id="type-input" class="mdc-text-field__input form__text"
+                value="{{ session.rate }}" disabled>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="type-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">User Rating</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="errornote">
+              {{ form.status.errors }}
+            </div>
+            <div class="mdc-select mdc-select--outlined form--widget-create__name form__field--upper">
+              <i class="mdc-select__dropdown-icon"></i>
+              <select class="mdc-select__native-control" name="status" required>
+                <option value="" disabled></option>                
+                {% for value, label in statuses %}
+                  <option value="{{ value }}" {% if session.status == value %} selected {% endif %}>{{ label|title }}</option>
+                {% endfor %}
+              </select>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                   <label class="mdc-floating-label">Status</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+
+            {% if session.content is not None %}
+            <div class="errornote">
+              {{ form.content.errors }}
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+              <textarea id="content-input" name="content" class="mdc-text-field__input form__text" rows="8" cols="40">{{ session.content }}</textarea>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="content-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Message</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            {% endif %}
+            
+
+          </div>
+          <div class="fc">
+            <div class="flc form__ui">
+              <div>
+                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
+              </div>
+              <div>
+                <a href="{% url 'dashboard:communication_edit' communication_id=session.communication.id %}">
+                  <input type="button" class="form__button" value="Back">
+                </a>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

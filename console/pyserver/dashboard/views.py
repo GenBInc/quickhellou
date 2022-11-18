@@ -349,11 +349,12 @@ def widget_unpause(
 def communications_view(
     request: HttpRequest
 ) -> HttpResponse:
-    communications = Communication.objects.filter(
+    communications: list[Communication] = Communication.objects.filter(
         client_board=request.user.client_board).filter(active=True)
     return render(request, 'dashboard/communications.html', {
         'communications': communications,
-        'user': request.user, })
+        'user': request.user,
+    })
 
 
 @login_required
@@ -416,7 +417,6 @@ def client_user_edit_view(
         return redirect('dashboard:team')
     if request.method == 'POST':
         user_form = UserForm(request.POST, instance=client_user)
-        print(user_form)
         profile_form = ProfileForm(
             request.POST, request.FILES, instance=client_user.profile)
         profile_meta_form = ProfileMetaForm(request.POST)
@@ -619,7 +619,6 @@ def install(
     if not widget:
         raise Http404
 
-    print(domain, widget.url)
     domain_match = domain in widget.url
     if widget is not None and not domain_match:
         result = "Widget not installed. Incorrect domain."
@@ -667,7 +666,6 @@ def widget_embed_view(
         raise Http404
 
     domain_match = hostname == widget.url
-    print(domain_match, hostname, widget.url)
     if widget is not None and domain_match and not widget.is_installed:
         widget.is_installed = True
         widget.save()
@@ -772,7 +770,6 @@ def widget_extension_embed_view(
                 messages.success(
                     request, "Message sent successfully.")
             except Exception as e:
-                print('e', e)
                 messages.error(request, "Error sending email.")
                 messages.error(request, "Please try again later.")
             # set success message

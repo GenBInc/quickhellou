@@ -1,0 +1,206 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Create Widget{% endblock %}
+{% block page_title %}Create Widget{% endblock %}
+
+{% block nav %}
+<nav class="fcol mdc-list aside__navi-list">
+  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
+    Dashboard
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:communications' %}">
+    Communications
+  </a>
+  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:widgets' %}">
+    Widgets<span></span>
+  </a>
+  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:team' %}">
+    Team<span></span>
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
+    Billing
+  </a>
+  <a class="aside__navi-item aside__navi-item" href="{% url 'dashboard:settings' %}">
+    Settings
+  </a>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="fc">
+  <div class="wrapper wrapper--thin wrapper--profile">
+    <div class="fcol">
+      <div class="form--settings__form-container form-container">
+        <p class="form__header">Provide widget information.</p>
+        <form class="fcol form site-form form--profile" action="{% url 'dashboard:widget_create' %}" method="post"
+          novalidate>
+          {% csrf_token %}
+          {% if request.GET.next %}
+          <input type="hidden" name="next" value="{{request.GET.next}}">
+          {% endif %}
+          {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <div class="fcol form__content_widget_create">
+            <div class="errornote">
+              {{ form.name.errors }}
+            </div>
+
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+              <input type="text" id="name-input" name="name" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+                {% if form.name.value is not None %} value="{{ form.name.value }}" {% endif %} required>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Name</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+              <input type="text" id="url-input" name="url" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+                {% if form.url.value is not None %} value="{{ form.url.value }}" {% endif %} required>
+              
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="url-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">URL</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+
+            <div class="errornote">
+              {{ form.lang.errors }}
+            </div>
+            <div class="mdc-select mdc-select--outlined form--widget-create__name form__field--upper">
+              <input type="hidden" name="demo-input">
+              <i class="mdc-select__dropdown-icon"></i>
+              <select class="mdc-select__native-control" name="lang" required>
+                <option value="" disabled selected></option>
+                {% for value, label in languages %}
+                  <option value="{{ value }}">{{ label }}</option>                
+                {% endfor %}
+              </select>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label class="mdc-floating-label">Language</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+
+            <p class="form__header">Template</p>
+
+            <div class="mdc-select mdc-select--outlined form__field--upper">
+              <i class="mdc-select__dropdown-icon"></i>
+              <select id="template-input" name="template" class="mdc-select__native-control">
+                {% for widget_template in widget_templates %}
+                  <option value="{{ widget_template.id }}" {% if widget.template.id == widget_template.id %} selected {% endif %}>{{ widget_template.name }}</option>
+                {% endfor %}
+              </select>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <!--<label for="template-input" class="mdc-floating-label form__text">Template Layout</label>-->
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+<!--
+            <div class="errornote">
+              {{ form.header.errors }}
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+              <input type="text" id="header-input" name="header" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+                {% if form.header.value is not None %} value="{{ form.header.value }}" {% endif %} required>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="header-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Header</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+
+            <div class="errornote">
+              {{ form.content.errors }}
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea form__field form__field--upper signup__email">
+              <textarea id="content-textarea" name="content" class="mdc-text-field__input form__text" rows="8" cols="40" 
+              {% if form.content.value is not None %} value="{{ form.content.value }}" {% endif %} required>
+              </textarea>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="content-textarea" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Content</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+-->
+            {% if user.is_default_rw and users.count > 0 %}
+            <div class="errornote">
+              {{ assignees_form.id.errors }}
+            </div>
+            <div class="fcol form__field form__field--upper">
+              <p class="form__subheader">Assignees:</p>
+              <ul class="mdc-list" role="group" aria-label="List with checkbox items"> 
+              {% for client_user in users %}
+                <li class="mdc-list-item" role="checkbox" aria-checked="true" tabindex="0">
+                  <span class="mdc-list-item__graphic">
+                      <div class="mdc-checkbox">
+                          <input type="checkbox"
+                                  value="{{client_user.id}}"
+                                  name="assignee"
+                                  class="mdc-checkbox__native-control"
+                                  id="list-checkbox-item-{{client_user.id}}"
+                                  {% if client_user.profile.role == 'Owner' %} checked {% endif  %}
+                                  >
+                          <div class="mdc-checkbox__background">
+                            <svg class="mdc-checkbox__checkmark"
+                                  viewBox="0 0 24 24">
+                              <path class="mdc-checkbox__checkmark-path"
+                                    fill="none"
+                                    d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                            </svg>
+                            <div class="mdc-checkbox__mixedmark"></div>
+                          </div>
+                        </div>
+                  </span>
+                  <label class="mdc-list-item__text" for="list-checkbox-item-{{client_user.id}}">{{client_user.email}}</label>
+                </li>
+              {% empty %}
+                <li>There are no users in this list.</li>
+              {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+
+          </div>
+          <div class="fc">
+            <div class="flc form__ui">
+              <div>
+                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Create">
+              </div>
+              <div>
+                <a href="{% url 'dashboard:widgets' %}">
+                  <input type="button" class="form__button" value="Back">
+                </a>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.i18n import JavaScriptCatalog
 from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -8,9 +9,11 @@ from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = [
+    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     path('admin/', admin.site.urls),
-    path('dashboard/', include('dashboard.urls', namespace="dashboard")),
-    path('', include('accounts.urls', namespace="accounts")),
+	path('dashboard/', include(('dashboard.urls', 'dashboard'), namespace='dashboard')),
+    path('accounts/', include(('accounts.urls','accounts'), namespace="accounts")),
+    path('', include('accounts.urls')),  
     path('api/', include('api.urls'))
 ]
 

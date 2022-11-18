@@ -1,0 +1,86 @@
+{% load static %}
+<!doctype html>
+<html>
+
+<head>
+  <title>QuickHellou | {% block title %}{% endblock title %}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta property="qh:view" content="{{ request.resolver_match.url_name }}">
+  <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static '/css/dashboard.css' %}" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  {% block css %}{% endblock %}
+  <script src="{% static '/js/dashboard.js' %}"></script>
+  {% block js %}{% endblock %}
+</head>
+
+<body>
+  <div class="drawer-frame-root">
+    <aside class="aside mdc-drawer">
+      <div class="mdc-drawer__header">
+        <div class="fc m-logo__image drawer__logo">
+          <img src="{% static '/images/hellou-quick-white.svg' %}" alt="quickhellou logo">
+        </div>
+        <form class="fc aside__avatar-content" action="{% url 'accounts:upload_thumbnail' profile_id=user.profile.id %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="aside__avatar avatar" style="background-image:url(/media/{{user.profile.thumbnail}})"></div>
+          <label for="thumbnail" class="fc button--add-photo">
+            <svg viewBox="0 0 24 24" fill="#000000">
+              <path d="M0 0h24v24H0z" fill="none"/>
+              <path d="M21 6h-3.17L16 4h-6v2h5.12l1.83 2H21v12H5v-9H3v9c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM8 14c0 2.76 2.24 5 5 5s5-2.24 5-5-2.24-5-5-5-5 2.24-5 5zm5-3c1.65 0 3 1.35 3 3s-1.35 3-3 3-3-1.35-3-3 1.35-3 3-3zM5 6h3V4H5V1H3v3H0v2h3v3h2z"/>
+            </svg>
+          </label>
+          <input type="file" class="input--add-avatar" id="thumbnail" name="thumbnail" onchange="form.submit()">
+        </form>
+        <p class="fc aside__title">{{ user.profile.full_name }}</p>
+        <p class="fc aside__subtitle">{{ user.email }}</p>
+      </div>
+      <div class="mdc-drawer__content">
+        <div class="fc df-col aside__version">
+          <p class="version__text version__label">FREE</p>
+          <a class="fc version__text version__enterprise" href="#" target="_self">Switch To ENTERPRISE</a>
+        </div>
+        {% block nav %}{% endblock nav %}
+      </div>
+    </aside>
+
+    <div class="mdc-drawer-app-content">
+      <header class="mdc-top-app-bar drawer-top-app-bar">
+        <div class="flc mdc-top-app-bar__row">
+          <div class="flc mdc-top-app-bar__breadcrumb">
+            <p>Dashboard</p>
+            <p class="breadcrumb__next"></p> <a>{% block page_title %}{% endblock page_title %}</a>
+          </div>
+          <div class="f1"></div>
+          <div class="df mdc-top-app-bar__logout">
+            <form class="logout-link" action="{% url 'accounts:logout' %}" method="post">
+              {% csrf_token %}
+              <button class="button--logout" type="submit">Logout</button>
+            </form>
+          </div>
+        </div>
+      </header>
+      </header>
+
+      <main class="main-content" id="main-content">
+        <div class="mdc-top-app-bar--fixed-adjust">
+
+          <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate mdc-linear-progress--page" >
+            <div class="mdc-linear-progress__buffering-dots"></div>
+            <div class="mdc-linear-progress__buffer"></div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+              <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+              <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+          </div>
+
+          {% block content %}{% endblock content %}
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+
+</html>

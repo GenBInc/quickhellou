@@ -1,0 +1,163 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Create Widget Template{% endblock %}
+{% block page_title %}Create Widget Template{% endblock %}
+
+{% block nav %}
+<nav class="fcol mdc-list aside__navi-list">
+  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
+    Dashboard
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:communications' %}">
+    Communications
+  </a>
+  {% if user.is_default_admin %}
+  <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
+    Widgets<span></span>
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
+    Team<span></span>
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
+    Billing
+  </a>
+  <a class="aside__navi-item aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:settings' %}">
+    Settings
+  </a>
+  {% endif %}
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="fc">
+  <div class="wrapper wrapper--thin wrapper--profile">
+    <div class="fcol">
+      <div class="form--settings__form-container form-container">
+        <p class="form__header">Provide widget template information.</p>
+        <form class="fcol site-form form--profile" action="{% url 'dashboard:widget_template_create' %}" method="post"
+          novalidate enctype="multipart/form-data">
+          {% csrf_token %}
+          {% if request.GET.next %}
+          <input type="hidden" name="next" value="{{request.GET.next}}">
+          {% endif %}
+          {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <div class="fcol form__content_widget_create">
+            <div class="errornote">
+              {{ form.name.errors }}
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+              <input type="text" id="name-input" name="name" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+                {% if form.name.value is not None %} value="{{ form.name.value }}" {% endif %} required>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Name</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+
+            <!-- Outlook -->
+             <div class="content-box">
+              <div class="flc content-box__topbar">
+                <p class="content-box__header">Widget Outlook</p>
+                <div class="f1"></div>
+              </div>
+              <div class="fcol content-box__content">
+                  <div class="flc form__field--upper">
+                    <div class="flc">
+                    <p class="form__subheader form__subheader--column">Background Color</p>
+                    </div>
+                    {% for color, value in default_colors %}
+                    <div class="mdc-form-field mdc-form-field--radio-buttons">
+                      <div class="mdc-radio">
+                        <input class="mdc-radio__native-control" type="radio" id="radio-{{color}}" name="background_color" value="{{color}}"
+                        {% if form.background_color.value == color %} checked="checked" {% endif %}>
+                        <div class="mdc-radio__background">
+                          <div class="mdc-radio__outer-circle"></div>
+                          <svg class="" width="30" height="30">
+                            <rect width="20" height="20" fill="#{{color}}" />
+                          </svg>
+                        </div>
+                      </div>
+                      <label for="radio-{{color}}"></label>
+                    </div>
+                    {% endfor %}
+                  </div>
+
+                  <div class="errornote">
+                      {{ form.icon.errors }}
+                  </div>
+                    
+                  <div class="flc form__field--upper">
+                    <div class="fcol">
+                      <div class="flc content-box__block">
+                      <p class="form__subheader form__subheader--column">Icon file</p>
+                      <p class="">
+                        <a href="/media/images/logo.svg" target="_blank">/media/images/logo.svg</a>
+                      </p>
+                      </div>
+                      <div class="mdc-text-field mdc-text-field--outlined form__field signup__thumbnail">
+                        <input type="file" id="icon-input" name="icon" value="images/logo.svg" 
+                        class="mdc-text-field__input form__text form--signup__text form__input form--signup__input ">
+                        <div class="mdc-notched-outline">
+                          <div class="mdc-notched-outline__leading"></div>
+                          <div class="mdc-notched-outline__notch">
+                            <label for="icon-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Icon</label>
+                          </div>
+                          <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="fc outlook">
+                    <div class="widget-outlook__graphics">
+                      <svg class="outlook--background" width="100" height="100">
+                        <circle class="widget-outlook__background-circle outlook--circle" cx="50" cy="50" r="50" fill="#{{form.background_color.value}}" />
+                      </svg>
+
+                      <div class="widget-outlook__alert">
+                        <svg class="outlook--background" width="100" height="100">
+                          <circle class="outlook__circle-red" cx="12.5" cy="12.5" r="12.5" fill="#fe2a1c" />
+                        </svg>
+                        <p class="widget-outlook__alert-text">5</p>
+                      </div>
+                      
+                      <div class="fc widget-outlook__icon">
+                        <img src="/media/images/logo.svg">
+                      </div>
+                     
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div> 
+            <!---->
+
+          </div>
+          <div class="fc">
+            <div class="flc form__ui">
+              <div>
+                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Create">
+              </div>
+              <div>
+                <a href="{% url 'dashboard:settings' %}">
+                  <input type="button" class="form__button" value="Back">
+                </a>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Calls{% endblock %}
+{% block page_title %}Calls{% endblock %}
+
+{% block nav %}
+<nav class="fcol mdc-list aside__navi-list">
+  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
+    Dashboard
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:communications' %}">
+    Communications
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
+    Widgets
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
+    Team
+  </a>
+  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:billing' %}">
+    Billing<span></span>
+  </a>
+  <a class="aside__navi-item aside__navi-item" href="{% url 'dashboard:settings' %}">
+    Settings
+  </a>
+</nav>
+{% endblock %}
+
+{% block content %}
+  <div>
+    <p class="form__header">No data yet.</p>
+  </div>
+{% endblock %}

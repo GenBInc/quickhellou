@@ -1,0 +1,186 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %} {{client_user.get_full_name}} Profile {% endblock %}
+{% block page_title %} {{client_user.get_full_name}} Profile {% endblock %}
+
+{% block nav %}
+<nav class="fcol mdc-list aside__navi-list">
+  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
+    Dashboard
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:communications' %}">
+    Communications
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
+    Widgets
+  </a>
+  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:team' %}">
+    Team<span></span>
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
+    Billing
+  </a>
+  <a class="aside__navi-item aside__navi-item" href="{% url 'dashboard:settings' %}">
+    Settings
+  </a>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+{% block css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/14.0.7/css/intlTelInput.css" 
+integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="anonymous" />
+{% endblock %}
+
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/14.0.7/js/intlTelInput.min.js" 
+integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded",  function () {
+    var phoneInput = document.querySelector("input.phone--front");
+    window.intlTelInput(phoneInput, {
+      allowDropdown: true,
+      initialCountry: 'us',
+      separateDialCode: true,
+      hiddenInput:"phone",
+      utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/8.4.6/js/utils.js'
+    });
+  })
+</script>
+{% endblock %}
+<div class="fc">
+<div class="wrapper wrapper--thin wrapper--profile">
+  <div class="fcol">
+    <div class="form--settings__form-container form-container">
+      <p class="form__header">{{client_user.get_full_name}} Profile</p>
+      <form class="fcol site-form form--profile" action="{% url 'dashboard:client_user_edit' user_id=client_user.id %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if request.GET.next %}
+        <input type="hidden" name="next" value="{{request.GET.next}}">
+        {% endif %}
+        {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+          <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        <div class="fcol form__content_user_edit">
+          <div class="errornote">
+            {{ user_form.email.errors }}
+          </div>
+          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+            <input type="text" id="login-input" name="email" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+              value="{{ client_user.email }}">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="login-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Work e-mail</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+          <div class="errornote">
+            {{ profile_form.errors.full_name }}
+          </div>
+          <div class="errornote">
+            {{ profile_form.errors.invalid_full_name }}
+          </div>
+          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__fullname">
+            <input type="text" id="full-name-input" name="full_name" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+              value="{{ client_user.get_full_name }}" maxlength="128">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="full-name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Full name</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+          
+          <div class="errornote">
+            {{ profile_form.phone.errors }}
+          </div>
+          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper form__phone settings__phone">
+            <input type="text" id="phone-input" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input form--signup__input--phone phone--front" 
+              value="{{ client_user.profile.phone }}">
+            <!--<label for="full-name-input" class="mdc-floating-label form__text form--signup__text form__label form--signup__label">Phone</label>-->
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="errornote">
+            {{ profile_form.thumbnail.errors }}
+          </div>
+          <p class="form__thumbnail-label"><b>Thumbnail file:</b> <a href="/media/{{ client_user.profile.thumbnail }}" target="_blank">{{client_user.profile.thumbnail}}</a></p>
+          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__thumbnail">
+            <input type="file" id="thumbnail-input" name="thumbnail" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input ">
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="thumbnail-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Thumbnail</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+          {% if user.is_default_rw and board_widgets.count > 0 %}
+            <div class="fcol form__field form__field--upper widget">
+              <p class="form__subheader">Widgets:</p>
+              <ul class="mdc-list" role="group" aria-label="List with checkbox items">
+              
+              {% for board_widget in board_widgets %}
+                <li class="mdc-list-item" role="checkbox" aria-checked="true" tabindex="0">
+                  <span class="mdc-list-item__graphic">
+                      <div class="mdc-checkbox">
+                          <input type="checkbox"
+                                  name="widget"
+                                  value="{{board_widget.id}}"
+                                  class="mdc-checkbox__native-control"
+                                  id="list-checkbox-item-{{board_widget.id}}"
+                                  {% if board_widget in user_widgets  %} checked {% endif  %}
+                                  >
+                          <div class="mdc-checkbox__background">
+                            <svg class="mdc-checkbox__checkmark"
+                                  viewBox="0 0 24 24">
+                              <path class="mdc-checkbox__checkmark-path"
+                                    fill="none"
+                                    d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                            </svg>
+                            <div class="mdc-checkbox__mixedmark"></div>
+                          </div>
+                        </div>
+                  </span>
+                  <label class="mdc-list-item__text" for="list-checkbox-item-{{board_widget.id}}">{{board_widget.name}} ({{board_widget.url}}) </label>
+                </li>
+              {% empty %}
+                <li>Sorry, no users in this list.</li>
+              {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          
+        </div>
+        <div class="fc">
+            <div class="flc form__ui">
+              <div>
+                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
+              </div>
+              <div>
+                <a href="{% url 'dashboard:team' %}">
+                  <input type="button" class="form__button" value="Back">
+                </a>
+              </div>
+            </div>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

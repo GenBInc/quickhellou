@@ -22,9 +22,6 @@ from dashboard.models import (
     ApplicationSettings
 )
 
-# Create your views here.
-
-
 def home_view(
     request: HttpRequest
 ) -> HttpResponseRedirect:
@@ -102,7 +99,6 @@ def login_view(
                 return redirect('dashboard:home')
     else:
         form = AuthenticationForm()
-
     return render(request, 'accounts/login.html', {'form': form})
 
 

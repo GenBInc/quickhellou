@@ -60,7 +60,7 @@ services:
       - EMAIL_USE_SSL=${EMAIL_USE_SSL}
 
       - CERT_FILE=${CERT_FILE}
-      - CERT_CHAIN_FILE=${CERT_CHAIN_FILE}      
+      - CERT_CHAIN_FILE=${CERT_CHAIN_FILE}
       - KEY_FILE=${KEY_FILE}
 
       - SUPPORT_EMAIL=${SUPPORT_EMAIL}      

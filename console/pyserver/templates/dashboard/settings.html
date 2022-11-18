@@ -1,0 +1,142 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Settings{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block nav %}
+<nav class="fcol mdc-list aside__navi-list">
+  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
+    Dashboard
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:communications' %}">
+    Communications
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
+    Widgets
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
+    Team
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
+    Billing
+  </a>
+  <a class="aside__navi-item aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:settings' %}">
+    Settings<span></span>
+  </a>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+{% block css %}
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}
+<div class="fc">
+<div class="wrapper wrapper--thin wrapper--profile">
+  <div class="fcol">
+    <div class="form--settings__form-container form-container">
+      <p class="form__header">Settings</p>
+      <div class="content-box widget-templates">
+        <div class="flc content-box__topbar">
+          <p class="content-box__header">Widget Templates</p>
+          <div class="f1"></div>
+          <div class="frc content-box__controls">
+            <a class="link-button" href="{% url 'dashboard:widget_template_create' %}" target="_self">CREATE</a>
+          </div>
+        </div>
+        <div class="content-box__content">
+          <ul class="mdc-list">
+          {% for widget_template in widget_templates %}
+            <li class="mdc-list-item" tabindex="0"><a href="{% url 'dashboard:widget_template_edit' widget_template_id=widget_template.id %}"> {{widget_template.name}}</a></li>
+          {% empty %}
+            <p>No widget templates.</p>
+          {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <form class="fcol site-form form--profile" action="{% url 'dashboard:settings' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if request.GET.next %}
+        <input type="hidden" name="next" value="{{request.GET.next}}">
+        {% endif %}
+        {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+          <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        <div class="fcol form__content_settings">
+          <div class="errornote">
+            {{ form.video_app_url.errors }}
+          </div>
+          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+            <input type="text" id="video_app_url-input" name="video_app_url" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+              value="{{ video_app_url }}" required>
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="video_app_url-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Video Application URL</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="errornote">
+            {{ form.console_app_url.errors }}
+          </div>
+          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+            <input type="text" id="console_app_url-input" name="console_app_url" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+              value="{{ console_app_url }}" required>
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="console_app_url-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Console Application URL</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="errornote">
+            {{ form.ws_service_url.errors }}
+          </div>
+          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+            <input type="text" id="ws_service_url-input" name="ws_service_url" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+              value="{{ ws_service_url }}" required>
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="ws_service_url-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">WebSocket Service URL</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="errornote">
+            {{ form.admin_email_address.errors }}
+          </div>
+          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+            <input type="text" id="admin_email_address-input" name="admin_email_address" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+              value="{{ admin_email_address }}" required>
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="admin_email_address-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Admin Email Address</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+        </div>
+        <div class="fc">
+          <input type="submit" class="form__submit form--dashboard__submit save__submit" value="Save">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
