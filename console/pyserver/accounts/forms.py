@@ -93,11 +93,20 @@ class ResetPasswordForm(forms.Form):
 
 
 class WidgetForm(forms.ModelForm):
+    
+    template = forms.CharField(required=True)
+    
     class Meta:
         model = Widget
         fields = ['url', 'template']
 
     def is_valid(self):
+        cleaned_data = super().clean()
+
+        template: str = cleaned_data.get('template')
+        if not template:
+            self.add_error('template', 'Please select a template.')
+        
         return super(WidgetForm, self).is_valid()
 
     def save(

@@ -16,7 +16,7 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     networks:
       console_network:
-        ipv4_address: 192.180.0.21  
+        ipv4_address: 192.180.0.21
   
   pgadmin:
     container_name: pgadmin4

@@ -102,10 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const selectElement = document.querySelector('.mdc-select')
-  if (selectElement) {
-    MDCSelect.attachTo(selectElement)
-  }
+  const selectElements = document.querySelectorAll('.mdc-select')
+  selectElements.forEach(selectElement => {
+    if (selectElement) {
+      MDCSelect.attachTo(selectElement)
+    }
+  })
   initUrlInput('.form--profile')
   initPhone()
 

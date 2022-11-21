@@ -40,13 +40,7 @@
           {% if request.GET.next %}
           <input type="hidden" name="next" value="{{request.GET.next}}">
           {% endif %}
-          {% if messages %}
-          <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
+          {% include "messages.html" %}
           <div class="fcol form__content_widget_create">
             <div class="errornote">
               {{ form.name.errors }}
@@ -98,13 +92,11 @@
               </div>
             </div>
 
-            <p class="form__header">Template</p>
-
             {# Widget template #}
             <div class="mdc-select mdc-select--outlined form__field--upper">
               <i class="mdc-select__dropdown-icon"></i>
               <select id="template-input" name="template" class="mdc-select__native-control">
-                <option value="" disabled {% if not widget.template %} selected {% endif %}>Select template</option>
+                <option value="" disabled></option>
                 {% for widget_template in widget_templates %}
                   <option value="{{ widget_template.id }}" {% if widget.template.id == widget_template.id %} selected {% endif %}>{{ widget_template.name }}</option>
                 {% endfor %}

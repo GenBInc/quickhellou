@@ -99,14 +99,7 @@
         </div>
 {% endblock %}
 
-
-{% if messages %}
-<ul class="messages messages--widgets">
-  {% for message in messages %}
-  <li {% if message.tags %} class="message {{ message.tags }}" {% endif %}>{{ message }}</li>
-  {% endfor %}
-</ul>
-{% endif %}
+{% include "messages.html" %}
 <div class="mdc-snackbar mdc-snackbar--align-start" aria-live="assertive" aria-atomic="true" aria-hidden="false">
   <div class="mdc-snackbar__text"></div>
   <div class="mdc-snackbar__action-wrapper">

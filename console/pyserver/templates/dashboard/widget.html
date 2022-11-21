@@ -1,8 +1,15 @@
 {% extends 'dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Edit Widget{% endblock %}
-{% block page_title %}Edit Widget{% endblock %}
+{% if widget %}
+  {% block title %}Edit Widget{% endblock %}
+  {% block page_title %}Edit Widget{% endblock %}
+{% endif %}
+
+{% if widget %}
+  {% block title %}Add Widget{% endblock %}
+  {% block page_title %}Add Widget{% endblock %}
+{% endif %}
 
 {% block nav %}
 <nav class="fcol mdc-list aside__navi-list">
@@ -40,7 +47,13 @@
           {% if request.GET.next %}
           <input type="hidden" name="next" value="{{request.GET.next}}">
           {% endif %}
-          {% include "messages.html" %}
+          {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
           <div class="fcol form__content_widget">
             
             <div class="errornote">
@@ -78,7 +91,7 @@
             <div class="mdc-select mdc-select--outlined form--widget-create__name form__field--upper">
               <i class="mdc-select__dropdown-icon"></i>
               <select class="mdc-select__native-control" name="lang" required>
-                <option value="" disabled></option>     
+                <option value="" disabled></option>                
                 {% for value, label in languages %}
                 <option value="{{ value }}" {% if widget.lang == value %} selected {% endif %}>{{ label }}</option>                
                 {% endfor %}
@@ -92,13 +105,12 @@
               </div>
             </div>
 
-            <div class="errornote">
-              {{ form.template.errors }}
-            </div>
+            <p class="form__header">Template</p>
+
             <div class="block--small mdc-select mdc-select--outlined">
               <i class="mdc-select__dropdown-icon"></i>
-              <select name="template" class="mdc-select__native-control" required>
-                <option value="" disabled></option>
+              <select id="template-input" name="template" class="mdc-select__native-control">
+                <option value="" disabled {% if not widget.template %} selected {% endif %}></option>
                 {% for widget_template in widget_templates %}
                   <option value="{{ widget_template.id }}" {% if widget.template.id == widget_template.id %} selected {% endif %}>{{ widget_template.name }}</option>
                 {% endfor %}
@@ -106,7 +118,7 @@
               <div class="mdc-notched-outline">
                 <div class="mdc-notched-outline__leading"></div>
                 <div class="mdc-notched-outline__notch">
-                  <label for="template-input" class="mdc-floating-label form__text">Template</label>
+                  <label for="template-input" class="mdc-floating-label form__text">Select Template*</label>
                 </div>
                 <div class="mdc-notched-outline__trailing"></div>
               </div>

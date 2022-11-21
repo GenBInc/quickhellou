@@ -12,7 +12,7 @@ urlpatterns = [
     path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
     path('admin/', admin.site.urls),
 	path('dashboard/', include(('dashboard.urls', 'dashboard'), namespace='dashboard')),
-    path('', include('accounts.urls')),  
+    path('', include(('accounts.urls', 'accounts'), namespace='accounts')), 
     path('api/', include('api.urls'))
 ]
 

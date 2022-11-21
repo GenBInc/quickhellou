@@ -2,6 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin")
+const CopyPlugin = require("copy-webpack-plugin");
 const TerserJSPlugin = require('terser-webpack-plugin')
 
 var getPath = function (pathToFile) {
@@ -77,6 +78,15 @@ module.exports = (env) => {
     new MiniCssExtractPlugin({
       filename: 'css/[name].css',
       ignoreOrder: false,
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: "../client/dist/js", to: "./console/static/js" },
+        { from: "../client/dist/css", to: "./console/static/css" },
+      ],
+      options: {
+        concurrency: 100,
+      },
     }),
   ]
   config.entry = {
