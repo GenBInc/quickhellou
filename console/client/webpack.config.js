@@ -91,7 +91,6 @@ module.exports = () => {
     "css/widget": "./scss/widget.scss",
     "js/dashboard": "./js/dashboard.js",
     "js/widget": "./js/widget.js",
-    "js/embed/widget_content_script": "./js/embed/widget_content_script.js",
     "css/dashboard": "./scss/dashboard.scss"
   }
   config.output = {

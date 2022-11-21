@@ -1,1 +1,0 @@
-!function(e){{var r=e.getElementsByTagName("script")[0],c=e.createElement("script");c.type="text/javascript",c.async=!0,c.src="{console_app_url}/dashboard/widget_content_script/{widget_id}",r.parentNode.insertBefore(c,r);}}(document);
