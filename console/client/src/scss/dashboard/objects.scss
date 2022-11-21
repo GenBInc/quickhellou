@@ -63,3 +63,15 @@ a.list-header__button {
 .list-header__element.js-hidden {
   display: none;
 }
+
+a.a--theme-primary {
+  text-decoration: none;
+  color: $color--resolution-blue;
+  font-size: .875rem;
+  font-weight: 600;
+}
+
+a.a--theme-primary:hover {
+  text-decoration: underline;
+  color: $color--dark-orange;
+}

@@ -100,9 +100,11 @@
 
             <p class="form__header">Template</p>
 
+            {# Widget template #}
             <div class="mdc-select mdc-select--outlined form__field--upper">
               <i class="mdc-select__dropdown-icon"></i>
               <select id="template-input" name="template" class="mdc-select__native-control">
+                <option value="" disabled {% if not widget.template %} selected {% endif %}>Select template</option>
                 {% for widget_template in widget_templates %}
                   <option value="{{ widget_template.id }}" {% if widget.template.id == widget_template.id %} selected {% endif %}>{{ widget_template.name }}</option>
                 {% endfor %}
@@ -110,43 +112,14 @@
               <div class="mdc-notched-outline">
                 <div class="mdc-notched-outline__leading"></div>
                 <div class="mdc-notched-outline__notch">
-                  <!--<label for="template-input" class="mdc-floating-label form__text">Template Layout</label>-->
+                  <label for="template-input" class="mdc-floating-label form__text">Select Template</label>
                 </div>
                 <div class="mdc-notched-outline__trailing"></div>
               </div>
             </div>
-<!--
-            <div class="errornote">
-              {{ form.header.errors }}
+            <div class="frc">
+              <a class="block a--theme-primary" href="/dashboard/widgets/template/create">Create Template</a>
             </div>
-            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
-              <input type="text" id="header-input" name="header" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
-                {% if form.header.value is not None %} value="{{ form.header.value }}" {% endif %} required>
-              <div class="mdc-notched-outline">
-                <div class="mdc-notched-outline__leading"></div>
-                <div class="mdc-notched-outline__notch">
-                  <label for="header-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Header</label>
-                </div>
-                <div class="mdc-notched-outline__trailing"></div>
-              </div>
-            </div>
-
-            <div class="errornote">
-              {{ form.content.errors }}
-            </div>
-            <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea form__field form__field--upper signup__email">
-              <textarea id="content-textarea" name="content" class="mdc-text-field__input form__text" rows="8" cols="40" 
-              {% if form.content.value is not None %} value="{{ form.content.value }}" {% endif %} required>
-              </textarea>
-              <div class="mdc-notched-outline">
-                <div class="mdc-notched-outline__leading"></div>
-                <div class="mdc-notched-outline__notch">
-                  <label for="content-textarea" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Content</label>
-                </div>
-                <div class="mdc-notched-outline__trailing"></div>
-              </div>
-            </div>
--->
             {% if user.is_default_rw and users.count > 0 %}
             <div class="errornote">
               {{ assignees_form.id.errors }}

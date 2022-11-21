@@ -199,14 +199,17 @@ $mdc-typography-styles-button: (
   flex-direction: column;   
 }
 
+.block,
 .form__content_widget,
 .form__content_user_edit,
 .form__content_settings,
 .form__content_widget_create,
 .form__content_widget_edit {
+  margin-bottom: $spacing-default;
+}
 
- margin-bottom: 20px;
- 
+.block--small {
+  margin-bottom: 10px;
 }
 
 .form__header {

@@ -95,13 +95,17 @@ class ResetPasswordForm(forms.Form):
 class WidgetForm(forms.ModelForm):
     class Meta:
         model = Widget
-        fields = ['url']
+        fields = ['url', 'template']
 
     def is_valid(self):
-        valid = super(WidgetForm, self).is_valid()
-        return valid
+        return super(WidgetForm, self).is_valid()
 
-    def save(self, user=None, client_board=None, commit=True):
+    def save(
+        self,
+        user=None,
+        client_board=None,
+        commit=True
+    ):
         widget = super(WidgetForm, self).save(commit=False)
         widget.last_editor = user
         widget.client_board = client_board

@@ -10,6 +10,7 @@ from django.http import (
     HttpResponse,
     HttpResponseRedirect
 )
+from django.utils.timezone import make_aware
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.mail import send_mail
@@ -174,7 +175,7 @@ def widget_create_view(
         if form.is_valid() and assignees_form.is_valid():
             instance = form.save(commit=False)
             instance.client_board = request.user.client_board
-            instance.last_change = datetime.datetime.now()
+            instance.last_change = make_aware(datetime.datetime.now())
             instance.last_editor = request.user
             instance.save()
             """ Add assignees """
@@ -215,7 +216,7 @@ def widget_edit_view(
         assignees_form = AssigneesForm(request.POST)
         if form.is_valid() and assignees_form.is_valid():
             instance = form.save(commit=False)
-            instance.last_change = datetime.datetime.now()
+            instance.last_change = make_aware(datetime.datetime.now())
             instance.last_editor = request.user
             instance.save()
             """ Update assignees """
@@ -558,21 +559,37 @@ def create_widget_embed_script(
 def create_widget_content_script(
     widget: Widget
 ) -> str:
-    template_params: dict = {'widget_id': widget.id, 'uuid': str(widget.uuid), 'console_app_url': ApplicationSettings.objects.get_console_app_url(),
-                             'video_app_url': ApplicationSettings.objects.get_video_app_url(),
-                             'background_color': widget.template.background_color, 'icon': widget.template.icon.url}
+    """Creates widget content script
+
+    Args:
+        widget (Widget): the widget object
+
+    Returns:
+        str: the script code
+    """
+    widget_template: WidgetTemplate = widget.template
+    template_params: dict = {
+        'widget_id': widget.id,
+        'uuid': str(widget.uuid),
+        'console_app_url': ApplicationSettings.objects.get_console_app_url(),
+        'video_app_url': ApplicationSettings.objects.get_video_app_url(),
+        'background_color': widget_template.background_color,
+        'icon': widget_template.icon.url}
     template_code = render_to_string(
         'embed/widget_content.html', template_params)
 
     widget_source_file = open(
         'console/static/js/embed/widget_content_script.js', 'r', encoding='utf-8')
-    widget_source = widget_source_file.readlines()
+    widget_source: list[str] = widget_source_file.readlines()
 
-    code = ''
+    code: str = ''
     if widget is not None:
         for line in widget_source:
-            line = line.format(template_code=template_code, console_app_url=ApplicationSettings.objects.get_console_app_url(
-            ), video_app_url=ApplicationSettings.objects.get_video_app_url())
+            line = line.format(
+                template_code=template_code,
+                console_app_url=ApplicationSettings.objects.get_console_app_url(),
+                video_app_url=ApplicationSettings.objects.get_video_app_url()
+            )
             code += line
     return code
 
