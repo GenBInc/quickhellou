@@ -19,7 +19,7 @@ services:
         ipv4_address: 192.180.0.21
   
   pgadmin:
-    container_name: pgadmin4
+    container_name: pgadmin4_qh
     image: dpage/pgadmin4
     restart: always
     environment:
