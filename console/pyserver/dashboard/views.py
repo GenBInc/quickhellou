@@ -202,8 +202,8 @@ def widget_edit_view(
     request: HttpRequest,
     widget_id: int = None
 ) -> HttpResponse:
-    widget_templates = WidgetTemplate.objects.all()
-    users = User.objects.filter(
+    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.all()
+    users: list[User] = User.objects.filter(
         client_board=request.user.client_board, is_admin=True)
     if widget_id is not None:
         widget = Widget.objects.get(id=widget_id)
@@ -576,7 +576,9 @@ def create_widget_content_script(
         'background_color': widget_template.background_color,
         'icon': widget_template.icon.url}
     template_code = render_to_string(
-        'embed/widget_content.html', template_params)
+       'embed/widget_content.html', template_params)
+    # template_iframe = render_to_string(
+    #   'embed/widget_iframe.html', template_params)
 
     widget_source_file = open(
         'console/static/js/embed/widget_content_script.js', 'r', encoding='utf-8')
@@ -670,6 +672,15 @@ def inactive_operator_init_form(
 ) -> HttpResponse:
     return render(request, 'embed/inactive_operator_init_form.html', {})
 
+
+def widget_content_view(
+    request: HttpRequest,
+    widget_id: int,
+) -> HttpResponse:
+    return render(request, 'dashboard/embed/widget_iframe.html', {
+        'widget_id': widget_id,
+        'console_app_url': ApplicationSettings.objects.get_console_app_url(),
+    })
 
 def widget_embed_view(
     request: HttpRequest,

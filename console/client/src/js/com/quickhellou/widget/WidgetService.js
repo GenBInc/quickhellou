@@ -82,7 +82,7 @@ export class WidgetService extends EventEmitter {
               )
 
               // attach videochat events
-              if (!!videochat) {
+              try {
                 this.videochatProxy = videochat.proxy()
                 this.videochatProxy.addEventListener('close', () => {
                   this.onCloseVideoChat()
@@ -90,6 +90,8 @@ export class WidgetService extends EventEmitter {
                 this.videochatProxy.addEventListener('remote_hangup', () => {
                   this.onCloseVideoChat()
                 })
+              } catch (e) {
+                console.log('Videochat is not defined.')
               }
 
               resolve()

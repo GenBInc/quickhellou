@@ -43,6 +43,8 @@ urlpatterns = [
     path('users/delete/<int:user_id>/', views.user_delete, name="user_delete"),
     path('widget_embed/<int:widget_id>/<str:hostname>/<slug:uuid>',
          views.widget_embed_view, name='widget_embed'),
+    path('widget_content/<int:widget_id>',
+         views.widget_content_view, name='widget_content'),
     path('widget_extension_embed/<int:widget_id>/<str:hostname>/<slug:uuid>',
          views.widget_extension_embed_view, name='widget_extension_embed'),
     path('widget_active_operator/<int:widget_id>/<str:hostname>/<slug:uuid>',
