@@ -550,11 +550,8 @@ def create_widget_embed_script(
     code = ''
     if widget is not None:
         for line in widget_source:
-            line = line.format(
-                widget_id=widget.id,
-                uuid=widget.uuid,
-                console_app_url=ApplicationSettings.objects.get_console_app_url()
-            )
+            line = line.format(widget_id=widget.id, uuid=widget.uuid,
+                               console_app_url=ApplicationSettings.objects.get_console_app_url())
             code += line
     return code
 
