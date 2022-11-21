@@ -199,7 +199,14 @@ $mdc-typography-styles-button: (
   flex-direction: column;   
 }
 
+<<<<<<< Updated upstream
 .block,
+=======
+.form__content-signup {
+  flex-direction: row;   
+}
+
+>>>>>>> Stashed changes
 .form__content_widget,
 .form__content_user_edit,
 .form__content_settings,
