@@ -52,6 +52,7 @@
   background: white;
   -webkit-background-size: cover;
   background-size: cover;
+  flex-direction: column-reverse;
   @media (min-width: $s-lg) {
     @include df-row();
   }
@@ -176,7 +177,7 @@ div.open-quick-talk img {
   width: auto;
   display: block;
   font-size: 1rem;
-  border: 2px solid #4285f4;
+  border: 3px solid #4285f4;
   color: white;
   border-radius: 60px;
   padding: 15px 20px;
@@ -204,7 +205,7 @@ div.open-quick-talk img {
 }
 
 .feature-option__button:hover {
-  border: 2px solid #5db8ff;
+  border: 3px solid #5db8ff;
   background: #5db8ff;
 }
 
@@ -1291,17 +1292,35 @@ body.subpage {
 
 .menu-top {
   background-color: #171717;
-  padding: 25px;
+  padding: 20px;
   width: 100%;
+
+  flex-direction: column;
+
+  @media (min-width: $s-md) {
+    padding: 25px;    
+    flex-direction: row;
+  }  
+
 }
 
 .top-texts-menu {
   color: white;
+  font-size: 14px;
+  @media (min-width: $s-lg) {
+    font-size: 16px;
+  }  
 }
 
 .qh-icon-top {
-  width: 43px;
-  margin-right: 15px;
+  width: 33px;
+  margin-right: 8px;
+
+  @media (min-width: $s-lg) {
+    width: 43px;
+    margin-right: 15px;  
+  }  
+
 }
 
 .top-menu-link {
@@ -1319,4 +1338,16 @@ body.subpage {
   border-radius: 30px;
   padding: 8px 12px ;
 }
+
+.top-menu-buttons {
+
+  margin-top: 15px;
+
+  justify-content: flex-end;
+
+  @media (min-width: $s-lg) {
+    margin-top: 0px;
+  }    
+}
+
 
