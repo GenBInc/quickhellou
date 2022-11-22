@@ -234,12 +234,12 @@ $mdc-typography-styles-button: (
 .form__submit {
   cursor: pointer;
   font-family:'Raleway';
-  font-weight:600;
+  font-weight:700;
   font-size:1.125rem;
-  background-color: white;
+  background-color: $color--green;
   border-color:$color--green;
-  color:$color--green;
-  border-width: 1px;
+  color:white;
+  border-width: 2px;
   border-style: solid;
   /*margin-bottom:40px;*/
   transition: background-color .2s ease, color .2s ease;
@@ -259,14 +259,14 @@ $mdc-typography-styles-button: (
 
 .form__button:hover {
   background-color:$color--white;
-  border-color:black;
-  color:black;
+  border-color:#001588;
+  color:#001588;
 }
 
 .form__submit:hover {
   background-color:$color--white;
-  border-color:black;
-  color:black;
+  border-color:#001588;
+  color:#001588;
 }
 
 .form__input {

@@ -177,7 +177,7 @@ div.open-quick-talk img {
 .feature-option__button {
   width: auto;
   display: block;
-  font-size: 1rem;
+  font-size: 0.9rem;
   border: 3px solid #4285f4;
   color: white;
   border-radius: 60px;
@@ -185,8 +185,7 @@ div.open-quick-talk img {
   background: none;
   cursor: pointer;
   margin-bottom: 6px;
-  font-weight: 600;
-  font-style: italic;
+  font-weight: 700;
   @include transition(all .2s ease);
 
   @media (min-width: $s-sm) {
