@@ -42,8 +42,8 @@ module.exports = () => {
         },
       },
       {
-        test: /\.svg/,
-        type: 'asset/resource'
+        test: /\.(svg|png|jpeg|jpg)/,
+        type: 'asset/inline'
       }
     ],
   }
