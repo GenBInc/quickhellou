@@ -21,6 +21,9 @@ module.exports = () => {
           MiniCssExtractPlugin.loader,
           {
             loader: "css-loader",
+            options: {
+              url: false,
+            }            
           },
           "postcss-loader",
           {
@@ -43,7 +46,7 @@ module.exports = () => {
       },
       {
         test: /\.(svg|png|jpeg|jpg)/,
-        type: 'asset/inline'
+        type: 'asset/resource'
       }
     ],
   }
