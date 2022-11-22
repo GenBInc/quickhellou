@@ -205,7 +205,7 @@ div.open-quick-talk img {
 
 .feature-option__button:hover {
   border: 2px solid #5db8ff;
-  opacity: .8;
+  background: #5db8ff;
 }
 
 .desc-invite {
@@ -437,6 +437,7 @@ p.home__text6 {
 
 .home__column--rt {
   padding: 20px;
+  width: 100%;
   @media (min-width: $s-lg) {
     margin-left: 100px;
     padding: 0;
@@ -1236,7 +1237,7 @@ body.subpage {
 }
 
 .open-source-chat-image {
-  max-width: 600px;
+  max-width: 500px;
   width: 90%;
   margin: 0 auto;
   margin-top: 41px;
@@ -1287,3 +1288,35 @@ body.subpage {
     font-size:2.5rem;
   }    
 }
+
+.menu-top {
+  background-color: #171717;
+  padding: 25px;
+  width: 100%;
+}
+
+.top-texts-menu {
+  color: white;
+}
+
+.qh-icon-top {
+  width: 43px;
+  margin-right: 15px;
+}
+
+.top-menu-link {
+  margin-left: 25px;
+  color: white;
+  font-weight: 700;
+}
+
+.top-menu-link:hover {
+  color: white;
+}
+
+.button-sign-up {
+  background-color: #e5332a;
+  border-radius: 30px;
+  padding: 8px 12px ;
+}
+
