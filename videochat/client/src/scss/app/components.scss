@@ -1334,6 +1334,8 @@ body.subpage {
   flex-direction: column;
   max-width: 1000px;
   width: 90%;
+  margin-top:50px;
+  margin-bottom:50px;
 
   @media (min-width: $s-md) {
     flex-direction: row;
@@ -1393,4 +1395,14 @@ body.subpage {
 
 .home-column-right {
   overflow-y: auto;
+}
+
+.top-link-signup {
+  color: white;
+  text-decoration: underline;
+}
+
+.top-link-signup:hover {
+  color: white;
+  text-decoration: none;
 }
