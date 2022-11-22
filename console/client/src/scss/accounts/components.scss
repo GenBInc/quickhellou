@@ -2,6 +2,8 @@
 
 .container {
   height:100%;
+  position: relative;
+  z-index: 0;
 }
 
 .m-form__button--login {
@@ -187,8 +189,21 @@
 }
 
 .wrapper--login {
-  background-image: url("/static/images/background-elem.png");
+  position: relative;
+}
+
+/*
+.container::before {
+  position: absolute;
+  content: "";
+  background-image: url("/static/images/qh-mark2.png");
   background-repeat: no-repeat;
   background-position: top center;
-  background-size: cover;
+  background-size: contain;
+  width: 700px;
+  height: 600px;
+  z-index: -1;
+  top: 0;
+  right: 0;
 }
+*/
