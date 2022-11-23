@@ -301,6 +301,9 @@ class ApplicationSettingsManager(models.Manager):
     def get_console_app_url(self):
         return self.get_value('console_app_url')
 
+    def get_ws_service_url(self):
+        return self.get_value('ws_service_url')
+    
     def get_admin_email_address(self):
         return self.get_value('admin_email_address')
 

@@ -3,7 +3,12 @@
 
 {% block title %}QuickHellou | Sign Up{% endblock %}
 
-{% block content %}
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/14.0.7/js/intlTelInput.min.js" 
+integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="anonymous"></script>
+<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+<script src="{% static '/js/accounts.js' %}"></script>
+{% endblock %}
 
 {% block css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/14.0.7/css/intlTelInput.css" 
@@ -11,24 +16,8 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
 <link rel="stylesheet" type="text/css" href="{% static '/css/accounts.css' %}" />
 {% endblock %}
 
-{% block js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/14.0.7/js/intlTelInput.min.js" 
-integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="anonymous"></script>
-<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
-<script src="{% static '/js/accounts.js' %}"></script>
-<script>
-  document.addEventListener("DOMContentLoaded",  function () {
-    var phoneInput = document.querySelector("input.form--signup__input--phone");
-    window.intlTelInput(phoneInput, {
-      allowDropdown: true,
-      initialCountry: 'us',
-      separateDialCode: true,
-      hiddenInput:"phone",
-      utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/8.4.6/js/utils.js'
-    });
-  })
-</script>
-{% endblock %}
+{% block content %}
+
 <div class="fct container">
   <div class="fcol signup">
     <div class="m-logo">
@@ -96,7 +85,7 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
               </div>
               <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__password">
                 <input type="password" id="password-input" name="password" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
-                  maxlength="128">
+                  maxlength="128" autocomplete="new-password">
                 <div class="mdc-notched-outline">
                   <div class="mdc-notched-outline__leading"></div>
                   <div class="mdc-notched-outline__notch">
@@ -110,7 +99,7 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
               </div>
               <div class="mdc-text-field mdc-text-field--outlined form__field signup__confirm-password">
                 <input type="password" id="confirm-password-input" name="confirm_password" class="mdc-text-field__input form__text form--signup__text  form__input form--signup__input "
-                  maxlength="128">
+                  maxlength="128" autocomplete="new-password">
                 <div class="mdc-notched-outline">
                   <div class="mdc-notched-outline__leading"></div>
                   <div class="mdc-notched-outline__notch">
@@ -123,10 +112,11 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
             </div>
             <div class="fcol form__column form__column--right">
               <div class="errornote">
-                {{ profile_meta_form.errors.phone_raw }}
+                {{ profile_meta_form.phone.errors }}
               </div>
               <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper form__phone">
-                <input type="text" name="phone_raw" id="phone-input" class="mdc-text-field__input form__text form--signup__text  form__input form--signup__input form--signup__input--phone"
+                <input type="hidden" name="phone" {% if profile_form.phone.value is not None %} value="{{ profile_form.phone.value }}" {% endif %}>
+                <input type="text" id="phone-input" class="mdc-text-field__input form__text form--signup__text  form__input form--signup__input form--signup__input--phone"
                 {% if profile_form.phone.value is not None %} value="{{ profile_form.phone.value }}" {% endif %}>
                 <div class="mdc-notched-outline">
                   <div class="mdc-notched-outline__leading"></div>
@@ -168,7 +158,7 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
 
           <div class="m-form__space"></div>
           <div class="fc">
-            <input type="submit" class="m-form__button--login form__submit signup__submit" value="Create a FREE account">
+            <input class="m-form__button--login form__submit signup__submit" onclick="createAccount()" value="Create a FREE account">
           </div>
           <div class="fc m-form__forgot-password">
             <p class="m-form__link--forgot-password signup__submit-note">By submitting the form, you accept the <a href="{% url 'accounts:terms-of-use' %}">Terms
@@ -180,5 +170,4 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
     </div>
   </div>
 </div>
-
 {% endblock %}

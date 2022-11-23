@@ -11,7 +11,6 @@ class ProfileMetaForm(forms.Form):
     password = forms.CharField(required=True)
     confirm_password = forms.CharField(required=True)
     recaptcha = forms.CharField(required=True)
-    phone_raw = forms.CharField(required=True)
 
     def is_valid(self):
         valid = super(ProfileMetaForm, self).is_valid()
@@ -93,9 +92,9 @@ class ResetPasswordForm(forms.Form):
 
 
 class WidgetForm(forms.ModelForm):
-    
+
     template = forms.CharField(required=True)
-    
+
     class Meta:
         model = Widget
         fields = ['url', 'template']
