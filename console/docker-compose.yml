@@ -16,6 +16,7 @@ services:
       - "./console/pyserver:/pyserver"
       - "./console/client/dist/js:/pyserver/console/static/js"
       - "./console/client/dist/css:/pyserver/console/static/css"
+      - "./console/client/dist/css:/pyserver/console/static/css"
     networks:
       console_network:
         ipv4_address: 192.180.0.20

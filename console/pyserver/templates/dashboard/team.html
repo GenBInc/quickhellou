@@ -59,7 +59,7 @@
         {% if user.profile.available %}
         <a class="fc df-f1 team__list-link list-link--pause" href="{% url 'dashboard:user_deactivate' user_id=user.id  %}">Deactivate</a>
         {% else %}
-        <a class="fc df-f1 team__list-link link--unpause-widget list-link--pause" href="{% url 'dashboard:user_activate' user_id=user.id  %}">Activate</a>
+        <a class="fc df-f1 team__list-link link--unpause-widget list-link--pause form-switch" href="{% url 'dashboard:user_activate' user_id=user.id  %}">Activate</a>
         {% endif %}
         <a class="fc df-f1 team__list-link list-link--delete" href="{% url 'dashboard:user_delete' user_id=user.id  %}">Delete</a>
       </div>
