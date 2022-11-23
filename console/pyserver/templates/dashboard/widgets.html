@@ -18,7 +18,7 @@
           <div class="flc widget-list__header">            
             <div class="widget-list__field widget-list__field--id">ID</div>
             <div class="flc widget-list__field widget-list__field--url">URL</div>
-            <div class="fc widget-list__field widget-list__field--language">Language</div>
+            <div class="flc widget-list__field widget-list__field--language">Language</div>
             <div class="flc widget-list__field widget-list__field--status">Status</div>
             <div class="fc widget-list__field widget-list__field--last-change">Last change</div>
             <div class="f1"></div>            
@@ -60,7 +60,7 @@
                     <a class="widget-list__url-link" href="http://{{ widget.url }}" target="_blank">{{ widget.url }}</a>
                   </div>
                 </div>
-                <div class="fc widget-list__field widget-list__field--language">
+                <div class="flc widget-list__field widget-list__field--language">
                   {% for k, v in widget.LANG_CHOICES %}            
                   {% if k == widget.lang %}
                   {{ v }}
