@@ -240,8 +240,8 @@ $mdc-typography-styles-button: (
   font-family:'Raleway';
   font-weight:700;
   font-size:1.125rem;
-  background-color: $color--green;
-  border-color:$color--green;
+  background-color: $color--red-orange;
+  border-color:$color--red-orange;
   color:white;
   border-width: 2px;
   border-style: solid;
@@ -255,10 +255,9 @@ $mdc-typography-styles-button: (
   font-family:'Raleway';
   font-weight:600;
   padding: 10px 30px;
-  border-radius: 20px;
-  border-width: 1px;
+  border-radius: 50px;
+  border-width: 2px;
   border-style: solid;
-  background-color: white;  
 }
 
 .form__button:hover {
