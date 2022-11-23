@@ -22,10 +22,10 @@
 <div class="fcol widget-list">
   <div class="flc widget-list__header">
     <div class="widget-list__field widget-list__field--id">ID</div>
-    <div class="fc widget-list__field widget-list__field--url">Full Name</div>
-    <div class="fc widget-list__field widget-list__field--language">Email</div>
-    <div class="fc widget-list__field client-list__field--role">Role</div>    
-    <div class="fc widget-list__field widget-list__field--status">Status</div>
+    <div class="flc widget-list__field widget-list__field--url">Full Name</div>
+    <div class="flc widget-list__field widget-list__field--language">Email</div>
+    <div class="flc widget-list__field client-list__field--role">Role</div>    
+    <div class="flc widget-list__field widget-list__field--status">Status</div>
     <div class="f1"></div>
     
       <a class="widget-list__create console-button" href="{% url 'dashboard:client_user_create' %}" target="_self"><img class="console-button--icon" src="{% static '/images/user-add.svg' %}"> Add Member</a>
@@ -63,17 +63,18 @@
         <div class="widget-list__field widget-list__field--id">#{{ user.id }}</div>
 
         <div class="flc widget-list__subdata">
+
           <div class="flc widget-list__field widget-list__field--url">
-            <div class="fcol">
-              <div class="widget-list__url-label">{{ user.get_full_name }}</div>
-            </div>
+            <div class="widget-list__url-label">{{ user.get_full_name }}</div>
           </div>
-          <div class="fc widget-list__field widget-list__field--email">
-            <div class="widget-list__url-label">{{ user.email }}</div>
+
+          <div class="flc widget-list__field widget-list__field--language">
+            <div class="widget-list__change-author">{{ user.email }}</div>
           </div>
+
         </div>
 
-        <div class="fc df-c widget-list__field client-list__field--role">
+        <div class="flc df-c widget-list__field client-list__field--role">
           <div class="widget-list__change-date">{{ user.role }}</div>
         </div>
         

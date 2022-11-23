@@ -14,7 +14,7 @@
   <div class="wrapper wrapper--thin wrapper--profile">
     <div class="fcol">
       <div class="form--settings__form-container form-container">
-        <p class="form__header">Provide widget information.</p>
+        <p class="form__header">Provide widget information</p>
         <form class="fcol form site-form form--profile" action="{% url 'dashboard:widget_create' %}" method="post"
           novalidate>
           {% csrf_token %}
@@ -97,8 +97,8 @@
             <div class="errornote">
               {{ assignees_form.id.errors }}
             </div>
-            <div class="fcol form__field form__field--upper">
-              <p class="form__subheader">Assignees:</p>
+            <div class="fcol form__field form__field--upper widget">
+              <p class="form__header">Assignees</p>
               <ul class="mdc-list" role="group" aria-label="List with checkbox items"> 
               {% for client_user in users %}
                 <li class="mdc-list-item" role="checkbox" aria-checked="true" tabindex="0">
@@ -135,13 +135,14 @@
           <div class="fc">
             <div class="flc form__ui">
               <div>
-                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Create">
-              </div>
-              <div>
                 <a href="{% url 'dashboard:widgets' %}">
                   <input type="button" class="form__button" value="Back">
                 </a>
               </div>
+              <div>
+                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Create">
+              </div>
+
             </div>
           </div>
         </form>

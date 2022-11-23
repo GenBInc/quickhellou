@@ -6,20 +6,21 @@
 }
 
 .content-box {
-  border-radius: 10px;
+  border-radius: 20px;
   border:1px solid $color--dark-orange;
+  overflow: hidden;
 }
 
 .content-box__topbar {
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-  padding:6px;
+  padding:15px;
   background-color: $color--dark-orange;
   width:100%;
 }
 
 .content-box__header {
-  font-size:.75rem;
+  font-size:.95rem;
   color: white;
   font-weight: 600;
 }

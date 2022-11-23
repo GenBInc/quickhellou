@@ -119,21 +119,24 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
           <div class="errornote">
             {{ profile_form.thumbnail.errors }}
           </div>
-          <p class="form__thumbnail-label"><span class="form__subheader">Thumbnail file:</span><br/>
-          <a href="/media/{{ client_user.profile.thumbnail }}" target="_blank">{{client_user.profile.thumbnail}}</a></p>
-          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__thumbnail">
-            <input type="file" id="thumbnail-input" name="thumbnail" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input ">
-            <div class="mdc-notched-outline">
-              <div class="mdc-notched-outline__leading"></div>
-              <div class="mdc-notched-outline__notch">
-                <label for="thumbnail-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Thumbnail</label>
+
+          <div class="form__field--upper widget">
+            <p class="form__thumbnail-label"><span class="form__header">Thumbnail file</span><br/>
+            <a href="/media/{{ client_user.profile.thumbnail }}" target="_blank">{{client_user.profile.thumbnail}}</a></p>
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__thumbnail">
+              <input type="file" id="thumbnail-input" name="thumbnail" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input ">
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="thumbnail-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Thumbnail</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
               </div>
-              <div class="mdc-notched-outline__trailing"></div>
             </div>
           </div>
           {% if user.is_default_rw and board_widgets.count > 0 %}
             <div class="fcol form__field form__field--upper widget">
-              <p class="form__subheader">Widgets:</p>
+              <p class="form__header">Widgets</p>
               <ul class="mdc-list" role="group" aria-label="List with checkbox items">
               
               {% for board_widget in board_widgets %}
@@ -171,13 +174,14 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
         <div class="fc">
             <div class="flc form__ui">
               <div>
-                <input type="submit" onclick="saveForm()" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
-              </div>
-              <div>
                 <a href="{% url 'dashboard:team' %}">
                   <input type="button" class="form__button" value="Back">
                 </a>
               </div>
+              <div>
+                <input type="submit" onclick="saveForm()" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
+              </div>
+
             </div>
           </div>
       </form>

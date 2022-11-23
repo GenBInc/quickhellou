@@ -190,6 +190,11 @@ a.aside__navi-item--activated {
   padding:20px;
 }
 
+.main-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
 .welcome {
   margin-top:20px; 
   margin-bottom:20px;
@@ -243,6 +248,7 @@ a.aside__navi-item--activated {
   @media (min-width: $s-sm) {
     background-color: $color--resolution-blue;
     padding:15px 20px;
+    padding-left: 60px;
   }  
 }
 
@@ -257,6 +263,7 @@ a.aside__navi-item--activated {
 .widget-list__field {
   margin-right: 10px;
   white-space: nowrap;
+  overflow: hidden;
 }
 
 .widget-list__field:last-child {
@@ -264,16 +271,11 @@ a.aside__navi-item--activated {
 }
 
 .widget-list__field--id {
-  width:40px;
+  min-width:30px;
 }
 
 .widget-list__field--url {
-  width:100%;
-
-  @media (min-width: $s-sm) {
-    width: 120px;
-  }
-  
+  min-width:120px;  
 }
 
 .widget-list__field--contact {
@@ -284,10 +286,11 @@ a.aside__navi-item--activated {
 }
 
 .widget-list__field--language {
-  width:20%;
+  min-width:120px;
 }
 
 .widget-list__field--status {
+  display: none !important;
   width:15px;
   @media (min-width: $s-lg) {
     width:90px;
@@ -408,7 +411,7 @@ a.list-link--edit:hover {
 
 .widget-list__status-dot--active {
   background-color:$color--kelly-green;
-  display:block;
+  display:none;
 }
 
 .widget-list__status-dot--paused {
@@ -439,8 +442,9 @@ a.widget-list__create {
 .form__thumbnail-label {
   font-size:.875rem;
   color:$color--tory-blue;
+  margin-top: 0px;
   margin-bottom:10px;
-  
+  overflow: hidden;
 }
 
 .form__thumbnail-label a {
@@ -466,6 +470,7 @@ a.link--unpause-widget {
 
 .widget-templates {
   margin-bottom:50px;
+  overflow: hidden;
 }
 
 
@@ -682,7 +687,13 @@ a.call-list__button--deactivate {
 }
 
 .client-list__field--role {
-  min-width:65px;
+  min-width:45px;
+  display: flex;
+
+  @media (min-width: $s-sm) {
+    display: flex;    
+  }  
+
 }
 
 .iu-view__video-app-url {
@@ -881,4 +892,48 @@ aside.mdc-drawer {
 
 .mdc-checkbox__checkmark {
   color: white !important;
+}
+
+.form__field--upper.widget {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: $color--light-blue;
+  border-radius: 20px;
+}
+
+.mdc-list-item {
+  padding: 0;
+}
+
+.widget_templates--item {
+  padding-left: 20px;
+  padding-right: 20px;
+  border: 1px solid #efefef;
+  border-radius: 20px;
+  flex-direction: row;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding: 10px;
+  width: 100%;
+  background-color: white;
+}
+
+.widget_templates--data {
+  font-weight: 400;
+  text-decoration: none;
+  width: 100%;
+  color: black;
+  font-size: 12px;
+}
+
+.widget-list__field.widget-list__buttons {
+  overflow: unset;
+}
+
+.mdc-list-item__graphic {
+  margin-right: 15px;
+}
+
+.site-form.form--profile {
+  margin-top:60px;
 }

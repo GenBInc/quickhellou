@@ -190,8 +190,9 @@ $mdc-typography-styles-button: (
 }
 
 .wrapper--thin {
-  width:600px;
-  margin-top:78px;
+  max-width: 700px;
+  width:95%;
+  margin-top:60px;
 }
 
 .form__content {
@@ -230,7 +231,7 @@ $mdc-typography-styles-button: (
 .form__subheader {
   color:$color--resolution-blue;
   font-weight:600;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .form {

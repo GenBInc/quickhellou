@@ -14,7 +14,7 @@
   <div class="wrapper wrapper--thin wrapper--profile">
     <div class="fcol">
       <div class="form--settings__form-container form-container">
-        <p class="form__header">Provide widget template information.</p>
+        <p class="form__header">Provide widget template information</p>
         <form class="fcol site-form form--profile" action="{% url 'dashboard:widget_template_create' %}" method="post"
           novalidate enctype="multipart/form-data">
           {% csrf_token %}
@@ -45,11 +45,11 @@
             </div>
 
             <!-- Outlook -->
-             <div class="content-box">
-              <div class="flc content-box__topbar">
-                <p class="content-box__header">Widget Outlook</p>
-                <div class="f1"></div>
-              </div>
+            <div class="form__field--upper widget">
+
+              <p class="form__header">Widget Outlook</p>
+              <div class="f1"></div>
+              
               <div class="fcol content-box__content">
                   <div class="flc form__field--upper">
                     <div class="flc">
@@ -125,13 +125,14 @@
           <div class="fc">
             <div class="flc form__ui">
               <div>
-                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Create">
-              </div>
-              <div>
                 <a href="{% url 'dashboard:settings' %}">
                   <input type="button" class="form__button" value="Back">
                 </a>
               </div>
+              <div>
+                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Create">
+              </div>
+
             </div>
           </div>
         </form>

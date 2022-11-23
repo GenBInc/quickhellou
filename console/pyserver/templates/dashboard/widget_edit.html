@@ -95,7 +95,7 @@
             <div class="frc">
               <a class="block a--theme-primary" href="/dashboard/widgets/template/create">Create Template</a>
             </div>
-            <div class="form__field--upper">
+            <div class="form__field--upper widget">
               <p class="form__header">Code</p>
               <div class="widget-code-box">
                 <div class="widget-code-box__copy" title="Copy script to clipboard">
@@ -110,8 +110,8 @@
             <div class="errornote">
               {{ assignees_form.id.errors }}
             </div>
-            <div>
-              <p class="form__subheader">Assignees:</p>
+            <div class="fcol form__field form__field--upper widget">
+              <p class="form__header">Assignees</p>
               <ul class="mdc-list" role="group" aria-label="List with checkbox items">
               
               {% for client_user in users %}
@@ -149,13 +149,14 @@
           <div class="fc">
             <div class="flc form__ui">
               <div>
-                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
-              </div>
-              <div>
                 <a href="{% url 'dashboard:widgets' %}">
                   <input type="button" class="form__button" value="Back">
                 </a>
               </div>
+              <div>
+                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
+              </div>
+
             </div>
           </div>
         </form>
