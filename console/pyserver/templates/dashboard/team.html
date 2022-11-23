@@ -34,6 +34,27 @@
   <div class="fcol view-list__content widget-list__content">
     {% for user in users %}
     <div class="flc view-list__entry team-list__entry">
+      
+      <label class="form-switch"
+        aria-label="Show"
+        data-microtip-position="bottom"
+        data-role="tooltip">
+        <input
+          name="activate_user"
+          type="checkbox"
+          data-id="0"
+          {% if user.profile.available %}
+            onclick="javascript:window.location.href='{% url 'dashboard:user_deactivate' user_id=user.id  %}'"
+          {% else %}
+            onclick="javascript:window.location.href='{% url 'dashboard:user_activate' user_id=user.id  %}'"
+          {% endif %}
+          {% if user.profile.available %}
+          checked
+          {% endif %}
+        >
+        <i class="flc"></i>
+      </label>
+
       <div class="widget-list__field widget-list__field--id">#{{ user.id }}</div>
       <div class="flc widget-list__field widget-list__field--url">
         <div class="fcol">
@@ -55,12 +76,8 @@
       </div>
       <div class="f1"></div>
       <div class="flc widget-list__field widget-list__field--mod-bar">
+
         <a class="fc df-f1 team__list-link list-link--edit" href="{% url 'dashboard:client_user_edit' user_id=user.id  %}" target="_self">Edit</a>
-        {% if user.profile.available %}
-        <a class="fc df-f1 team__list-link list-link--pause" href="{% url 'dashboard:user_deactivate' user_id=user.id  %}">Deactivate</a>
-        {% else %}
-        <a class="fc df-f1 team__list-link link--unpause-widget list-link--pause form-switch" href="{% url 'dashboard:user_activate' user_id=user.id  %}">Activate</a>
-        {% endif %}
         <a class="fc df-f1 team__list-link list-link--delete" href="{% url 'dashboard:user_delete' user_id=user.id  %}">Delete</a>
       </div>
     </div>
