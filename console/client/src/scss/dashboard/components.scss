@@ -294,26 +294,34 @@ a.list-link--accept {
 a.com__list-link,
 a.team__list-link,
 a.widgets__list-link {
-  padding:0 5px;
+  padding:5px;
+  margin-right: 5px;
+  border-radius: 50%;
+  border-color: #efefef;
+  border-width: 2px;
+  border-style: solid;
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
 }
 
 a.com__list-link:last-child,
 a.team__list-link:last-child,
 a.widgets__list-link:last-child {
-  padding-right:0;
+  margin-right: 0px;
 }
 
-.list-link--reject,
-.list-link--delete {
-  color:#c90000;
+.list-link--reject:hover,
+.list-link--delete:hover {
+  border-color: #c90000;
 }
 
-a.list-link--pause {
-  color:$color--dark-orange;
+a.list-link--pause:hover {
+  border-color:$color--dark-orange;
 }
 
-a.list-link--edit {
-  color:$color--green;
+a.list-link--edit:hover {
+  border-color:$color--green;
 }
 
 .widget-list__status-dot {
@@ -779,4 +787,9 @@ aside.mdc-drawer {
 
 .aside-close-button:hover {
   background-color: #4285f4;
+}
+
+.list-link--icon {
+  opacity: 0.7;
+  width: 90%;
 }
