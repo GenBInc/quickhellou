@@ -659,6 +659,9 @@ a.call-list__button--deactivate {
   border-radius: 20px;
   color: white !important;
   box-shadow: 0 0 0 2px hsla(0,0%,100%,.15);
+  align-items: center;
+  display: flex;
+  flex-direction: row;
 }
 
 .console-button-green {
@@ -792,4 +795,9 @@ aside.mdc-drawer {
 .list-link--icon {
   opacity: 0.7;
   width: 90%;
+}
+
+.console-button--icon {
+  height: 20px;
+  margin-right: 5px;
 }
