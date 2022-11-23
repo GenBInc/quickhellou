@@ -152,5 +152,12 @@ const initMobileMenu = () => {
     e.stopPropagation();
   })  
 
+  const asideCloseButton = document.querySelector('.aside-close-button  ')
+
+  asideCloseButton.addEventListener('click', function (e) {
+    const asideDrawer = document.querySelector('aside.mdc-drawer')
+    asideDrawer.classList.remove("aside-active")
+    e.stopPropagation();
+  })  
 
 }
