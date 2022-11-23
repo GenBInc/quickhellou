@@ -33,11 +33,12 @@
   font-weight: 600;
   display: inline-block;
   font-family: 'Raleway';
-  font-weight: 600;
+  font-weight: 700;
   color: white;
   border-radius: 15px;
   text-decoration: none;
   transition: background-color .2s ease, color .2s ease;
+  text-transform: uppercase;
 }
 
 .link-button:hover {

@@ -5,26 +5,7 @@
 {% block page_title %} New User Profile {% endblock %}
 
 {% block nav %}
-<nav class="fcol mdc-list aside__navi-list">
-  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
-    Dashboard
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:communications' %}">
-    Communications
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
-    Widgets
-  </a>
-  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:team' %}">
-    Team<span></span>
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
-    Billing
-  </a>
-  <a class="aside__navi-item aside__navi-item" href="{% url 'dashboard:settings' %}">
-    Settings
-  </a>
-</nav>
+  {% include "./nav_menu.html" with menu_selected='team' %}   
 {% endblock %}
 
 {% block content %}

@@ -5,28 +5,7 @@
 {% block page_title %}Create Widget Template{% endblock %}
 
 {% block nav %}
-<nav class="fcol mdc-list aside__navi-list">
-  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
-    Dashboard
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:communications' %}">
-    Communications
-  </a>
-  {% if user.is_default_admin %}
-  <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
-    Widgets<span></span>
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
-    Team<span></span>
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
-    Billing
-  </a>
-  <a class="aside__navi-item aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:settings' %}">
-    Settings
-  </a>
-  {% endif %}
-</nav>
+  {% include "./nav_menu.html" with menu_selected='settings' %}   
 {% endblock %}
 
 {% block content %}
