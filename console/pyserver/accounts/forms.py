@@ -100,14 +100,11 @@ class WidgetForm(forms.ModelForm):
         model = Widget
         fields = ['url', 'template']
 
-    def is_valid(self):
+    def clean(self):
         cleaned_data = super().clean()
-
         template: str = cleaned_data.get('template')
         if not template:
             self.add_error('template', 'Please select a template.')
-        
-        return super(WidgetForm, self).is_valid()
 
     def save(
         self,

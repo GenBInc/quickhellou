@@ -52,13 +52,14 @@ def signup_view(
             # create default widget associated with the clientboard and newly created user
             # as it has an owner role
             if widget_form.is_valid():
-                widget = widget_form.save(user, client_board)
+                widget_form.save(user, client_board)
             # email notification
             subject = 'QuickHellou - New User'
             recipients = [
                 ApplicationSettings.objects.get_admin_email_address()]
+            url: str = widget_form.data['url']
             email_params = {'username': user.first_name, 'email': user.email, 'full_name': user.get_full_name,
-                            'phone': user.profile.phone, 'url': widget.url, 'console_app_url': ApplicationSettings.objects.get_console_app_url()}
+                            'phone': user.profile.phone, 'url': url, 'console_app_url': ApplicationSettings.objects.get_console_app_url()}
             send_email_notification(subject, recipients, email_params,
                                     'accounts/email/signup-admin.txt', 'accounts/email/signup-admin.html')
             # send email to client user
