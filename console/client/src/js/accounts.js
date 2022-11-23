@@ -49,7 +49,7 @@ document.createAccount = () => {
 window.onloadCallback = function () {
   // eslint-disable-next-line no-undef
   grecaptcha.render('recaptcha', {
-    sitekey: '__sitekey__',
+    sitekey: '6LfTxScjAAAAADHF0OtdzBNpgR30IZDO4TWJDt7X',
     // eslint-disable-next-line func-names
     callback: function () {
       const captchaContainer = document.querySelector("input[name='recaptcha']")

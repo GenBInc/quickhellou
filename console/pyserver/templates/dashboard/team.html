@@ -24,61 +24,70 @@
     <div class="widget-list__field widget-list__field--id">ID</div>
     <div class="fc widget-list__field widget-list__field--url">Full Name</div>
     <div class="fc widget-list__field widget-list__field--language">Email</div>
-    <div class="fc widget-list__field widget-list__field--status">Available</div>
-    <div class="fc widget-list__field client-list__field--role">Role</div>
+    <div class="fc widget-list__field client-list__field--role">Role</div>    
+    <div class="fc widget-list__field widget-list__field--status">Status</div>
     <div class="f1"></div>
-    <div class="frc widget-list__field widget-list__field--mod-bar">
+    
       <a class="widget-list__create console-button" href="{% url 'dashboard:client_user_create' %}" target="_self"><img class="console-button--icon" src="{% static '/images/user-add.svg' %}"> Add Member</a>
-    </div>
+    
   </div>
   <div class="fcol view-list__content widget-list__content">
     {% for user in users %}
     <div class="flc view-list__entry team-list__entry">
+      
+      <div class="df-f1 flc widget-list__data">
 
-      <label class="form-switch"
-        {% if user.profile.available %}
-          aria-label="Deactivate"
-        {% else %}
-          aria-label="Activate"
-        {% endif %}          
-        data-microtip-position="bottom"
-        data-role="tooltip">
-        <input
-          name="activate_user"
-          type="checkbox"
+        <label class="form-switch"
           {% if user.profile.available %}
-            onclick="javascript:window.location.href='{% url 'dashboard:user_deactivate' user_id=user.id  %}'"
+            aria-label="Deactivate"
           {% else %}
-            onclick="javascript:window.location.href='{% url 'dashboard:user_activate' user_id=user.id  %}'"
-          {% endif %}
-          {% if user.profile.available %}
-          checked
-          {% endif %}
-        >
-        <i class="flc"></i>
-      </label>
+            aria-label="Activate"
+          {% endif %}          
+          data-microtip-position="bottom"
+          data-role="tooltip">
+          <input
+            name="activate_user"
+            type="checkbox"
+            {% if user.profile.available %}
+              onclick="javascript:window.location.href='{% url 'dashboard:user_deactivate' user_id=user.id  %}'"
+            {% else %}
+              onclick="javascript:window.location.href='{% url 'dashboard:user_activate' user_id=user.id  %}'"
+            {% endif %}
+            {% if user.profile.available %}
+            checked
+            {% endif %}
+          >
+          <i class="flc"></i>
+        </label>
 
-      <div class="widget-list__field widget-list__field--id">#{{ user.id }}</div>
-      <div class="flc widget-list__field widget-list__field--url">
-        <div class="fcol">
-          <div class="widget-list__url-label">{{ user.get_full_name }}</div>
+        <div class="widget-list__field widget-list__field--id">#{{ user.id }}</div>
+
+        <div class="flc widget-list__subdata">
+          <div class="flc widget-list__field widget-list__field--url">
+            <div class="fcol">
+              <div class="widget-list__url-label">{{ user.get_full_name }}</div>
+            </div>
+          </div>
+          <div class="fc widget-list__field widget-list__field--email">
+            <div class="widget-list__url-label">{{ user.email }}</div>
+          </div>
         </div>
+
+        <div class="fc df-c widget-list__field client-list__field--role">
+          <div class="widget-list__change-date">{{ user.role }}</div>
+        </div>
+        
+        <div class="fc widget-list__field widget-list__field--status">
+          {% if user.profile.available %}
+          <div class="widget-list__status-dot widget-list__status-dot--active"></div>
+          {% else %}
+          <div class="widget-list__status-dot widget-list__status-dot--paused"></div>
+          {% endif %}
+        </div>
+        <div class="f1"></div>
       </div>
-      <div class="fc widget-list__field widget-list__field--language">
-        <div class="widget-list__url-label">{{ user.email }}</div>
-      </div>
-      <div class="fc widget-list__field widget-list__field--status">
-        {% if user.profile.available %}
-        <div class="widget-list__status-dot widget-list__status-dot--active"></div>
-        {% else %}
-        <div class="widget-list__status-dot widget-list__status-dot--paused"></div>
-        {% endif %}
-      </div>
-      <div class="fc df-c widget-list__field client-list__field--role">
-        <div class="widget-list__change-date">{{ user.role }}</div>
-      </div>
-      <div class="f1"></div>
-      <div class="flc widget-list__field widget-list__field--mod-bar">
+        
+      <div class="flc widget-list__field widget-list__field--mod-bar widget-list__buttons">
 
         <a class="fc df-f1 team__list-link list-link--edit" href="{% url 'dashboard:client_user_edit' user_id=user.id  %}" target="_self"
           aria-label="Edit"

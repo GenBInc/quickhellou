@@ -15,75 +15,76 @@
           <!-- <a>Change plan for more</a> -->
         </div>
         <div class="fcol widget-list">
-          <div class="flc widget-list__header">
+          <div class="flc widget-list__header">            
             <div class="widget-list__field widget-list__field--id">ID</div>
             <div class="fc widget-list__field widget-list__field--url">URL</div>
             <div class="fc widget-list__field widget-list__field--language">Language</div>
             <div class="fc widget-list__field widget-list__field--status">Status</div>
             <div class="fc widget-list__field widget-list__field--last-change">Last change</div>
-            <div class="f1"></div>
-            <div class="frc widget-list__field widget-list__field--mod-bar">
-              <a class="widget-list__create console-button" href="{% url 'dashboard:widget_create' %}" target="_self"><img class="console-button--icon" src="{% static '/images/widget-add.svg' %}">Add Widget</a>
-            </div>
+            <div class="f1"></div>            
+            <a class="widget-list__create console-button" href="{% url 'dashboard:widget_create' %}" target="_self"><img class="console-button--icon" src="{% static '/images/widget-add.svg' %}">Add Widget</a>
           </div>
           <div class="fcol view-list__content widget-list__content">
             {% for widget in widgets %}
             <div class="flc view-list__entry widget-list__entry">
+              
+              <div class="df-f1 flc widget-list__data">
 
-
-              <label class="form-switch"
-                {% if widget.paused %}
-                  aria-label="Unpause"
-                {% else %}
-                  aria-label="Pause"
-                {% endif %}          
-                data-microtip-position="bottom"
-                data-role="tooltip">
-                <input
-                  name="activate_user"
-                  type="checkbox"
+                <label class="form-switch"
                   {% if widget.paused %}
-                    onclick="javascript:window.location.href='{% url 'dashboard:widget_unpause' widget_id=widget.id  %}'"
+                    aria-label="Unpause"
                   {% else %}
-                    onclick="javascript:window.location.href='{% url 'dashboard:widget_pause' widget_id=widget.id  %}'"
-                  {% endif %}
-                  {% if not widget.paused %}
-                  checked
-                  {% endif %}
-                >
-                <i class="flc"></i>
-              </label>
+                    aria-label="Pause"
+                  {% endif %}          
+                  data-microtip-position="bottom"
+                  data-role="tooltip">
+                  <input
+                    name="activate_user"
+                    type="checkbox"
+                    {% if widget.paused %}
+                      onclick="javascript:window.location.href='{% url 'dashboard:widget_unpause' widget_id=widget.id  %}'"
+                    {% else %}
+                      onclick="javascript:window.location.href='{% url 'dashboard:widget_pause' widget_id=widget.id  %}'"
+                    {% endif %}
+                    {% if not widget.paused %}
+                    checked
+                    {% endif %}
+                  >
+                  <i class="flc"></i>
+                </label>
 
-              <div class="widget-list__field widget-list__field--id">{{ widget.id }}</div>
-              <div class="flc widget-list__field widget-list__field--url">
-                <div class="fcol">
-                  <div class="widget-list__url-label">{{ widget.name }}</div>
-                  <a class="widget-list__url-link" href="http://{{ widget.url }}" target="_blank">{{ widget.url }}</a>
+                <div class="widget-list__field widget-list__field--id">{{ widget.id }}</div>
+                <div class="flc widget-list__field widget-list__field--url">
+                  <div class="fcol">
+                    <div class="widget-list__url-label">{{ widget.name }}</div>
+                    <a class="widget-list__url-link" href="http://{{ widget.url }}" target="_blank">{{ widget.url }}</a>
+                  </div>
                 </div>
-              </div>
-              <div class="fc widget-list__field widget-list__field--language">
-                {% for k, v in widget.LANG_CHOICES %}            
-                {% if k == widget.lang %}
-                {{ v }}
-                {% endif %}
-                {% endfor %}
-              </div>
-              <div class="fc widget-list__field widget-list__field--status">
-                {% if widget.paused %}
-                <div class="widget-list__status-dot widget-list__status-dot--paused"></div>
-                {% else %}
-                <div class="widget-list__status-dot widget-list__status-dot--active"></div>
-                {% endif %}
-                <div class="widget-list__status-dot"></div>
-              </div>
-              <div class="fc df-c widget-list__field widget-list__field--last-change">
-                <div class="fcol">
-                  <div class="widget-list__change-date">{{ widget.last_change|date:"m/d/Y" }}</div>
-                  <div class="widget-list__change-author">by {{ widget.last_editor.get_full_name }}</div>
+                <div class="fc widget-list__field widget-list__field--language">
+                  {% for k, v in widget.LANG_CHOICES %}            
+                  {% if k == widget.lang %}
+                  {{ v }}
+                  {% endif %}
+                  {% endfor %}
                 </div>
+                <div class="fc widget-list__field widget-list__field--status">
+                  {% if widget.paused %}
+                  <div class="widget-list__status-dot widget-list__status-dot--paused"></div>
+                  {% else %}
+                  <div class="widget-list__status-dot widget-list__status-dot--active"></div>
+                  {% endif %}
+                  <div class="widget-list__status-dot"></div>
+                </div>
+                <div class="fc df-c widget-list__field widget-list__field--last-change">
+                  <div class="fcol">
+                    <div class="widget-list__change-date">{{ widget.last_change|date:"m/d/Y" }}</div>
+                    <div class="widget-list__change-author">by {{ widget.last_editor.get_full_name }}</div>
+                  </div>
+                </div>
+                <div class="f1"></div>
               </div>
-              <div class="f1"></div>
-              <div class="flc widget-list__field widget-list__field--mod-bar">
+                
+              <div class="flc widget-list__field widget-list__field--mod-bar widget-list__buttons">
                 <a class="fc df-f1 widgets__list-link list-link--edit" href="{% url 'dashboard:widget_edit' widget_id=widget.id  %}" target="_self"
                   aria-label="Edit"
                   data-microtip-position="bottom"

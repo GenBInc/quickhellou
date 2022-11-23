@@ -56,7 +56,7 @@
   margin-bottom:20px;
 }
 
-.button--add-photo svg {
+.button--photo--icon {
   width:14px;
   height:14px;
 }
@@ -179,7 +179,7 @@ a.aside__navi-item--activated {
 .mdc-drawer-app-content {
   width: 100%;
   height:100%;
-  @media (min-width: $s-md) {
+  @media (min-width: $s-mobile) {
     width:calc(100% - 256px);
   }
 }
@@ -233,12 +233,34 @@ a.aside__navi-item--activated {
 }
 
 .widget-list__header {
-  background-color: $color--resolution-blue;
+  background-color: white;
   color:white;
   font-size:.75rem;
   font-weight:700;
-  padding:15px 20px;
+  padding:0px;
   border-radius: 50px;
+
+  @media (min-width: $s-sm) {
+    background-color: $color--resolution-blue;
+    padding:15px 20px;
+  }  
+}
+
+.widget-list__header .widget-list__field {
+  display: none;
+
+  @media (min-width: $s-sm) {
+    display: flex;
+  }    
+}
+
+.widget-list__field {
+  margin-right: 10px;
+  white-space: nowrap;
+}
+
+.widget-list__field:last-child {
+  margin-right: 0px;
 }
 
 .widget-list__field--id {
@@ -246,7 +268,12 @@ a.aside__navi-item--activated {
 }
 
 .widget-list__field--url {
-  width:120px;
+  width:100%;
+
+  @media (min-width: $s-sm) {
+    width: 120px;
+  }
+  
 }
 
 .widget-list__field--contact {
@@ -261,13 +288,16 @@ a.aside__navi-item--activated {
 }
 
 .widget-list__field--status {
-  width:90px;
+  width:15px;
+  @media (min-width: $s-lg) {
+    width:90px;
+  }    
 }
 
 .widget-list__field--last-change {
   width:120px;
   display: none;
-  @media (min-width: $s-xl) {
+  @media (min-width: $s-sm) {
     display: flex;
   }
 }
@@ -276,9 +306,53 @@ a.aside__navi-item--activated {
   font-size:.75rem;
 }
 
+
 .view-list__entry {
-  padding:25px 10px;
+  padding:15px 15px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   width:100%;
+  flex-direction: column;
+  border-radius: 20px;
+  border-width: 1px;
+  border-color: #efefef;
+  border-style: solid;
+
+  @media (min-width: $s-md) {
+    flex-direction: row;
+  }  
+}
+
+.widget-list__data {
+  width: 100%;
+  @media (min-width: $s-md) {
+    width: auto;
+  }  
+}
+
+.widget-list__subdata {
+  flex-direction: column;
+  align-items:start;
+  width: 100%;
+  @media (min-width: $s-sm) {
+    align-items:center;
+    flex-direction: row;
+    width: auto;
+  }  
+}
+
+.widget-list__subdata .widget-list__field {
+  margin-right: 10px !important;
+}
+
+
+.widget-list__buttons {
+  justify-content: flex-end;
+  width: 100%;
+  @media (min-width: $s-md) {
+    width: auto;
+    justify-content: flex-start;
+  }  
 }
 
 .widget-list__field--mod-bar a {
@@ -302,6 +376,7 @@ a.widgets__list-link {
   border-style: solid;
   width: 30px;
   min-width: 30px;
+  max-width: 30px;
   height: 30px;
 }
 
@@ -696,7 +771,7 @@ a.call-list__button--deactivate {
 
   display: flex;
 
-  @media (min-width: $s-md) {
+  @media (min-width: $s-mobile) {
     display: none;    
   }
 
@@ -706,7 +781,7 @@ a.call-list__button--deactivate {
 
   display: none;
 
-  @media (min-width: $s-md) {
+  @media (min-width: $s-mobile) {
     display: flex;
   }
 
@@ -733,7 +808,7 @@ aside.mdc-drawer {
   left:-256px;
   box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.05);
 
-  @media (min-width: $s-md) {
+  @media (min-width: $s-mobile) {
     left:0px;
     position: relative;
     height: auto;
@@ -747,7 +822,7 @@ aside.mdc-drawer {
 .aside__navi-list {
   padding:10px 30px;
 
-  @media (min-width: $s-md) {
+  @media (min-width: $s-mobile) {
     padding:30px;    
   }    
 }
@@ -755,7 +830,7 @@ aside.mdc-drawer {
 .mdc-top-app-bar {
   padding: 5px 10px;
 
-  @media (min-width: $s-md) {
+  @media (min-width: $s-mobile) {
     padding:5px 25px;    
   }    
 
@@ -764,7 +839,7 @@ aside.mdc-drawer {
 .mdc-top-app-bar--fixed-adjust{
   padding: 0px;
 
-  @media (min-width: $s-md) {
+  @media (min-width: $s-mobile) {
     padding: 20px;
   }    
 
