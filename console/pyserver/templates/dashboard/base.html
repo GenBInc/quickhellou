@@ -36,11 +36,15 @@
         <p class="fc aside__subtitle">{{ user.email }}</p>
       </div>
       <div class="mdc-drawer__content">
+        <!--
         <div class="fc df-col aside__version">
           <p class="version__text version__label">FREE</p>
           <a class="fc version__text version__enterprise" href="#" target="_self">Switch To ENTERPRISE</a>
         </div>
+        -->
+        
         {% block nav %}{% endblock nav %}
+        
       </div>
     </aside>
 
@@ -55,7 +59,7 @@
           <div class="df mdc-top-app-bar__logout">
             <form class="logout-link" action="{% url 'accounts:logout' %}" method="post">
               {% csrf_token %}
-              <button class="button--logout" type="submit">Logout</button>
+              <button class="button--logout console-button" type="submit">Logout</button>
             </form>
           </div>
         </div>

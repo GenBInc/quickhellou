@@ -43,6 +43,7 @@
   background-repeat: no-repeat;
   border-radius: 50%;
   background-position: center;
+  box-shadow: 0 0 0 4px hsla(0,0%,100%,.15);
 }
 
 .aside__avatar-content {
@@ -68,6 +69,11 @@ label.button--add-photo {
   height:30px;
   background-color: white;
   border-radius: 50%;
+  cursor: pointer;
+}
+
+.button--add-photo:hover {
+  background-color: $color--red-orange;
 }
 
 input.input--add-avatar {
@@ -158,6 +164,10 @@ a.version__text {
   text-decoration: none;
 }
 
+.aside__navi-item:hover {
+  color: $color--deep-sky-blue;
+}
+
 .aside__navi-item--activated {
   color:$color--red-orange!important;
   background-color:transparent;
@@ -200,7 +210,7 @@ a.aside__navi-item--activated {
 }
 
 .widgets__top-header {
-  padding:30px 30px 40px;
+  padding:60px 30px 40px;
 }
 
 .widgets__top-header p,
@@ -225,7 +235,8 @@ a.aside__navi-item--activated {
   color:white;
   font-size:.75rem;
   font-weight:700;
-  padding:20px 30px;
+  padding:15px 20px;
+  border-radius: 50px;
 }
 
 .widget-list__field--id {
@@ -630,4 +641,20 @@ a.call-list__button--deactivate {
 
 .call-list__entry--completed {
   background-color: #90ee90;
+}
+
+.console-button {
+  background-color: #e5332a;
+  padding: 6px 10px;
+  border-radius: 20px;
+  color: white !important;
+  box-shadow: 0 0 0 2px hsla(0,0%,100%,.15);
+}
+
+.console-button-green {
+  background-color: $color--kelly-green;
+}
+
+.console-button:hover {
+  background-color: #4285f4;
 }

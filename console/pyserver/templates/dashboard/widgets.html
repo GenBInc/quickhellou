@@ -5,35 +5,14 @@
 {% block page_title %}Widgets{% endblock %}
 
 {% block nav %}
-<nav class="fcol mdc-list aside__navi-list">
-  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
-    Dashboard
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:communications' %}">
-    Communications
-  </a>
-  {% if user.is_default_admin %}
-  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:widgets' %}">
-    Widgets<span></span >
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
-    Team
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
-    Billing
-  </a>
-  <a class="aside__navi-item aside__navi-item" href="{% url 'dashboard:settings' %}">
-    Settings
-  </a>
-  {% endif %}
-</nav>
+  {% include "./nav_menu.html" with menu_selected='widgets' %}   
 {% endblock %}
 
 {% block content %}
 <div class="flc widgets__top-header">
           <p>Your widgets: {{ active_widgets_len }}/{{ widgets|length }}</p>
           <p>Your domains: {{ widgets|length }}</p>
-          <a>Change plan for more</a>
+          <!-- <a>Change plan for more</a> -->
         </div>
         <div class="fcol widget-list">
           <div class="flc widget-list__header">
@@ -44,7 +23,7 @@
             <div class="fc widget-list__field widget-list__field--last-change">Last change</div>
             <div class="f1"></div>
             <div class="frc widget-list__field widget-list__field--mod-bar">
-              <a class="widget-list__create" href="{% url 'dashboard:widget_create' %}" target="_self">CREATE</a>
+              <a class="widget-list__create console-button" href="{% url 'dashboard:widget_create' %}" target="_self">Add Widget</a>
             </div>
           </div>
           <div class="fcol view-list__content widget-list__content">
