@@ -37,7 +37,11 @@
           </label>
           <input type="file" class="input--add-avatar" id="thumbnail" name="thumbnail" onchange="form.submit()">
         </form>
-        <p class="fc aside__title">{{ user.profile.full_name }}</p>
+        <a class="fc aside__title" href="{% url 'dashboard:client_user_edit' user_id=user.profile.id  %}" target="_self"
+        >
+          {{ user.profile.full_name }}
+        </a>
+
         <p class="fc aside__subtitle">{{ user.email }}</p>
       </div>
       <div class="mdc-drawer__content">
