@@ -121,4 +121,36 @@ document.addEventListener('DOMContentLoaded', () => {
     uiView = new DashboardView()
   }
   uiView.init()
+
+  initMobileMenu();
+
 })
+
+const initMobileMenu = () => {
+
+  const mobileMenu = document.querySelector('.mobile-menu_button')
+
+
+  mobileMenu.addEventListener('click', () => {
+
+    const asideDrawer = document.querySelector('aside.mdc-drawer')
+
+    if (asideDrawer.classList.contains("aside-active")) {
+      asideDrawer.classList.remove("aside-active")
+    } else {
+      asideDrawer.classList.add("aside-active")
+    }
+    
+  }) 
+
+
+  const pageContent = document.querySelector('.main-content')
+
+  pageContent.addEventListener('click', function (e) {
+    const asideDrawer = document.querySelector('aside.mdc-drawer')
+    asideDrawer.classList.remove("aside-active")
+    e.stopPropagation();
+  })  
+
+
+}

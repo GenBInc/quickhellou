@@ -18,8 +18,8 @@
   <div class="drawer-frame-root">
     <aside class="aside mdc-drawer">
       <div class="mdc-drawer__header">
-        <div class="fc m-logo__image drawer__logo">
-          <img src="{% static '/images/hellou-quick-white.svg' %}" alt="quickhellou logo">
+        <div class="fc m-logo__image drawer__logo desktop-objects">
+          <a href="/dashboard"><img src="{% static '/images/hellou-quick-white.svg' %}" alt="quickhellou logo"></a>
         </div>
         <form class="fc aside__avatar-content" action="{% url 'accounts:upload_thumbnail' profile_id=user.profile.id %}" method="post" enctype="multipart/form-data">
           {% csrf_token %}
@@ -51,12 +51,18 @@
     <div class="mdc-drawer-app-content">
       <header class="mdc-top-app-bar drawer-top-app-bar">
         <div class="flc mdc-top-app-bar__row">
+          <div class="flc mobile-objects">
+            <a href="/dashboard"><img class="mobile-logo_icon" src="{% static '/images/hellou-quick.svg' %}" alt="quickhellou logo"></a>
+          </div>
           <div class="flc mdc-top-app-bar__breadcrumb">
-            <p>Dashboard</p>
-            <p class="breadcrumb__next"></p> <a>{% block page_title %}{% endblock page_title %}</a>
+            <a href="/dashboard" class="breadcrumb_link_home desktop-objects">Dashboard</a>
+            <p class="breadcrumb__next desktop-objects"></p> <a>{% block page_title %}{% endblock page_title %}</a>
           </div>
           <div class="f1"></div>
-          <div class="df mdc-top-app-bar__logout">
+          <div class="mobile-menu_button mobile-objects">
+            <img src="{% static '/images/menu.svg' %}" alt="menu">
+          </div>  
+          <div class="df mdc-top-app-bar__logout desktop-objects">
             <form class="logout-link" action="{% url 'accounts:logout' %}" method="post">
               {% csrf_token %}
               <button class="button--logout console-button" type="submit">Logout</button>
