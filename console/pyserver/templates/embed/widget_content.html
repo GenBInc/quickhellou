@@ -1,9 +1,11 @@
 {% spaceless %}
-<script src="{{ video_app_url }}/static/videochat/js/adapter-latest.js"></script>
-<script src="{{ video_app_url }}/static/videochat/js/quickhellou.js" defer></script>
+{# <script src="{{ video_app_url }}/static/videochat/js/adapter-latest.js"></script> #}
+{# <script src="{{ video_app_url }}/static/videochat/js/quickhellou.js" defer></script> #}
 {# <link rel="stylesheet" type="text/css" href="{{ video_app_url }}/static/videochat/css/quickhellou.css"> #}
+<script src="{{ console_app_url }}/static/js/widget.js" defer></script>
+<link rel="stylesheet" type="text/css" href="{{ console_app_url }}/static/css/widget.css">
 <div class="qh-root" data-id="{{ widget_id }}" data-url="{{ console_app_url }}" style="opacity:0;">
-<div id="qh_w_frame" class="qh-widget-badge js-top">
+<div id="qh_w_frame" class="qh-widget-badge">
   <!-- widget base -->
   {% include "embed/widget_base.html" %}
   <!-- widget extension element -->

@@ -679,6 +679,22 @@ html {
   fill: #ffffff;
 }
 
+iframe#qh_iframe {
+  display: block!important;
+  width:86px;
+  height:86px;
+  z-index:9999999;
+  border:none;
+  position:fixed;
+  bottom:20px;
+  right:20px;
+}
+
+iframe#qh_iframe.js-expanded {
+  width:310px;
+  height:380px;
+}
+
 #qh_e_frame.js-expanded {
   opacity:1;
   display: block;
@@ -716,154 +732,4 @@ html {
   left: 0;
   z-index: 1001;
   padding:4px 20px;
-}
-
-.widget-bottom {
-  @include transform(translateY(110%));
-  @include transition(transform .2s ease);
-}
-
-.widget-bottom.js-active {
-  @include transform(translateY(0%));
-}
-
-.qh-widget-badge {
-  @include transition(transform .2s ease);
-}
-
-.qh-widget-badge {
-  bottom: 8px;
-  right: 8px;
-  position:fixed;
-}
-
-.qh-widget-badge.js-top {
-  @include transform(translateY(-56px));
-}
-
-#message-input {
-  margin-bottom:10px;
-}
-
-div.qh-root.active {
-  opacity:1!important;
-  transition: opacity .3s ease-out;
-}
-
-/// videochat
-
-.column--video {
-  position: relative;
-  height: 100%;
-  background-color: black;
-  overflow: hidden;
-}
-
-.videos-wrap,
-.video-columns-wrap {
-  max-height: calc(100% - 40px);
-  @media (min-width: $s-md) {
-    max-height:calc(100% - 75px);
-  }
-}
-
-.videos-wrap {
-  @include transition(all .2s ease);
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  max-height: calc(100% - 40px);
-  @media (min-width: $s-md) {
-    max-height:calc(100% - 75px);
-  }
-}
-
-.video-columns-wrap.js-fullscreen,
-.videos-wrap.js-fullscreen {
-  max-height: 100%;
-}
-
-.remote-video-fullscreen,
-div.fullscreen {
-  display:none!important;
-}
-
-.qh_video-columns {
-  height:100%;
-}
-
-div.fullscreen,
-.qh_video-control {
-  background-image: none !important;
-}
-
-.qh_video-control svg {
-  height:32px;
-}
-
-.videos-wrap.active {
-  @include transform(rotateY(0));
-}
-
-.rejoin-button {
-  background-color: #f44336;
-}
-
-.new-room-button,
-.rejoin-button {
-  font-size: 0.75rem;
-  font-weight: 400;
-  border: none;
-  border-radius: 20px;
-  padding: 5px 10px;
-  white-space: nowrap;
-  @media (min-width: $s-sm) {
-    font-size:1.25rem;
-    padding: 5px 20px;
-  }
-}
-
-.qh_room-link,
-.rejoin-button,
-.new-room-button,
-.button--send-invitation {
-  display: none!important;
-}
-
-.rejoin-button {
-  margin-right: 10px;
-}
-
-.text-left-call {
-  color: white;
-  display: none;
-}
-
-.rejoin-div {
-  margin-right: 20px;
-}
-
-.local-video {
-  height: 100%;
-  max-height: 100%;
-  max-width: 100%;
-  object-fit: cover;
-  transition: opacity 1s;
-  width: 100%;
-}
-
-.mini-video {
-  border: 1px solid gray;
-  top: 20px;
-  left: 20px;
-  max-height: 17%;
-  max-width: 17%;
-  opacity: 0;
-  position: absolute;
-  transition: opacity 1s;
-}
-
-.mini-video.active {
-  opacity: 1;
-  z-index: 2;
 }

@@ -19,7 +19,8 @@ export class BadgeView extends UIView {
   constructor(service) {
     super()
     this.service = service
-    this.element = window.parent.document.getElementById('qh_w_frame')
+    this.element = document.getElementById('qh_w_frame')
+    this.extDispatcher = window.parent.document.QHDispatcher
   }
 
   /**
@@ -38,6 +39,9 @@ export class BadgeView extends UIView {
     const widgetButtonElement = this.uiGet('.widget_base')
     widgetButtonElement.addEventListener('click', () => {
       this.emit('collapse')
+      this.extDispatcher.dispatchEvent(
+        new CustomEvent('expand', { detail: { source: 'badge' } })
+      )
     })
 
     this.service.addListener('callRejected', () => {
@@ -117,6 +121,14 @@ export class BadgeView extends UIView {
     const adminThumbnailElement = this.uiGet('.widget-outlook__admin-thumbnail')
     adminThumbnailElement.style.backgroundImage = `url(${this.service.consoleAppUrl}/media/${thumbnailPath})`
     this.emit('setThumbnail', thumbnailPath)
+    this.extDispatcher.dispatchEvent(
+      new CustomEvent('setThumbnail', {
+        detail: {
+          'thumbnailPath': thumbnailPath,
+          source: 'badge',
+        }
+      })
+    )
   }
 
   /**
@@ -125,6 +137,7 @@ export class BadgeView extends UIView {
    * @memberof WidgetBottomBarView
    */
   toggleTopState(force) {
+    return
     if (HTMLUtils.getCookie('qh_bottom_bar') === 'false') {
       force = false
     }

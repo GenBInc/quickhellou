@@ -23,6 +23,7 @@ export class WidgetExtensionView extends UIView {
     this.isExpanded = false
     this.videoMode = false
     this.anyOperatorActive = false
+    this.extDispatcher = window.parent.document.QHDispatcher
   }
 
   /**
@@ -310,6 +311,7 @@ export class WidgetExtensionView extends UIView {
   expandView() {
     this.isExpanded = true
     this.element.classList.add('js-expanded')
+    this.dispatchExtEvent('expand')
   }
 
   /**
@@ -321,6 +323,7 @@ export class WidgetExtensionView extends UIView {
     this.isExpanded = false
     this.element.classList.remove('js-expanded')
     this.deactivateVideoMode()
+    this.dispatchExtEvent('collapse')
   }
 
   /**
@@ -339,6 +342,7 @@ export class WidgetExtensionView extends UIView {
     } else if (!this.videoMode) {
       this.activateActiveOperatorInitForm()
       this.emit('collapse')
+      this.dispatchExtEvent('expand')
     }
   }
 
@@ -502,5 +506,15 @@ export class WidgetExtensionView extends UIView {
     this.element.classList.remove('qh_video-mode')
     this.videoMode = false
     // remove connection data from videochat app
+  }
+
+  dispatchExtEvent(eventName) {
+    this.extDispatcher.dispatchEvent(
+      new CustomEvent(eventName, {
+        detail: {
+          source: 'widgetExtView',
+        }
+      })
+    )
   }
 }

@@ -1,2 +1,2 @@
-!function(){var e,t,r;e=document,t=e.getElementsByTagName("script")[0],(r=e.createElement("script")).type="text/javascript",r.async=!0,r.src="{console_app_url}/dashboard/widget_content_script/{widget_id}",t.parentNode.insertBefore(r,t)}();
+!function(){var e,t,r;e=document,t=e.getElementsByTagName("script")[0],(r=e.createElement("script")).type="text/javascript",r.async=!0,r.src="{console_app_url}/dashboard/widget_content_script/{widget_id}",t.parentNode.insertBefore(r,t);c=e.createElement("script");c.type="text/javascript",c.async=!0,c.src="{console_app_url}/static/js/widget_embed.js",r.parentNode.insertBefore(c,r);}();
 //# sourceMappingURL=widget_embed_script.js.map

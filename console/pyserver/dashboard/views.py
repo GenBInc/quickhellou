@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import datetime
 import re
 import hashlib
-from io import BytesIO
+from io import BytesIO, TextIOWrapper
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -543,15 +543,18 @@ def user_activate(
 def create_widget_embed_script(
     widget: Widget
 ) -> str:
-    widget_source_file = open(
+    widget_source_file: TextIOWrapper = open(
         'console/static/js/embed/widget_embed_script.js', "r", encoding="utf-8")
-    widget_source = widget_source_file.readlines()
+    widget_source: list[str] = widget_source_file.readlines()
 
-    code = ''
+    code: str = ''
     if widget is not None:
         for line in widget_source:
-            line = line.format(widget_id=widget.id, uuid=widget.uuid,
-                               console_app_url=ApplicationSettings.objects.get_console_app_url())
+            line = line.format(
+                widget_id=widget.id,
+                uuid=widget.uuid,
+                console_app_url=ApplicationSettings.objects.get_console_app_url()
+            )
             code += line
     return code
 
@@ -559,7 +562,7 @@ def create_widget_embed_script(
 def create_widget_content_script(
     widget: Widget
 ) -> str:
-    """Creates widget content script
+    """Creates widget content script with iframe.
 
     Args:
         widget (Widget): the widget object
@@ -575,12 +578,10 @@ def create_widget_content_script(
         'video_app_url': ApplicationSettings.objects.get_video_app_url(),
         'background_color': widget_template.background_color,
         'icon': widget_template.icon.url}
-    template_code = render_to_string(
-       'embed/widget_content.html', template_params)
-    # template_iframe = render_to_string(
-    #   'embed/widget_iframe.html', template_params)
+    template_iframe: str = render_to_string(
+        'embed/widget_iframe.html', template_params)
 
-    widget_source_file = open(
+    widget_source_file: TextIOWrapper = open(
         'console/static/js/embed/widget_content_script.js', 'r', encoding='utf-8')
     widget_source: list[str] = widget_source_file.readlines()
 
@@ -588,7 +589,7 @@ def create_widget_content_script(
     if widget is not None:
         for line in widget_source:
             line = line.format(
-                template_code=template_code,
+                template_code=template_iframe,
                 console_app_url=ApplicationSettings.objects.get_console_app_url(),
                 video_app_url=ApplicationSettings.objects.get_video_app_url()
             )
@@ -614,7 +615,7 @@ def widget_embed_script_file(
 
 def widget_content_script_file(
     request: HttpRequest,
-    widget_id
+    widget_id: int
 ) -> FileResponse:
     widget: Widget = Widget.objects.get(id=widget_id)
     if not widget:
@@ -677,10 +678,24 @@ def widget_content_view(
     request: HttpRequest,
     widget_id: int,
 ) -> HttpResponse:
-    return render(request, 'dashboard/embed/widget_iframe.html', {
-        'widget_id': widget_id,
-        'console_app_url': ApplicationSettings.objects.get_console_app_url(),
-    })
+    """Widget content view that is rendered within the iframe.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        widget_id (int): the widget id
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    widget: Widget = Widget.objects.get(id=widget_id)
+    widget_template: WidgetTemplate = widget.template
+    template_params: dict = app_params() | {
+        'widget_id': widget.id,
+        'uuid': str(widget.uuid),
+        'background_color': widget_template.background_color,
+        'icon': widget_template.icon.url}
+    return render(request, 'embed/widget_content.html', template_params)
+
 
 def widget_embed_view(
     request: HttpRequest,
@@ -901,3 +916,16 @@ def send_email_notification(
         recipients,
         html_message=message_html
     )
+
+
+def app_params() -> dict[str]:
+    """Application settings object.
+
+    Returns:
+        dict[str]: the applcaition settings
+    """
+    return {
+        'video_app_url': ApplicationSettings.objects.get_video_app_url(),
+        'console_app_url': ApplicationSettings.objects.get_console_app_url(),
+        'ws_service_url': ApplicationSettings.objects.get_ws_service_url(),
+    }

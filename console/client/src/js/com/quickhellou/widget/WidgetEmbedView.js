@@ -2,57 +2,35 @@ import { UIView } from '../../genb/base/controller/UIView'
 import { HTMLUtils } from '../../genb/base/utils/HTMLUtils'
 
 /**
- * Widget bottom bar view.
+ * Widget embed view. The iframe that is included on a client's page.
  *
  * @export
- * @class WidgetBottomBarView
+ * @class WidgetEmbedView
  * @extends {UIView}
  */
-export class WidgetBottomBarView extends UIView {
+export class WidgetEmbedView extends UIView {
   /**
-   * Creates an instance of WidgetBottomBarView.
+   * Creates an instance of WidgetEmbedView.
    *
    * @param { WidgetService } service
    *
-   * @memberof WidgetBottomBarView
+   * @memberof WidgetEmbedView
    */
   constructor(service) {
     super()
     this.service = service
     this.isExpanded = false
-    this.element = document.getElementById('qh_b_frame')
-    this.extDispatcher = window.parent.document.QHDispatcher
+    this.element = document.querySelector('iframe#qh_iframe')
   }
 
   /**
    * Initializes the view.
    *
-   * @memberof WidgetBottomBarView
+   * @memberof WidgetEmbedView
    */
-  async init() {
-    const muteButton = this.uiGet('.widget-bottom__button--mute')
-    muteButton.addEventListener('click', () => {
-      this.collapseView()
-      this.disable()
-    })
-    const agreeButton = this.uiGet('.widget-bottom__button--yes')
-    agreeButton.addEventListener('click', () => {
-      this.collapseView()
-      this.emit('expandExtView')
-      this.extDispatcher.dispatchEvent(
-        new CustomEvent('expandExtView', {
-          detail: {
-            isExpanded: false,
-            source: 'bottomBarView',
-          }
-        })
-      )
-    })
-    const disagreeButton = this.uiGet('.widget-bottom__button--no')
-    disagreeButton.addEventListener('click', () => {
-      this.collapseView()
-      this.disable()
-    })
+  async init(extDispatcher) {
+    
+    this.extDispatcher = extDispatcher
 
     this.service.addListener('callRejected', () => {
       this.onCallRejected()
@@ -65,12 +43,20 @@ export class WidgetBottomBarView extends UIView {
     this.service.addListener('error', (error) => {
       this.onError(error)
     })
+
+    this.extDispatcher.addEventListener('expand', () => {
+      this.element.classList.add('js-expanded')
+    }, false)
+
+    this.extDispatcher.addEventListener('collapse', () => {
+      this.element.classList.remove('js-expanded')
+    }, false)
   }
 
   /**
    * Handles call rejected event.
    *
-   * @memberof WidgetBottomBarView
+   * @memberof WidgetEmbedView
    */
   onCallRejected() {
     this.expandView()
@@ -81,7 +67,7 @@ export class WidgetBottomBarView extends UIView {
    *
    * @param {boolean} anyOperatorActive is any operator active
    *
-   * @memberof WidgetBottomBarView
+   * @memberof WidgetEmbedView
    */
   onListUsers(anyOperatorActive) {
     if (anyOperatorActive) {
@@ -98,10 +84,10 @@ export class WidgetBottomBarView extends UIView {
    * @param {boolean} anyOperatorActive
    */
   handleDesciptionsOnOperatorListChange(anyOperatorActive) {
-    const noOperatorsDescription = this.uiGet('.qh_widget-bottom__msg--no-operators')
-    noOperatorsDescription.classList.toggle('js-active', !anyOperatorActive)
-    const linesDescription = this.uiGet('.qh_widget-bottom__msg--lines')
-    linesDescription.classList.toggle('js-active', anyOperatorActive)
+    // const noOperatorsDescription = this.uiGet('.qh_widget-bottom__msg--no-operators')
+    // noOperatorsDescription.classList.toggle('js-active', !anyOperatorActive)
+    // const linesDescription = this.uiGet('.qh_widget-bottom__msg--lines')
+    // linesDescription.classList.toggle('js-active', anyOperatorActive)
     // const leaveMessageDescription = this.uiGet('.qh_widget-bottom__msg--leave-message')
   }
 
@@ -121,7 +107,7 @@ export class WidgetBottomBarView extends UIView {
   /**
    * Toggles the view.
    *
-   * @memberof WidgetBottomBarView
+   * @memberof WidgetEmbedView
    */
   toggleView() {
     if (this.isExpanded) {
@@ -134,7 +120,7 @@ export class WidgetBottomBarView extends UIView {
   /**
    * Expands the view.
    *
-   * @memberof WidgetBottomBarView
+   * @memberof WidgetEmbedView
    */
   expandView() {
     if (this.isEnabled()) {
@@ -146,7 +132,7 @@ export class WidgetBottomBarView extends UIView {
   /**
    * Collapses the view.
    *
-   * @memberof WidgetBottomBarView
+   * @memberof WidgetEmbedView
    */
   collapseView() {
     this.isExpanded = false
@@ -156,7 +142,7 @@ export class WidgetBottomBarView extends UIView {
       new CustomEvent('toggleBadgeTopState', {
         detail: {
           isExpanded: false,
-          source: 'bottomBarView',
+          source: 'widgetExtView',
         }
       })
     )

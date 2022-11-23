@@ -14,28 +14,29 @@ widgetService
     // views
     const badgeView = new BadgeView(widgetService)
     const extView = new WidgetExtensionView(widgetService)
-    const bottomBarView = new WidgetBottomBarView(widgetService)
+    const extDispatcher = window.document.QHDispatcher
+    //const bottomBarView = new WidgetBottomBarView(widgetService)
     // event handlers
-    extView.addListener('collapse', () => {
-      bottomBarView.collapseView()
+    extDispatcher.addListener('collapse', () => {
+      // bottomBarView.collapseView()
     })
-    badgeView.addListener('collapse', () => {
+    extDispatcher.addListener('collapse', () => {
       extView.toggleView()
-      bottomBarView.collapseView()
+      //bottomBarView.collapseView()
     })
-    badgeView.addListener('setThumbnail', (path) => {
+    extDispatcher.addListener('setThumbnail', (path) => {
       extView.setThumbnails(path)
     })
-    bottomBarView.addListener('toggleBadgeTopState', (force) => {
+    /*bottomBarView.addListener('toggleBadgeTopState', (force) => {
       badgeView.toggleTopState(force)
     })
     bottomBarView.addListener('expandExtView', () => {
       extView.expandView()
-    })
+    })*/
     // init widget modules
     badgeView.init()
     extView.init()
-    bottomBarView.init()
+    // bottomBarView.init()
 
     // init
     document.querySelector('.qh-root').classList.add('active')
