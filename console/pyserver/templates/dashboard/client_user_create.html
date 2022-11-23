@@ -63,20 +63,7 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
         </ul>
         {% endif %}
         <div class="fcol form__content">
-          <div class="errornote">
-            {{ user_form.email.errors }}
-          </div>
-          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
-            <input type="text" id="login-input" name="email" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
-              {% if user_form.email.value is not None %} value="{{ user_form.email.value }}" {% endif %}>
-            <div class="mdc-notched-outline">
-              <div class="mdc-notched-outline__leading"></div>
-              <div class="mdc-notched-outline__notch">
-                <label for="login-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">E-mail</label>
-              </div>
-              <div class="mdc-notched-outline__trailing"></div>
-            </div>
-          </div>
+
           <div class="errornote">
             {{ profile_form.errors.full_name }}
           </div>
@@ -90,6 +77,21 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
               <div class="mdc-notched-outline__leading"></div>
               <div class="mdc-notched-outline__notch">
                 <label for="full-name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Full name</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+
+          <div class="errornote">
+            {{ user_form.email.errors }}
+          </div>
+          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+            <input type="text" id="login-input" name="email" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+              {% if user_form.email.value is not None %} value="{{ user_form.email.value }}" {% endif %}>
+            <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                <label for="login-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">E-mail</label>
               </div>
               <div class="mdc-notched-outline__trailing"></div>
             </div>
@@ -115,7 +117,7 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
             {{ profile_form.thumbnail.errors }}
           </div>
           <p class="form__thumbnail-label">
-            <b>Thumbnail file:</b>
+            <span class="form__subheader">Thumbnail file:</span><br/>
             {% if profile_form.thumbnail.value is not None %} 
             <a href="/media/{{ profile_form.thumbnail.value }}" target="_blank">
               {{profile_form.thumbnail.value}}
@@ -160,7 +162,7 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
                           </div>
                         </div>
                   </span>
-                  <label class="mdc-list-item__text" for="list-checkbox-item-{{widget.id}}">{{widget.name}}</label>
+                  <label class="mdc-list-item__text" for="list-checkbox-item-{{widget.id}}"><strong>{{widget.name}}</strong> ({{widget.url}})</label>
                 </li>
               {% empty %}
                 <li>Sorry, no users in this list.</li>

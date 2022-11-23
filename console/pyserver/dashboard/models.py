@@ -97,7 +97,7 @@ class Widget(models.Model):
     )
     id = models.AutoField(primary_key=True)
     name = models.CharField(
-        max_length=256, default="Your Domain", blank=False)
+        max_length=256, default="", blank=False)
     url = models.CharField(max_length=512, validators=[
                            full_domain_validator], blank=False)
     lang = models.CharField(max_length=5, default="en", blank=False)
