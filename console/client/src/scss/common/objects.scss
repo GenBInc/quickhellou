@@ -200,7 +200,11 @@ $mdc-typography-styles-button: (
 }
 
 .form__content-signup {
-  flex-direction: row;   
+  flex-direction: column;   
+
+  @media (min-width: $s-lg) {
+    flex-direction: row;   
+  }  
 }
 
 .block,
@@ -287,3 +291,21 @@ $mdc-typography-styles-button: (
 .form__phone {
   z-index:2;
 }
+
+.intl-tel-input.separate-dial-code .selected-dial-code {
+  background-color: white;
+}
+
+.flag-container {
+  height: 40px;
+  margin-top: 7px;
+}
+
+.form--signup__label_phone_no {
+  padding-left: 64px;
+}
+
+.form--signup__label_phone_no.mdc-floating-label--float-above {
+  padding-left: 0px;
+}
+
