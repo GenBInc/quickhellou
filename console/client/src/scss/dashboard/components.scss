@@ -937,3 +937,104 @@ aside.mdc-drawer {
 .site-form.form--profile {
   margin-top:60px;
 }
+
+.dashboard-block {
+
+  border: 1px solid #efefef;
+  border-radius: 20px;
+  padding: 40px;
+  margin: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  min-width: 210px;
+
+  transition: all .5s ease;
+
+  @media (min-width: $s-md) {
+    padding: 30px 10px;
+    margin: 15px;
+  
+  }  
+
+  @media (min-width: $s-mobile) {
+    padding: 40px;
+    margin: 30px;
+  
+  }  
+  
+  
+}
+
+.dashboard-block:hover {
+  background-color: #e5332a;
+  text-decoration: none;
+}
+
+.dashboard-block__photo {
+  width: 150px;
+  margin: 0 auto;
+}
+
+.dashboard-block__text {
+  color: #4285f4;
+  font-size: 20px;
+  font-weight: 700;
+  margin-top:10px;
+  margin-bottom:10px;
+  text-align: center;
+}
+
+.dashboard-block__desc {
+  color: #001487;
+  font-size: 14px;
+  text-align: center;
+  max-width: 170px;
+}
+
+.dashboard-block__row {
+  flex-direction: column;
+  flex-wrap: wrap;
+
+  @media (min-width: $s-md) {
+    flex-direction: row;
+  
+  }  
+
+  @media (min-width: $s-mobile) {
+    flex-direction: column;
+  
+  }  
+
+  @media (min-width: $s-lg) {
+    flex-direction: row;
+  }  
+
+}
+
+.dashboard-block:hover .dashboard-block__desc,
+.dashboard-block:hover .dashboard-block__text {
+  color: white;
+}
+
+.dashboard-block-welcome,
+.dashboard-block-welcome .dashboard-block__desc {
+  color: white;
+  cursor: unset;
+}
+
+.dashboard-block-welcome:hover .dashboard-block__text {
+  color: #4285f4;
+}
+
+
+.dashboard-block-welcome:hover,
+.dashboard-block-welcome {
+  background-color: #001487;
+}
+
+.dashboard-home .mdc-top-app-bar--fixed-adjust {
+  padding: 0px;
+}
+
+
+

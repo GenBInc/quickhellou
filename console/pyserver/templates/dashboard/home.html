@@ -4,6 +4,8 @@
 {% block title %}Dashboard{% endblock %}
 {% block page_title %}Home{% endblock %}
 
+{% block bodyclass %}dashboard-home{% endblock %}
+
 {% block nav %}
 
 {% include "./nav_menu.html" with menu_selected='home' %}   
@@ -11,10 +13,46 @@
 {% endblock %}
 
 {% block content %}
-<div class="fc">
-  <div class="fcol welcome">
-    <img src="{% static '/images/hellou-quick.svg' %}" alt="quickhellou logo">
-    <p class="welcome__text">Welcome to the QuickHellou console.</p>
+
+<div class="df fc dashboard-block__row">
+
+  <div class="df fc fcol dashboard-block dashboard-block-welcome">
+    <img class="dashboard-block__photo" src="{% static '/images/dashboard-welcome.png' %}">
+    <p class="fc dashboard-block__text">Good to see you!</p>
+    <p class="fc dashboard-block__desc">Welcome to the QuickHellou dashboard</p>
   </div>
+
+
+  <a class="df fc fcol dashboard-block" href="/dashboard/communications/">
+    <img class="dashboard-block__photo" src="{% static '/images/dashboard-appointments.png' %}">
+    <p class="fc dashboard-block__text">Appointments</p>
+    <p class="fc dashboard-block__desc">Control your pending video meetings</p>
+  </a>
+
+  <a class="df fc fcol dashboard-block" href="/dashboard/calendar/">
+    <img class="dashboard-block__photo" src="{% static '/images/dashboard-calendar.png' %}">
+    <p class="fc dashboard-block__text">Calendar</p>
+    <p class="fc dashboard-block__desc">Setup your availability time slots</p>
+  </a>
+
+  <a class="df fc fcol dashboard-block" href="/dashboard/widgets/">
+    <img class="dashboard-block__photo" src="{% static '/images/dashboard-widgets.png' %}">
+    <p class="fc dashboard-block__text">Widgets</p>
+    <p class="fc dashboard-block__desc">Create your video chats scheduling widgets</p>
+  </a>
+
+  <a class="df fc fcol dashboard-block" href="/dashboard/templates/">
+    <img class="dashboard-block__photo" src="{% static '/images/dashboard-templates.png' %}">
+    <p class="fc dashboard-block__text">Templates</p>
+    <p class="fc dashboard-block__desc">Control outlook of your widgets</p>
+  </a>
+
+  <a class="df fc fcol dashboard-block" href="/dashboard/team/">
+    <img class="dashboard-block__photo" src="{% static '/images/dashboard-team.png' %}">
+    <p class="fc dashboard-block__text">Team</p>
+    <p class="fc dashboard-block__desc">Manage operators regarding your account</p>
+  </a>
+
 </div>
+
 {% endblock %}
