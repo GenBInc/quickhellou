@@ -9,7 +9,13 @@
 {% endblock %}
 
 {% block content %}
+<div class="df flc frow top-header__section">
+  <img class="top-header-block__photo" src="{% static '/images/dashboard-appointments.png' %}">
+  <p class="fc top-header-block__text">Appointments</p>  
+</div>
+
 <div class="flc widgets__top-header">
+
   <p>Your communications: {{ communications|length }}</p>
   <p>Active guests: <span class="active-guests">0</span></p>
   <!--

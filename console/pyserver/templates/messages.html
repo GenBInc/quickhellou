@@ -1,8 +1,13 @@
+{% load static %}
+
 {% if messages %}
 <ul class="messages">
   {% for message in messages %}
-  <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
-    {{ message }}
+  <li {% if message.tags %} class="df flc message {{ message.tags }}" {% endif %}>
+    <img class="parrot-message" src="{% static '/images/parrot-bw.png' %}">
+    <div class="message-bubble">
+      {{ message }}
+    </div>    
   </li>
   {% endfor %}
 </ul>

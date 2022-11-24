@@ -160,9 +160,63 @@ $mdc-typography-styles-button: (
   padding:0;
 }
 
+@keyframes fade-in-out {
+  5%,
+  90% {
+    opacity: 0;
+  }
+  15%,
+  80% {
+    opacity: 1;
+  }
+  99% {
+    height: initial;
+  }
+  100% {
+    height: 0;
+  }
+}
+
+ul.messages {
+  opacity: 0;
+}
+
+.js-fade {
+  animation: fade-in-out 6s linear forwards;
+}
+
 .messages {
   margin:0;
   margin-bottom:20px;
+  transform: all .5 ease;
+}
+
+.parrot-message {
+  width: 50px;
+}
+
+.message-bubble {
+  background-color: #001487;
+  border-radius: 8px;
+  color: #fff;
+  margin-left: 7px;
+  padding: 10px;
+  position: relative;
+  font-size: 14px;
+  margin-top: -18px;
+}
+
+.message-bubble::before {
+  background-color: #001487;
+  border-radius: 0 0 0 3px;
+  content: "";
+  height: 12px;
+  left: -3px;
+  margin: 0 auto;
+  position: absolute;
+  top: calc(50% - 6px);
+  transform: rotate(45deg);
+  width: 12px;
 }
 
 .errornote {
@@ -181,12 +235,14 @@ $mdc-typography-styles-button: (
   list-style: none;
 }
 
-.messages li.error {
-  color:#c90000;
+.messages li.error .message-bubble::before,
+.messages li.error .message-bubble {
+  background-color:#c90000;
 }
 
-.messages li.success {
-  color:#00a100;
+.messages li.success .message-bubble::before,
+.messages li.success .message-bubble {
+  background-color:#00a100;
 }
 
 .wrapper--thin {

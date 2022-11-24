@@ -1037,4 +1037,35 @@ aside.mdc-drawer {
 }
 
 
+.top-header__section {
+  background-color: #f1f6ff;
+  border-radius: 20px;
+  margin-top: 30px;
+  padding: 20px;
+  flex-direction: column;
+
+  @media (min-width: $s-md) {
+    flex-direction: row;  
+  }    
+}
+
+.top-header-block__photo {
+  width: 100px;
+  margin-bottom: 20px;
+  margin-right: 0px;
+
+  @media (min-width: $s-md) {
+    margin-bottom: 0px;
+    margin-right: 30px;
+  
+  }   
+
+}
+
+.top-header-block__text {
+  color: #e5332a;
+  font-weight: 700;
+  font-size: 22px;
+  text-transform: uppercase;
+}
 

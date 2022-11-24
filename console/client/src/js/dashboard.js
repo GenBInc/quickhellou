@@ -124,7 +124,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initMobileMenu();
 
+  initMessages();
+
 })
+
+const initMessages = () => {
+  const ulMessages = document.querySelector('ul.messages')
+  if (!!ulMessages) {
+    ulMessages.classList.add('js-fade')
+  }
+}
 
 const initMobileMenu = () => {
 
