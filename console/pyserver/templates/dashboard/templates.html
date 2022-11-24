@@ -43,8 +43,10 @@
             <li class="df widget_templates--item" tabindex="0">
               
               <a class="df-f1 flc widget_templates--data" href="{% url 'dashboard:widget_template_edit' widget_template_id=widget_template.id %}">
-                #{{ widget_template.id}}&nbsp;&nbsp;&nbsp;&nbsp;<strong>{{widget_template.name}}</strong></a>
-            
+                <span class="template-row-id">#{{ widget_template.id}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<strong>{{widget_template.name}}</strong></a>
+                            
+              
+
               <div class="flc widget-list__field widget-list__field--mod-bar widget-list__buttons">
 
                 <a class="fc df-f1 team__list-link list-link--edit" href="{% url 'dashboard:widget_template_edit' widget_template_id=widget_template.id %}" target="_self"

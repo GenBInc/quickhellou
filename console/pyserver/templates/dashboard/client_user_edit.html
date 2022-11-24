@@ -50,7 +50,14 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
 <div class="wrapper wrapper--thin wrapper--profile">
   <div class="fcol">
     <div class="form--settings__form-container form-container">
-      <p class="form__header">{{client_user.get_full_name}} Profile</p>
+
+      <div class="flc form__header">          
+        <div class="form__header_text">
+          Profile<br/>
+          <span class="form__header_subtext">{{client_user.get_full_name}}</span>  
+        </div>
+      </div>
+
       <form class="fcol site-form form--profile" action="{% url 'dashboard:client_user_edit' user_id=client_user.id %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {% if request.GET.next %}

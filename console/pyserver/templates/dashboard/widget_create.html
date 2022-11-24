@@ -14,7 +14,14 @@
   <div class="wrapper wrapper--thin wrapper--profile">
     <div class="fcol">
       <div class="form--settings__form-container form-container">
-        <p class="form__header">Provide widget information</p>
+
+        <div class="flc form__header">          
+          <div class="form__header_text">
+            Create<br/>
+            <span class="form__header_subtext">Widget</span>  
+          </div>
+        </div>
+
         <form class="fcol form site-form form--profile" action="{% url 'dashboard:widget_create' %}" method="post"
           novalidate>
           {% csrf_token %}

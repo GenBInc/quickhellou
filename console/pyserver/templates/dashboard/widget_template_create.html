@@ -14,7 +14,14 @@
   <div class="wrapper wrapper--thin wrapper--profile">
     <div class="fcol">
       <div class="form--settings__form-container form-container">
-        <p class="form__header">Provide widget template information</p>
+
+        <div class="flc form__header">
+          <div class="form__header_text">
+            Create<br/>
+            <span class="form__header_subtext">Widget Template</span>  
+          </div>
+        </div>
+
         <form class="fcol site-form form--profile" action="{% url 'dashboard:widget_template_create' %}" method="post"
           novalidate enctype="multipart/form-data">
           {% csrf_token %}

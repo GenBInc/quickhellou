@@ -14,7 +14,14 @@
   <div class="wrapper wrapper--thin wrapper--profile">
     <div class="fcol">
       <div class="form--settings__form-container form-container">
-        <p class="form__header">Widget #{{ widget.id}}</p>
+
+        <div class="flc form__header">          
+          <div class="form__header_text">
+            Edit<br/>
+            <span class="form__header_subtext">Widget #{{ widget.id}}</span>  
+          </div>
+        </div>
+
         <form class="fcol form site-form form--profile" action="{% url 'dashboard:widget_edit' widget_id=widget.id %}"
           method="post" novalidate>
           {% csrf_token %}
