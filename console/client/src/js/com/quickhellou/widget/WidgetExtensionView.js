@@ -311,7 +311,6 @@ export class WidgetExtensionView extends UIView {
   expandView() {
     this.isExpanded = true
     this.element.classList.add('js-expanded')
-    this.dispatchExtEvent('expand')
   }
 
   /**

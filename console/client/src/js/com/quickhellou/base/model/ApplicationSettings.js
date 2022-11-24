@@ -13,10 +13,10 @@ export class ApplicationSettings {
    */
   constructor(objString) {
     this.objs = JSON.parse(objString)
-    this.videoAppUrl = this.getValue('video_app_url')
-    this.consoleAppUrl = this.getValue('console_app_url')
-    this.webSocketServiceUrl = this.getValue('ws_service_url')
-    this.adminEmailAddress = this.getValue('admin_email_address')
+    this.videoAppUrl = this.objs.video_app_url
+    this.consoleAppUrl = this.objs.console_app_url
+    this.webSocketServiceUrl = this.objs.ws_service_url
+    this.adminEmailAddress = this.objs.admin_email_address
   }
 
   /**

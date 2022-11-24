@@ -126,6 +126,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'console.wsgi.application'
 
+VIDEOCHAT_APP_URL = 'https://{}'.format(os.environ.get('VIDEOCHAT_APP_HOST'))
+CONSOLE_APP_URL = 'https://{}'.format(os.environ.get('HELPDESK_APP_HOST'))
+WEB_SERVICE_URL = '{}://{}/ws'.format(os.environ.get(
+    'WEB_SERVICE_PROTOCOL'), os.environ.get('WEB_SERVICE_URL'))
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases

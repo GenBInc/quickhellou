@@ -5,6 +5,7 @@ from django.http import (
     HttpResponse,
     HttpResponseRedirect
 )
+from django.conf import settings
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -19,8 +20,8 @@ from accounts.forms import ForgotPasswordForm, ProfileForm, ProfileMetaForm, \
     ResetPasswordForm, UserForm, WidgetForm, ProfileThumbnailForm
 from dashboard.models import (
     ClientBoard,
-    ApplicationSettings
 )
+
 
 def home_view(
     request: HttpRequest
@@ -55,11 +56,10 @@ def signup_view(
                 widget_form.save(user, client_board)
             # email notification
             subject = 'QuickHellou - New User'
-            recipients = [
-                ApplicationSettings.objects.get_admin_email_address()]
+            recipients = [settings.ADMIN_EMAIL]
             url: str = widget_form.data['url']
             email_params = {'username': user.first_name, 'email': user.email, 'full_name': user.get_full_name,
-                            'phone': user.profile.phone, 'url': url, 'console_app_url': ApplicationSettings.objects.get_console_app_url()}
+                            'phone': user.profile.phone, 'url': url, 'console_app_url': settings.CONSOLE_APP_URL}
             send_email_notification(subject, recipients, email_params,
                                     'accounts/email/signup-admin.txt', 'accounts/email/signup-admin.html')
             # send email to client user
@@ -129,7 +129,7 @@ def forgot_password_view(
                 subject = 'QuickHellou - Reset Your Password'
                 recipients = [receiver]
                 email_params = {
-                    'username': user.first_name, 'user_id': user.id, 'console_app_url': ApplicationSettings.objects.get_console_app_url()}
+                    'username': user.first_name, 'user_id': user.id, 'console_app_url': settings.CONSOLE_APP_URL}
                 send_email_notification(subject, recipients, email_params,
                                         'accounts/email/forgot-password.txt', 'accounts/email/forgot-password.html')
                 messages.success(

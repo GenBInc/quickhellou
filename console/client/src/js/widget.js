@@ -1,7 +1,7 @@
 import { WidgetService } from './com/quickhellou/widget/WidgetService'
 import { BadgeView } from './com/quickhellou/widget/BadgeView'
 import { WidgetExtensionView } from './com/quickhellou/widget/WidgetExtensionView'
-import { WidgetBottomBarView } from './com/quickhellou/widget/WidgetBottomBarView'
+// import { WidgetBottomBarView } from './com/quickhellou/widget/WidgetBottomBarView'
 
 // data
 const consoleAppUrl = document.querySelector('.qh-root').dataset.url
@@ -14,19 +14,19 @@ widgetService
     // views
     const badgeView = new BadgeView(widgetService)
     const extView = new WidgetExtensionView(widgetService)
-    const extDispatcher = window.document.QHDispatcher
+    const extDispatcher = window.parent.document.QHDispatcher
     //const bottomBarView = new WidgetBottomBarView(widgetService)
     // event handlers
-    extDispatcher.addListener('collapse', () => {
+    extDispatcher.addEventListener('collapse', () => {
       // bottomBarView.collapseView()
-    })
-    extDispatcher.addListener('collapse', () => {
-      extView.toggleView()
+    }, false)
+    extDispatcher.addEventListener('expand', () => {
+      extView.expandView()
       //bottomBarView.collapseView()
-    })
-    extDispatcher.addListener('setThumbnail', (path) => {
+    }, false)
+    extDispatcher.addEventListener('setThumbnail', (path) => {
       extView.setThumbnails(path)
-    })
+    }, false)
     /*bottomBarView.addListener('toggleBadgeTopState', (force) => {
       badgeView.toggleTopState(force)
     })

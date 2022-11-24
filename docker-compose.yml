@@ -9,9 +9,6 @@ services:
       - "${COLLIDER_SERVER_PORT}:${COLLIDER_SERVER_PORT}"
     expose:
       - "${COLLIDER_SERVER_PORT}"
-
-    restart: on-failure
-
     volumes:
       - "./goserver:/goserver"
     networks:

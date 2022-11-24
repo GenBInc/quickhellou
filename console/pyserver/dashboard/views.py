@@ -22,7 +22,6 @@ from django.conf import settings
 from accounts.models import Profile, User
 
 from dashboard.forms import (
-    ApplicationSettingsForm,
     AssignedWidgetsForm,
     AssigneesForm,
     CommunicationForm,
@@ -36,7 +35,6 @@ from dashboard.forms import (
     WidgetActiveUserForm
 )
 from dashboard.models import (
-    ApplicationSettings,
     Communication,
     CommunicationSession,
     Widget,
@@ -450,8 +448,10 @@ def client_user_create_view(
             # send activation email
             subject = 'QuickHellou - Account Activation'
             recipients = [client_user.email]
-            email_params = {'console_app_url': ApplicationSettings.objects.get_console_app_url(),
-                            'user_id': client_user.id, 'username': profile.full_name}
+            email_params = app_params() | {
+                'user_id': client_user.id,
+                'username': profile.full_name,
+            }
             send_email_notification(subject, recipients, email_params,
                                     'accounts/email/client-activation.txt', 'accounts/email/client-activation.html')
 
@@ -523,7 +523,7 @@ def create_widget_embed_script(
             line = line.format(
                 widget_id=widget.id,
                 uuid=widget.uuid,
-                console_app_url=ApplicationSettings.objects.get_console_app_url()
+                console_app_url=settings.CONSOLE_APP_URL
             )
             code += line
     return code
@@ -541,11 +541,9 @@ def create_widget_content_script(
         str: the script code
     """
     widget_template: WidgetTemplate = widget.template
-    template_params: dict = {
+    template_params: dict = app_params() | {
         'widget_id': widget.id,
         'uuid': str(widget.uuid),
-        'console_app_url': ApplicationSettings.objects.get_console_app_url(),
-        'video_app_url': ApplicationSettings.objects.get_video_app_url(),
         'background_color': widget_template.background_color,
         'icon': widget_template.icon.url}
     template_iframe: str = render_to_string(
@@ -560,8 +558,8 @@ def create_widget_content_script(
         for line in widget_source:
             line = line.format(
                 template_code=template_iframe,
-                console_app_url=ApplicationSettings.objects.get_console_app_url(),
-                video_app_url=ApplicationSettings.objects.get_video_app_url()
+                console_app_url=settings.CONSOLE_APP_URL,
+                video_app_url=settings.VIDEOCHAT_APP_URL,
             )
             code += line
     return code
@@ -762,10 +760,9 @@ def widget_extension_embed_view(
 
             # send message
             subject = 'QuickHellou - Message'
-            recipients = [
-                ApplicationSettings.objects.get_admin_email_address()]
+            recipients = [settings.ADMIN_EMAIL]
             # if email address is empty prevent sending email
-            console_app_url = ApplicationSettings.objects.get_console_app_url()
+            console_app_url: str = settings.CONSOLE_APP_URL
             email_params = {
                 'name': clientName, 'email': clientEmail, 'phone': clientPhone, 'message': clientMessage, 'console_app_url': console_app_url}
             try:
@@ -895,7 +892,7 @@ def app_params() -> dict[str]:
         dict[str]: the applcaition settings
     """
     return {
-        'video_app_url': ApplicationSettings.objects.get_video_app_url(),
-        'console_app_url': ApplicationSettings.objects.get_console_app_url(),
-        'ws_service_url': ApplicationSettings.objects.get_ws_service_url(),
+        'video_app_url': settings.VIDEOCHAT_APP_URL,
+        'console_app_url': settings.CONSOLE_APP_URL,
+        'ws_service_url': settings.WEB_SERVICE_URL,
     }

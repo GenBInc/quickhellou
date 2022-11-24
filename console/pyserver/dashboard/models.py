@@ -288,29 +288,3 @@ class CommunicationSession(models.Model):
         db_table = 'dashboard_communication_session'
         verbose_name = "communication_session"
         verbose_name_plural = "communication_sessions"
-
-
-class ApplicationSettingsManager(models.Manager):
-
-    def get_value(self, property_name):
-        return self.get_queryset().get(property=property_name).value
-
-    def get_video_app_url(self):
-        return self.get_value('video_app_url')
-
-    def get_console_app_url(self):
-        return self.get_value('console_app_url')
-
-    def get_ws_service_url(self):
-        return self.get_value('ws_service_url')
-    
-    def get_admin_email_address(self):
-        return self.get_value('admin_email_address')
-
-
-class ApplicationSettings(models.Model):
-    id = models.AutoField(primary_key=True)
-    property = models.CharField(max_length=256, default='', blank=False)
-    value = models.CharField(max_length=256, default='', blank=False)
-
-    objects = ApplicationSettingsManager()

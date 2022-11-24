@@ -101,14 +101,6 @@ class WidgetExtensionViewForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea(), required=True)
 
 
-class ApplicationSettingsForm(forms.Form):
-    video_app_url = forms.CharField(max_length=256)
-    console_app_url = forms.CharField(max_length=256)
-    ws_service_url = forms.CharField(max_length=256)
-    admin_email_address = forms.CharField(
-        max_length=256, validators=[validate_email])
-
-
 class AssigneesForm(forms.Form):
     assignee = forms.ModelMultipleChoiceField(
         queryset=User.objects.all(),

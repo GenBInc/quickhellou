@@ -48,8 +48,6 @@
 
 /*! ./com/quickhellou/widget/BadgeView */
 
-/*! ./com/quickhellou/widget/WidgetBottomBarView */
-
 /*! ./com/quickhellou/widget/WidgetExtensionView */
 
 /*! ./com/quickhellou/widget/WidgetService */
@@ -141,10 +139,6 @@
 /*!*********************************************************!*\
   !*** ../../node_modules/regenerator-runtime/runtime.js ***!
   \*********************************************************/
-
-/*!**********************************************************!*\
-  !*** ./js/com/quickhellou/widget/WidgetBottomBarView.js ***!
-  \**********************************************************/
 
 /*!**********************************************************!*\
   !*** ./js/com/quickhellou/widget/WidgetExtensionView.js ***!

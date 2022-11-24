@@ -4,13 +4,13 @@ from rest_framework import routers
 from . import views
 from rest_framework.renderers import JSONRenderer
 from django.views.decorators.csrf import csrf_exempt
+from api.views import ApplicationSettingsView
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'widgets', views.WidgetViewSet)
 router.register(r'communications', views.CommunicationViewSet)
 router.register(r'comSessions', views.CommunicationSessionViewSet)
-router.register(r'settings', views.ApplicationSettingsViewSet)
 
 com_create_with_session = views.CommunicationViewSet.as_view({
     'post': 'create_with_session',
@@ -34,6 +34,7 @@ pending_sessions = views.CommunicationSessionViewSet.as_view({
 
 urlpatterns = [
   path('', include(router.urls)),
+  path('settings/', ApplicationSettingsView.as_view()),
   path('communications/create-with-session/', com_create_with_session, name='com-create-with-session'),
   path('comSessions/room-uuid/<slug:str>', room_uuid, name='com-sessions-room-uuid'),
   path('comSessions/status/<int:pk>/<int:status>', com_session, name='com-session'),
