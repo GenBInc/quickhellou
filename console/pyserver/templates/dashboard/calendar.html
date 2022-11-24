@@ -1,0 +1,15 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Calls{% endblock %}
+{% block page_title %}Calls{% endblock %}
+
+{% block nav %}
+    {% include "./nav_menu.html" with menu_selected='calendar' %}
+{% endblock %}
+
+{% block content %}
+  <div>
+    <p class="form__header">No calendar yet.</p>
+  </div>
+{% endblock %}

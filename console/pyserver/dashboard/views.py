@@ -67,42 +67,12 @@ def widgets_view(
 @permission_required("is_default_admin")
 @permission_required("is_default_editor")
 @login_required
-def settings_view(
+def templates_view(
     request: HttpRequest
 ) -> HttpResponse:
     widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.all()
-    video_app_url: str = ApplicationSettings.objects.get(
-        property='video_app_url')
-    console_app_url: str = ApplicationSettings.objects.get(
-        property='console_app_url')
-    ws_service_url: str = ApplicationSettings.objects.get(
-        property='ws_service_url')
-    admin_email_address: str = ApplicationSettings.objects.get(
-        property='admin_email_address')
-    if request.method == 'POST':
-        form = ApplicationSettingsForm(request.POST)
-        if form.is_valid():
-            video_app_url.value = form.cleaned_data['video_app_url']
-            video_app_url.save()
-
-            console_app_url.value = form.cleaned_data['console_app_url']
-            console_app_url.save()
-
-            admin_email_address.value = form.cleaned_data['admin_email_address']
-            admin_email_address.save()
-
-            ws_service_url.value = form.cleaned_data['ws_service_url']
-            ws_service_url.save()
-
-            messages.success(
-                request, 'Settings have been saved.')
-            return redirect('dashboard:settings')
-    return render(request, 'dashboard/settings.html', {
-        'widget_templates': widget_templates,
-        'video_app_url': video_app_url.value,
-        'console_app_url': console_app_url.value,
-        'ws_service_url': ws_service_url.value,
-        'admin_email_address': admin_email_address.value
+    return render(request, 'dashboard/templates.html', {
+        'widget_templates': widget_templates
     })
 
 
@@ -397,10 +367,10 @@ def team_view(
 
 @permission_required("is_default_admin")
 @login_required
-def billing_view(
+def calendar_view(
     request: HttpRequest
 ) -> HttpResponse:
-    return render(request, 'dashboard/billing.html', {'user': request.user})
+    return render(request, 'dashboard/calendar.html', {'user': request.user})
 
 
 @permission_required("is_default_admin")
