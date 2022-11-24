@@ -94,7 +94,6 @@ html {
   }
   
   * {
-    line-height: normal;
     box-sizing: border-box;
   }
   
@@ -679,6 +678,35 @@ html {
   fill: #ffffff;
 }
 
+.widget--schedule {
+  background: transparent;
+  border: none;
+  bottom: 1px;
+  display: none;
+  height: 470px;
+  opacity: 0;
+  position: absolute;
+  right: -4px;
+  top: auto;
+  transition: bottom .2s ease-in;
+  width: 504px;
+  z-index: 1002;
+}
+
+.widget--schedule__content {
+  position: relative;
+  box-shadow: 0 0 5px 0 #ddd;
+  background-color: $color--lawn-green;
+  padding: 20px 10px 10px;
+  border-radius: 12px;
+  height:100%;
+}
+
+.widget--schedule__datetime {
+  display: none;
+}
+
+div.js-expanded,
 #qh_e_frame.js-expanded {
   opacity:1;
   display: block;
@@ -739,6 +767,10 @@ html {
 
 .qh-widget-badge.js-top {
   @include transform(translateY(-56px));
+}
+
+.margin-box {
+  margin-bottom:20px;
 }
 
 #message-input {

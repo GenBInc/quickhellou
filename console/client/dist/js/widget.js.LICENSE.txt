@@ -48,6 +48,8 @@
 
 /*! ./com/quickhellou/widget/BadgeView */
 
+/*! ./com/quickhellou/widget/ScheduleView */
+
 /*! ./com/quickhellou/widget/WidgetExtensionView */
 
 /*! ./com/quickhellou/widget/WidgetService */
@@ -122,6 +124,10 @@
 
 /*!***************************************************!*\
   !*** ./js/com/quickhellou/base/model/UserType.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./js/com/quickhellou/widget/ScheduleView.js ***!
   \***************************************************/
 
 /*!****************************************************!*\
