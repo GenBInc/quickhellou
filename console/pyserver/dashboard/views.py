@@ -223,7 +223,7 @@ def widget_template_create_view(
             instance = form.save(request.user)
             messages.success(
                 request, 'Widget template has been created.')
-            return redirect('dashboard:settings')
+            return redirect('dashboard:templares')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
@@ -243,7 +243,7 @@ def widget_template_edit_view(
     if widget_template_id is not None:
         widget_template = WidgetTemplate.objects.get(id=widget_template_id)
     else:
-        return redirect('dashboard:settings')
+        return redirect('dashboard:templares')
     if request.method == 'POST':
         form = WidgetTemplateForm(
             request.POST, request.FILES, instance=widget_template)
@@ -251,7 +251,7 @@ def widget_template_edit_view(
             instance = form.save(request.user)
             messages.success(
                 request, 'Widget template has been saved.')
-            return redirect('dashboard:settings')
+            return redirect('dashboard:templares')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
