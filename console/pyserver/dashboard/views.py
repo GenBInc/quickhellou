@@ -68,7 +68,9 @@ def widgets_view(
 def templates_view(
     request: HttpRequest
 ) -> HttpResponse:
-    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.all()
+    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.filter(
+        active=True
+    ).order_by('id')
     return render(request, 'dashboard/templates.html', {
         'widget_templates': widget_templates
     })
