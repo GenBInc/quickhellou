@@ -20,6 +20,8 @@ urlpatterns = [
          name="widget_template_edit"),
     path('widgets/template/edit/<int:widget_template_id>/',
          views.widget_template_edit_view, name="widget_template_edit"),
+    path('widgets/template/delete/<int:widget_template_id>/',
+         views.widget_template_delete, name="widget_template_delete"),
     path('templates/', views.templates_view, name="templates"),
     path('communications/', views.communications_view, name="communications"),
     path('communications/list/', views.communication_list_view,

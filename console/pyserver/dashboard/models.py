@@ -65,8 +65,8 @@ class WidgetManager(models.Manager):
 
 class WidgetTemplate(models.Model):
     """ Widget template model. """
-    DEFAULT_COLOR_1 = '7FD100'
-    DEFAULT_COLOR_2 = '29327d'
+    DEFAULT_COLOR_1 = '#7FD100'
+    DEFAULT_COLOR_2 = '#29327d'
     DEFAULT_COLOR_CHOICES = (
         (DEFAULT_COLOR_1, 'DEFAULT_COLOR_1'),
         (DEFAULT_COLOR_2, 'DEFAULT_COLOR_2'),
@@ -76,7 +76,7 @@ class WidgetTemplate(models.Model):
     code = models.TextField(default=None, null=True, blank=True)
     active = models.BooleanField(default=True)
     background_color = models.CharField(
-        max_length=6, default=DEFAULT_COLOR_1, blank=False)
+        max_length=12, default=DEFAULT_COLOR_1, blank=False)
     icon = models.FileField(
         default='images/logo.svg', blank=True, upload_to='widget_templates/images')
     last_editor = models.ForeignKey(

@@ -221,7 +221,7 @@ def widget_template_create_view(
             instance = form.save(request.user)
             messages.success(
                 request, 'Widget template has been created.')
-            return redirect('dashboard:templares')
+            return redirect('dashboard:templates')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
@@ -241,7 +241,7 @@ def widget_template_edit_view(
     if widget_template_id is not None:
         widget_template = WidgetTemplate.objects.get(id=widget_template_id)
     else:
-        return redirect('dashboard:templares')
+        return redirect('dashboard:templates')
     if request.method == 'POST':
         form = WidgetTemplateForm(
             request.POST, request.FILES, instance=widget_template)
@@ -249,7 +249,7 @@ def widget_template_edit_view(
             instance = form.save(request.user)
             messages.success(
                 request, 'Widget template has been saved.')
-            return redirect('dashboard:templares')
+            return redirect('dashboard:templates')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
@@ -259,6 +259,19 @@ def widget_template_edit_view(
         'widget_template': widget_template,
         'default_colors': WidgetTemplate.DEFAULT_COLOR_CHOICES
     })
+
+
+@login_required
+def widget_template_delete(
+    request: HttpRequest,
+    widget_template_id: int
+) -> HttpResponseRedirect:
+    widget_template = WidgetTemplate.objects.get(id=widget_template_id)
+    widget_template.active = False
+    widget_template.save()
+    messages.success(
+        request, 'Template has been deleted.')
+    return redirect('dashboard:templates')
 
 
 @login_required

@@ -6,10 +6,13 @@
   <title>QuickHellou | {% block title %}{% endblock title %}</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta property="qh:view" content="{{ request.resolver_match.url_name }}">
+
   <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
   <link rel="stylesheet" type="text/css" href="{% static '/css/dashboard.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static '/css/ext/microtip.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static '/css/ext/form-switch.css' %}" />
+  <link rel="stylesheet" href="{% static '/css/ext/coloris.css' %}"/>
+  <script src="{% static '/js/ext/coloris.js' %}"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   {% block css %}{% endblock %}
   <script src="{% static '/js/dashboard.js' %}"></script>

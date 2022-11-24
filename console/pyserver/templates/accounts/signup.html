@@ -36,13 +36,7 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
           {% if request.GET.next %}
           <input type="hidden" name="next" value="{{request.GET.next}}">
           {% endif %}
-          {% if messages %}
-          <ul class="messages">
-              {% for message in messages %}
-              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-              {% endfor %}
-          </ul>
-          {% endif %}
+          {% include "messages.html" %}          
             <div class="flt form__content form__content-signup">
             <div class="fcol form__column form__column--left">
               <div class="errornote">

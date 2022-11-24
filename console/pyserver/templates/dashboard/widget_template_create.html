@@ -28,13 +28,7 @@
           {% if request.GET.next %}
           <input type="hidden" name="next" value="{{request.GET.next}}">
           {% endif %}
-          {% if messages %}
-          <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
+          {% include "messages.html" %}
           <div class="fcol form__content_widget_create">
             <div class="errornote">
               {{ form.name.errors }}
@@ -58,25 +52,19 @@
               <div class="f1"></div>
               
               <div class="fcol content-box__content">
-                  <div class="flc form__field--upper">
+                  <div class="flc form__field--upper background-block">
                     <div class="flc">
                     <p class="form__subheader form__subheader--column">Background Color</p>
                     </div>
-                    {% for color, value in default_colors %}
-                    <div class="mdc-form-field mdc-form-field--radio-buttons">
-                      <div class="mdc-radio">
-                        <input class="mdc-radio__native-control" type="radio" id="radio-{{color}}" name="background_color" value="{{color}}"
-                        {% if form.background_color.value == color %} checked="checked" {% endif %}>
-                        <div class="mdc-radio__background">
-                          <div class="mdc-radio__outer-circle"></div>
-                          <svg class="" width="30" height="30">
-                            <rect width="20" height="20" fill="#{{color}}" />
-                          </svg>
-                        </div>
-                      </div>
-                      <label for="radio-{{color}}"></label>
-                    </div>
-                    {% endfor %}
+
+                    <div class="color-dot-wrap"></div>
+
+                    <div class="color-dot" style="background-color: #c90000;">
+                        <label class="mdc-text-field">
+                          <input class="mdc-text-field__input df color-button widget-color-field" type="hidden" name="background_color" value="{% if color %}{{color}}{% else %}#7FD100{% endif %}" data-coloris>
+                        </label>
+                    </div>                    
+
                   </div>
 
                   <div class="errornote">
@@ -107,7 +95,7 @@
                   <div class="fc outlook">
                     <div class="widget-outlook__graphics">
                       <svg class="outlook--background" width="100" height="100">
-                        <circle class="widget-outlook__background-circle outlook--circle" cx="50" cy="50" r="50" fill="#{{form.background_color.value}}" />
+                        <circle class="widget-outlook__background-circle outlook--circle" cx="50" cy="50" r="50" fill="{{form.background_color.value}}" />
                       </svg>
 
                       <div class="widget-outlook__alert">

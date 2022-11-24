@@ -35,6 +35,9 @@ export function initUrlInput(formQuerySelector) {
 function initPhone() {}
 
 document.addEventListener('DOMContentLoaded', () => {
+
+  initColorPicker();
+
   const list = MDCList.attachTo(document.querySelector('.mdc-list'))
   list.wrapFocus = true
 
@@ -42,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (topAppBarElement) {
     MDCTopAppBar.attachTo(topAppBarElement)
   }
+  
   const inputElements = Array.from(document.querySelectorAll('.mdc-text-field'))
   inputElements.forEach((inputElement) => {
     MDCTextField.attachTo(inputElement)
@@ -73,19 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     radioFormFieldElement.input = radioElement
   })
 
-  const colorSchemeRadioElements = document.querySelectorAll(
-    "input[name='background_color']"
-  )
-  const backgroundGraphicElement = document.querySelector(
-    '.widget-outlook__background-circle'
-  )
-
-  colorSchemeRadioElements.forEach((colorSchemeRadioElement) => {
-    colorSchemeRadioElement.addEventListener('change', (event) => {
-      backgroundGraphicElement.style.fill = `#${event.target.value}`
-    })
-  })
-
+  
   const messageInput = document.querySelector('.message')
   if (messageInput) {
     const snackbarElement = document.querySelector('.mdc-snackbar')
@@ -127,6 +119,73 @@ document.addEventListener('DOMContentLoaded', () => {
   initMessages();
 
 })
+
+const initColorPicker = () => {
+
+  Coloris({
+    parent: '.color-dot-wrap',
+    alpha: true,
+    focusInput: false,
+    theme: 'polaroid',
+    /*format: 'rgb',
+    saveButton: {
+      show: true,
+      label: 'Save',
+    },
+    clearButton: {
+      show: true,
+      label: 'Cancel',
+    },*/
+    swatches: [
+      '#231f20',
+      '#264653',
+      '#2a9d8f',
+      '#e9c46a',
+      '#f4a261',
+      '#e76f51',
+      '#d62828',
+      '#023e8a',
+      '#0096c7',
+      '#00b4d8',
+      '#48cae4',
+      '#ffffff',
+    ],
+  })
+
+  
+  const colorDot = document.querySelector('.color-dot');
+  if (!!colorDot) {
+    updateColor();
+    colorDot.addEventListener('click', openColorPicker);
+  }
+
+  const colorInput = document.querySelector('.widget-color-field')
+  if (!!colorInput) {
+    colorInput.addEventListener('input', updateColor)
+  }
+
+}
+
+const updateColor = () => {
+  console.log("ssf");
+  const colorInput = document.querySelector('.widget-color-field')
+  const colorDot = document.querySelector('.color-dot')
+  const previewDot = document.querySelector('.widget-outlook__background-circle')
+
+  if (!!colorInput && !!colorDot && !!previewDot) {
+    previewDot.style.fill = colorDot.style.backgroundColor = colorInput.value;
+  }
+
+}
+
+
+
+const openColorPicker = (e) => {
+
+  const colorInput = document.querySelector('.widget-color-field')
+  colorInput.dispatchEvent(new Event('openPicker', { bubbles: true }));
+  
+}
 
 const initMessages = () => {
   const ulMessages = document.querySelector('ul.messages')

@@ -18,13 +18,7 @@
 <div class="flc widgets__top-header">
   <p>Users: {{ users|length }}</p>
 </div>
-{% if messages %}
-    <ul class="messages main-view__messages">
-    {% for message in messages %}
-      <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-    {% endfor %}
-    </ul>
-{% endif %}
+{% include "messages.html" %}
 <div class="fcol widget-list">
   <div class="flc widget-list__header">
     <div class="widget-list__field widget-list__field--id">ID</div>
@@ -122,13 +116,6 @@
 </div>
 {% endblock %}
 
-{% if messages %}
-<ul class="messages messages--widgets">
-  {% for message in messages %}
-  <li {% if message.tags %} class="message {{ message.tags }}" {% endif %}>{{ message }}</li>
-  {% endfor %}
-</ul>
-{% endif %}
 <div class="mdc-snackbar mdc-snackbar--align-start" aria-live="assertive" aria-atomic="true" aria-hidden="false">
   <div class="mdc-snackbar__text"></div>
   <div class="mdc-snackbar__action-wrapper">

@@ -30,14 +30,7 @@
           {% if request.GET.next %}
             <input type="hidden" name="next" value="{{request.GET.next}}">
           {% endif %}
-          {% if messages %}
-          <ul class="messages">
-              {% for message in messages %}
-              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-              {% endfor %}
-          </ul>
-          {% endif %}
-
+          {% include "messages.html" %}
           <div class="mdc-text-field mdc-text-field--outlined login__email">
             <input type="text" id="login-input" name="username" class="mdc-text-field__input form__text form--login__text form__input form--login__input "
               required>

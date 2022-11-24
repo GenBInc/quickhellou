@@ -43,13 +43,7 @@
           {% if request.GET.next %}
           <input type="hidden" name="next" value="{{request.GET.next}}">
           {% endif %}
-          {% if messages %}
-          <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
+          {% include "messages.html" %}          
           <div class="fcol form__content">
             
             <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper">

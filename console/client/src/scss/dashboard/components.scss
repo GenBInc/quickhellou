@@ -1086,3 +1086,29 @@ aside.mdc-drawer {
   text-transform: uppercase;
   line-height: 32px;
 }
+
+.clr-field {
+ // width: 30px;
+  //height: 30px;
+}
+
+.color-button {
+  
+}
+
+.color-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;  
+  position: relative;
+  box-shadow: 0 0 0 4px rgba(0,0,0,.05);
+  cursor: pointer;
+} 
+
+.color-dot:hover {
+  opacity: 0.7;
+}
+
+.color-dot-wrap {
+  position: relative;
+}

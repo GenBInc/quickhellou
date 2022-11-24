@@ -24,6 +24,7 @@
 
 <div class="fc">
 <div class="wrapper wrapper--thin wrapper--profile">
+  {% include "messages.html" %}
   <div class="fcol">
     <div class="form--settings__form-container form-container">
       <div class="form__field--upper widget">
@@ -56,7 +57,7 @@
                 >
                   <img class="list-link--icon" src="{% static '/images/edit.svg' %}" alt="edit">
                 </a>
-                <a class="fc df-f1 team__list-link list-link--delete" href="{% url 'dashboard:widget_template_edit' widget_template_id=widget_template.id %}"
+                <a class="fc df-f1 team__list-link list-link--delete" href="{% url 'dashboard:widget_template_delete' widget_template_id=widget_template.id %}"
                   aria-label="Delete"
                   data-microtip-position="bottom"
                   data-role="tooltip"              

@@ -31,13 +31,7 @@
           {% if request.GET.next %}
           <input type="hidden" name="next" value="{{request.GET.next}}">
           {% endif %}
-          {% if messages %}
-          <ul class="messages">
-            {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
+          {% include "messages.html" %}
           <div class="form__content">
             <div class="errornote">
               {{ form.errors.passwords_not_match }}
