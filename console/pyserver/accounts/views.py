@@ -36,6 +36,7 @@ def signup_view(
     if request.method == 'POST':
         user_form = UserForm(request.POST)
         profile_form = ProfileForm(request.POST)
+        widget_form = WidgetForm(request.POST)
         profile_meta_form = ProfileMetaForm(request.POST)
         if user_form.is_valid() and profile_meta_form.is_valid() and profile_form.is_valid():
             # Create client board
