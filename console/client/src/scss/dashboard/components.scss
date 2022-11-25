@@ -1124,7 +1124,7 @@ aside.mdc-drawer {
   margin-left: 15px;
   cursor: pointer;
   width: 130px;
-  margin-bottom: 15px;  
+  margin-bottom: 15px;
 
   @media (min-width: $s-md) {
     margin-bottom: 0px;    
@@ -1147,6 +1147,11 @@ aside.mdc-drawer {
   margin:25px;
   border-radius: 15px;
   width: 100%;
+  min-height: 105px;
+}
+
+.calendar-day_row:hover {
+  background-color:#fefefe;
 }
 
 .calendar-day_row div:last-child {
@@ -1216,6 +1221,7 @@ select.time_select {
 
 .time-row-desc {
   display: flex;
+  min-height: 34px;
 }
 
 .day_checkbox:checked ~ .time-row-desc {
@@ -1229,4 +1235,14 @@ select.time_select {
 .calendar_break_row {
   margin-top: 15px;
   width: 100%;
+}
+
+.time-break_button {
+  text-decoration: none;
+  color:#4285f4
+}
+
+.time-break_button:hover {
+  text-decoration: none;
+  color:#001487;
 }
