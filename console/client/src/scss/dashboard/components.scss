@@ -1118,19 +1118,39 @@ aside.mdc-drawer {
 }
 
 .calendar-day-label {
+  position: relative;
   text-transform: uppercase;  
   color:#dddddd;
   font-weight: 700;
   margin-left: 15px;
   cursor: pointer;
-  width: 130px;
+  width: 160px;
   margin-bottom: 15px;
+  padding-left: 30px;
 
   @media (min-width: $s-md) {
     margin-bottom: 0px;    
   }    
-
 }
+
+.calendar-day-label::before {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    background-image: url('/static/images/checkbox.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    top:2px;
+    left: 0;    
+}
+
+.day_checkbox:checked ~ .calendar-day-label::before {
+  color: #001487;
+  background-image: url('/static/images/checkbox-checked.svg');
+}
+
 
 .day_checkbox:checked ~ .calendar-day-label:hover,
 .calendar-day-label:hover {
@@ -1241,8 +1261,7 @@ select.time_select {
 
 .time-row-desc {
   display: flex;
-  min-height: 46px;
-  margin-bottom: 10px;
+  min-height: 56px;
 }
 
 .day_checkbox:checked ~ .time-row-desc {
