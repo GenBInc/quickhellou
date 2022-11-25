@@ -72,13 +72,18 @@
                   </div>
                     
                   <div class="flc form__field--upper">
-                    <div class="fcol">
+                    <div class="fcol df-f1">
                       <div class="flc content-box__block">
                       <p class="form__subheader form__subheader--column">Icon file</p>
                       <p class="">
                         <a href="/media/images/logo.svg" target="_blank">/media/images/logo.svg</a>
                       </p>
                       </div>
+
+                      <div class="frc content-box__controls">
+                        <a class="link-button console-button" href="#" onclick="javasctipt:document.getElementById('icon-input').click();" target="_self"><img class="console-button--icon" src="{% static '/images/photo-add-white.svg' %}">Browse Icon</a>
+                      </div>
+
                       <div class="mdc-text-field mdc-text-field--outlined form__field signup__thumbnail">
                         <input type="file" id="icon-input" name="icon" value="images/logo.svg" 
                         class="mdc-text-field__input form__text form--signup__text form__input form--signup__input ">

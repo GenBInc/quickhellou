@@ -75,7 +75,7 @@
 
           <div class="form__field--upper widget">
             <p class="form__thumbnail-label">
-              <span class="form__header">Thumbnail file</span><br/>
+              <span class="form__header">Thumbnail</span><br/>
               {% if profile_form.thumbnail.value is not None %} 
               <a href="/media/{{ profile_form.thumbnail.value }}" target="_blank">
                 {{profile_form.thumbnail.value}}
@@ -84,6 +84,10 @@
                 Select a file.
               {% endif %}
             </p>
+            <div class="frc content-box__controls">
+              <a class="link-button console-button" href="#" onclick="javasctipt:document.getElementById('thumbnail-input').click();" target="_self"><img class="console-button--icon" src="{% static '/images/photo-add-white.svg' %}">Browse Thumbnail</a>
+            </div>
+
             <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__thumbnail">
               <input type="file" id="thumbnail-input" name="thumbnail" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input ">
               <div class="mdc-notched-outline">
