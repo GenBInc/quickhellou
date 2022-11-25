@@ -113,9 +113,7 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
             <input class="m-form__button--login form__submit signup__submit" onclick="createAccount()" value="Create a FREE account">
           </div>
           <div class="fc m-form__forgot-password">
-            <p class="m-form__link--forgot-password signup__submit-note">By submitting the form, you accept the <a href="{% url 'accounts:terms-of-use' %}">Terms
-                Of Use</a> and <a href="{% url 'accounts:privacy-policy' %}">Privacy
-                Policy</a>.</p>
+            <a class="m-form__link--forgot-password login__forgot-password" href="{% url 'accounts:login' %}">Have an account? Sign In</a>
           </div>
         </form>
       </div>
