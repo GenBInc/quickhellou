@@ -1,0 +1,76 @@
+{% load static %}
+
+<div id="time-row" class="df df-f1 flc time-row">
+
+    <img class="time-row--clock-icon" src="{% static '/images/clock.svg' %}">
+
+    <div class="flc calendar-time calendar-time_from">
+        <select class="time_select time_select_hour" name="time_from_hour_{{day}}">
+            <option value="01">01</option>
+            <option value="02">02</option>
+            <option value="03">03</option>
+            <option value="04">04</option>
+            <option value="05">05</option>
+            <option value="06">06</option>
+            <option value="07">07</option>
+            <option value="08">08</option>
+            <option value="09">09</option>          
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+        :
+        <select class="time_select time_select_min" name="time_from_minutes_{{day}}">
+            <option value="00">00</option>
+            <option value="30">30</option>
+        </select>      
+        <select class="time_select" name="time_from_ampm_{{day}}">
+            <option value="am">am</option>
+            <option value="pm">pm</option>
+        </select>      
+    </div>
+        
+    <div class="fc calendar_to_between">
+        <p>to</p>
+    </div>    
+        
+    <div class="flc calendar-time calendar-time_to">
+
+        <select class="time_select time_select_hour" name="time_to_hour_{{day}}">
+            <option value="01">01</option>
+            <option value="02">02</option>
+            <option value="03">03</option>
+            <option value="04">04</option>
+            <option value="05">05</option>
+            <option value="06">06</option>
+            <option value="07">07</option>
+            <option value="08">08</option>
+            <option value="09">09</option>          
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+        :
+        <select class="time_select time_select_min" name="time_to_minutes_{{day}}">
+            <option value="00">00</option>
+            <option value="30">30</option>
+        </select>      
+        <select class="time_select" name="time_to_ampm_{{day}}">
+            <option value="am">am</option>
+            <option value="pm" selected>pm</option>
+        </select>      
+
+    </div>
+
+
+    <a class="fc df-f1 team__list-link list-link--delete delete-calendar-row" href="#" onclick="javascript:this.parentElement.remove();"
+        aria-label="Delete"
+        data-microtip-position="bottom"
+        data-role="tooltip"              
+    >
+        <img class="list-link--icon" src="{% static '/images/delete.svg' %}" alt="delete">
+    </a>
+
+
+
+</div>

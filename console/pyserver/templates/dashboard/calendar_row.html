@@ -2,77 +2,19 @@
 
 <div class="df df-f1 flc fcol calendar-day_row">
 
-    <div class="df df-f1 flc frow calendar-day">
+    <div id="calendar-day_{{day}}" class="df df-f1 flc frow calendar-day calendar-day_{{day}}">
         <input class="day_checkbox" type="checkbox" name="day_{{day}}" id="day_{{day}}" {% if day != 'saturday' and day != 'sunday'  %} checked {% endif %}/>
         <label for="day_{{day}}" class="calendar-day-label">{{day}}</label>
     
-        <div class="df df-f1 flc time-row">
-            <div class="flc calendar-time calendar-time_from">
-            <select class="time_select time_select_hour" name="time_from_hour_{{day}}">
-                <option value="01">01</option>
-                <option value="02">02</option>
-                <option value="03">03</option>
-                <option value="04">04</option>
-                <option value="05">05</option>
-                <option value="06">06</option>
-                <option value="07">07</option>
-                <option value="08">08</option>
-                <option value="09">09</option>          
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-            </select>
-            :
-            <select class="time_select time_select_min" name="time_from_minutes_{{day}}">
-                <option value="00">00</option>
-                <option value="30">30</option>
-            </select>      
-            <select class="time_select" name="time_from_ampm_{{day}}">
-                <option value="am">am</option>
-                <option value="pm">pm</option>
-            </select>      
-            </div>
-            
-            <div class="calendar_to_between">
-                <p>to</p>
-            </div>    
-            
-            <div class="flc calendar-time calendar-time_to">
-
-                <select class="time_select time_select_hour" name="time_to_hour_{{day}}">
-                <option value="01">01</option>
-                <option value="02">02</option>
-                <option value="03">03</option>
-                <option value="04">04</option>
-                <option value="05">05</option>
-                <option value="06">06</option>
-                <option value="07">07</option>
-                <option value="08">08</option>
-                <option value="09">09</option>          
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                </select>
-                :
-                <select class="time_select time_select_min" name="time_to_minutes_{{day}}">
-                <option value="00">00</option>
-                <option value="30">30</option>
-                </select>      
-                <select class="time_select" name="time_to_ampm_{{day}}">
-                <option value="am">am</option>
-                <option value="pm" selected>pm</option>
-                </select>      
-
-            </div>
-
-            <div class="df df-f1"></div>
-            
+        <div id="time_rows_{{day}}" class="time_rows df flc fcol df-f1">
+            {% include "./time_row.html" with day=day %}
         </div>
+        
         <div class="df flc df-f1 time-row-desc">
             Non Working Day
         </div>
     </div>
-    <div class="df frc calendar_break_row">
-        <a href="" class="time-break_button">+ Break</a>
+    <div class="df frc frow calendar_break_row">
+        <a href="#" onclick="javascript:addTimeRow('{{day}}');" target="_self" class="time-break_button">+ Add</a>
     </div>
   </div>

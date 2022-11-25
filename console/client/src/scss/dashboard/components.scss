@@ -1192,16 +1192,32 @@ select.time_select {
   background-color: #f1f6ff !important;
 }
 
+
 .time-row {
-  display: none;
   flex-direction: column;
   width: 100%;
+  border-radius: 10px;
+  border: 1px solid #efefef;
+  padding: 5px;
+  margin-bottom: 10px;
 
   @media (min-width: $s-md) {
     width: unset;
     flex-direction: row;  
   }  
 
+}
+
+.time-row.additional {
+  display: flex;
+}
+
+.delete-calendar-row {
+  visibility: collapse;
+}
+
+.time-row.additional .delete-calendar-row {
+  visibility: visible;
 }
 
 .calendar-day {
@@ -1214,14 +1230,19 @@ select.time_select {
   }  
 }
 
+.time_rows {
+  display: none;
+  width: 100%;
+}
 
-.day_checkbox:checked ~ .time-row {
+.day_checkbox:checked ~ .time_rows {
   display: flex;
 }
 
 .time-row-desc {
   display: flex;
-  min-height: 34px;
+  min-height: 46px;
+  margin-bottom: 10px;
 }
 
 .day_checkbox:checked ~ .time-row-desc {
@@ -1245,4 +1266,13 @@ select.time_select {
 .time-break_button:hover {
   text-decoration: none;
   color:#001487;
+}
+
+.time_rows {
+  align-items: start;
+}
+
+.time-row--clock-icon {
+  width: 20px;
+  min-width: 20px;
 }

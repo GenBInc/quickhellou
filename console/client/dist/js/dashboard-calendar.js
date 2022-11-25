@@ -19,7 +19,13 @@ const initCalendar = () => {
 
 }
 
-const dayChange = (e) => {
 
+const dayChange = (e) => {
+    
   
+}
+
+
+const addTimeRow = (day) => {
+    document.getElementById('time_rows_'+day).innerHTML+='<div class="time-row additional">'+document.getElementById('time-row').innerHTML+'</div>';
 }
