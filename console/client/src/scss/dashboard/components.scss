@@ -1273,6 +1273,42 @@ select.time_select {
 }
 
 .time-row--clock-icon {
-  width: 20px;
-  min-width: 20px;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  background-image: url('/static/images/clock.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  @media (min-width: $s-md) {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    }     
+}
+
+.time-row.additional .time-row--clock-icon {
+  background-image: url('/static/images/clock-additional.svg');
+}
+
+.time-row--clock-icon_wrap {
+  width: 100%;
+  justify-items: start;
+  margin-bottom: 10px;
+
+  @media (min-width: $s-md) {
+    width: unset;
+    margin-bottom: 0px;
+  }   
+}
+
+.time-row--delete-button_wrap {
+  width: 100%;
+  justify-items: end;
+  margin-top: 10px;
+
+  @media (min-width: $s-md) {
+    width: unset;
+    margin-top: 0px;
+  }   
 }

@@ -2,7 +2,9 @@
 
 <div id="time-row" class="df df-f1 flc time-row">
 
-    <img class="time-row--clock-icon" src="{% static '/images/clock.svg' %}">
+    <div class="flc time-row--clock-icon_wrap time-row--clock-icon">
+        
+    </div>    
 
     <div class="flc calendar-time calendar-time_from">
         <select class="time_select time_select_hour" name="time_from_hour_{{day}}">
@@ -62,15 +64,15 @@
 
     </div>
 
-
-    <a class="fc df-f1 team__list-link list-link--delete delete-calendar-row" href="#" onclick="javascript:this.parentElement.remove();"
+    <div class="frc time-row--delete-button_wrap">
+        <a class="fc df-f1 team__list-link list-link--delete delete-calendar-row" href="#" onclick="javascript:this.parentElement.parentElement.remove();"
         aria-label="Delete"
         data-microtip-position="bottom"
         data-role="tooltip"              
-    >
-        <img class="list-link--icon" src="{% static '/images/delete.svg' %}" alt="delete">
-    </a>
-
+        >
+            <img class="list-link--icon" src="{% static '/images/delete.svg' %}" alt="delete">
+        </a>
+    </div>
 
 
 </div>
