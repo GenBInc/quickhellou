@@ -104,25 +104,6 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
                 </div>
               </div>
 
-
-              <div class="errornote">
-                {{ widget_form.errors.url }}
-              </div>
-              <div class="form__field form__field--upper signup__callpage-url">
-                <div class="mdc-text-field mdc-text-field--outlined form__mdc-text-field--callpage-url">
-                  <input type="text" id="url-input" name="url" class="mdc-text-field__input form__text form--signup__text  form__input form__input form--signup__input form__input--callpage-url"
-                  {% if widget_form.url.value is not None %} value="{{ widget_form.url.value }}" {%   endif %}>
-                  <div class="mdc-notched-outline">
-                    <div class="mdc-notched-outline__leading"></div>
-                    <div class="mdc-notched-outline__notch">
-                      <label for="url-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">
-                        Default widget domain</label>
-                    </div>
-                    <div class="mdc-notched-outline__trailing"></div>
-                  </div>
-                </div>
-              </div>
-
             </div>
 
           </div>

@@ -36,7 +36,6 @@ def signup_view(
     if request.method == 'POST':
         user_form = UserForm(request.POST)
         profile_form = ProfileForm(request.POST)
-        widget_form = WidgetForm(request.POST)
         profile_meta_form = ProfileMetaForm(request.POST)
         if user_form.is_valid() and profile_meta_form.is_valid() and profile_form.is_valid():
             # Create client board
@@ -50,16 +49,12 @@ def signup_view(
             # Save profile form
             profile_form.save(
                 profile_form.cleaned_data['full_name'].strip(), user)
-            # create default widget associated with the clientboard and newly created user
-            # as it has an owner role
-            if widget_form.is_valid():
-                widget_form.save(user, client_board)
+
             # email notification
             subject = 'QuickHellou - New User'
             recipients = [settings.ADMIN_EMAIL]
-            url: str = widget_form.data['url']
             email_params = {'username': user.first_name, 'email': user.email, 'full_name': user.get_full_name,
-                            'phone': user.profile.phone, 'url': url, 'console_app_url': settings.CONSOLE_APP_URL}
+                            'phone': user.profile.phone, 'console_app_url': settings.CONSOLE_APP_URL}
             send_email_notification(subject, recipients, email_params,
                                     'accounts/email/signup-admin.txt', 'accounts/email/signup-admin.html')
             # send email to client user
