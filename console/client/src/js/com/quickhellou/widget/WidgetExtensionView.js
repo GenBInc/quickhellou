@@ -79,7 +79,7 @@ export class WidgetExtensionView extends UIView {
    * @memberof WidgetExtensionView
    */
   initContactForm() {
-    const sendButtonClassName = '.widget-extension__button--send'
+    const sendButtonClassName = '.widget-extension__button--send-contact'
     if (this.uiExists(sendButtonClassName)) {
       HTMLUtils.removeAllEventListeners(sendButtonClassName)
       const submitButtonElement = this.uiGet(sendButtonClassName)
@@ -196,6 +196,7 @@ export class WidgetExtensionView extends UIView {
       document.querySelector('.qh_video-ui_replace').innerHTML = html
       this.activateActiveOperatorInitForm()
       this.collapseView()
+      this.dispatchExtEvent('collapse')
       if (forceDestroyVideoChat) {
         this.service.destroyVideoChatApp()
       }
@@ -212,6 +213,7 @@ export class WidgetExtensionView extends UIView {
       document.querySelector('.contact-form').innerHTML = html
       this.initContactForm()
       this.collapseView()
+      this.dispatchExtEvent('collapse')
     })
   }
 
@@ -234,6 +236,14 @@ export class WidgetExtensionView extends UIView {
       .then((response) => {
         document.querySelector('.contact-form').innerHTML = response
         this.initContactForm()
+        this.collapseView()
+        this.extDispatcher.dispatchEvent(
+          new CustomEvent('expand_schedule', {
+            detail: {
+              source: 'contact',
+            }
+          })
+        )
       })
       .catch((reason) => {
         console.log('reason', reason)
@@ -298,6 +308,7 @@ export class WidgetExtensionView extends UIView {
   toggleView() {
     if (this.isExpanded) {
       this.collapseView()
+      this.dispatchExtEvent('collapse')
     } else {
       this.expandView()
     }
@@ -322,7 +333,6 @@ export class WidgetExtensionView extends UIView {
     this.isExpanded = false
     this.element.classList.remove('js-expanded')
     this.deactivateVideoMode()
-    this.dispatchExtEvent('collapse')
   }
 
   /**

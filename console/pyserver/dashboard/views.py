@@ -29,6 +29,7 @@ from dashboard.forms import (
     ProfileMetaForm,
     UserForm,
     WidgetExtensionViewForm,
+    WidgetScheduleForm,
     WidgetForm,
     WidgetTemplateForm,
     CommunicationSessionForm,
@@ -678,6 +679,34 @@ def widget_content_view(
         'background_color': widget_template.background_color,
         'icon': widget_template.icon.url}
     return render(request, 'embed/widget_content.html', template_params)
+
+
+@csrf_exempt
+def widget_schedule(
+    request: HttpRequest,
+    widget_id: int,
+    hostname: str,
+    uuid: str
+) -> HttpResponse:
+    widget = Widget.objects.get(id=widget_id, uuid=uuid)
+
+    if not widget:
+        raise Http404
+
+    domain_match = hostname == widget.url
+    if widget is not None and domain_match and not widget.is_installed:
+        widget.is_installed = True
+        widget.save()
+        
+    if request.method == 'POST':
+        form = WidgetScheduleForm(request.POST)
+        # if form.is_valid():
+        #     form.save()
+
+    return render(request, 'embed/widget/scheduler_form_response.html', {
+        'widget': widget,
+        'form': form,
+        'hostname': hostname})
 
 
 def widget_embed_view(

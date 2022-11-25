@@ -19,14 +19,21 @@ widgetService
 
     // event handlers
     extDispatcher.addEventListener('collapse', () => {
-      // bottomBarView.collapseView()
+      scheduleView.collapseView()
+      extView.collapseView()
+    }, false)
+    extDispatcher.addEventListener('expand_contact', () => {
+      extView.expandView()
+      scheduleView.collapseView()
     }, false)
     extDispatcher.addEventListener('expand_schedule', () => {
       scheduleView.expandView()
+      extView.collapseView()
     }, false)
     extDispatcher.addEventListener('setThumbnail', (path) => {
       extView.setThumbnails(path)
     }, false)
+    
     // init widget modules
     badgeView.init()
     extView.init()

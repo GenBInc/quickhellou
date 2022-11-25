@@ -10,6 +10,7 @@ services:
       - NODE_ENV=development
     volumes:
       - "./console/client:/client/"
+      - "./console/pyserver/console/static/images:/static/images"
     networks:
       console_network:
          ipv4_address: 192.180.0.22

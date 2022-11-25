@@ -1,6 +1,4 @@
 {% spaceless %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 {# <script src="{{ video_app_url }}/static/videochat/js/adapter-latest.js"></script> #}
 {# <script src="{{ video_app_url }}/static/videochat/js/quickhellou.js" defer></script> #}
 {# <link rel="stylesheet" type="text/css" href="{{ video_app_url }}/static/videochat/css/quickhellou.css"> #}
@@ -11,7 +9,7 @@
   {# widget badge #}
   {% include "embed/widget_base.html" %}
   {# widget schedule #}
-  {% include "embed/widget_schedule.html" %}
+  {% include "embed/widget/schedule_dialog.html" %}
   {# widget extension element #}
   {% include "embed/widget_contact.html" %}
 </div>

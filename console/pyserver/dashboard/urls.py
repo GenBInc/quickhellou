@@ -49,6 +49,8 @@ urlpatterns = [
          views.widget_content_view, name='widget_content'),
     path('widget_extension_embed/<int:widget_id>/<str:hostname>/<slug:uuid>',
          views.widget_extension_embed_view, name='widget_extension_embed'),
+    path('widget_schedule/<int:widget_id>/<str:hostname>/<slug:uuid>',
+         views.widget_schedule, name='widget_schedule'),
     path('widget_active_operator/<int:widget_id>/<str:hostname>/<slug:uuid>',
          views.widget_active_operator, name='widget_active_operator'),
     path('test_widget2', views.test_widget, name="test_widget"),

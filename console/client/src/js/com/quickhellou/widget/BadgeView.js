@@ -40,7 +40,7 @@ export class BadgeView extends UIView {
     widgetButtonElement.addEventListener('click', () => {
       this.emit('collapse')
       this.extDispatcher.dispatchEvent(
-        new CustomEvent('expand_schedule', { detail: { source: 'badge' } })
+        new CustomEvent('expand_contact', { detail: { source: 'badge' } })
       )
     })
 

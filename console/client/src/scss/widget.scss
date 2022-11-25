@@ -689,7 +689,7 @@ html {
   right: -4px;
   top: auto;
   transition: bottom .2s ease-in;
-  width: 504px;
+  width: 534px;
   z-index: 1002;
 }
 
@@ -898,4 +898,73 @@ div.fullscreen,
 .mini-video.active {
   opacity: 1;
   z-index: 2;
+}
+
+.scheduler__day {
+  font-weight: 600;
+  color: white;
+  height: 330px;
+}
+
+.scheduler__time {
+  color: white;
+}
+
+.scheduler__button {
+  border-radius: 6px;
+  padding:6px 12px;
+  background-color: $color--white-smoke;
+  border: 1px solid white;
+  transition: background-color .2s linear;
+  cursor: pointer;
+}
+
+.scheduler__day-text {
+  text-align: center;
+  background-color: $color--dark-orange;
+  padding:6px 12px;
+  color: white;
+  font-size: 1rem;
+}
+
+.scheduler__day-name {
+  font-size: 1.5rem;
+  padding-bottom: 0;
+  font-weight: 600;
+}
+
+.scheduler__button--time {
+  margin-bottom: 10px;
+}
+
+.scheduler__button.js-enabled {
+  background-color: $color--nero;
+}
+
+.scheduler__button.js-enabled .scheduler__button-text {
+  color: white;
+}
+
+.scheduler__day {
+  margin-left:5px;
+  margin-right:5px;
+}
+
+.scheduler__day:first-child {
+  margin-left:0px;
+}
+
+.scheduler__day:last-child {
+  margin-right:0px;
+}
+
+.scheduler__button-text {
+  font-size: 1.375rem;
+  pointer-events: none;
+  user-select: none;
+  color: $color--nero;
+}
+
+.scheduler__day-header {
+  margin-bottom: 10px;
 }

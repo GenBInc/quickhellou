@@ -100,7 +100,10 @@ class WidgetExtensionViewForm(forms.Form):
     email_or_phone = EmailOrPhoneField(max_length=256, required=True)
     message = forms.CharField(widget=forms.Textarea(), required=True)
 
-
+class WidgetScheduleForm(forms.Form):
+    datetime = forms.CharField(required=True)
+    email_or_phone = EmailOrPhoneField(max_length=256, required=True)
+    
 class AssigneesForm(forms.Form):
     assignee = forms.ModelMultipleChoiceField(
         queryset=User.objects.all(),

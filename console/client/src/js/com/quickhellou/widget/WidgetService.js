@@ -226,6 +226,20 @@ export class WidgetService extends EventEmitter {
   }
 
   /**
+   * Sends schedule form.
+   *
+   * @param {array<object>} fieldSet the field set
+   */
+  sendScheduleForm(fieldSet) {
+      const url = `${this.consoleAppUrl}/dashboard/widget_schedule/${
+        this.widgetId
+      }/${encodeURIComponent(window.location.hostname.toLowerCase())}/${
+        this.widget.uuid
+      }`
+      return this.apiService.postAsXMLHttpRequest(fieldSet, url)
+  }
+
+  /**
    * Sends start video chat form.
    *
    * @param {object} fieldSet
