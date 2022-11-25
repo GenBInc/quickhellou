@@ -94,6 +94,7 @@ module.exports = () => {
     "css/widget": "./scss/widget.scss",
     "css/widget_embed": "./scss/widget_embed.scss",
     "js/dashboard": "./js/dashboard.js",
+    "js/dashboard-calendar": "./js/dashboard-calendar.js",
     "js/widget": "./js/widget.js",
     "js/widget_embed": "./js/widget_embed.js",
     "css/dashboard": "./scss/dashboard.scss"

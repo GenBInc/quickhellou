@@ -8,6 +8,10 @@
     {% include "./nav_menu.html" with menu_selected='calendar' %}
 {% endblock %}
 
+{% block js %}
+  <script src="{% static '/js/dashboard-calendar.js' %}"></script>
+{% endblock %}
+
 {% block content %}
 <div class="df flc frow top-header__section">
   <img class="top-header-block__photo" src="{% static '/images/dashboard-calendar.png' %}">
@@ -15,7 +19,21 @@
 </div>
 
 <div class="wrapper wrapper--thin wrapper--profile">
-  <p class="form__header">No calendar yet.</p>
+  <p class="form__header">Working Hours</p>
 </div>
+
+<form>
+  <div class="df fc fcol calendar-wrap">
+    
+      {% include "./calendar_row.html" with day='monday' %}
+      {% include "./calendar_row.html" with day='tuesday' %}
+      {% include "./calendar_row.html" with day='wednesday' %}
+      {% include "./calendar_row.html" with day='thursday' %}
+      {% include "./calendar_row.html" with day='friday' %}
+      {% include "./calendar_row.html" with day='saturday' %}
+      {% include "./calendar_row.html" with day='sunday' %}
+    
+  </div>
+</form>
 
 {% endblock %}

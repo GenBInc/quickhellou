@@ -1112,3 +1112,121 @@ aside.mdc-drawer {
 .color-dot-wrap {
   position: relative;
 }
+
+.calendar-wrap {
+  margin: 0 auto;
+}
+
+.calendar-day-label {
+  text-transform: uppercase;  
+  color:#dddddd;
+  font-weight: 700;
+  margin-left: 15px;
+  cursor: pointer;
+  width: 130px;
+  margin-bottom: 15px;  
+
+  @media (min-width: $s-md) {
+    margin-bottom: 0px;    
+  }    
+
+}
+
+.day_checkbox:checked ~ .calendar-day-label:hover,
+.calendar-day-label:hover {
+  color: #4285f4;
+}
+
+.day_checkbox:checked ~ .calendar-day-label {
+  color: #001487;
+}
+
+.calendar-day_row {
+  box-shadow: 0 0 0 4px rgba(0,0,0,.05);
+  padding: 15px;
+  margin:25px;
+  border-radius: 15px;
+  width: 100%;
+}
+
+.calendar-day_row div:last-child {
+  margin-right: 10px;
+}
+
+.calendar_to_between {
+  margin: 15px 0px 15px 0px;
+
+  @media (min-width: $s-md) {
+    margin: 0px 15px 0px 15px;
+  }    
+}
+
+select.time_select {
+
+  -webkit-appearance:initial !important;
+  appearance: initial !important;
+
+  background-color: white;
+  border-color:#efefef;
+  border-width: 1px;
+  border-radius: 5px;
+  border-style: solid;
+  margin-right: 8px;
+  margin-left: 8px;
+  padding: 8px;
+
+  cursor: pointer;
+}
+
+.day_checkbox {
+  cursor: pointer;
+}
+
+.time_select_hour,
+.time_select_min {
+  background-color: #f1f6ff !important;
+}
+
+.time-row {
+  display: none;
+  flex-direction: column;
+  width: 100%;
+
+  @media (min-width: $s-md) {
+    width: unset;
+    flex-direction: row;  
+  }  
+
+}
+
+.calendar-day {
+  flex-direction: column;
+  align-items: baseline;
+  width: 100%;
+
+  @media (min-width: $s-md) {
+    flex-direction: row;  
+  }  
+}
+
+
+.day_checkbox:checked ~ .time-row {
+  display: flex;
+}
+
+.time-row-desc {
+  display: flex;
+}
+
+.day_checkbox:checked ~ .time-row-desc {
+  display: none;
+}
+
+.day_checkbox {
+  display: none;
+}
+
+.calendar_break_row {
+  margin-top: 15px;
+  width: 100%;
+}
