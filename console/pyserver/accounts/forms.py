@@ -10,7 +10,7 @@ class ProfileMetaForm(forms.Form):
 
     password = forms.CharField(required=True)
     confirm_password = forms.CharField(required=True)
-    recaptcha = forms.CharField(required=True)
+    #recaptcha = forms.CharField(required=False)
 
     def is_valid(self):
         valid = super(ProfileMetaForm, self).is_valid()
@@ -21,9 +21,10 @@ class ProfileMetaForm(forms.Form):
             self._errors['passwords_not_match'] = 'Passwords don\'t match.'
             return False
 
-        if self.cleaned_data['recaptcha'] == "0":
-            self._errors['no_captcha'] = 'Please check the Captcha field.'
-            return False
+
+#        if self.cleaned_data['recaptcha'] == "0":
+#            self._errors['no_captcha'] = 'Please check the Captcha field.'
+#            return False
         return True
 
 
@@ -45,7 +46,7 @@ class UserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('full_name', 'phone', 'thumbnail')
+        fields = ('full_name', 'thumbnail')
 
     def is_valid(self):
         valid = super(ProfileForm, self).is_valid()

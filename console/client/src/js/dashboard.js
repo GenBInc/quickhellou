@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })
   initUrlInput('.form--profile')
-  initPhone()
+  //initPhone()
 
   // init current view
   let uiView

@@ -11,40 +11,10 @@
 {% block content %}
 
 {% block css %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/14.0.7/css/intlTelInput.css" 
-integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="anonymous" />
 {% endblock %}
 
 {% block js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/14.0.7/js/intlTelInput.min.js" 
-integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="anonymous"></script>
-<script>
-  document.addEventListener("DOMContentLoaded",  function () {
-    var phoneInput = document.querySelector("input.phone--front");
-    window.intlTelInput(phoneInput, {
-      initialCountry: 'us',
-      separateDialCode: true,
-      hiddenInput:"phone",
-      utilsScript: 'https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/8.4.6/js/utils.js'
-    })
-  })
 
-  const updatePhoneNumber = () => {
-    var iti = window.intlTelInputGlobals.instances[0]
-    if (iti !== undefined) {
-      const phoneInput = document.querySelector("input[name='phone']")
-      if (!!phoneInput) {
-        phoneInput.value = iti.getNumber(1)
-      }
-    }
-  }
-
-  const saveForm = (event) => {
-    event.preventDefault()
-    updatePhoneNumber()
-    document.querySelector('form.site-form').submit()
-  }
-</script>
 {% endblock %}
 <div class="fc">
 <div class="wrapper wrapper--thin wrapper--profile">
@@ -101,21 +71,6 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
             </div>
           </div>
           
-          <div class="errornote">
-            {{ profile_form.phone.errors }}
-          </div>
-          <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper form__phone settings__phone">
-            <input type="hidden" name="phone" {% if profile_form.phone.value is not None %} value="{{ profile_form.phone. }}" {% endif %}>
-            <input type="text" id="phone-input" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input form--signup__input--phone phone--front" 
-              value="{{ client_user.profile.phone }}">
-            <!--<label for="full-name-input" class="mdc-floating-label form__text form--signup__text form__label form--signup__label">Phone</label>-->
-            <div class="mdc-notched-outline">
-              <div class="mdc-notched-outline__leading"></div>
-              <div class="mdc-notched-outline__notch">
-              </div>
-              <div class="mdc-notched-outline__trailing"></div>
-            </div>
-          </div>
 
           <div class="errornote">
             {{ profile_form.thumbnail.errors }}
@@ -180,7 +135,7 @@ integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="ano
                 </a>
               </div>
               <div>
-                <input type="submit" onclick="saveForm()" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
+                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
               </div>
 
             </div>

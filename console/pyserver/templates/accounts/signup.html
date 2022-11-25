@@ -29,8 +29,8 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
       </div>
     </div>
     <div class="">
-      <div class="m-form form__container form--signup__container">
-        <p class="form__header">Please enter details about person responsible for QuickHellou in your company</p>
+      <div class="m-form form__container form--login__container">
+        <p class="form__header">Please enter your profile details</p>
         <form class="fcol site-form" action="{% url 'accounts:signup' %}" method="post">
           {% csrf_token %}
           {% if request.GET.next %}
@@ -38,7 +38,7 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
           {% endif %}
           {% include "messages.html" %}          
             <div class="flt form__content form__content-signup">
-            <div class="fcol form__column form__column--left">
+            <div class="fcol df-f1">
               <div class="errornote">
                 {{ user_form.email.errors }}
               </div>
@@ -48,7 +48,7 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
                 <div class="mdc-notched-outline mdc-notched-outline--upgraded">
                   <div class="mdc-notched-outline__leading"></div>
                   <div class="mdc-notched-outline__notch">
-                    <label for="login-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Your work e-mail</label>
+                    <label for="login-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">E-mail</label>
                   </div>
                   <div class="mdc-notched-outline__trailing"></div>
                 </div>
@@ -91,7 +91,7 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
               <div class="errornote">
                 {{ profile_meta_form.confirm_password.errors }}
               </div>
-              <div class="mdc-text-field mdc-text-field--outlined form__field signup__confirm-password">
+              <div class="mdc-text-field form__field--upper mdc-text-field--outlined form__field signup__confirm-password">
                 <input type="password" id="confirm-password-input" name="confirm_password" class="mdc-text-field__input form__text form--signup__text  form__input form--signup__input "
                   maxlength="128" autocomplete="new-password">
                 <div class="mdc-notched-outline">
@@ -103,51 +103,28 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
                   <div class="mdc-notched-outline__trailing"></div>
                 </div>
               </div>
-            </div>
-            <div class="fcol form__column form__column--right">
-              <div class="errornote">
-                {{ profile_meta_form.phone.errors }}
-              </div>
-              <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper form__phone">
-                <input type="hidden" name="phone" {% if profile_form.phone.value is not None %} value="{{ profile_form.phone.value }}" {% endif %}>
-                <input type="text" id="phone-input" class="mdc-text-field__input form__text form--signup__text  form__input form--signup__input form--signup__input--phone"
-                {% if profile_form.phone.value is not None %} value="{{ profile_form.phone.value }}" {% endif %}>
-                <div class="mdc-notched-outline">
-                  <div class="mdc-notched-outline__leading"></div>
-                  <div class="mdc-notched-outline__notch">
-                    <label for="phone-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label form--signup__label_phone_no">Phone number</label>
-                  </div>
-                  <div class="mdc-notched-outline__trailing"></div>
-                </div>
-              </div>
+
+
               <div class="errornote">
                 {{ widget_form.errors.url }}
               </div>
-              <div class="flc form__field form__field--upper signup__callpage-url">
-                <div class="df url__prefix">http(s)://</div>
+              <div class="form__field form__field--upper signup__callpage-url">
                 <div class="mdc-text-field mdc-text-field--outlined form__mdc-text-field--callpage-url">
                   <input type="text" id="url-input" name="url" class="mdc-text-field__input form__text form--signup__text  form__input form__input form--signup__input form__input--callpage-url"
                   {% if widget_form.url.value is not None %} value="{{ widget_form.url.value }}" {%   endif %}>
                   <div class="mdc-notched-outline">
                     <div class="mdc-notched-outline__leading"></div>
                     <div class="mdc-notched-outline__notch">
-                      <label for="url-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">URL
-                        where you'll install quickhellou</label>
+                      <label for="url-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">
+                        Default widget domain</label>
                     </div>
                     <div class="mdc-notched-outline__trailing"></div>
                   </div>
                 </div>
               </div>
-              <div class="fc signup__captcha">
-                <div class="fcol">
-                  <div class="errornote">
-                    {{ profile_meta_form.errors.recaptcha }}
-                  </div>
-                  <input type="hidden" name="recaptcha" value="1">
-                  <div id="recaptcha"></div>
-                </div>
-              </div>
+
             </div>
+
           </div>
 
           <div class="m-form__space"></div>

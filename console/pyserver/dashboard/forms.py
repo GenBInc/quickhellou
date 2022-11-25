@@ -44,7 +44,7 @@ class UserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('full_name', 'phone', 'thumbnail')
+        fields = ('full_name', 'thumbnail')
 
     def is_valid(self):
         valid = super(ProfileForm, self).is_valid()

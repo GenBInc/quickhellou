@@ -219,10 +219,13 @@ ul.messages {
   width: 12px;
 }
 
-.errornote {
-  color:#c90000;
+.errornote li {
+  color: #c90000;
   font-size:.75rem;
-  text-align:right;
+  text-align:left;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 50px;
 }
 
 .errorlist {
