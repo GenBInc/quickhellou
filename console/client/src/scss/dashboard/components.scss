@@ -1275,6 +1275,16 @@ select.time_select {
 .calendar_break_row {
   margin-top: 15px;
   width: 100%;
+  display: none;
+
+  @media (min-width: $s-md) {
+    margin-top: 0px;
+    width: auto;
+  }     
+}
+
+.day_checkbox:checked ~ .calendar_break_row {
+  display: flex;
 }
 
 .time-break_button {
