@@ -29,15 +29,16 @@
         <div class="fc m-logo__image drawer__logo desktop-objects">
           <a href="/dashboard"><img src="{% static '/images/hellou-quick-white.svg' %}" alt="quickhellou logo"></a>
         </div>
-        <form class="fc aside__avatar-content" action="{% url 'accounts:upload_thumbnail' profile_id=user.profile.id %}" method="post" enctype="multipart/form-data">
+        {% with default_thumbnail='images/user.svg' %}
+        <form id="thumbnail-form" class="fc aside__avatar-content" action="{% if user.profile.thumbnail != default_thumbnail %}{% url 'accounts:delete_thumbnail' profile_id=user.profile.id %}{% else %}{% url 'accounts:upload_thumbnail' profile_id=user.profile.id %}{% endif %}" method="post" enctype="multipart/form-data">
           {% csrf_token %}
           
 
           <div class="aside__avatar avatar" style="background-image:url(/media/{{user.profile.thumbnail}})"></div>
           
-          <label for="thumbnail" class="fc button--add-photo">
+          <label {% if user.profile.thumbnail == default_thumbnail %}for="thumbnail"{% else %}onclick="javascript:document.getElementById('thumbnail-form').submit();"{% endif %} class="fc button--add-photo">
 
-          {% if user.profile.thumbnail != 'images/user.svg' %}
+          {% if user.profile.thumbnail != default_thumbnail %}
             <img class="button--photo--icon" src="{% static '/images/delete.svg' %}" alt="add photo">
           {% else %}
             <img class="button--photo--icon" src="{% static '/images/photo-add.svg' %}" alt="add photo">
@@ -47,6 +48,7 @@
 
           <input type="file" class="input--add-avatar" id="thumbnail" name="thumbnail" onchange="form.submit()">
         </form>
+        {% endwith %}
         <a class="fc aside__title" href="{% url 'dashboard:client_user_edit' user_id=user.profile.id  %}" target="_self"
         >
           {{ user.profile.full_name }}

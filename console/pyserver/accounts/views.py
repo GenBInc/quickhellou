@@ -169,6 +169,19 @@ def upload_thumbnail(request, profile_id):
         form = ProfileThumbnailForm()
     return redirect('dashboard:home')
 
+def delete_thumbnail(request, profile_id):
+    if request.method == 'POST':
+        form = ProfileThumbnailForm(request.POST, request.FILES)
+        if form.is_valid():
+            profile = Profile.objects.get(id=profile_id)
+            profile.thumbnail = "images/user.svg"
+            profile.save()
+            return redirect('dashboard:home')
+        else:
+            form = ProfileThumbnailForm()
+    else:
+        form = ProfileThumbnailForm()
+    return redirect('dashboard:home')
 
 def activate_user_view(
     request: HttpRequest,

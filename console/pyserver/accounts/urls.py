@@ -11,6 +11,8 @@ urlpatterns = [
     path('activate/<int:user_id>/', views.activate_user_view, name="activate_user"),
     path('upload_thumbnail/<int:profile_id>/',
          views.upload_thumbnail, name="upload_thumbnail"),
+    path('delete_thumbnail/<int:profile_id>/',
+         views.delete_thumbnail, name="delete_thumbnail"),
     path('forgot-password/', views.forgot_password_view, name="forgot-password"),
     path('reset-password/<int:user_id>/',
          views.reset_password_view, name="reset-password"),
