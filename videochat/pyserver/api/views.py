@@ -164,7 +164,7 @@ def get_room_parameters(request, room_id, client_id, sessions):
         params['room_link'] = room_link
         params['canonical'] = room_link
     else:
-        params['canonical'] = 'https://www.quickhellou.com'
+        params['canonical'] = 'https://www.qhellou.com'
 
     if client_id is not None:
         params['client_id'] = client_id

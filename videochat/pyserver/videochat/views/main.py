@@ -516,7 +516,7 @@ class SendInvitation(View):
     calendarData = request_post.get('calendar')
     dateTime = request_post.get('dateTime')
     attachCalendar = request_post.get('attachCalendar')
-    sender_address = 'Quick Hellou <no-reply@quickhellou.com>'
+    sender_address = 'Quick Hellou <no-reply@qhellou.com>'
     subject = request_post.get('subject')
     msg = MIMEMultipart('mixed')
     msg['From'] = sender_address
@@ -827,7 +827,7 @@ def get_room_parameters(request, room_id, client_id, sessions):
         params['room_link'] = room_link
         params['canonical'] = room_link
     else:
-        params['canonical'] = 'https://www.quickhellou.com'
+        params['canonical'] = 'https://www.qhellou.com'
 
     if client_id is not None:
         params['client_id'] = client_id

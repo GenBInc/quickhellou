@@ -46,7 +46,7 @@ export class LoadingParams {
   public errorMessages: string[] = new Array<string>()
   public warningMessages: string[] = new Array<string>()
   public suggestedRoomId: string = Util.randomString(9)
-  public roomServer: 'https://www.quickhellou.com'
+  public roomServer: 'https://www.qhellou.com'
   public connect: boolean = false
   public roomID: string
   public roomType: string
