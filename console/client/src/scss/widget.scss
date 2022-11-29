@@ -6,66 +6,72 @@ $s-md:		768px;
 
 @mixin df() {
   display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
 }
 
 @mixin df-lc() {
   -webkit-justify-content: flex-start;
-  -ms-flex-pack: start;
   justify-content: flex-start;
   -webkit-align-items: center;
-  -ms-flex-align: center;
+  align-items: center;
+}
+
+@mixin df-lt() {
+  -webkit-justify-content: flex-start;
+  justify-content: flex-start;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+}
+
+@mixin df-rc() {
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
+  -webkit-align-items: center;
   align-items: center;
 }
 
 @mixin df-lb() {
   -webkit-justify-content: flex-start;
-  -ms-flex-pack: start;
   justify-content: flex-start;
   -webkit-align-items: flex-end;
-  -ms-flex-align: end;
   align-items: flex-end;
 }
 
 @mixin df-cb() {
   -webkit-justify-content: center;
-  -ms-flex-pack: center;
   justify-content: center;
   -webkit-align-items: flex-end;
-  -ms-flex-align: end;
   align-items: flex-end;
 }
 
 @mixin df-col() {
   -webkit-flex-direction: column;
-  -ms-flex-direction: column;
   flex-direction: column;
+}
+
+@mixin df-row() {
+  -webkit-flex-direction: row;
+  flex-direction: row;
 }
 
 @mixin df-f1() {
   -webkit-flex: 1 !important;
-  -ms-flex: 1 0 auto;
   flex: 1 0;
 }
 
 @mixin df-c() {
   -webkit-justify-content: center;
-  -ms-flex-pack: center;
   justify-content: center;
   -webkit-align-items: center;
-  -ms-flex-align: center;
   align-items: center;
 }
 
 @mixin transform($transforms) {
 	-webkit-transform: $transforms;
-		-ms-transform: $transforms;
 	   		transform: $transforms;
 }
 
 @mixin transition($transition...) {
-  -moz-transition:    $transition;
   -webkit-transition: $transition;
   transition:         $transition;
 }
@@ -125,16 +131,24 @@ html {
 
   .fct {
     -webkit-justify-content: flex-start;
-    -ms-flex-pack: start;
     justify-content: flex-start;
     -webkit-align-items: center;
-    -ms-flex-align: center;
     align-items: center;
   }
 
   .flc {
     @include df;
     @include df-lc;
+  }
+
+  .flt {
+    @include df;
+    @include df-lt;
+  }
+
+  .frc {
+    @include df;
+    @include df-rc;
   }
 
   .fcol {
@@ -354,7 +368,7 @@ html {
     cursor: pointer;
     background-color: transparent;
     border: 3px solid white;
-    padding: 3px 6px;
+    padding: 3px 6px 3px 24px;
     border-radius: 26px;
   }
 
@@ -366,6 +380,7 @@ html {
     font-weight:600;
     font-size:16px;
     user-select: none;
+    margin-right:6px;
   }
 
   .widget-extension__button:hover p {
@@ -373,7 +388,7 @@ html {
   }
 
   .widget-extension__send-icon {
-    height:40px;
+    height: 40px;
   }
 
   .qh_module--active-operator {
@@ -678,28 +693,31 @@ html {
   fill: #ffffff;
 }
 
-.widget--schedule {
+div.window {
+  // width: 100%;
+  // height: 100%;
+}
+
+div.widget--schedule {
   background: transparent;
   border: none;
   bottom: 1px;
   display: none;
-  height: 470px;
   opacity: 0;
-  position: absolute;
   right: -4px;
   top: auto;
   transition: bottom .2s ease-in;
-  width: 534px;
-  z-index: 1002;
+  z-index: 1003;
+  overflow-x: hidden;
 }
 
 .widget--schedule__content {
   position: relative;
-  box-shadow: 0 0 5px 0 #ddd;
   background-color: $color--lawn-green;
-  padding: 20px 10px 10px;
+  padding: 0;
   border-radius: 12px;
   height:100%;
+  padding-top: 40px;
 }
 
 .widget--schedule__datetime {
@@ -715,18 +733,21 @@ div.js-expanded,
 #qh_e_frame {
   background: transparent;
   border: none;
-  position: absolute;
-  right: -4px;
-  bottom: 1px;
-  top: auto;
-  width: 300px;
-  height: 368px;
   z-index: 1002;
   transition: bottom 0.2s ease-in;
   box-shadow: 0 0 5px 0 #ddd;
   opacity:0;
   border-radius: 12px;
   display: none;
+}
+
+.widget--schedule, 
+.qh-widget-ext {
+  position: fixed;
+  width: calc(100vw - 8px);
+  height: calc(100vh - 8px);
+  top: 4px;
+  left:4px;
 }
 
 #qh_e_frame.qh_video-mode {
@@ -900,10 +921,92 @@ div.fullscreen,
   z-index: 2;
 }
 
-.scheduler__day {
+div.scheduler {
+  @media (min-width: $s-sm) {
+    padding-bottom: 40px;
+  }
+}
+
+.widget--schedule__datetime-controls {
+  @include df;
+  width: 100%;
+  height:calc(100% - 72px);
+}
+
+div.scheduler__page {
+  min-width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
+  @include df;
+  @include df-col;
+  @media (min-width: $s-sm) {
+    overflow-y: auto;
+    height: 100%;
+    @include df-lt;
+    @include df-row;
+  }
+}
+
+div.scheduler__day {
   font-weight: 600;
   color: white;
-  height: 330px;
+  width: 100%;
+  @media (min-width: $s-sm) {
+    padding-left: 10px;
+    padding-right: 10px; 
+    width: 20%;
+  }
+}
+
+.scheduler,
+.scheduler__pages {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+}
+
+div.scheduler__pages {
+  transition: transform .4s ease-out;
+  margin-bottom: 10px;
+  @include df-col;
+  @include df-lt;
+  overflow-y: auto;
+  @media (min-width: $s-sm) {
+    overflow-y: unset;
+    @include df-row;
+  }
+}
+
+.scheduler__page-buttons {
+  height: calc(100vh - 160px);
+  overflow-y: auto;
+  align-items: flex-start;
+}
+
+.scheduler__pages-controls {
+  padding-left:20px;
+  padding-right:20px;
+}
+
+.scheduler__pages-nav-button {
+  cursor:pointer;
+  user-select: none;
+  background-color: #f44336;
+  border:1px solid white;
+  border-radius: 14px;
+  padding: 3px 12px;
+  color: white;
+  font-weight: 600;
+  transition: background-color .2s linear, border-color .2s linear;
+  display: none;
+  @media (min-width: $s-sm) {
+    @include df;
+  }
+}
+
+.scheduler__pages-nav-button:hover {
+  background-color: #FC1A19;
+  border-color: #f44336;
 }
 
 .scheduler__time {
@@ -911,30 +1014,40 @@ div.fullscreen,
 }
 
 .scheduler__button {
+  font-size: 1rem;
   border-radius: 6px;
-  padding:6px 12px;
+  padding:3px 12px;
   background-color: $color--white-smoke;
   border: 1px solid white;
   transition: background-color .2s linear;
   cursor: pointer;
 }
 
+.scheduler__page-table {
+  min-width: 100%;
+}
+
 .scheduler__day-text {
   text-align: center;
   background-color: $color--dark-orange;
-  padding:6px 12px;
+  padding:6px 0;
   color: white;
   font-size: 1rem;
 }
 
 .scheduler__day-name {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   padding-bottom: 0;
   font-weight: 600;
 }
 
+.scheduler__time-buttons {
+  height:300px;
+  overflow-y: auto;
+}
+
 .scheduler__button--time {
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .scheduler__button.js-enabled {
@@ -945,19 +1058,6 @@ div.fullscreen,
   color: white;
 }
 
-.scheduler__day {
-  margin-left:5px;
-  margin-right:5px;
-}
-
-.scheduler__day:first-child {
-  margin-left:0px;
-}
-
-.scheduler__day:last-child {
-  margin-right:0px;
-}
-
 .scheduler__button-text {
   font-size: 1.375rem;
   pointer-events: none;
@@ -966,5 +1066,19 @@ div.fullscreen,
 }
 
 .scheduler__day-header {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+}
+
+.scheduler__page-headers {
+  padding-right: 17px;
+}
+
+.widget-extension__controls {
+  width: 100%;
+  padding:10px 30px;
+}
+
+.scheduler__day-info {
+  font-size: 1rem;
+  min-height: 23px;
 }

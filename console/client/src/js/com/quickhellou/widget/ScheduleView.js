@@ -37,34 +37,20 @@ export class ScheduleView extends UIView {
       this.collapseView()
     })
 
-    this.extDispatcher.addEventListener('expand_scheduler', () => {
+    this.extDispatcher.addEventListener('expand_schedule', () => {
       this.element.classList.add('js-expanded')
     }, false)
 
-    const sendFormButton = document.querySelector('.widget-extension__button--send-schedule')
-    sendFormButton.addEventListener('click', () => {
-      this.sendForm()
+    const submitButton = document.querySelector('.widget-extension__button--send-schedule')
+    submitButton.addEventListener('click', () => {
+      this.extDispatcher.dispatchEvent(
+        new CustomEvent('expand_contact', {
+          detail: {
+            source: 'contact',
+          }
+        })
+      )
     })
-  }
-
-  /**
-   * Sends form.
-   *
-   * @memberof ScheduleView
-   */
-  sendForm() {
-    const fieldSet = {
-      datetime: document.querySelector('input[name=datetime]').value,
-      email_or_phone: document.querySelector('input[name=email_or_phone]').value,
-    }
-    this.service
-      .sendScheduleForm(fieldSet)
-      .then((response) => {
-        document.querySelector('.widget--schedule__content').innerHTML = response
-      })
-      .catch((reason) => {
-        console.log('reason', reason)
-      })
   }
 
   /**

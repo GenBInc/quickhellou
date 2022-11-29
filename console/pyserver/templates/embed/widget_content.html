@@ -5,11 +5,11 @@
 <script src="{{ console_app_url }}/static/js/widget.js" defer></script>
 <link rel="stylesheet" type="text/css" href="{{ console_app_url }}/static/css/widget.css">
 <div class="qh-root" data-id="{{ widget_id }}" data-url="{{ console_app_url }}" style="opacity:0;">
-<div id="qh_w_frame" class="qh-widget-badge">
-  {# widget badge #}
-  {% include "embed/widget_base.html" %}
   {# widget schedule #}
   {% include "embed/widget/schedule_dialog.html" %}
+  <div id="qh_w_frame" class="qh-widget-badge">
+  {# widget badge #}
+  {% include "embed/widget_base.html" %}
   {# widget extension element #}
   {% include "embed/widget_contact.html" %}
 </div>

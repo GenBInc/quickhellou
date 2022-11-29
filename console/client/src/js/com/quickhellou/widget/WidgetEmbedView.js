@@ -45,8 +45,7 @@ export class WidgetEmbedView extends UIView {
     })
 
     this.extDispatcher.addEventListener('expand_contact', () => {
-      this.element.classList.add('js-expanded')
-      this.element.classList.remove('js-expanded--large')
+      this.element.classList.add('js-expanded', 'js-expanded--large')
     }, false)
 
     this.extDispatcher.addEventListener('expand_schedule', () => {

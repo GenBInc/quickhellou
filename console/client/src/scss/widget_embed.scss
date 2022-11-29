@@ -696,8 +696,14 @@ iframe#qh_iframe.js-expanded {
 }
 
 iframe#qh_iframe.js-expanded.js-expanded--large {
-  width:540px;
-  height:480px;
+  width:calc(100vw - 40px);
+  height:calc(100vh - 40px);
+  @media (min-width: $s-sm) {
+    height:100%;
+    max-height:480px;
+    width:100%;
+    max-width:$s-sm;
+  }
 }
 
 #qh_e_frame.js-expanded {

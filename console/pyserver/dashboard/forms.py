@@ -90,20 +90,32 @@ class WidgetForm(forms.ModelForm):
         fields = ('name', 'url', 'lang', 'template', 'header', 'content')
 
 
+class CalendarForm(forms.Form):
+    DAY_CHOICES = (
+        ('1', 'Monday'),
+        ('2', 'Tuesday'),
+        ('3', 'Wednesday'),
+        ('4', 'Thursday'),
+        ('5', 'Friday'),
+        ('6', 'Saturday'),
+        ('7', 'Sunday'),
+    )
+    day_checked = forms.MultipleChoiceField(choices = DAY_CHOICES)
+    
+
+
 class WidgetActiveUserForm(forms.Form):
     name = forms.CharField(max_length=256, required=True)
     email_or_phone = EmailOrPhoneField(max_length=256, required=True)
 
 
-class WidgetExtensionViewForm(forms.Form):
-    name = forms.CharField(max_length=256, required=True)
-    email_or_phone = EmailOrPhoneField(max_length=256, required=True)
-    message = forms.CharField(widget=forms.Textarea(), required=True)
-
 class WidgetScheduleForm(forms.Form):
+    name = forms.CharField(max_length=256, required=True)
+    email_address = forms.EmailField(required=True)
+    phone_number = forms.CharField(required=False)
     datetime = forms.CharField(required=True)
-    email_or_phone = EmailOrPhoneField(max_length=256, required=True)
-    
+
+
 class AssigneesForm(forms.Form):
     assignee = forms.ModelMultipleChoiceField(
         queryset=User.objects.all(),

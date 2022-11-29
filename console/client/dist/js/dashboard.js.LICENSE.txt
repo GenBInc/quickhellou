@@ -75,6 +75,8 @@ PERFORMANCE OF THIS SOFTWARE.
 
 /*! ./com/quickhellou/base/utils/QhUtils */
 
+/*! ./com/quickhellou/dashboard/CalendarView */
+
 /*! ./com/quickhellou/dashboard/CallsView */
 
 /*! ./com/quickhellou/dashboard/DashboardView */
@@ -277,6 +279,10 @@ PERFORMANCE OF THIS SOFTWARE.
 
 /*!******************************************************!*\
   !*** ../../node_modules/@material/menu/constants.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./js/com/quickhellou/dashboard/CalendarView.js ***!
   \******************************************************/
 
 /*!*******************************************************!*\

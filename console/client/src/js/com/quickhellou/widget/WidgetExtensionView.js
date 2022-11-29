@@ -84,7 +84,7 @@ export class WidgetExtensionView extends UIView {
       HTMLUtils.removeAllEventListeners(sendButtonClassName)
       const submitButtonElement = this.uiGet(sendButtonClassName)
       submitButtonElement.addEventListener('click', () => {
-        this.sendContactForm()
+        this.sendScheduleForm()
       })
     }
     this.initInactiveOperatorCloser()
@@ -218,32 +218,26 @@ export class WidgetExtensionView extends UIView {
   }
 
   /**
-   * Sends contact form.
+   * Sends schedule form.
    *
    * @memberof WidgetExtensionView
    */
-  sendContactForm() {
+   sendScheduleForm() {
     const fieldSet = {
       name: document.querySelector('.qh_module--inactive-form input[name=name]')
         .value,
-      email_or_phone: document.querySelector(
-        '.qh_module--inactive-form input[name=email_or_phone]'
+      email_address: document.querySelector(
+        '.qh_module--inactive-form input[name=email_address]'
       ).value,
-      message: document.querySelector('textarea[name=message]').value,
+      phone_number: document.querySelector('input[name=phone_number]').value,
+      datetime: document.querySelector('input[name=datetime]').value,
     }
     this.service
-      .sendContactForm(fieldSet)
+      .sendScheduleForm(fieldSet)
       .then((response) => {
         document.querySelector('.contact-form').innerHTML = response
         this.initContactForm()
         this.collapseView()
-        this.extDispatcher.dispatchEvent(
-          new CustomEvent('expand_schedule', {
-            detail: {
-              source: 'contact',
-            }
-          })
-        )
       })
       .catch((reason) => {
         console.log('reason', reason)
@@ -257,8 +251,11 @@ export class WidgetExtensionView extends UIView {
     const fieldSet = {
       name: document.querySelector('.qh_active-user-form__input[name=name]')
         .value,
-      email_or_phone: document.querySelector(
-        '.qh_active-user-form__input[name=email_or_phone]'
+      email_address: document.querySelector(
+        '.qh_active-user-form__input[name=email_address]'
+      ).value,
+      phone_number: document.querySelector(
+        '.qh_active-user-form__input[name=phone_number]'
       ).value,
     }
     this.service

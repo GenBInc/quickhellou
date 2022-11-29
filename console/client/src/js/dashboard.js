@@ -7,6 +7,7 @@ import { MDCFormField } from '@material/form-field'
 import { MDCCheckbox } from '@material/checkbox'
 import { MDCRadio } from '@material/radio'
 import { QhUtils } from './com/quickhellou/base/utils/QhUtils'
+import { CalendarView } from './com/quickhellou/dashboard/CalendarView'
 import { DashboardView } from './com/quickhellou/dashboard/DashboardView'
 import { WidgetView } from './com/quickhellou/dashboard/WidgetView'
 import { CallsView } from './com/quickhellou/dashboard/CallsView'
@@ -36,7 +37,7 @@ function initPhone() {}
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  initColorPicker();
+  initColorPicker()
 
   const list = MDCList.attachTo(document.querySelector('.mdc-list'))
   list.wrapFocus = true
@@ -109,14 +110,15 @@ document.addEventListener('DOMContentLoaded', () => {
     uiView = new WidgetView()
   } else if (QhUtils.isPage('communications')) {
     uiView = new CallsView()
+  } else if (QhUtils.isPage('calendar')) {
+    uiView = new CalendarView()
   } else {
     uiView = new DashboardView()
   }
   uiView.init()
 
-  initMobileMenu();
-
-  initMessages();
+  initMobileMenu()
+  initMessages()
 
 })
 
@@ -167,7 +169,6 @@ const initColorPicker = () => {
 }
 
 const updateColor = () => {
-  console.log("ssf");
   const colorInput = document.querySelector('.widget-color-field')
   const colorDot = document.querySelector('.color-dot')
   const previewDot = document.querySelector('.widget-outlook__background-circle')

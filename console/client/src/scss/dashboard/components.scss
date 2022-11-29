@@ -1207,8 +1207,8 @@ select.time_select {
   cursor: pointer;
 }
 
-.time_select_hour,
-.time_select_min {
+.calendar__select--hour,
+.calendar__select--minutes {
   background-color: #f1f6ff !important;
 }
 
@@ -1287,12 +1287,18 @@ select.time_select {
   display: flex;
 }
 
-.time-break_button {
-  text-decoration: none;
-  color:#4285f4
+.calendar__button--delete-time-slot {
+  cursor: pointer;
 }
 
-.time-break_button:hover {
+.calendar__button--time-break {
+  text-decoration: none;
+  color:#4285f4;
+  cursor: pointer;
+  user-select: none;
+}
+
+.calendar__button--time-break:hover {
   text-decoration: none;
   color:#001487;
 }

@@ -1,0 +1,112 @@
+{% load static %} {% if additional %}
+<div class="df df-f1 flc time-row additional">
+  {% endif %}
+  <div
+		data-index="{{ index }}"
+		data-id="{{ day }}_{{ index }}"
+		data-day="{{ day }}"
+		class="df df-f1 flc time-row calendar__time-slot"
+	>
+    <input
+      data-id="{{ day }}_{{ index }}"
+      type="hidden"
+      name="date_time"
+      value=""
+    />
+    <div class="flc time-row--clock-icon_wrap time-row--clock-icon"></div>
+    <div class="flc calendar-time calendar-time_from">
+      <select
+				data-id="from_hour_{{ day }}_{{ index }}"
+        class="time_select calendar__select--hour"
+      >
+        <option value="01">01</option>
+        <option value="02">02</option>
+        <option value="03">03</option>
+        <option value="04">04</option>
+        <option value="05">05</option>
+        <option value="06">06</option>
+        <option value="07">07</option>
+        <option value="08">08</option>
+        <option value="09" selected>09</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+      </select>
+      :
+      <select
+        data-id="from_minutes_{{ day }}_{{ index }}"
+        class="time_select calendar__select--minutes"
+      >
+        <option value="00" selected>00</option>
+        <option value="30">30</option>
+      </select>
+
+      <select
+        data-id="from_timeabbr_{{ day }}_{{ index }}"
+        data-day="{{ day }}"
+        data-field="timeAbbreviation"
+				class="time_select calendar__select--time-abbreviation"
+      >
+        <option value="am" selected>am</option>
+        <option value="pm">pm</option>
+      </select>
+    </div>
+
+    <div class="fc calendar_to_between">
+      <p>to</p>
+    </div>
+
+    <div class="flc calendar-time calendar-time-to">
+      <select
+        data-id="to_hour_{{ day }}_{{ index }}"
+				class="time_select calendar__select--hour"
+      >
+        <option value="01">01</option>
+        <option value="02">02</option>
+        <option value="03">03</option>
+        <option value="04">04</option>
+        <option value="05" selected>05</option>
+        <option value="06">06</option>
+        <option value="07">07</option>
+        <option value="08">08</option>
+        <option value="09">09</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+      </select>
+      :
+      <select
+        data-id="to_minutes_{{ day }}_{{ index }}"
+        class="time_select calendar__select--minutes"
+      >
+        <option value="00" selected>00</option>
+        <option value="30">30</option>
+      </select>
+
+      <select
+        data-id="to_timeabbr_{{ day }}_{{ index }}"
+        class="time_select calendar__select--time-abbreviation"
+      >
+        <option value="am">am</option>
+        <option value="pm" selected>pm</option>
+      </select>
+    </div>
+
+    <div class="frc time-row--delete-button_wrap">
+      <a
+        class="fc df-f1 calendar__button--delete-time-slot team__list-link list-link--delete delete-calendar-row"
+        aria-label="Delete"
+        data-microtip-position="bottom"
+        data-role="tooltip"
+      >
+        <img
+          class="list-link--icon"
+          src="{% static '/images/delete.svg' %}"
+          alt="delete"
+        />
+      </a>
+    </div>
+  </div>
+  {% if additional %}
+</div>
+{% endif %}

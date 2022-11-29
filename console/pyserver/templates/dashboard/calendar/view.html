@@ -5,7 +5,7 @@
 {% block page_title %}Calendar{% endblock %}
 
 {% block nav %}
-    {% include "./nav_menu.html" with menu_selected='calendar' %}
+    {% include "dashboard/nav_menu.html" with menu_selected='calendar' %}
 {% endblock %}
 
 {% block js %}
@@ -22,17 +22,19 @@
   <p class="form__header">Working Hours</p>
 </div>
 
-<form>
+<form
+  action="{% url 'dashboard:calendar_edit' %}"
+  method="post"
+  novalidate
+>
   <div class="df fc fcol calendar-wrap">
-    
-      {% include "./calendar_row.html" with day='monday' %}
-      {% include "./calendar_row.html" with day='tuesday' %}
-      {% include "./calendar_row.html" with day='wednesday' %}
-      {% include "./calendar_row.html" with day='thursday' %}
-      {% include "./calendar_row.html" with day='friday' %}
-      {% include "./calendar_row.html" with day='saturday' %}
-      {% include "./calendar_row.html" with day='sunday' %}
-    
+      {% include "dashboard/calendar/day_row.html" with day='monday' %}
+      {% include "dashboard/calendar/day_row.html" with day='tuesday' %}
+      {% include "dashboard/calendar/day_row.html" with day='wednesday' %}
+      {% include "dashboard/calendar/day_row.html" with day='thursday' %}
+      {% include "dashboard/calendar/day_row.html" with day='friday' %}
+      {% include "dashboard/calendar/day_row.html" with day='saturday' %}
+      {% include "dashboard/calendar/day_row.html" with day='sunday' %}
   </div>
 
   <div class="fc">

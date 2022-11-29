@@ -5,6 +5,10 @@ import datetime
 import re
 import hashlib
 from io import BytesIO, TextIOWrapper
+from django.views.decorators.http import (
+    require_POST,
+    require_GET
+)
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -28,12 +32,12 @@ from dashboard.forms import (
     ProfileForm,
     ProfileMetaForm,
     UserForm,
-    WidgetExtensionViewForm,
     WidgetScheduleForm,
     WidgetForm,
     WidgetTemplateForm,
     CommunicationSessionForm,
-    WidgetActiveUserForm
+    WidgetActiveUserForm,
+    CalendarForm,
 )
 from dashboard.models import (
     Communication,
@@ -213,6 +217,35 @@ def widget_edit_view(
         'widget_code': widget_code})
 
 
+@require_POST
+@login_required
+def save_calendar(
+    request: HttpRequest,
+) -> HttpResponse:
+    form = CalendarForm(request.POST)
+    user: User = request.user
+    if form.is_valid():
+        messages.success(
+            request, 'Calendar has been saved.')
+    return render(request, 'dashboard/calendar/view.html', {
+        'user': request.user,
+        'form': form,
+    })
+
+@require_POST
+@login_required
+def calendar_time_row(
+    request: HttpRequest,
+    day: str,
+    index: int,
+) -> HttpResponse:
+    return render(request, 'dashboard/calendar/time_row.html', {
+        'day': day,
+        'index': index,
+        'additional': True,
+    })
+
+
 @permission_required("is_default_admin")
 @login_required
 def widget_template_create_view(
@@ -384,7 +417,7 @@ def team_view(
 def calendar_view(
     request: HttpRequest
 ) -> HttpResponse:
-    return render(request, 'dashboard/calendar.html', {'user': request.user})
+    return render(request, 'dashboard/calendar/view.html', {'user': request.user})
 
 
 @permission_required("is_default_admin")
@@ -681,34 +714,6 @@ def widget_content_view(
     return render(request, 'embed/widget_content.html', template_params)
 
 
-@csrf_exempt
-def widget_schedule(
-    request: HttpRequest,
-    widget_id: int,
-    hostname: str,
-    uuid: str
-) -> HttpResponse:
-    widget = Widget.objects.get(id=widget_id, uuid=uuid)
-
-    if not widget:
-        raise Http404
-
-    domain_match = hostname == widget.url
-    if widget is not None and domain_match and not widget.is_installed:
-        widget.is_installed = True
-        widget.save()
-        
-    if request.method == 'POST':
-        form = WidgetScheduleForm(request.POST)
-        # if form.is_valid():
-        #     form.save()
-
-    return render(request, 'embed/widget/scheduler_form_response.html', {
-        'widget': widget,
-        'form': form,
-        'hostname': hostname})
-
-
 def widget_embed_view(
     request: HttpRequest,
     widget_id: int,
@@ -732,61 +737,52 @@ def widget_embed_view(
 
 
 @csrf_exempt
-def widget_extension_embed_view(
+def widget_schedule_view(
     request: HttpRequest,
     widget_id: int,
     hostname: str,
     uuid: str
 ) -> HttpResponse:
-    widget = Widget.objects.get(id=widget_id, uuid=uuid)
+    widget: Widget = Widget.objects.get(id=widget_id, uuid=uuid)
 
     if not widget:
         raise Http404
 
-    domain_match = hostname == widget.url
+    domain_match: bool = hostname == widget.url
 
-    user_id = None
+    user_id: int = None
 
     if widget is not None and domain_match and not widget.is_installed:
         widget.is_installed = True
         widget.save()
 
     if request.method == 'POST':
-        form = WidgetExtensionViewForm(request.POST)
+        form = WidgetScheduleForm(request.POST)
         if form.is_valid():
-            clientName = form.cleaned_data['name']
-            clientEmailOrPhone = form.cleaned_data['email_or_phone']
-            clientMessage = form.cleaned_data['message']
+            client_name = form.cleaned_data['name']
+            email_address = form.cleaned_data['email_address']
+            phone_number: str = form.cleaned_data['phone_number']
+            datetime: str = form.cleaned_data['datetime']
 
             clientEmail = ''
             clientPhone = ''
 
-            if '@' in clientEmailOrPhone:
-                clientEmail = clientEmailOrPhone
-            else:
-                clientEmail = hashlib.md5(str(datetime.datetime.now()).encode(
-                    'utf-8')).hexdigest() + '@' + settings.FAKE_EMAIL_DOMAIN
-
-            phone_regex = re.compile(
-                '^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
-            if phone_regex.match(clientEmailOrPhone):
-                clientPhone = clientEmailOrPhone
             # get or create user
             try:
-                client_user = User.objects.get(email=clientEmail)
+                client_user: User = User.objects.get(email=email_address)
             except:
-                client_user = User.objects.create(
-                    email=clientEmail, client_board=widget.client_board)
+                client_user: User = User.objects.create(
+                    email=email_address, client_board=widget.client_board)
                 client_user.save()
-            user_id = client_user.id
+            user_id: int = client_user.id
             # get or create user profile
             try:
-                profile = Profile.objects.get(user=client_user)
+                profile: Profile = Profile.objects.get(user=client_user)
             except:
-                profile = Profile.objects.create(user=client_user)
-                profile.phone = clientPhone
+                profile: Profile = Profile.objects.create(user=client_user)
+                profile.phone = phone_number
 
-            profile.full_name = clientName
+            profile.full_name = client_name
             profile.save()
 
             # get or create communication
@@ -794,12 +790,12 @@ def widget_extension_embed_view(
                 communication = Communication.objects.get(caller=client_user)
                 communication.status = 2
             except:
-                communication = Communication.objects.create(caller=client_user, caller_name=clientName,
+                communication = Communication.objects.create(caller=client_user, caller_name=client_name,
                                                              client_board=widget.client_board, status=2, widget=widget)
             communication.save()
 
             # create communication session
-            session = CommunicationSession.objects.create_message(
+            session: CommunicationSession = CommunicationSession.objects.create_message(
                 communication=communication, attendant=client_user, message=clientMessage, type=2)
 
             # send message
@@ -827,9 +823,9 @@ def widget_extension_embed_view(
                 messages.error(request, "Error sending email.")
                 messages.error(request, "Please try again later.")
             # set success message
-            form = WidgetExtensionViewForm()
+            form = WidgetScheduleForm()
     else:
-        form = WidgetExtensionViewForm()
+        form = WidgetScheduleForm()
     return render(request, 'embed/widget_form_response.html', {
         'widget': widget,
         'form': form,

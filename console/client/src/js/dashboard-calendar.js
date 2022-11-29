@@ -24,8 +24,3 @@ const dayChange = (e) => {
     
   
 }
-
-
-const addTimeRow = (day) => {
-    document.getElementById('time_rows_'+day).innerHTML+='<div class="df df-f1 flc time-row additional">'+document.getElementById('time-row').innerHTML+'</div>';
-}

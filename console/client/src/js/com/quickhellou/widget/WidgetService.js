@@ -216,27 +216,13 @@ export class WidgetService extends EventEmitter {
    *
    * @param {array<object>} fieldSet the field set
    */
-  sendContactForm(fieldSet) {
-    const url = `${this.consoleAppUrl}/dashboard/widget_extension_embed/${
+  sendScheduleForm(fieldSet) {
+    const url = `${this.consoleAppUrl}/dashboard/widget_schedule/${
       this.widgetId
     }/${encodeURIComponent(window.location.hostname.toLowerCase())}/${
       this.widget.uuid
     }`
     return this.apiService.postAsXMLHttpRequest(fieldSet, url)
-  }
-
-  /**
-   * Sends schedule form.
-   *
-   * @param {array<object>} fieldSet the field set
-   */
-  sendScheduleForm(fieldSet) {
-      const url = `${this.consoleAppUrl}/dashboard/widget_schedule/${
-        this.widgetId
-      }/${encodeURIComponent(window.location.hostname.toLowerCase())}/${
-        this.widget.uuid
-      }`
-      return this.apiService.postAsXMLHttpRequest(fieldSet, url)
   }
 
   /**
