@@ -74,7 +74,7 @@ def templates_view(
     request: HttpRequest
 ) -> HttpResponse:
     widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.filter(
-        active=True
+        active=True, last_editor=request.user
     ).order_by('id')
     return render(request, 'dashboard/templates.html', {
         'widget_templates': widget_templates
@@ -282,7 +282,7 @@ def widget_template_edit_view(
         form = WidgetTemplateForm(
             request.POST, request.FILES, instance=widget_template)
         if form.is_valid():
-            instance = form.save(request.user)
+            form.save(request.user)
             messages.success(
                 request, 'Widget template has been saved.')
             return redirect('dashboard:templates')
