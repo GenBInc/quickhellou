@@ -238,6 +238,14 @@ ul.messages {
   list-style: none;
 }
 
+.errorlist li {
+  background-color:#c90000;
+  color: white;
+  padding:4px 16px;
+  font-weight: 500;
+  border-radius: 16px;
+}
+
 .messages li.error .message-bubble::before,
 .messages li.error .message-bubble {
   background-color:#c90000;

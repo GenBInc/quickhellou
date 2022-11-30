@@ -142,11 +142,12 @@ def communication_session_edit_view(
 def widget_create_view(
     request: HttpRequest
 ) -> HttpResponse:
-    users = User.objects.filter(client_board=request.user.client_board)
-    widget_templates = WidgetTemplate.objects.all()
+    users: list[User] = User.objects.filter(
+        client_board=request.user.client_board)
+    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.all()
     if request.method == 'POST':
-        form = WidgetForm(request.POST)
-        assignees_form = AssigneesForm(request.POST)
+        form: WidgetForm = WidgetForm(request.POST)
+        assignees_form: AssigneesForm = AssigneesForm(request.POST)
         if form.is_valid() and assignees_form.is_valid():
             instance = form.save(commit=False)
             instance.client_board = request.user.client_board
@@ -214,7 +215,8 @@ def widget_edit_view(
         'languages': Widget.LANG_CHOICES,
         'widget_templates': widget_templates,
         'widget': widget,
-        'widget_code': widget_code})
+        'widget_code': widget_code
+    })
 
 
 @require_POST
@@ -222,15 +224,25 @@ def widget_edit_view(
 def save_calendar(
     request: HttpRequest,
 ) -> HttpResponse:
-    form = CalendarForm(request.POST)
-    user: User = request.user
+    """Saves calendar.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    form: CalendarForm = CalendarForm(request.POST)
     if form.is_valid():
         messages.success(
             request, 'Calendar has been saved.')
     return render(request, 'dashboard/calendar/view.html', {
         'user': request.user,
         'form': form,
+        'is_saved': True,
+        'date_time': request.POST.getlist('date_time')
     })
+
 
 @require_POST
 @login_required
@@ -417,7 +429,11 @@ def team_view(
 def calendar_view(
     request: HttpRequest
 ) -> HttpResponse:
-    return render(request, 'dashboard/calendar/view.html', {'user': request.user})
+    return render(request, 'dashboard/calendar/view.html', {
+        'user': request.user,
+        'is_saved': False,
+        'form': CalendarForm(request.POST)
+    })
 
 
 @permission_required("is_default_admin")

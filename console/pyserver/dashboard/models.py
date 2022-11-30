@@ -112,7 +112,7 @@ class Widget(models.Model):
     paused = models.BooleanField(default=False)
     template = models.ForeignKey(
         WidgetTemplate, default=None, blank=True, null=True, on_delete=models.CASCADE)
-    """ Properties merged into template. """
+    # Properties merged into template.
     header = models.CharField(max_length=256, blank=True)
     content = models.TextField(blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)

@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     uiView = new WidgetView()
   } else if (QhUtils.isPage('communications')) {
     uiView = new CallsView()
-  } else if (QhUtils.isPage('calendar')) {
+  } else if (QhUtils.isPage('calendar') || QhUtils.isPage('calendar_edit')) {
     uiView = new CalendarView()
   } else {
     uiView = new DashboardView()

@@ -100,6 +100,7 @@ export class FormService extends EventEmitter {
       html += `<input type="hidden" name="${field.name}" value='${field.value}'>`
     })
     html += `</form>`
+    console.log(html)
     document.body.insertAdjacentHTML('beforeend', html)
     const form = document.getElementById('__form__')
     form.submit()

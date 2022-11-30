@@ -1,4 +1,10 @@
-import re
+from re import (
+    compile,
+    search,
+    Pattern,
+    Match,
+)
+from datetime import datetime, date
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -17,7 +23,7 @@ class EmailOrPhoneField(forms.CharField):
         super().validate(value)
         if '@' in value:
             return validate_email(value)
-        phone_regex = re.compile(
+        phone_regex = compile(
             '^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
         if phone_regex.match(value):
             return True
@@ -91,18 +97,44 @@ class WidgetForm(forms.ModelForm):
 
 
 class CalendarForm(forms.Form):
-    DAY_CHOICES = (
-        ('1', 'Monday'),
-        ('2', 'Tuesday'),
-        ('3', 'Wednesday'),
-        ('4', 'Thursday'),
-        ('5', 'Friday'),
-        ('6', 'Saturday'),
-        ('7', 'Sunday'),
-    )
-    day_checked = forms.MultipleChoiceField(choices = DAY_CHOICES)
+    """The calendar view form.
+    """
+    day1 = forms.CharField(required=False)
+    day2 = forms.CharField(required=False)
+    day3 = forms.CharField(required=False)
+    day4 = forms.CharField(required=False)
+    day5 = forms.CharField(required=False)
+    day6 = forms.CharField(required=False)
+    day0 = forms.CharField(required=False)
     
+    
+    def clean(self):
+        """Clean form data."""
+        
+        range_pattern: Pattern = compile(
+            '^(\d{1})\s((\d{2})\:(\d{2})\s(AM|PM))\s((\d{2})\:(\d{2})\s(AM|PM))')
 
+        day_fields: list[str] = ['day1', 'day2', 'day3', 'day4', 'day5', 'day6', 'day0']
+        
+        for day_field in day_fields:
+            date_time_list = self.data.getlist(day_field)    
+                
+            for date_time in date_time_list:
+                result: Match[str] = search(range_pattern, date_time)
+                day: str = result.group(1)
+
+                datetime_from_str: str = '{} {}'.format(day, result.group(2))
+                datetime_to_str: str = '{} {}'.format(day, result.group(6))
+
+                datetime_format: str = '%w %I:%M %p'
+                datetime_from: datetime = datetime.strptime(
+                    datetime_from_str, datetime_format)
+                datetime_to: datetime = datetime.strptime(
+                    datetime_to_str, datetime_format)
+
+                if datetime_from > datetime_to:
+                    self.add_error(
+                        'day{}'.format(day), 'Time range is invalid.')
 
 class WidgetActiveUserForm(forms.Form):
     name = forms.CharField(max_length=256, required=True)
@@ -157,7 +189,8 @@ class WidgetTemplateForm(forms.ModelForm):
         return valid
 
     def save(self, user, commit=True):
-        widget_template = super(WidgetTemplateForm, self).save(commit=False)
+        widget_template: WidgetTemplate = super(
+            WidgetTemplateForm, self).save(commit=False)
         widget_template.code = generate_template_code(widget_template)
         widget_template.last_editor = user
         if commit:

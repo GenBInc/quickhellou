@@ -1,27 +1,39 @@
 {% load static %}
-
-<div class="df df-f1 flc fcol calendar-day_row">
-
-    <div class="df df-f1 flc frow calendar-day calendar-day_{{ day }}">
-        <input
-            id="day_{{ day }}"
-            class="day_checkbox"
-            type="checkbox"
-            name="day_checked"
-            {% if day != 'saturday' and day != 'sunday'  %} checked {% endif %}
-        >
-        <label for="day_{{ day }}" class="calendar-day-label">{{ day }}</label>
+{% load dashboard_extras %}
+{{ form_field.errors }}
+{{ form_field.value }}
+<div
+	class="df df-f1 flc fcol calendar__day-slot"
+	data-daycode="{{ day_code }}"
+>
+  <div class="df df-f1 flc frow calendar-day calendar-day_{{ day }}">
     
-        <div class="time_rows time-rows--{{ day }} df flc fcol df-f1">
-            {% include "dashboard/calendar/time_row.html" with day=day additional=False index=1 %}
-        </div>
-        
-        <div class="df flc df-f1 time-row-desc">
-            <p>Non Working Day</p>
-        </div>
-        <div class="df frc frow calendar_break_row">
-            <a data-day="{{ day }}" class="calendar__button--time-break">+ Add Time Slot</a>
-        </div>
-    
+    <input
+      id="day_{{ day }}"
+      class="day_checkbox"
+      type="checkbox"
+      name="day{{ day_code }}_checked"
+      {% if day != 'saturday' and day != 'sunday' %}
+        {%  if is_saved and form_field.value is not None %}
+          checked
+        {% elif not is_saved %}
+          checked
+        {% endif %}    
+      {% else %}
+        {% if is_saved and form_field.value is not None %}
+          checked
+        {% endif %}
+      {% endif %}
+    >
+    <label for="day_{{ day }}" class="calendar-day-label">{{ day }}</label>
+    <div class="time_rows time-rows--{{ day }} df flc fcol df-f1">
+    	{% include "dashboard/calendar/time_row.html" with day=day additional=False index=1 %}
+    </div>
+    <div class="df flc df-f1 time-row-desc">
+    	<p>Non Working Day</p>
+    </div>
+    <div class="df frc frow calendar_break_row">
+    	<a data-day="{{ day }}" class="calendar__button--time-break">+ Add Time Slot</a>
     </div>
   </div>
+</div>

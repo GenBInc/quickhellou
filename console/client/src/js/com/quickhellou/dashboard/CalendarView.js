@@ -7,24 +7,45 @@ export class CalendarView extends UIView {
     super()
     this.apiService = new ApiService('')
     this.viewService = new ViewService()
+    this.timeRowCounter = 1
   }
 
   async init() {
     this.initAddTimeRowControls()
     this.initDeleteTimeSlots()
     this.initTimeSelects()
+    this.initSubmit()
+  }
+
+  initSubmit() {
+    const submitButton = document.querySelector('.calendar__button--submit')
+    submitButton.addEventListener('click', () => {
+      const form = document.querySelector('form.form--save')
+      const formInputs = form.querySelectorAll('input.input--data')
+      formInputs.forEach(formInput => {
+        formInput.remove()
+      })
+      const days = this.updateTimeSelectInput()
+      
+      for (const [dayCode, day] of Object.entries(days)) {
+        day.forEach(dateTime => {
+          form.insertAdjacentHTML('beforeend', `<input class="input--data" type="hidden" name="day${dayCode}" value="${dateTime}">`)
+        })
+      }
+      form.submit()
+    })
   }
 
   initTimeSelects() {
-    this.removeListeners('.calendar__select--hour')
+    this.removeListListeners('.calendar__select--hour')
     const hourSelectElements = document.querySelectorAll('.calendar__select--hour')
     hourSelectElements.forEach(hourSelectElement => {
-      hourSelectElement.addEventListener('change', (e) => {
+      hourSelectElement.addEventListener('change', () => {
         this.updateTimeSelectInput()
       })
     })
 
-    this.removeListeners('.calendar__select--minutes')
+    this.removeListListeners('.calendar__select--minutes')
     const minutesSelectElements = document.querySelectorAll('.calendar__select--minutes')
     minutesSelectElements.forEach(minutesSelectElement => {
       minutesSelectElement.addEventListener('change', () => {
@@ -32,7 +53,7 @@ export class CalendarView extends UIView {
       })
     })
 
-    this.removeListeners('.calendar__select--time-abbreviation')
+    this.removeListListeners('.calendar__select--time-abbreviation')
     const timeAbbreviationElements = document.querySelectorAll('.calendar__select--time-abbreviation')
     timeAbbreviationElements.forEach(timeAbbreviationElement => {
       timeAbbreviationElement.addEventListener('change', () => {
@@ -42,44 +63,63 @@ export class CalendarView extends UIView {
   }
 
   initAddTimeRowControls() {
+    this.removeListListeners('.calendar__button--time-break')
     const buttonElements = document.querySelectorAll('.calendar__button--time-break')
     buttonElements.forEach(buttonElement => {
       buttonElement.addEventListener('click', () => {
-        const day = buttonElement.dataset.day
-        const slotElement = document.querySelector(`div.time-row[data-day="${day}"]:last-child`)
-        this.addTimeRow(buttonElement.dataset.day, Number(slotElement.dataset.index) + 1)
+        this.addTimeRow(buttonElement.dataset.day, ++this.timeRowCounter)
       })
     })
   }
   
   updateTimeSelectInput() {
-    const elements = document.querySelectorAll('.calendar__time-slot')
-    elements.forEach(element => {
-      const id = element.dataset.id
-      const day = element.dataset.day
+    const daySlotElements = document.querySelectorAll('.calendar__day-slot')
+    let data = []
+    
+    daySlotElements.forEach(daySlotElement => {
+      const isChecked = daySlotElement.querySelector('input.day_checkbox').checked
+      if (!isChecked) {
+        return
+      }
+      const dayCode = daySlotElement.dataset.daycode
+      const timeRowElements = daySlotElement.querySelectorAll('.calendar__time-slot')
+      timeRowElements.forEach(element => {
+        const id = element.dataset.id
 
-      const inputElement = element.querySelector('input[name="date_time"]')
-      
-      const fromHour = element.querySelector(`select[data-id=from_hour_${id}]`).value
-      const fromMinutes = element.querySelector(`select[data-id=from_minutes_${id}]`).value
-      const fromTimeAbbreviation = element.querySelector(`select[data-id=from_timeabbr_${id}]`).value
-      
-      const toHour = element.querySelector(`select[data-id=to_hour_${id}]`).value
-      const toMinutes = element.querySelector(`select[data-id=to_minutes_${id}]`).value
-      const toTimeAbbreviation = element.querySelector(`select[data-id=to_timeabbr_${id}]`).value
-      
-      
-      inputElement.value = `${day} ${fromHour}:${fromMinutes} ${fromTimeAbbreviation} ${toHour}:${toMinutes} ${toTimeAbbreviation}`
-      console.log('xx', inputElement.value)
+        const fromHour = element.querySelector(`select[data-id=from_hour_${id}]`).value
+        const fromMinutes = element.querySelector(`select[data-id=from_minutes_${id}]`).value
+        const fromTimeAbbreviation = element.querySelector(`select[data-id=from_timeabbr_${id}]`).value.toUpperCase()
+
+        const toHour = element.querySelector(`select[data-id=to_hour_${id}]`).value
+        const toMinutes = element.querySelector(`select[data-id=to_minutes_${id}]`).value
+        const toTimeAbbreviationElement = element.querySelector(`select[data-id=to_timeabbr_${id}]`)
+        const toTimeAbbreviation = toTimeAbbreviationElement.value.toUpperCase()
+        
+        const isFromTimeAbbreviationPM = fromTimeAbbreviation === 'PM'
+        if (isFromTimeAbbreviationPM) {
+          toTimeAbbreviationElement.value = 'pm'
+          toTimeAbbreviationElement.setAttribute('disabled', 'disabled')
+        }
+        if (!isFromTimeAbbreviationPM) {
+          toTimeAbbreviationElement.removeAttribute('disabled')
+        }
+        
+        if (!data[dayCode]) {
+          data[dayCode] = []
+        }
+        data[dayCode].push(`${dayCode} ${fromHour}:${fromMinutes} ${fromTimeAbbreviation} ${toHour}:${toMinutes} ${toTimeAbbreviation}`)
+      })
     })
+    return data
   }
 
   initDeleteTimeSlots() {
-    this.removeListeners('.calendar__button--delete-time-slot')
+    this.removeListListeners('.calendar__button--delete-time-slot')
     const deleteTimeButtons = document.querySelectorAll('.calendar__button--delete-time-slot')
     deleteTimeButtons.forEach(deleteTimeButton => {
       deleteTimeButton.addEventListener('click', () => {
-        deleteTimeButton.parentElement.parentElement.remove()
+        deleteTimeButton.parentElement.parentElement.parentElement.remove()
+        this.updateTimeSelectInput()
       })
     })
   }
@@ -113,6 +153,8 @@ export class CalendarView extends UIView {
       document.querySelector(`.time-rows--${day}`).innerHTML += resultHtml
       this.initDeleteTimeSlots()
       this.initTimeSelects()
+      this.initAddTimeRowControls()
+      this.updateTimeSelectInput()
     })
   }
 }
