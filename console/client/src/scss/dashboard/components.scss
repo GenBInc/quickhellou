@@ -520,21 +520,6 @@ a.link--unpause-widget {
   z-index:2;
 }
 
-.widget-outlook__icon {
-  position: absolute;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  z-index: 1;
-}
-
-.widget-outlook__icon img {
-  display: block;
-  height:40px;
-  max-width:80px;
-}
-
 .widget-code-box {
   position: relative;
   font-family:monospace;

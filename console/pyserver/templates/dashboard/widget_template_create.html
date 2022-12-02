@@ -8,6 +8,11 @@
   {% include "./nav_menu.html" with menu_selected='settings' %}   
 {% endblock %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static '/css/widget.css' %}"/>
+{% endblock %}
+
+
 {% block content %}
 
 <div class="fc">
@@ -76,7 +81,7 @@
                       <div class="flc content-box__block">
                       <p class="form__subheader form__subheader--column">Icon file</p>
                       <p class="">
-                        <a href="/media/images/logo.svg" target="_blank">/media/images/logo.svg</a>
+                        <a href="/media/images/logo.svg" class="icon-name-label" target="_blank">/media/images/logo.svg</a>
                       </p>
                       </div>
 
@@ -98,23 +103,11 @@
                     </div>
                   </div>
                   <div class="fc outlook">
-                    <div class="widget-outlook__graphics">
-                      <svg class="outlook--background" width="100" height="100">
-                        <circle class="widget-outlook__background-circle outlook--circle" cx="50" cy="50" r="50" fill="{{form.background_color.value}}" />
-                      </svg>
 
-                      <div class="widget-outlook__alert">
-                        <svg class="outlook--background" width="100" height="100">
-                          <circle class="outlook__circle-red" cx="12.5" cy="12.5" r="12.5" fill="#fe2a1c" />
-                        </svg>
-                        <p class="widget-outlook__alert-text">5</p>
-                      </div>
-                      
-                      <div class="fc widget-outlook__icon">
-                        <img src="/media/images/logo.svg">
-                      </div>
-                     
-                    </div>
+                    <div class="qh-root">
+                      {% include "../embed/widget_base.html"  with background_color=form.background_color.value %}
+                    </div>                    
+                    
                   </div>
                 </div>
               </div>

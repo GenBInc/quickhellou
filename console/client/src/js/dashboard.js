@@ -120,6 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileMenu()
   initMessages()
 
+  initIconInput()
+
 })
 
 const initColorPicker = () => {
@@ -229,4 +231,44 @@ const initMobileMenu = () => {
     e.stopPropagation();
   })  
 
+}
+
+const initIconInput = () => {
+  
+  const iconInput = document.querySelector('#icon-input')
+  if (!!iconInput) {
+    iconInput.addEventListener('change', updateIconName)
+  }
+
+  window.clearWidgetIcon = clearWidgetIcon;
+}
+
+const updateIconName = (e) => {
+  
+  const iconNameLabel = document.querySelector('.icon-name-label')
+  if (!!iconNameLabel) {
+    iconNameLabel.innerHTML=e.currentTarget.files[0].name;
+    iconNameLabel.setAttribute('href', "#");
+    iconNameLabel.setAttribute('target', "_self");
+  }
+  
+}
+
+export function clearWidgetIcon() {
+
+  const iconInput = document.querySelector('#icon-input')
+  if (!!iconInput) {
+    iconInput.value="";
+
+
+    const iconNameLabel = document.querySelector('.icon-name-label')
+    if (!!iconNameLabel) {
+      iconNameLabel.innerHTML="images/logo.svg";
+      iconNameLabel.setAttribute('href', "/media/images/logo.svg");
+      iconNameLabel.setAttribute('target', "_blank");
+    }
+  
+  }
+  
+  
 }

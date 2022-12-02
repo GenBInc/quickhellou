@@ -24,6 +24,8 @@ urlpatterns = [
          name="widget_template_edit"),
     path('widgets/template/edit/<int:widget_template_id>/',
          views.widget_template_edit_view, name="widget_template_edit"),
+    path('widgets/template/del_icon/<int:widget_template_id>/',
+         views.widget_template_del_icon_view, name="widget_template_del_icon"),
     path('widgets/template/delete/<int:widget_template_id>/',
          views.widget_template_delete, name="widget_template_delete"),
     path('templates/', views.templates_view, name="templates"),

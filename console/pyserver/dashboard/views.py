@@ -308,6 +308,33 @@ def widget_template_edit_view(
         'default_colors': WidgetTemplate.DEFAULT_COLOR_CHOICES
     })
 
+@permission_required("is_default_admin")
+@login_required
+def widget_template_del_icon_view(
+    request: HttpRequest,
+    widget_template_id: int = None
+) -> HttpResponse:
+    if widget_template_id is not None:
+        widget_template = WidgetTemplate.objects.get(id=widget_template_id)
+    else:
+        return redirect('dashboard:widget_template_edit')
+    if request.method == 'POST':
+        form = WidgetTemplateForm(
+            request.POST, request.FILES, instance=widget_template)            
+        widget_template.icon = "/images/logo.svg"
+        widget_template.save()
+        messages.success(
+                request, 'Widget template icon cleared.')
+        return redirect('/dashboard/widgets/template/edit/{}'.format(widget_template_id))
+    else:
+        form = WidgetTemplateForm()
+        
+    return render(request, '/dashboard/widgets/template/edit/{}'.format(widget_template_id), {
+        'form': form,
+        'widget_template': widget_template,
+        'default_colors': WidgetTemplate.DEFAULT_COLOR_CHOICES
+    })
+
 
 @login_required
 def widget_template_delete(
@@ -610,7 +637,7 @@ def create_widget_content_script(
         'widget_id': widget.id,
         'uuid': str(widget.uuid),
         'background_color': widget_template.background_color,
-        'icon': widget_template.icon.url}
+        'icon': widget_template.icon}
     template_iframe: str = render_to_string(
         'embed/widget_iframe.html', template_params)
 
@@ -726,7 +753,7 @@ def widget_content_view(
         'widget_id': widget.id,
         'uuid': str(widget.uuid),
         'background_color': widget_template.background_color,
-        'icon': widget_template.icon.url}
+        'icon': widget_template.icon}
     return render(request, 'embed/widget_content.html', template_params)
 
 

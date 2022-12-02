@@ -76,8 +76,7 @@ $s-md:		768px;
   transition:         $transition;
 }
 
-html {
-  font-size:10px;
+html {  
   line-height: normal;
 }
 
@@ -87,13 +86,30 @@ html {
   background: transparent;
   border: none;
   bottom: 30px;
-  height: 74px;
+  
   position: fixed;
   right: 30px;
   top: auto;
-  width: 70px;
+  
   z-index: 1002;
   
+  .widget_base {
+    cursor: pointer;
+    transition: opacity 0.2s linear;
+    width: 60px;
+    height: 60px;
+  }
+
+  .widget-outlook__background-circle,
+  .outlook--background {
+    width: 100%;
+    height: 100%;
+  }
+
+  .widget_base:hover {
+    opacity: 0.75;
+  }
+
   button, input, select, textarea {
     font-family: inherit;
     line-height: inherit;
@@ -216,6 +232,9 @@ html {
     position: relative;
     box-shadow: 0px 0px 10px 3px lightgrey;
     border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
 
   .qh_widget-bottom__msg--switchable {
@@ -238,13 +257,25 @@ html {
     display: block;
   }
 
-  .widget-outlook__icon {
+  .widget-outlook__icon_wrap {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 50%;
+    padding: 3px;
+  }
+
+  .widget-outlook__icon {
+    position: relative;
+    width: 100%;
+    height: 100%;
     z-index: 1;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: hidden;
+    border-radius: 50%;
   }
 
   .widget-outlook__icon svg {
@@ -474,15 +505,6 @@ html {
     font-weight:600;
   }
 
-  .widget_base {
-    cursor: pointer;
-    transition: opacity 0.2s linear;
-  }
-
-  .widget_base:hover {
-    opacity: 0.75;
-  }
-
   .widget-outlook__admin-thumbnail {
     width:30px;
     height:30px;
@@ -518,7 +540,7 @@ html {
     height:20px;
   }
 
-  .widget-outlook__background-circle {
+  .widget-outlook__background-circle.not-active {
     fill:#878787;
   }
 
@@ -1003,6 +1025,14 @@ div.scheduler__pages {
     @include df;
   }
 }
+
+.outlook .qh-root {
+  position: relative;
+  bottom: unset;
+  right: unset;
+  z-index: 0;
+}
+
 
 .scheduler__pages-nav-button:hover {
   background-color: #FC1A19;
