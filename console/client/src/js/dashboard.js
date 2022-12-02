@@ -241,6 +241,7 @@ const initIconInput = () => {
   }
 
   window.clearWidgetIcon = clearWidgetIcon;
+  window.onChangeBrowseIcon = onChangeBrowseIcon;
 }
 
 const updateIconName = (e) => {
@@ -267,8 +268,47 @@ export function clearWidgetIcon() {
       iconNameLabel.setAttribute('href', "/media/images/logo.svg");
       iconNameLabel.setAttribute('target', "_blank");
     }
+
+    const outlookIcon = document.querySelector('.widget-outlook__icon')
+    if (!!outlookIcon) {  
+  
+      outlookIcon.style.backgroundImage = "url(/media/images/logo.svg)"
+  
+    }    
   
   }
   
-  
+  const buttonBrowse = document.querySelector('.console-button_browse-icon')
+  if (!!buttonBrowse) {  
+    buttonBrowse.classList.remove("js-hidden");
+  }
+
+  const buttonClear = document.querySelector('.console-button_clear-icon')
+  if (!!buttonClear) {  
+    buttonClear.classList.add("js-hidden");
+  }
+
+}
+
+export function onChangeBrowseIcon(target) {
+
+  const outlookIcon = document.querySelector('.widget-outlook__icon')
+  if (!!outlookIcon) {  
+
+    outlookIcon.style.backgroundImage = "url("+window.URL.createObjectURL(target.files[0])+")"
+
+  }
+
+
+  const buttonBrowse = document.querySelector('.console-button_browse-icon')
+  if (!!buttonBrowse) {  
+    buttonBrowse.classList.add("js-hidden");
+  }
+
+  const buttonClear = document.querySelector('.console-button_clear-icon')
+  if (!!buttonClear) {  
+    buttonClear.classList.remove("js-hidden");
+  }
+
+
 }

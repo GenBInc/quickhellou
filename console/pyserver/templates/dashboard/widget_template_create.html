@@ -86,12 +86,20 @@
                       </div>
 
                       <div class="frc content-box__controls">
-                        <a class="link-button console-button" href="#" onclick="javasctipt:document.getElementById('icon-input').click();" target="_self"><img class="console-button--icon" src="{% static '/images/photo-add-white.svg' %}">Browse Icon</a>
+
+                          <a class="link-button console-button console-button_clear-icon js-hidden" href="#" onclick="javascript:clearWidgetIcon()" target="_self">
+                            <img class="console-button--icon" src="{% static '/images/delete-white.svg' %}">Clear Icon
+                          </a>
+
+                          <a class="link-button console-button console-button_browse-icon" href="#" onclick="javascript:document.getElementById('icon-input').click();" target="_self">
+                            <img class="console-button--icon" src="{% static '/images/photo-add-white.svg' %}">Browse Icon
+                          </a>
+
+
                       </div>
 
                       <div class="mdc-text-field mdc-text-field--outlined form__field signup__thumbnail">
-                        <input type="file" id="icon-input" name="icon" value="images/logo.svg" 
-                        class="mdc-text-field__input form__text form--signup__text form__input form--signup__input ">
+                        <input type="file" id="icon-input" name="icon" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input" onchange="javascript:onChangeBrowseIcon(this);">
                         <div class="mdc-notched-outline">
                           <div class="mdc-notched-outline__leading"></div>
                           <div class="mdc-notched-outline__notch">
