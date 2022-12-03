@@ -23,8 +23,8 @@
 
     <div class="scheduler__page">
       <div class="f1 fcol scheduler__day today">
-        <div class="f1 fcol scheduler__day-header">
-          
+        <div class="f1 fcol scheduler__day-header_wrap">
+          <span class="fc scheduler__day-info">row.info</span>
           <div class="fcol scheduler__day-header">
             <span class="scheduler__day-text scheduler__day-name">row.day</span>
             <span class="scheduler__day-text">row.name</span>
@@ -41,8 +41,8 @@
         </div>
       </div>
       <div class="f1 fcol scheduler__day">
-        <div class="f1 fcol scheduler__day-header">
-          
+        <div class="f1 fcol scheduler__day-header_wrap">
+          <span class="fc scheduler__day-info">row.info</span>
           <div class="fcol scheduler__day-header">
             <span class="scheduler__day-text scheduler__day-name">row.day</span>
             <span class="scheduler__day-text">row.name</span>
@@ -50,8 +50,8 @@
         </div>
       </div>
       <div class="f1 fcol scheduler__day">
-        <div class="f1 fcol scheduler__day-header">
-          
+        <div class="f1 fcol scheduler__day-header_wrap">
+          <span class="fc scheduler__day-info">row.info</span>
           <div class="fcol scheduler__day-header">
             <span class="scheduler__day-text scheduler__day-name">row.day</span>
             <span class="scheduler__day-text">row.name</span>
@@ -59,8 +59,8 @@
         </div>
       </div>
       <div class="f1 fcol scheduler__day">
-        <div class="f1 fcol scheduler__day-header">
-          
+        <div class="f1 fcol scheduler__day-header_wrap">
+          <span class="fc scheduler__day-info">row.month row.year</span>
           <div class="fcol scheduler__day-header">
             <span class="scheduler__day-text scheduler__day-name">row.day</span>
             <span class="scheduler__day-text">row.name</span>
@@ -68,8 +68,8 @@
         </div>
       </div>
       <div class="f1 fcol scheduler__day">
-        <div class="f1 fcol scheduler__day-header">
-          
+        <div class="f1 fcol scheduler__day-header_wrap">
+          <span class="fc scheduler__day-info">row.info</span>
           <div class="fcol scheduler__day-header">
             <span class="scheduler__day-text scheduler__day-name">row.day</span>
             <span class="scheduler__day-text">row.name</span>
@@ -80,8 +80,8 @@
     <div class="scheduler__page"> 
       <div class="f1 fcol scheduler__day">
           
-          <div class="f1 fcol scheduler__day-header">
-            
+          <div class="f1 fcol scheduler__day-header_wrap">
+            <span class="fc scheduler__day-info">row.info</span>
             <div class="fcol scheduler__day-header">
               <span class="scheduler__day-text scheduler__day-name">row.day</span>
               <span class="scheduler__day-text">row.name</span>
@@ -100,29 +100,8 @@
         </div>
         <div class="f1 fcol scheduler__day">
           
-          <div class="f1 fcol scheduler__day-header">
-            
-            <div class="fcol scheduler__day-header">
-              <span class="scheduler__day-text scheduler__day-name">row.day</span>
-              <span class="scheduler__day-text">row.name</span>
-            </div>
-          </div>
-          
-          <div class="fc scheduler__button scheduler__button--time scheduler__time" data-time="${date} ${time}">
-            <span class="scheduler__button-text">time</span>
-          </div>
-          <div class="fc scheduler__button scheduler__button--time scheduler__time" data-time="${date} ${time}">
-            <span class="scheduler__button-text">time</span>
-          </div>
-          <div class="fc scheduler__button scheduler__button--time scheduler__time" data-time="${date} ${time}">
-            <span class="scheduler__button-text">time</span>
-          </div>
-        </div>
-
-        <div class="f1 fcol scheduler__day">
-          
-          <div class="f1 fcol scheduler__day-header">
-            
+          <div class="f1 fcol scheduler__day-header_wrap">
+            <span class="fc scheduler__day-info">row.info</span>
             <div class="fcol scheduler__day-header">
               <span class="scheduler__day-text scheduler__day-name">row.day</span>
               <span class="scheduler__day-text">row.name</span>
@@ -142,8 +121,8 @@
 
         <div class="f1 fcol scheduler__day">
           
-          <div class="f1 fcol scheduler__day-header">
-            
+          <div class="f1 fcol scheduler__day-header_wrap">
+            <span class="fc scheduler__day-info">row.info</span>
             <div class="fcol scheduler__day-header">
               <span class="scheduler__day-text scheduler__day-name">row.day</span>
               <span class="scheduler__day-text">row.name</span>
@@ -163,8 +142,29 @@
 
         <div class="f1 fcol scheduler__day">
           
-          <div class="f1 fcol scheduler__day-header">
-            
+          <div class="f1 fcol scheduler__day-header_wrap">
+            <span class="fc scheduler__day-info">row.info</span>
+            <div class="fcol scheduler__day-header">
+              <span class="scheduler__day-text scheduler__day-name">row.day</span>
+              <span class="scheduler__day-text">row.name</span>
+            </div>
+          </div>
+          
+          <div class="fc scheduler__button scheduler__button--time scheduler__time" data-time="${date} ${time}">
+            <span class="scheduler__button-text">time</span>
+          </div>
+          <div class="fc scheduler__button scheduler__button--time scheduler__time" data-time="${date} ${time}">
+            <span class="scheduler__button-text">time</span>
+          </div>
+          <div class="fc scheduler__button scheduler__button--time scheduler__time" data-time="${date} ${time}">
+            <span class="scheduler__button-text">time</span>
+          </div>
+        </div>
+
+        <div class="f1 fcol scheduler__day">
+          
+          <div class="f1 fcol scheduler__day-header_wrap">
+            <span class="fc scheduler__day-info">row.info</span>
             <div class="fcol scheduler__day-header">
               <span class="scheduler__day-text scheduler__day-name">row.day</span>
               <span class="scheduler__day-text">row.name</span>
@@ -230,7 +230,7 @@
     <div class="scheduler__page"> 
       <div class="f1 fcol scheduler__day">
         
-        <div class="f1 fcol scheduler__day-header">
+        <div class="f1 fcol scheduler__day-header_wrap">
           <span class="fc scheduler__day-info">row.info2</span>
           <div class="fcol scheduler__day-header">
             <span class="scheduler__day-text scheduler__day-name">row.day2</span>
@@ -250,8 +250,8 @@
       </div>
       <div class="f1 fcol scheduler__day">
         
-        <div class="f1 fcol scheduler__day-header">
-          
+        <div class="f1 fcol scheduler__day-header_wrap">
+          <span class="fc scheduler__day-info">row.info</span>
           <div class="fcol scheduler__day-header">
             <span class="scheduler__day-text scheduler__day-name">row.day</span>
             <span class="scheduler__day-text">row.name</span>
@@ -271,8 +271,8 @@
 
       <div class="f1 fcol scheduler__day">
         
-        <div class="f1 fcol scheduler__day-header">
-          
+        <div class="f1 fcol scheduler__day-header_wrap">
+          <span class="fc scheduler__day-info">row.info</span>
           <div class="fcol scheduler__day-header">
             <span class="scheduler__day-text scheduler__day-name">row.day</span>
             <span class="scheduler__day-text">row.name</span>
@@ -292,8 +292,8 @@
 
       <div class="f1 fcol scheduler__day">
         
-        <div class="f1 fcol scheduler__day-header">
-          
+        <div class="f1 fcol scheduler__day-header_wrap">
+          <span class="fc scheduler__day-info">row.info</span>
           <div class="fcol scheduler__day-header">
             <span class="scheduler__day-text scheduler__day-name">row.day</span>
             <span class="scheduler__day-text">row.name</span>
@@ -313,8 +313,8 @@
 
       <div class="f1 fcol scheduler__day">
         
-        <div class="f1 fcol scheduler__day-header">
-          
+        <div class="f1 fcol scheduler__day-header_wrap">
+          <span class="fc scheduler__day-info">row.info</span>
           <div class="fcol scheduler__day-header">
             <span class="scheduler__day-text scheduler__day-name">row.day</span>
             <span class="scheduler__day-text">row.name</span>

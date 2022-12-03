@@ -974,14 +974,6 @@ div.scheduler__day {
   }
 }
 
-div.scheduler__day:first-child {
-  margin-left: 10px;
-}
-
-div.scheduler__day:last-child {
-  margin-right: 10px;
-}
-
 div.scheduler__day:hover {
   background-color: rgba(255,255,255,0.25);
 }
@@ -1116,8 +1108,13 @@ div.scheduler__pages {
   color: white;
 }
 
-.scheduler__day-header {
+.scheduler__day-header_wrap {
+  margin-top: 10px;
   margin-bottom: 10px;
+
+  @media (min-width: $s-sm) {
+    margin-top: 0px;
+  }    
 }
 
 .scheduler__page-headers {
@@ -1133,6 +1130,10 @@ div.scheduler__pages {
   font-size: 12px;
   color: #1b1b1b;
   font-weight: 300;
+
+  @media (min-width: $s-sm) {
+    display: none !important;
+  }  
 }
 
 .qh-widget-ext__header {
@@ -1175,12 +1176,23 @@ div.scheduler__pages {
 
 .widget--schedule__scheduler {
   position: relative;
+  margin-top: 30px;
+
+  @media (min-width: $s-sm) {
+    margin-top: unset;
+  }    
+
 }
 
 .scheduler__paging_row {
   width: 100%;
   padding: 10px;
   padding-top: 20px;
+  display: none !important;
+
+  @media (min-width: $s-sm) {
+    display: flex !important;
+  }     
 }
 
 .scheduler__date-label {
