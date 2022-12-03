@@ -285,7 +285,7 @@ html {
   }
 
   .js-hidden {
-    display: none;
+    visibility: hidden;
   }
 
   // EXT
@@ -938,25 +938,18 @@ div.fullscreen,
   z-index: 2;
 }
 
-div.scheduler {
-  @media (min-width: $s-sm) {
-    padding-bottom: 10px;
-  }
-}
-
 .widget--schedule__datetime-controls {
   @include df;
-  width: calc(100% - 90px);
-  margin-left: 45px;
-  margin-right: 45px;
+  width: calc(100% - 40px);
+  margin-left: 20px;
+  margin-right: 20px;
   height:calc(100% - 200px);
   overflow: hidden;
+  margin-bottom: 10px;
 }
 
 div.scheduler__page {
   min-width: 100%;
-  padding-top: 20px;
-  padding-bottom: 20px;
   @include df;
   @include df-col;
   @media (min-width: $s-sm) {
@@ -1023,8 +1016,6 @@ div.scheduler__pages {
 }
 
 .scheduler__pages-nav-button {
-  position: absolute;
-  top: calc(50% - 30px);
   cursor:pointer;
   user-select: none;
   background-color: rgba(0,0,0,.6);
@@ -1048,11 +1039,11 @@ div.scheduler__pages {
 }
 
 .scheduler__pages-nav-button--prev {
-  left:10px;
+
 }
 
 .scheduler__pages-nav-button--next {
-  right:10px;
+
 }
 
 
@@ -1135,7 +1126,7 @@ div.scheduler__pages {
 
 .widget-extension__controls {
   width: 100%;
-  padding:10px 45px;
+  padding:10px 30px;
 }
 
 .scheduler__day-info {
@@ -1166,7 +1157,7 @@ div.scheduler__pages {
 }
 
 .qh-widget__form {
-  padding: 20px 45px 0px;
+  padding: 20px 30px 0px;
 }
 
 .qh_footer {
@@ -1184,4 +1175,19 @@ div.scheduler__pages {
 
 .widget--schedule__scheduler {
   position: relative;
+}
+
+.scheduler__paging_row {
+  width: 100%;
+  padding: 10px;
+  padding-top: 20px;
+}
+
+.scheduler__date-label {
+  width: 100%;
+}
+
+.scheduler__month-label {
+  font-weight: 600;
+  margin-right: 5px !important;
 }
