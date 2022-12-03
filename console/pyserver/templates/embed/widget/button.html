@@ -1,0 +1,10 @@
+{% load static %}
+
+<div class="flc widget-extension__button widget-extension__button--send widget-extension__button--send-schedule">
+    <div class="fc f1">
+      <p>{{label}}</p>
+    </div>
+    <div class="flc widget-button-icon">
+        <img class="widget-extension__send-icon" src="{% if button_icon %}{{button_icon}}{% else %}{% static '/images/next-icon.svg' %}{% endif %}" border="0">
+    </div>
+</div>

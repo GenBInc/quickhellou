@@ -5,13 +5,18 @@
 <script src="{{ console_app_url }}/static/js/widget.js" defer></script>
 <link rel="stylesheet" type="text/css" href="{{ console_app_url }}/static/css/widget.css">
 <div class="qh-root" data-id="{{ widget_id }}" data-url="{{ console_app_url }}" style="opacity:0;">
-  {# widget schedule #}
-  {% include "embed/widget/schedule_dialog.html" %}
+
+    {# widget schedule #}
+    {% include "embed/widget/scheduler.html" %}
+  
   <div id="qh_w_frame" class="qh-widget-badge">
-  {# widget badge #} 
-  {% include "embed/widget_base.html" with background_color=background_color %}
-  {# widget extension element #}
-  {% include "embed/widget_contact.html" %}
-</div>
+  
+    {# widget badge #} 
+    {% include "embed/widget_dot.html" with background_color=background_color %}
+    
+    {# widget extension element #}
+    {% include "embed/widget/contact.html" %}
+
+  </div>
 {% include "embed/bottom_bar.html" %}
 {% endspaceless %}

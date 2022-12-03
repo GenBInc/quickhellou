@@ -32,7 +32,7 @@ export class ScheduleView extends UIView {
   */
   async init() {
 
-    const closeButton = document.querySelector('.qh_widget-closer--schedule')
+    const closeButton = document.querySelector('.qh_widget-closer')
     closeButton.addEventListener('click', (e) => {
       this.collapseView()
     })
