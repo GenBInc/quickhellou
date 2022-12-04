@@ -3,7 +3,7 @@
 <div class="fc qh widget_base">
   <div class="widget-outlook__graphics widget-outlook__graphics--widget">
     <svg class="outlook--background" width="100" height="100">
-      <rect width="100" height="100" class="widget-outlook__background-circle outlook--circle" fill="{{ background_color }}" />
+      <rect width="100" height="100" class="widget-outlook__background-circle outlook--circle" fill="{% if background_color %}{{ background_color }}{% else %}#7fd100{%endif%}" />
     </svg>
   </div>
   <div class="widget-outlook__alert">

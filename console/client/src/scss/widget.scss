@@ -735,6 +735,7 @@ div.widget--schedule {
   height:100%;
   overflow: hidden;
   border: 4px solid rgba(0, 0, 0, 0.15);
+  background-color: #7fd100;
 }
 
 .widget--schedule__datetime {
@@ -1077,10 +1078,14 @@ div.scheduler__pages {
 }
 
 .scheduler__day-name {
-  font-size: 12px;
+  font-size: 20px;
   font-weight: 600;
   color: #1b1b1b;
   padding: 5px 0;
+
+  @media (min-width: $s-sm) {
+    font-size: 12px;
+  }  
 }
 
 .scheduler__time-buttons {
@@ -1159,6 +1164,12 @@ div.scheduler__pages {
 
 .qh-widget__form {
   padding: 20px 30px 0px;
+  flex-direction: column-reverse;
+
+  @media (min-width: $s-sm) {
+    flex-direction: row;
+  }    
+
 }
 
 .qh_footer {
@@ -1202,4 +1213,61 @@ div.scheduler__pages {
 .scheduler__month-label {
   font-weight: 600;
   margin-right: 5px !important;
+}
+
+.qh-widget__form--inputs {
+  width: 100%;
+}
+
+.qh-widget__form--calendar-selected {
+  padding: 20px;
+  margin-left: 0px;
+  width: 100%;
+
+  @media (min-width: $s-sm) {
+    margin-left: 30px;
+    width: 200px;
+    min-width: 200px;
+  }     
+}
+
+.qh-widget__form--date-selected {
+  padding: 20px;  
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  background-color: #1b1b1b;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.25);
+  color: white;
+}
+
+.qh-widget__form--time-selected {
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.qh-widget__form--day-selected {
+  font-size: 40px;
+  font-weight: 600;
+}
+
+.qh-widget__form--month-selected {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.qh-widget__form--year-selected {
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.qh-widget__change-date-time_link {
+  margin-top: 10px;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+.qh-widget__change-date-time_link:hover {
+  text-decoration: none;
+  opacity: 0.6;
 }

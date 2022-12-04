@@ -3,28 +3,47 @@
 
   {% include "embed/widget/header.html" with label="Add Your Contact Information" sublabel="To Book Your Appointemnt!" closerClass="qh_widget-closer--inactive-operator" %}  
   
-  <div class="fcol qh-widget__form">
+  <div class="df f1 frow qh-widget__form">
 
-    <div class="fc fcol widget-extension__form-group">
-      <input name="name" placeholder="Your Name" class="widget-extension__input">
+    <div class="qh-widget__form--inputs">
+        <div class="fc fcol widget-extension__form-group">
+        <input name="name" placeholder="Your Name" class="widget-extension__input">
+        </div>
+        <div class="fc fcol widget-extension__form-group">
+        <input name="email_address" class="widget-extension__input" placeholder="Email address">
+        </div>
+        <div class="fc fcol widget-extension__form-group">
+        <input name="phone_number" class="widget-extension__input" placeholder="Phone Number (optional)">
+        </div>
+        <div class="fc fcol widget-extension__form-group">
+        <textarea name="message" class="widget-extension__input" placeholder="Message (optional)"></textarea>
+        </div>
     </div>
-    <div class="fc fcol widget-extension__form-group">
-      <input name="email_address" class="widget-extension__input" placeholder="Email address">
+    <div class="df f1 df-f1">        
     </div>
-    <div class="fc fcol widget-extension__form-group">
-      <input name="phone_number" class="widget-extension__input" placeholder="Phone Number (optional)">
-    </div>
-    <div class="fc fcol widget-extension__form-group">
-      <textarea name="message" class="widget-extension__input" placeholder="Message (optional)"></textarea>
+    <div class="fc qh-widget__form--calendar-selected">
+
+        <div class="fc fcol qh-widget__form--date-selected">
+            <p class="qh-widget__form--time-selected">Monday</p>
+            <p class="qh-widget__form--time-selected">10:00 am</p>
+            <p class="qh-widget__form--day-selected">1st</p>
+            <p class="qh-widget__form--month-selected">December</p>
+            <p class="qh-widget__form--year-selected">2022</p>
+            <a href="" class="qh-widget__change-date-time_link" style="color:{{ background_color }}">Change</a>
+        </div>
+        
     </div>
 
   </div> 
 
   <div class="frc widget-extension__controls">
-    <div class="fc">
-      {% include "embed/widget/button.html" with label="Confirm Booking" %}
-      
-    </div>
+    
+      {% include "embed/widget/button-back.html" with label="Back" %}
+      <div class="df df-f1 f1">
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+      </div>  
+      {% include "embed/widget/button-next.html" with label="Confirm Booking" class="widget-extension__button--send-contact" %}
+    
   </div>
 
   {% include "embed/widget/footer.html" %}

@@ -144,7 +144,9 @@ def widget_create_view(
 ) -> HttpResponse:
     users: list[User] = User.objects.filter(
         client_board=request.user.client_board)
-    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.all()
+    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.filter(
+        active=True, last_editor=request.user
+        ).order_by('id')
     if request.method == 'POST':
         form: WidgetForm = WidgetForm(request.POST)
         assignees_form: AssigneesForm = AssigneesForm(request.POST)
@@ -178,7 +180,9 @@ def widget_edit_view(
     request: HttpRequest,
     widget_id: int = None
 ) -> HttpResponse:
-    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.all()
+    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.filter(
+        active=True, last_editor=request.user
+        ).order_by('id')
     users: list[User] = User.objects.filter(
         client_board=request.user.client_board, is_admin=True)
     if widget_id is not None:
