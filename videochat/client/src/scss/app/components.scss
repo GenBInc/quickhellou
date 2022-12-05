@@ -880,6 +880,10 @@ a.invite-waiting-button--thanks:hover {
   background-color: $color--cornflower-blue;
 }
 
+.send-invitation__error {
+  color: $color--cornflower-blue !important;
+}
+
 .room-link-href-waiting {
   color:$color--cornflower-blue;
 }
