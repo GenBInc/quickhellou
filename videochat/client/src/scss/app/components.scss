@@ -863,21 +863,25 @@ a.invite-waiting-button:hover {
 }
 
 a.invite-waiting-button--send-invitation:hover {
-  background-color: $color--cornflower-blue;
+  background-color: $color--red-orange;
 }
 
 a.invite-waiting-button--send-invitation {
-  border-color: $color--cornflower-blue;
+  border-color: $color--red-orange;
   font-weight: 300;
 }
 
 .invite-waiting-button--thanks {
-  border-color: $color--red-orange;
+  border-color: $color--cornflower-blue;
   font-weight: 400;
 }
 
 a.invite-waiting-button--thanks:hover {
-  background-color: $color--red-orange;
+  background-color: $color--cornflower-blue;
+}
+
+.room-link-href-waiting {
+  color:$color--cornflower-blue;
 }
 
 .button--setup-text-chat {
