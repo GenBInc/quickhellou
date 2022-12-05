@@ -12,6 +12,22 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+from distutils.util import strtobool
+
+# Host for sending email.
+EMAIL_HOST = str(os.environ.get('EMAIL_HOST'))
+
+# Port for sending email.
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT'))
+
+# Whether to send SMTP 'Date' header in the local time zone or in UTC.
+EMAIL_USE_LOCALTIME = False
+
+# Optional SMTP authentication information for EMAIL_HOST.
+EMAIL_HOST_USER = str(os.environ.get('EMAIL_HOST_USER'))
+EMAIL_HOST_PASSWORD = str(os.environ.get('EMAIL_HOST_PASSWORD'))
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = strtobool(os.environ.get('EMAIL_USE_SSL'))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

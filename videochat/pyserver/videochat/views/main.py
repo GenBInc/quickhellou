@@ -551,7 +551,14 @@ class SendInvitation(View):
       attachment = MIMEText(calendarData)
       attachment.add_header('Content-Disposition', 'attachment', filename='calendar.csv')
       msg.attach(attachment)
-    smtp = smtplib.SMTP(str(os.environ.get('EMAIL_HOST')), int(os.environ.get('EMAIL_PORT')))
+    
+    if os.environ.get('EMAIL_USE_SSL'):
+      smtp = smtplib.SMTP_SSL(str(os.environ.get('EMAIL_HOST')), int(os.environ.get('EMAIL_PORT')))
+    else:
+      smtp = smtplib.SMTP(str(os.environ.get('EMAIL_HOST')), int(os.environ.get('EMAIL_PORT')))
+
+    if str(os.environ.get('EMAIL_HOST_USER')) != "":
+      smtp.login(str(os.environ.get('EMAIL_HOST_USER')),str(os.environ.get('EMAIL_HOST_PASSWORD')))
     smtp.set_debuglevel(True)
     try:
       smtp.sendmail(str(os.environ.get('SUPPORT_EMAIL')), receiver, msg.as_string())
