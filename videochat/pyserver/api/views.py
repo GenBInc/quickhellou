@@ -2,6 +2,7 @@ import uuid
 import random
 import os
 import json
+import logging
 
 from django.shortcuts import render
 from rest_framework import (views, viewsets, status)
@@ -243,7 +244,7 @@ def make_media_stream_constraints(audio, video, firefox_fake_device):
             'height': {'min': 480, 'ideal': 720, 'max': 1080}
             }
          })
-         
+
     if firefox_fake_device:
         stream_constraints['fake'] = True
     return stream_constraints
