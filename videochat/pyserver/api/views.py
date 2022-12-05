@@ -239,17 +239,11 @@ def make_media_stream_constraints(audio, video, firefox_fake_device):
     stream_constraints = (
         {'audio': make_media_track_constraints(audio),
          'video': {
-            'width': {'min': 1280, 'ideal': 1280, 'max': 1280},
-            'height': {'min': 700, 'ideal': 700},}
+            'width': {'min': 640, 'ideal': 1280, 'max': 1920},
+            'height': {'min': 480, 'ideal': 720, 'max': 1080}
+            }
          })
-    """
-    stream_constraints = (
-        {'audio': make_media_track_constraints(audio),
-         'video': {
-            'width': {'min': 320, 'ideal': 320, 'max': 320},
-            'height': {'min': 240, 'ideal': 240},}
-         })
-    """
+         
     if firefox_fake_device:
         stream_constraints['fake'] = True
     return stream_constraints
