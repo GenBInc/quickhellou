@@ -145,7 +145,7 @@ div.privacy a {
 .remote-video-fullscreen {
   z-index: 3;
   border-radius: 50%;
-  background-image: url('../static/images/fullscreen.svg');
+  background-image: url('/static/images/fullscreen.svg');
   display: block;
   /*
   transition: 40ms;
@@ -373,6 +373,7 @@ h1 {
 
 .icons div {
   border-radius: 50%;
+  box-shadow: 0px 0px 0px 3px rgba(0, 0, 0, 0.15);;
   display: block;
   margin: 0 0 3vh 0;
   transform: translateY(calc(20vh + 100px));
@@ -387,8 +388,8 @@ h1 {
   width: 50px;
   height: 50px;
   @media (min-width: $s-xxs) {
-    width:70px;
-    height: 70px;
+    width:60px;
+    height: 60px;
   }
 }
 
@@ -414,25 +415,25 @@ h1 {
 
 .mute-audio {
   transition: 40ms;
-  background-image: url('../static/images/sound.svg');
+  background-image: url('/static/images/sound.svg');
 }
 
 .mute-audio.on {
-  background-image: url('../static/images/no-sound.svg');
+  background-image: url('/static/images/no-sound.svg');
 }
 
 .mute-video {
   transition: 120ms;
-  background-image: url('../static/images/camera.svg');
+  background-image: url('/static/images/camera.svg');
 }
 
 .mute-video.on {
-  background-image: url('../static/images/no-camera.svg');
+  background-image: url('/static/images/no-camera.svg');
 }
 
 .button--chat-window {
   transition: 200ms;
-  background-image: url('../static/images/text-chat.svg');
+  background-image: url('/static/images/text-chat.svg');
 }
 
 #switch-video {
@@ -442,7 +443,7 @@ h1 {
 .button--hangup {
   transition: 280ms;
   background-color: #e20f00 !important;
-  background-image: url('../static/images/hangup.svg');
+  background-image: url('/static/images/hangup.svg');
 }
 
 .button--hangup:hover {
@@ -453,7 +454,7 @@ h1 {
   z-index: 1;
   transition: 40ms;
   border-radius: 50%;
-  background-image: url('../static/images/fullscreen.svg');
+  background-image: url('/static/images/fullscreen.svg');
   display: none;
   transform: translateX(calc(-100px));
   transition: all .1s;

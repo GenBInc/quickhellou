@@ -154,12 +154,13 @@ a.button span {
 .button--light-blue {
   background-color: $color--cornflower-blue;
   color: white;
+  box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.15);;
 }
 
 a.button--footer:hover,
 .button--footer.js-active,
 .button--light-blue:hover {
-  background-color: $color--lawn-green;
+  background-color: $color--cornflower-blue;
   color: white;
 }
 
