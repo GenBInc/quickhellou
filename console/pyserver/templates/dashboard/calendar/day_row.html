@@ -1,38 +1,41 @@
 {% load static %}
 {% load dashboard_extras %}
-{{ form_field.errors }}
-{{ form_field.value }}
 <div
 	class="df df-f1 flc fcol calendar__day-slot"
 	data-daycode="{{ day_code }}"
 >
   <div class="df df-f1 flc frow calendar-day calendar-day_{{ day }}">
-    
     <input
-      id="day_{{ day }}"
-      class="day_checkbox"
+      id="day{{ day_code }}"
+      class="calendar__checkbox--day"
       type="checkbox"
       name="day{{ day_code }}_checked"
-      {% if day != 'saturday' and day != 'sunday' %}
-        {%  if is_saved and form_field.value is not None %}
-          checked
-        {% elif not is_saved %}
-          checked
-        {% endif %}    
-      {% else %}
-        {% if is_saved and form_field.value is not None %}
-          checked
-        {% endif %}
+      {% if form_field.value %}
+        checked
       {% endif %}
     >
-    <label for="day_{{ day }}" class="calendar-day-label">{{ day }}</label>
+    <label for="day{{ day_code }}" class="calendar-day-label">{{ day }}</label>
     <div class="time_rows time-rows--{{ day }} df flc fcol df-f1">
-    	{% include "dashboard/calendar/time_row.html" with day=day additional=False index=1 %}
+      {% with "day"|add:day_code|add:"_"|add:"1" as day_id %}
+        {% include "dashboard/calendar/time_row.html" with day=day additional=False index=1 id=day_id form_field=form|get_field:day_id %}
+      {% endwith %}
+      {% with "day"|add:day_code|add:"_"|add:"2" as day_id %}
+        {% include "dashboard/calendar/time_row.html" with day=day additional=True index=2 form_field=form|get_field:day_id %}
+      {% endwith %}
+      {% with "day"|add:day_code|add:"_"|add:"3" as day_id %}
+    	  {% include "dashboard/calendar/time_row.html" with day=day additional=True index=3 form_field=form|get_field:day_id %}
+      {% endwith %}
+      {% with "day"|add:day_code|add:"_"|add:"4" as day_id %}
+    	  {% include "dashboard/calendar/time_row.html" with day=day additional=True index=4 form_field=form|get_field:day_id %}
+      {% endwith %}
+      {% with "day"|add:day_code|add:"_"|add:"5" as day_id %}
+    	  {% include "dashboard/calendar/time_row.html" with day=day additional=True index=5 form_field=form|get_field:day_id %}
+      {% endwith %}
     </div>
     <div class="df flc df-f1 time-row-desc">
     	<p>Non Working Day</p>
     </div>
-    <div class="df frc frow calendar_break_row">
+    <div class="df frc frow calendar__break-row">
     	<a data-day="{{ day }}" class="calendar__button--time-break">+ Add Time Slot</a>
     </div>
   </div>

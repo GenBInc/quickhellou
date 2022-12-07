@@ -43,7 +43,8 @@ from dashboard.models import (
     Communication,
     CommunicationSession,
     Widget,
-    WidgetTemplate
+    WidgetTemplate,
+    UserWorkingHours,
 )
 
 
@@ -146,7 +147,7 @@ def widget_create_view(
         client_board=request.user.client_board)
     widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.filter(
         active=True, last_editor=request.user
-        ).order_by('id')
+    ).order_by('id')
     if request.method == 'POST':
         form: WidgetForm = WidgetForm(request.POST)
         assignees_form: AssigneesForm = AssigneesForm(request.POST)
@@ -182,7 +183,7 @@ def widget_edit_view(
 ) -> HttpResponse:
     widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.filter(
         active=True, last_editor=request.user
-        ).order_by('id')
+    ).order_by('id')
     users: list[User] = User.objects.filter(
         client_board=request.user.client_board, is_admin=True)
     if widget_id is not None:
@@ -236,13 +237,22 @@ def save_calendar(
     Returns:
         HttpResponse: the HTTP response
     """
+    user: User = request.user
     form: CalendarForm = CalendarForm(request.POST)
     if form.is_valid():
+        form.save_all(user)
         messages.success(
-            request, 'Calendar has been saved.')
+            request, 'Working hours have been saved.')
+
+    hours: list[str] = ['01', '02', '03', '04', '05',
+                        '06', '07', '08', '09', '10', '11', '12', ]
+    minutes: list[str] = ['00', '30', ]
+
     return render(request, 'dashboard/calendar/view.html', {
-        'user': request.user,
+        'user': user,
         'form': form,
+        'hours': hours,
+        'minutes': minutes,
         'is_saved': True,
         'date_time': request.POST.getlist('date_time')
     })
@@ -312,6 +322,7 @@ def widget_template_edit_view(
         'default_colors': WidgetTemplate.DEFAULT_COLOR_CHOICES
     })
 
+
 @permission_required("is_default_admin")
 @login_required
 def widget_template_del_icon_view(
@@ -324,15 +335,15 @@ def widget_template_del_icon_view(
         return redirect('dashboard:widget_template_edit')
     if request.method == 'POST':
         form = WidgetTemplateForm(
-            request.POST, request.FILES, instance=widget_template)            
+            request.POST, request.FILES, instance=widget_template)
         widget_template.icon = "/images/logo.svg"
         widget_template.save()
         messages.success(
-                request, 'Widget template icon cleared.')
+            request, 'Widget template icon cleared.')
         return redirect('/dashboard/widgets/template/edit/{}'.format(widget_template_id))
     else:
         form = WidgetTemplateForm()
-        
+
     return render(request, '/dashboard/widgets/template/edit/{}'.format(widget_template_id), {
         'form': form,
         'widget_template': widget_template,
@@ -460,10 +471,35 @@ def team_view(
 def calendar_view(
     request: HttpRequest
 ) -> HttpResponse:
+    """Calendar view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    user: User = request.user
+
+    hours: list[str] = ['01', '02', '03', '04', '05',
+                        '06', '07', '08', '09', '10', '11', '12', ]
+    minutes: list[str] = ['00', '30', ]
+
+    calendar_form: CalendarForm = CalendarForm(request.POST)
+
+    # Collect all existing working hours.
+    working_hours_entries: list[UserWorkingHours] = UserWorkingHours.objects.filter(
+        user=user).all()
+
+    # Populate working hours into form.
+    calendar_form.collect_all(working_hours_entries)
+
     return render(request, 'dashboard/calendar/view.html', {
         'user': request.user,
-        'is_saved': False,
-        'form': CalendarForm(request.POST)
+        'hours': hours,
+        'minutes': minutes,
+        'is_saved': len(working_hours_entries) > 0,
+        'form': calendar_form
     })
 
 

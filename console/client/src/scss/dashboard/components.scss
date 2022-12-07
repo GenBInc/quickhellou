@@ -1052,6 +1052,7 @@ aside.mdc-drawer {
   font-weight: 700;
   font-size: 22px;
   text-transform: uppercase;
+  user-select: none;
 }
 
 .template-row-id {
@@ -1131,18 +1132,18 @@ aside.mdc-drawer {
     left: 0;    
 }
 
-.day_checkbox:checked ~ .calendar-day-label::before {
+.calendar__checkbox--day:checked ~ .calendar-day-label::before {
   color: #001487;
   background-image: url('/static/images/checkbox-checked.svg');
 }
 
 
-.day_checkbox:checked ~ .calendar-day-label:hover,
+.calendar__checkbox--day:checked ~ .calendar-day-label:hover,
 .calendar-day-label:hover {
   color: #4285f4;
 }
 
-.day_checkbox:checked ~ .calendar-day-label {
+.calendar__checkbox--day:checked ~ .calendar-day-label {
   color: #001487;
 }
 
@@ -1157,10 +1158,6 @@ aside.mdc-drawer {
 
 .calendar__day-slot:hover {
   background-color:#fefefe;
-}
-
-.calendar__day-slot div:last-child {
-  margin-right: 10px;
 }
 
 .calendar_to_between {
@@ -1188,7 +1185,7 @@ select.time_select {
   cursor: pointer;
 }
 
-.day_checkbox {
+.calendar__checkbox--day {
   cursor: pointer;
 }
 
@@ -1213,7 +1210,7 @@ select.time_select {
 
 }
 
-.time-row.additional {
+.time-row--additional {
   display: flex;
 }
 
@@ -1221,8 +1218,13 @@ select.time_select {
   visibility: collapse;
 }
 
-.time-row.additional .delete-calendar-row {
+.time-row--additional .delete-calendar-row {
   visibility: visible;
+}
+
+.time-row--additional.js-hidden,
+.time-row--additional.hidden {
+  display: none;
 }
 
 .calendar-day {
@@ -1240,7 +1242,7 @@ select.time_select {
   width: 100%;
 }
 
-.day_checkbox:checked ~ .time_rows {
+.calendar__checkbox--day:checked ~ .time_rows {
   display: flex;
 }
 
@@ -1249,15 +1251,15 @@ select.time_select {
   min-height: 56px;
 }
 
-.day_checkbox:checked ~ .time-row-desc {
+.calendar__checkbox--day:checked ~ .time-row-desc {
   display: none;
 }
 
-.day_checkbox {
+.calendar__checkbox--day {
   display: none;
 }
 
-.calendar_break_row {
+.calendar__break-row {
   margin-top: 15px;
   width: 100%;
   display: none;
@@ -1268,7 +1270,7 @@ select.time_select {
   }     
 }
 
-.day_checkbox:checked ~ .calendar_break_row {
+.calendar__checkbox--day:checked ~ .calendar__break-row {
   display: flex;
 }
 
@@ -1281,10 +1283,16 @@ select.time_select {
   color:#4285f4;
   cursor: pointer;
   user-select: none;
+  font-size: .875rem;
+}
+
+.calendar__button--time-break.js-disabled {
+  color: #dddddd;
+  cursor: default;
+  pointer-events: none;
 }
 
 .calendar__button--time-break:hover {
-  text-decoration: none;
   color:#001487;
 }
 

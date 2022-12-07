@@ -25,13 +25,13 @@
 
 <div>
   <div class="df fc fcol calendar-wrap">
-      {% include "dashboard/calendar/day_row.html" with day='monday' day_code=1 form_field=form.day1 %}
-      {% include "dashboard/calendar/day_row.html" with day='tuesday' day_code=2 form_field=form.day2 %}
-      {% include "dashboard/calendar/day_row.html" with day='wednesday' day_code=3 form_field=form.day3 %}
-      {% include "dashboard/calendar/day_row.html" with day='thursday' day_code=4 form_field=form.day4 %}
-      {% include "dashboard/calendar/day_row.html" with day='friday' day_code=5 form_field=form.day5 %}
-      {% include "dashboard/calendar/day_row.html" with day='saturday' day_code=6 form_field=form.day6 %}
-      {% include "dashboard/calendar/day_row.html" with day='sunday' day_code=0 form_field=form.day0 %}
+      {% include "dashboard/calendar/day_row.html" with day='monday' day_code="1" form_field=form.day1_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='tuesday' day_code="2" form_field=form.day2_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='wednesday' day_code="3" form_field=form.day3_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='thursday' day_code="4" form_field=form.day4_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='friday' day_code="5" form_field=form.day5_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='saturday' day_code="6" form_field=form.day6_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='sunday' day_code="0" form_field=form.day0_checked %}
   </div>
 
   <div class="fc">

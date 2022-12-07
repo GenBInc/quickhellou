@@ -3,6 +3,9 @@ import { ApiService } from '../base/services/ApiService'
 import { ViewService } from '../base/services/ViewService'
 
 export class CalendarView extends UIView {
+
+  static MAX_SLOTS_PER_DAY = 5
+
   constructor() {
     super()
     this.apiService = new ApiService('')
@@ -17,6 +20,11 @@ export class CalendarView extends UIView {
     this.initSubmit()
   }
 
+  /**
+   * Initializes form submit.
+   *
+   * @memberof CalendarView
+   */
   initSubmit() {
     const submitButton = document.querySelector('.calendar__button--submit')
     submitButton.addEventListener('click', () => {
@@ -26,12 +34,13 @@ export class CalendarView extends UIView {
         formInput.remove()
       })
       const days = this.updateTimeSelectInput()
-      
-      for (const [dayCode, day] of Object.entries(days)) {
-        day.forEach(dateTime => {
-          form.insertAdjacentHTML('beforeend', `<input class="input--data" type="hidden" name="day${dayCode}" value="${dateTime}">`)
-        })
+      for (const [dayCode, time] of Object.entries(days)) {
+        form.insertAdjacentHTML('beforeend', `<input class="input--data" type="hidden" name="${dayCode}" value="${time}">`)
       }
+      const dayCheckboxes = document.querySelectorAll('input.calendar__checkbox--day')
+      dayCheckboxes.forEach(checkbox => {
+        form.insertAdjacentHTML('beforeend', `<input class="input--data" type="hidden" name="${checkbox.name}" value="${checkbox.checked ? 'True' : 'False'}">`)
+      })
       form.submit()
     })
   }
@@ -62,12 +71,17 @@ export class CalendarView extends UIView {
     })
   }
 
+  /**
+   * Initializes time slot controls.
+   */
   initAddTimeRowControls() {
     this.removeListListeners('.calendar__button--time-break')
     const buttonElements = document.querySelectorAll('.calendar__button--time-break')
     buttonElements.forEach(buttonElement => {
       buttonElement.addEventListener('click', () => {
-        this.addTimeRow(buttonElement.dataset.day, ++this.timeRowCounter)
+        //if (!this.isMaxSlotsExceeded(buttonElement.dataset.day)) {
+          this.addTimeSlot(buttonElement.dataset.day)
+        //}
       })
     })
   }
@@ -77,12 +91,11 @@ export class CalendarView extends UIView {
     let data = []
     
     daySlotElements.forEach(daySlotElement => {
-      const isChecked = daySlotElement.querySelector('input.day_checkbox').checked
+      const isChecked = daySlotElement.querySelector('input.calendar__checkbox--day').checked
       if (!isChecked) {
         return
       }
-      const dayCode = daySlotElement.dataset.daycode
-      const timeRowElements = daySlotElement.querySelectorAll('.calendar__time-slot')
+      const timeRowElements = daySlotElement.querySelectorAll('.time-row:not(.hidden):not(.js-hidden)')
       timeRowElements.forEach(element => {
         const id = element.dataset.id
 
@@ -95,19 +108,7 @@ export class CalendarView extends UIView {
         const toTimeAbbreviationElement = element.querySelector(`select[data-id=to_timeabbr_${id}]`)
         const toTimeAbbreviation = toTimeAbbreviationElement.value.toUpperCase()
         
-        const isFromTimeAbbreviationPM = fromTimeAbbreviation === 'PM'
-        if (isFromTimeAbbreviationPM) {
-          toTimeAbbreviationElement.value = 'pm'
-          toTimeAbbreviationElement.setAttribute('disabled', 'disabled')
-        }
-        if (!isFromTimeAbbreviationPM) {
-          toTimeAbbreviationElement.removeAttribute('disabled')
-        }
-        
-        if (!data[dayCode]) {
-          data[dayCode] = []
-        }
-        data[dayCode].push(`${dayCode} ${fromHour}:${fromMinutes} ${fromTimeAbbreviation} ${toHour}:${toMinutes} ${toTimeAbbreviation}`)
+        data[id] = `${daySlotElement.dataset.daycode} ${fromHour}:${fromMinutes} ${fromTimeAbbreviation} ${toHour}:${toMinutes} ${toTimeAbbreviation}`
       })
     })
     return data
@@ -118,8 +119,13 @@ export class CalendarView extends UIView {
     const deleteTimeButtons = document.querySelectorAll('.calendar__button--delete-time-slot')
     deleteTimeButtons.forEach(deleteTimeButton => {
       deleteTimeButton.addEventListener('click', () => {
-        deleteTimeButton.parentElement.parentElement.parentElement.remove()
+        const timeSlotElement = document.querySelector(`.time-row--additional[data-id="${deleteTimeButton.dataset.id}"]`)
+        timeSlotElement.classList.add('js-hidden')
+        const inputElement = document.querySelector(`input[name='${deleteTimeButton.dataset.id}'`)
+        inputElement.value = ''
         this.updateTimeSelectInput()
+        // this.initAddTimeRowControls()
+        this.updateAddSlotButtonAvailability()
       })
     })
   }
@@ -147,14 +153,103 @@ export class CalendarView extends UIView {
     pageLoader.classList.remove('js-active')
   }
 
-  addTimeRow(day, index) {
-    const url = `/dashboard/calendar/time_row/${day}/${index}`
+  /**
+   * Adds time slot.
+   *  
+   * @param {string} day the name of day 
+   */
+  __addTimeSlot__(day) {
+    const url = `/dashboard/calendar/time_row/${day}/${this.__getTimeSlotIndex__(day)}`
     this.apiService.postAsXMLHttpRequest({}, url).then(resultHtml => {
       document.querySelector(`.time-rows--${day}`).innerHTML += resultHtml
       this.initDeleteTimeSlots()
       this.initTimeSelects()
       this.initAddTimeRowControls()
       this.updateTimeSelectInput()
+      this.updateAddSlotButtonAvailability()
+    })
+  }
+
+  addTimeSlot(day) {
+    this.updateTimeSlotAvailability(day)
+    
+    this.updateTimeSelectInput()
+    this.updateAddSlotButtonAvailability()
+    /*this.initDeleteTimeSlots()
+    // this.initTimeSelects()
+    // this.initAddTimeRowControls()
+    this.updateAddSlotButtonAvailability()*/
+  }
+
+  updateTimeSlotAvailability(day) {
+    const allIndices = [2, 3, 4, 5]
+    const indices = []
+    const timeSlotElements = document.querySelectorAll(`.time-rows--${day} .time-row--additional:not(.hidden):not(.js-hidden)`)
+    timeSlotElements.forEach(timeSlotElement => {
+      indices.push(Number(timeSlotElement.dataset.index))
+    })
+
+    let unique1 = allIndices.filter((o) => indices.indexOf(o) === -1)
+    let unique2 = indices.filter((o) => allIndices.indexOf(o) === -1)
+    const unique = unique1.concat(unique2)
+    
+    const timeSlotElement = document.querySelector(`.time-rows--${day} .time-row--additional[data-index="${unique[0]}"]`)
+    timeSlotElement.classList.remove('hidden', 'js-hidden')
+
+    return unique[0]
+  }
+
+  __getTimeSlotIndex__(day) {
+    const allIndices = [1, 2, 3, 4, 5]
+    const indices = []
+    const timeSlotElements = document.querySelectorAll(`.time-rows--${day} .calendar__time-slot`)
+    timeSlotElements.forEach(timeSlotElement => {
+      indices.push(Number(timeSlotElement.dataset.index))
+    })
+    let unique1 = allIndices.filter((o) => indices.indexOf(o) === -1)
+    let unique2 = indices.filter((o) => allIndices.indexOf(o) === -1)
+  
+    const unique = unique1.concat(unique2)
+    return unique[0]
+  }
+
+  /**
+   * Gets number of associated with a given day slot.
+   * 
+   * @param {string} day 
+   * @returns the number of slots 
+   */
+  getNumberOfAddedSlots(day) {
+    return document.querySelectorAll(`.time-rows--${day} .time-row--additional:not(.hidden):not(.js-hidden)`).length
+  }
+
+  /**
+   * Checks if maximum number of slot has been exceeded. 
+   * 
+   * @param {string} day 
+   * @returns true if number of slots has exceeded the maximum
+   */
+  isMaxSlotsExceeded(day) {
+    return this.getNumberOfAddedSlots(day) >= CalendarView.MAX_SLOTS_PER_DAY - 1
+  }
+
+  /**
+   * Checks if number of slot is equal to maximum.
+   * 
+   * @param {string} day 
+   * @returns if number of number of slots is equal maximum
+   */
+  isNumberOfSlotsEqualsLimit(day) {
+    return this.getNumberOfAddedSlots(day) === CalendarView.MAX_SLOTS_PER_DAY - 1
+  }
+  
+  /**
+   * Updates add slot availability.
+   */
+  updateAddSlotButtonAvailability() {
+    const buttonElements = document.querySelectorAll('.calendar__button--time-break')
+    buttonElements.forEach(buttonElement => {
+      buttonElement.classList.toggle('js-disabled', this.isNumberOfSlotsEqualsLimit(buttonElement.dataset.day))
     })
   }
 }

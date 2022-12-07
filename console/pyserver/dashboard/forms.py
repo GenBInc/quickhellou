@@ -4,17 +4,26 @@ from re import (
     Pattern,
     Match,
 )
-from datetime import datetime, date
+from datetime import (
+    timedelta,
+    datetime
+)
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from accounts.models import User, Profile
+from dashboard.util.time import TIME_FORMAT
 from dashboard.models import (
     Widget,
     WidgetTemplate,
     Communication,
     CommunicationSession,
+    UserWorkingHours,
 )
+from dashboard.validators import (
+    validate_time_range,
+)
+from dashboard.util.time import RANGE_PATTERN
 
 
 class EmailOrPhoneField(forms.CharField):
@@ -96,45 +105,181 @@ class WidgetForm(forms.ModelForm):
         fields = ('name', 'url', 'lang', 'template', 'header', 'content')
 
 
+class CheckboxInput(forms.CheckboxInput):
+    def __init__(self, default=False, *args, **kwargs):
+        super(CheckboxInput, self).__init__(*args, **kwargs)
+        self.default = default
+
+    def value_from_datadict(self, data, files, name):
+        if name not in data:
+            return self.default
+        return super(CheckboxInput, self).value_from_datadict(data, files, name)
+
+
+class MyForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        questions = kwargs.pop('questions')
+        super(MyForm, self).__init__(*args, **kwargs)
+        counter = 1
+        for q in questions:
+            self.fields['question-' +
+                        str(counter)] = forms.CharField(label='question')
+            counter += 1
+
+
 class CalendarForm(forms.Form):
     """The calendar view form.
     """
-    day1 = forms.CharField(required=False)
-    day2 = forms.CharField(required=False)
-    day3 = forms.CharField(required=False)
-    day4 = forms.CharField(required=False)
-    day5 = forms.CharField(required=False)
-    day6 = forms.CharField(required=False)
-    day0 = forms.CharField(required=False)
-    
-    
+
+    # Input slots (5 per day)
+    # TODO: make number of slots dynamic
+    day1_1 = forms.CharField(required=False, validators=[validate_time_range])
+    day1_2 = forms.CharField(required=False, validators=[validate_time_range])
+    day1_3 = forms.CharField(required=False, validators=[validate_time_range])
+    day1_4 = forms.CharField(required=False, validators=[validate_time_range])
+    day1_5 = forms.CharField(required=False, validators=[validate_time_range])
+
+    day2_1 = forms.CharField(required=False, validators=[validate_time_range])
+    day2_2 = forms.CharField(required=False, validators=[validate_time_range])
+    day2_3 = forms.CharField(required=False, validators=[validate_time_range])
+    day2_4 = forms.CharField(required=False, validators=[validate_time_range])
+    day2_5 = forms.CharField(required=False, validators=[validate_time_range])
+
+    day3_1 = forms.CharField(required=False, validators=[validate_time_range])
+    day3_2 = forms.CharField(required=False, validators=[validate_time_range])
+    day3_3 = forms.CharField(required=False, validators=[validate_time_range])
+    day3_4 = forms.CharField(required=False, validators=[validate_time_range])
+    day3_5 = forms.CharField(required=False, validators=[validate_time_range])
+
+    day4_1 = forms.CharField(required=False, validators=[validate_time_range])
+    day4_2 = forms.CharField(required=False, validators=[validate_time_range])
+    day4_3 = forms.CharField(required=False, validators=[validate_time_range])
+    day4_4 = forms.CharField(required=False, validators=[validate_time_range])
+    day4_5 = forms.CharField(required=False, validators=[validate_time_range])
+
+    day5_1 = forms.CharField(required=False, validators=[validate_time_range])
+    day5_2 = forms.CharField(required=False, validators=[validate_time_range])
+    day5_3 = forms.CharField(required=False, validators=[validate_time_range])
+    day5_4 = forms.CharField(required=False, validators=[validate_time_range])
+    day5_5 = forms.CharField(required=False, validators=[validate_time_range])
+
+    day6_1 = forms.CharField(required=False, validators=[validate_time_range])
+    day6_2 = forms.CharField(required=False, validators=[validate_time_range])
+    day6_3 = forms.CharField(required=False, validators=[validate_time_range])
+    day6_4 = forms.CharField(required=False, validators=[validate_time_range])
+    day6_5 = forms.CharField(required=False, validators=[validate_time_range])
+
+    day0_1 = forms.CharField(required=False, validators=[validate_time_range])
+    day0_2 = forms.CharField(required=False, validators=[validate_time_range])
+    day0_3 = forms.CharField(required=False, validators=[validate_time_range])
+    day0_4 = forms.CharField(required=False, validators=[validate_time_range])
+    day0_5 = forms.CharField(required=False, validators=[validate_time_range])
+
+    # Checks if day is selected
+    day1_checked = forms.BooleanField(
+        widget=CheckboxInput(default=True), required=False)
+    day2_checked = forms.BooleanField(
+        widget=CheckboxInput(default=True), required=False)
+    day3_checked = forms.BooleanField(
+        widget=CheckboxInput(default=True), required=False)
+    day4_checked = forms.BooleanField(
+        widget=CheckboxInput(default=True), required=False)
+    day5_checked = forms.BooleanField(
+        widget=CheckboxInput(default=True), required=False)
+    day6_checked = forms.BooleanField(
+        widget=CheckboxInput(default=False), required=False)
+    day0_checked = forms.BooleanField(
+        widget=CheckboxInput(default=False), required=False)
+
+    def get_day_group(
+        self,
+        day_code: int
+    ):
+        time_field_key_regex: Pattern = compile('^day\d\_\d$')
+        return filter(lambda x: 'day{}'.format(day_code) in x and time_field_key_regex.match(x), self.fields.keys())
+
     def clean(self):
         """Clean form data."""
-        
-        range_pattern: Pattern = compile(
-            '^(\d{1})\s((\d{2})\:(\d{2})\s(AM|PM))\s((\d{2})\:(\d{2})\s(AM|PM))')
 
-        day_fields: list[str] = ['day1', 'day2', 'day3', 'day4', 'day5', 'day6', 'day0']
-        
-        for day_field in day_fields:
-            date_time_list = self.data.getlist(day_field)    
-                
-            for date_time in date_time_list:
-                result: Match[str] = search(range_pattern, date_time)
+        for day_code in list(range(0, 7)):
+            time_ranges = []
+            for day_field in self.get_day_group(day_code):
+                date_time = self.cleaned_data.get(day_field)
+                # TODO: move the collect time_ranges feature inot separate, accessible from widget creation place
+                continue
+                if not date_time:
+                    continue
+
+                result: Match[str] = search(RANGE_PATTERN, date_time)
                 day: str = result.group(1)
 
                 datetime_from_str: str = '{} {}'.format(day, result.group(2))
                 datetime_to_str: str = '{} {}'.format(day, result.group(6))
 
-                datetime_format: str = '%w %I:%M %p'
                 datetime_from: datetime = datetime.strptime(
-                    datetime_from_str, datetime_format)
+                    datetime_from_str, TIME_FORMAT)
                 datetime_to: datetime = datetime.strptime(
-                    datetime_to_str, datetime_format)
+                    datetime_to_str, TIME_FORMAT)
+                delta = datetime_to - datetime_from
+                hours = int(delta.seconds / 60 / 60 * 2)
+                for i in range(hours):
+                    working_hour: datetime = datetime_from + \
+                        timedelta(hours=i * .5)
+                    time_ranges.append(working_hour.strftime(TIME_FORMAT))
 
+                """
                 if datetime_from > datetime_to:
                     self.add_error(
                         'day{}'.format(day), 'Time range is invalid.')
+                """
+            time_ranges = list(set(time_ranges))
+            time_ranges.sort()
+            # print(time_ranges)
+
+    def collect_all(
+        self,
+        working_hour_entries: list[UserWorkingHours],
+    ):
+        """Collects all working hours to the form.
+
+        Args:
+            working_hour_entries (list[UserWorkingHours]): the working hours entries
+        """
+        for working_hours in working_hour_entries:
+            time_result: Match[str] = search(RANGE_PATTERN, working_hours.time)
+            # index: int = 1
+            # day: str = time_result.group(1)
+            # field_name: str = 'day{}_{}'.format(day, index)
+            # self.fields[field_name] = working_hours.time
+
+    
+    def save_all(self, user, commit=True):
+        """Saves the working hours.
+
+        Args:
+            user (User): the user
+            commit (bool, optional): True if commit to database. Defaults to True.
+        """
+        # Collect all working hours field values
+        time_values: list[str] = []
+        for day_code in list(range(0, 7)):
+            for day_field in self.get_day_group(day_code):
+                day_value = self.cleaned_data.get(day_field)
+                if day_value != '':
+                    time_values.append(day_value)
+        
+        # Delete all former associations
+        UserWorkingHours.objects.filter(user=user).delete()
+
+        # Save new working hours
+        if commit:
+            working_hours_entries: list[UserWorkingHours] = []
+            for time in time_values:
+                working_hours: UserWorkingHours = UserWorkingHours.objects.create(
+                    user=user, time=time)
+                working_hours_entries.append(working_hours)
+            UserWorkingHours.objects.abulk_create(working_hours_entries)
+
 
 class WidgetActiveUserForm(forms.Form):
     name = forms.CharField(max_length=256, required=True)

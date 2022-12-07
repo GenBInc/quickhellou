@@ -1,54 +1,56 @@
-{% load static %} {% if additional %}
-<div class="df df-f1 flc time-row additional">
-  {% endif %}
+{% load dashboard_extras %} {% load static %} {% if additional %}
+{{ form_field.errors }}
+<div
+  class="df df-f1 flc time-row time-row--additional{% if form_field.value is None %} hidden{% endif %}"
+  data-id="{{ day_id }}"
+  data-index="{{ index }}"
+>
+{% endif %}
+{% if not additional %}
+{{ form_field.errors }}
+{% endif %}
   <div
 		data-index="{{ index }}"
-		data-id="{{ day }}_{{ index }}"
+		data-id="{{ day_id }}"
 		data-day="{{ day }}"
-		class="df df-f1 flc time-row calendar__time-slot"
+		class="df df-f1 flc calendar__time-slot{% if not additional %} time-row{% endif %}"
 	>
-    <input
-      data-id="{{ day }}_{{ index }}"
-      type="hidden"
-      name="date_time"
-      value=""
-    />
     <div class="flc time-row--clock-icon_wrap time-row--clock-icon"></div>
-    <div class="flc calendar-time calendar-time_from">
+    <div class="flc calendar-time">
       <select
-				data-id="from_hour_{{ day }}_{{ index }}"
+        data-id="from_hour_{{ day_id }}"
         class="time_select calendar__select--hour"
       >
-        <option value="01">01</option>
-        <option value="02">02</option>
-        <option value="03">03</option>
-        <option value="04">04</option>
-        <option value="05">05</option>
-        <option value="06">06</option>
-        <option value="07">07</option>
-        <option value="08">08</option>
-        <option value="09" selected>09</option>
-        <option value="10">10</option>
-        <option value="11">11</option>
-        <option value="12">12</option>
+        {% for hour in hours %}
+          <option value="{{ hour }}"
+            {% if hour in form_field.value|get_start_hour %}selected{% endif %}
+          >{{ hour }}</option>
+        {% endfor %}
       </select>
       :
       <select
-        data-id="from_minutes_{{ day }}_{{ index }}"
+        data-id="from_minutes_{{ day_id }}"
         class="time_select calendar__select--minutes"
       >
-        <option value="00" selected>00</option>
-        <option value="30">30</option>
+        {% for minute in minutes %}
+          <option value="{{ minute }}"
+            {% if minute in form_field.value|get_start_minutes %}selected{% endif %}
+          >{{ minute }}</option>
+        {% endfor %}
       </select>
 
       <select
-        data-id="from_timeabbr_{{ day }}_{{ index }}"
+        data-id="from_timeabbr_{{ day_id }}"
         data-day="{{ day }}"
         data-field="timeAbbreviation"
 				class="time_select calendar__select--time-abbreviation"
       >
-        <option value="am" selected>am</option>
-        <option value="pm">pm</option>
+        <option value="AM"
+        {% if "AM" in form_field.value|get_start_abbreviation %}selected{% endif %}
+        >AM</option>
+        <option value="PM"
+        {% if "PM" in form_field.value|get_start_abbreviation %}selected{% endif %}
+        >PM</option>
       </select>
     </div>
 
@@ -56,45 +58,45 @@
       <p>to</p>
     </div>
 
-    <div class="flc calendar-time calendar-time-to">
+    <div class="flc calendar-time">
       <select
-        data-id="to_hour_{{ day }}_{{ index }}"
+        data-id="to_hour_{{ day_id }}"
 				class="time_select calendar__select--hour"
       >
-        <option value="01">01</option>
-        <option value="02">02</option>
-        <option value="03">03</option>
-        <option value="04">04</option>
-        <option value="05" selected>05</option>
-        <option value="06">06</option>
-        <option value="07">07</option>
-        <option value="08">08</option>
-        <option value="09">09</option>
-        <option value="10">10</option>
-        <option value="11">11</option>
-        <option value="12">12</option>
+        {% for hour in hours %}
+          <option value="{{ hour }}"
+            {% if hour in form_field.value|get_end_hour %}selected{% endif %}
+          >{{ hour }}</option>
+        {% endfor %}
       </select>
       :
       <select
-        data-id="to_minutes_{{ day }}_{{ index }}"
+        data-id="to_minutes_{{ day_id }}"
         class="time_select calendar__select--minutes"
       >
-        <option value="00" selected>00</option>
-        <option value="30">30</option>
+        {% for minute in minutes %}
+          <option value="{{ minute }}"
+            {% if minute in form_field.value|get_end_minutes %}selected{% endif %}
+          >{{ minute }}</option>
+        {% endfor %}
       </select>
-
       <select
-        data-id="to_timeabbr_{{ day }}_{{ index }}"
+        data-id="to_timeabbr_{{ day_id }}"
         class="time_select calendar__select--time-abbreviation"
       >
-        <option value="am">am</option>
-        <option value="pm" selected>pm</option>
+        <option value="AM"
+        {% if "AM" in form_field.value|get_end_abbreviation %}selected{% endif %}
+        >AM</option>
+        <option value="PM"
+        {% if "PM" in form_field.value|get_end_abbreviation %}selected{% endif %}
+        >PM</option>
       </select>
     </div>
 
     <div class="frc time-row--delete-button_wrap">
       <a
         class="fc df-f1 calendar__button--delete-time-slot team__list-link list-link--delete delete-calendar-row"
+        data-id="{{ day_id }}"
         aria-label="Delete"
         data-microtip-position="bottom"
         data-role="tooltip"

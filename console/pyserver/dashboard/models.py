@@ -288,3 +288,11 @@ class CommunicationSession(models.Model):
         db_table = 'dashboard_communication_session'
         verbose_name = "communication_session"
         verbose_name_plural = "communication_sessions"
+
+
+class UserWorkingHours(models.Model):
+    """ User working hours model. """
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(
+        User, null=False, on_delete=models.CASCADE)
+    time = models.CharField(max_length=256, blank=False)
