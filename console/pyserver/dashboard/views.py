@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import datetime
+from datetime import (
+    datetime,
+    timedelta,
+)
 import re
 import hashlib
 from io import BytesIO, TextIOWrapper
 from django.views.decorators.http import (
     require_POST,
-    require_GET
 )
 from django.http import (
     HttpRequest,
@@ -23,11 +25,14 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-from accounts.models import Profile, User
-
+from accounts.models import (
+    Profile,
+    User,
+)
 from dashboard.util.time import (
     HOURS,
     MINUTES,
+    weekly_hours,
 )
 from dashboard.forms import (
     AssignedWidgetsForm,
@@ -733,13 +738,53 @@ def widget_content_script_file(
 
 
 @csrf_exempt
+def widget_calendar_view(
+    request: HttpRequest,
+    widget_id: int,
+) -> HttpResponse:
+    """Widget calendar page view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        widget_id (int): the widget id
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    widget: Widget = Widget.objects.get(id=widget_id)
+    print('widget', widget)
+    if not widget:
+        raise Http404
+
+    user: User = widget.last_editor
+
+    # working_hours = weekly_hours(user)
+
+    today = datetime.today()
+    date_list: list = [today + timedelta(days=x) for x in range(7)]
+    
+    for date in date_list:
+        print('date', date)    
+
+    pages = []
+    start_year: str = '2022'
+    start_month: str = 'December'
+    
+    return render(request, 'embed/widget/scheduler_calendar.html', {
+        'start_year': start_year,
+        'start_month': start_month,
+        'pages': pages,
+    })
+
+
+@csrf_exempt
 def install(
     request: HttpRequest,
     widget_id: int,
     domain: str,
     uuid: str
 ) -> HttpResponse:
-    widget = Widget.objects.get(id=widget_id, uuid=uuid)
+    widget: Widget = Widget.objects.get(id=widget_id, uuid=uuid)
 
     if not widget:
         raise Http404

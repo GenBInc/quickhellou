@@ -1,5 +1,5 @@
-import { DashboardView } from "./DashboardView";
-import { HTMLUtils } from "../../genb/base/utils/HTMLUtils";
+import { DashboardView } from "./DashboardView"
+import { HTMLUtils } from "../../genb/base/utils/HTMLUtils"
 
 export class WidgetView extends DashboardView {
 
@@ -9,10 +9,10 @@ export class WidgetView extends DashboardView {
    * @memberof WidgetViewController
    */
   init() {
-    const copyWidgetCodeElement = this.uiGet(".widget-code-box__copy");
+    const copyWidgetCodeElement = this.uiGet(".widget-code-box__copy")
     copyWidgetCodeElement.addEventListener("click", () => {
-      const copyTextElement = this.uiGet(".widget-code-box__content");
-      HTMLUtils.copyToClipboard(HTMLUtils.decodeHtml(copyTextElement.innerHTML));
-    });
+      const copyTextElement = this.uiGet(".widget-code-box__content")
+      HTMLUtils.copyToClipboard(HTMLUtils.decodeHtml(copyTextElement.innerHTML))
+    })
   } 
 }

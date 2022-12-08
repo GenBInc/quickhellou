@@ -309,4 +309,22 @@ export class WidgetService extends EventEmitter {
       `${this.consoleAppUrl}/dashboard/inactive_operator_init_form`
     )
   }
+
+  /**
+   * Gets scheduler calendar.
+   * 
+   * @returns the scheduler calendar 
+   */
+   async getSchedulerCalendar() {
+    
+    const url = `${this.consoleAppUrl}/dashboard/widget_calendar_view/${
+      this.widgetId
+    }`
+    console.log(url)
+    return await this.apiService.getAsXMLHttpRequest(url)
+
+    
+
+  }
 }
+

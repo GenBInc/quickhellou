@@ -55,6 +55,8 @@ urlpatterns = [
          views.widget_content_view, name='widget_content'),
     path('widget_schedule/<int:widget_id>/<str:hostname>/<slug:uuid>',
          views.widget_schedule_view, name='widget_schedule'),
+    path('widget_calendar_view/<int:widget_id>',
+         views.widget_calendar_view, name='widget_calendar_view'),
     path('widget_active_operator/<int:widget_id>/<str:hostname>/<slug:uuid>',
          views.widget_active_operator, name='widget_active_operator'),
     path('test_widget2', views.test_widget, name="test_widget"),

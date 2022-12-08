@@ -22,7 +22,7 @@ export class ScheduleView extends UIView {
     this.isExpanded = false
     this.element = document.querySelector('.widget--schedule')
     this.extDispatcher = window.parent.document.QHDispatcher
-    this.scheduler = new Scheduler()
+    this.scheduler = new Scheduler(this.service)
   }
 
   /**

@@ -12,12 +12,14 @@ import { RadioButtonsGroup } from '../../genb/base/components/RadioButtonsGroup'
 export class Scheduler extends UIView {
   /**
    * Creates an instance of Scheduler.
-   *
+   * 
+   * @param { WidgetService } service
    *
    * @memberof Scheduler
    */
-  constructor() {
+  constructor(service) {
       super()
+      this.service = service
       this.element = document.querySelector('.widget--schedule__scheduler')
 
       this.currentPage = 0
@@ -90,6 +92,7 @@ export class Scheduler extends UIView {
    * @memberof Scheduler
   */
   async init() {
+    await this.loadCalendar()
     this.pages = document.querySelectorAll('.scheduler__page').length
     const nextPageButton = document.querySelector('.scheduler__pages-nav-button--next')
     nextPageButton.addEventListener('click', () => {
@@ -229,6 +232,22 @@ export class Scheduler extends UIView {
       result.push(array.slice(i, i + size))
     }
     return result
+  }
+
+  /**
+   * Loads scheduler calendar view.
+   * 
+   * @param {number} 
+   */
+  async loadCalendar() {
+    return new Promise((resolve, reject) => {
+      this.service.getSchedulerCalendar().then((html) => {
+        document.querySelector('.widget--schedule__datetime-controls').innerHTML = html
+        resolve()
+      }).catch(reason => {
+        reject(reason)
+      })
+    })
   }
 
 }

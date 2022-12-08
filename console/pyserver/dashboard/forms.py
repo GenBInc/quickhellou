@@ -26,7 +26,10 @@ from dashboard.models import (
 from dashboard.validators import (
     validate_time_range,
 )
-from dashboard.util.time import RANGE_PATTERN
+from dashboard.util.time import (
+    RANGE_PATTERN,
+    collect_time_ranges,
+)
 
 
 class EmailOrPhoneField(forms.CharField):
@@ -185,26 +188,20 @@ class CalendarForm(forms.Form):
     def __init__(self, *args, **kwargs):
         """Form constructor.
         """
-        
-        working_hour_entries: list[UserWorkingHours] = kwargs.pop(
+
+        working_hours_entries: list[UserWorkingHours] = kwargs.pop(
             'working_hours')
-        
+
         # Initialize form
         super(CalendarForm, self).__init__(*args, **kwargs)
 
-        # Terminate if working hours are not set 
-        if not working_hour_entries:
+        # Terminate if working hours are not set
+        if not working_hours_entries:
             return
-        
-        # Collect time range values per day
-        time_ranges: dict[str, list[str]] = {}
-        for working_hours in working_hour_entries:
-            time_result: Match[str] = search(RANGE_PATTERN, working_hours.time)
-            day: str = time_result.group(1)
 
-            if not time_ranges.get(day):
-                time_ranges[day] = []
-            time_ranges[day].append(working_hours.time)
+        # Collect time range values per day
+        time_ranges: dict[str, list[str]] = collect_time_ranges(
+            working_hours_entries)
 
         # Initialize time range fields
         for day_code in time_ranges:
@@ -222,46 +219,16 @@ class CalendarForm(forms.Form):
         self,
         day_code: int
     ):
+        """Gets related to given day fields.
+
+        Args:
+            day_code (int): the day code
+
+        Returns:
+            filter[str]: the fields list
+        """
         time_field_key_regex: Pattern = compile('^day\d\_\d$')
         return filter(lambda x: 'day{}'.format(day_code) in x and time_field_key_regex.match(x), self.fields.keys())
-
-    def clean(self):
-        """Clean form data."""
-
-        for day_code in list(range(0, 7)):
-            time_ranges = []
-            for day_field in self.get_day_group(day_code):
-                date_time = self.cleaned_data.get(day_field)
-                # TODO: move the collect time_ranges feature inot separate, accessible from widget creation place
-                continue
-                if not date_time:
-                    continue
-
-                result: Match[str] = search(RANGE_PATTERN, date_time)
-                day: str = result.group(1)
-
-                datetime_from_str: str = '{} {}'.format(day, result.group(2))
-                datetime_to_str: str = '{} {}'.format(day, result.group(6))
-
-                datetime_from: datetime = datetime.strptime(
-                    datetime_from_str, TIME_FORMAT)
-                datetime_to: datetime = datetime.strptime(
-                    datetime_to_str, TIME_FORMAT)
-                delta = datetime_to - datetime_from
-                hours = int(delta.seconds / 60 / 60 * 2)
-                for i in range(hours):
-                    working_hour: datetime = datetime_from + \
-                        timedelta(hours=i * .5)
-                    time_ranges.append(working_hour.strftime(TIME_FORMAT))
-
-                """
-                if datetime_from > datetime_to:
-                    self.add_error(
-                        'day{}'.format(day), 'Time range is invalid.')
-                """
-            time_ranges = list(set(time_ranges))
-            time_ranges.sort()
-            # print(time_ranges)
 
     def save_all(self, user, commit=True):
         """Saves the working hours.
