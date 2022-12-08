@@ -4,10 +4,6 @@ from re import (
     Match,
     Pattern,
 )
-from datetime import (
-    timedelta,
-    datetime
-)
 
 TIME_FORMAT = '%d %I:%M %p'
 DEFAULT_FROM_HOUR = '09'
@@ -15,6 +11,12 @@ DEFAULT_TO_HOUR = '05'
 DEFAULT_MINUTES = '00'
 DEFAULT_FROM_ABBREVIATION = 'AM'
 DEFAULT_TO_ABBREVIATION = 'PM'
+
+DAYS = ['1', '2', '3', '4', '5', '6', '0']
+HOURS: list[str] = ['01', '02', '03', '04', '05',
+                    '06', '07', '08', '09', '10', '11', '12', ]
+MINUTES: list[str] = ['00', '30', ]
+
 RANGE_PATTERN: Pattern = compile(
     '^(\d)\s((\d{2})\:(\d{2})\s(AM|PM))\s((\d{2})\:(\d{2})\s(AM|PM))$')
 TIME_PATTERN: Pattern = compile(

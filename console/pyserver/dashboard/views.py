@@ -25,6 +25,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from accounts.models import Profile, User
 
+from dashboard.util.time import (
+    HOURS,
+    MINUTES,
+)
 from dashboard.forms import (
     AssignedWidgetsForm,
     AssigneesForm,
@@ -40,6 +44,7 @@ from dashboard.forms import (
     CalendarForm,
 )
 from dashboard.models import (
+    ClientBoard,
     Communication,
     CommunicationSession,
     Widget,
@@ -238,21 +243,15 @@ def save_calendar(
         HttpResponse: the HTTP response
     """
     user: User = request.user
-    form: CalendarForm = CalendarForm(request.POST)
+    form: CalendarForm = CalendarForm(request.POST, working_hours=None)
     if form.is_valid():
         form.save_all(user)
         messages.success(
             request, 'Working hours have been saved.')
 
-    hours: list[str] = ['01', '02', '03', '04', '05',
-                        '06', '07', '08', '09', '10', '11', '12', ]
-    minutes: list[str] = ['00', '30', ]
-
-    return render(request, 'dashboard/calendar/view.html', {
+    return render(request, 'dashboard/calendar/view.html', get_calendar_view_parameters(user) | {
         'user': user,
         'form': form,
-        'hours': hours,
-        'minutes': minutes,
         'is_saved': True,
         'date_time': request.POST.getlist('date_time')
     })
@@ -383,7 +382,7 @@ def widget_delete(
     request: HttpRequest,
     widget_id: int
 ) -> HttpResponseRedirect:
-    widget = Widget.objects.get(id=widget_id)
+    widget: Widget = Widget.objects.get(id=widget_id)
     widget.active = False
     widget.save()
     messages.success(
@@ -396,7 +395,7 @@ def widget_pause(
     request: HttpRequest,
     widget_id: int
 ) -> HttpResponseRedirect:
-    widget = Widget.objects.get(id=widget_id)
+    widget: Widget = Widget.objects.get(id=widget_id)
     widget.paused = True
     widget.save()
     messages.success(
@@ -409,7 +408,7 @@ def widget_unpause(
     request: HttpRequest,
     widget_id: int
 ) -> HttpResponseRedirect:
-    widget = Widget.objects.get(id=widget_id)
+    widget: Widget = Widget.objects.get(id=widget_id)
     widget.paused = False
     widget.save()
     messages.success(
@@ -433,7 +432,7 @@ def communications_view(
 def communication_list_view(
     request: HttpRequest
 ) -> HttpResponse:
-    communications = Communication.objects.filter(
+    communications: list[Communication] = Communication.objects.filter(
         client_board=request.user.client_board).filter(active=True).order_by('-modification_time')
     if communications.count() > 0:
         communication = communications[0]
@@ -460,7 +459,7 @@ def call_create_view(
 def team_view(
     request: HttpRequest
 ) -> HttpResponse:
-    users = User.objects.filter(
+    users: list[User] = User.objects.filter(
         is_active=True, is_admin=True, is_superuser=False,
         client_board=request.user.client_board).order_by('id')
     return render(request, 'dashboard/team.html', {'users': users})
@@ -481,26 +480,31 @@ def calendar_view(
     """
     user: User = request.user
 
-    hours: list[str] = ['01', '02', '03', '04', '05',
-                        '06', '07', '08', '09', '10', '11', '12', ]
-    minutes: list[str] = ['00', '30', ]
-
-    calendar_form: CalendarForm = CalendarForm(request.POST)
-
     # Collect all existing working hours.
     working_hours_entries: list[UserWorkingHours] = UserWorkingHours.objects.filter(
         user=user).all()
 
-    # Populate working hours into form.
-    calendar_form.collect_all(working_hours_entries)
-
-    return render(request, 'dashboard/calendar/view.html', {
+    return render(request, 'dashboard/calendar/view.html', get_calendar_view_parameters(user) | {
         'user': request.user,
-        'hours': hours,
-        'minutes': minutes,
-        'is_saved': len(working_hours_entries) > 0,
-        'form': calendar_form
+        'is_saved': working_hours_entries.__len__() > 0,
+        'form': CalendarForm(working_hours=working_hours_entries)
     })
+
+
+def get_calendar_view_parameters(user: User) -> dict:
+    """Gets calendar views common parameters.
+
+    Args:
+        user (User): the user
+
+    Returns:
+        dict: the parameters
+    """
+    return {
+        'user': user,
+        'hours': HOURS,
+        'minutes': MINUTES,
+    }
 
 
 @permission_required("is_default_admin")
@@ -510,15 +514,16 @@ def client_user_edit_view(
     user_id: int = None
 ) -> HttpResponse:
     if user_id is not None:
-        client_user = User.objects.get(id=user_id)
+        client_user: User = User.objects.get(id=user_id)
         board_widgets = Widget.objects.filter(
             client_board=request.user.client_board)
-        user_widgets = Widget.objects.filter(assignees__id=user_id)
+        user_widgets: list[Widget] = Widget.objects.filter(
+            assignees__id=user_id)
     else:
         return redirect('dashboard:team')
     if request.method == 'POST':
-        user_form = UserForm(request.POST, instance=client_user)
-        profile_form = ProfileForm(
+        user_form: UserForm = UserForm(request.POST, instance=client_user)
+        profile_form: ProfileForm = ProfileForm(
             request.POST, request.FILES, instance=client_user.profile)
         profile_meta_form = ProfileMetaForm(request.POST)
         widgets_form = AssignedWidgetsForm(request.POST)
@@ -554,8 +559,8 @@ def client_user_edit_view(
 def client_user_create_view(
     request: HttpRequest
 ) -> HttpResponse:
-    client_board = request.user.client_board
-    widgets = Widget.objects.filter(client_board=client_board)
+    client_board: ClientBoard = request.user.client_board
+    widgets: list[Widget] = Widget.objects.filter(client_board=client_board)
     if request.method == 'POST':
         user_form = UserForm(request.POST)
         profile_form = ProfileForm(
@@ -608,7 +613,7 @@ def user_delete(
     request: HttpRequest,
     user_id: int
 ) -> HttpResponseRedirect:
-    user = User.objects.get(id=user_id)
+    user: User = User.objects.get(id=user_id)
     user.is_active = False
     user.save()
     messages.success(

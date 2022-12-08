@@ -1,5 +1,4 @@
 from django import template
-from django.utils.safestring import mark_safe
 from django.template.defaultfilters import stringfilter
 
 from django.forms import Form
@@ -13,15 +12,6 @@ from dashboard.util.time import (
 )
 
 register = template.Library()
-
-
-@register.simple_tag
-def tag_day_id(
-    day_code: str,
-    time_code: str,
-):
-    day_code: str = 'day{}_{}'.format(day_code, time_code)
-    return mark_safe(day_code)
 
 
 @register.filter

@@ -1,14 +1,15 @@
 {% load dashboard_extras %} {% load static %} {% if additional %}
 {{ form_field.errors }}
 <div
-  class="df df-f1 flc time-row time-row--additional{% if form_field.value is None %} hidden{% endif %}"
-  data-id="{{ day_id }}"
-  data-index="{{ index }}"
+class="df df-f1 flc time-row time-row--additional{% if form_field.value is None %} hidden{% endif %}"
+data-id="{{ day_id }}"
+data-index="{{ index }}"
 >
 {% endif %}
 {% if not additional %}
 {{ form_field.errors }}
 {% endif %}
+      
   <div
 		data-index="{{ index }}"
 		data-id="{{ day_id }}"

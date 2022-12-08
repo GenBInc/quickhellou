@@ -293,6 +293,8 @@ class CommunicationSession(models.Model):
 class UserWorkingHours(models.Model):
     """ User working hours model. """
     id = models.AutoField(primary_key=True)
+    # Assigned user
     user = models.ForeignKey(
         User, null=False, on_delete=models.CASCADE)
+    # Time range entries in RANGE_PATTERN format
     time = models.CharField(max_length=256, blank=False)

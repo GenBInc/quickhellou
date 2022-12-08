@@ -12,7 +12,10 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from accounts.models import User, Profile
-from dashboard.util.time import TIME_FORMAT
+from dashboard.util.time import (
+    DAYS,
+    TIME_FORMAT,
+)
 from dashboard.models import (
     Widget,
     WidgetTemplate,
@@ -116,21 +119,9 @@ class CheckboxInput(forms.CheckboxInput):
         return super(CheckboxInput, self).value_from_datadict(data, files, name)
 
 
-class MyForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        questions = kwargs.pop('questions')
-        super(MyForm, self).__init__(*args, **kwargs)
-        counter = 1
-        for q in questions:
-            self.fields['question-' +
-                        str(counter)] = forms.CharField(label='question')
-            counter += 1
-
-
 class CalendarForm(forms.Form):
     """The calendar view form.
     """
-
     # Input slots (5 per day)
     # TODO: make number of slots dynamic
     day1_1 = forms.CharField(required=False, validators=[validate_time_range])
@@ -191,6 +182,42 @@ class CalendarForm(forms.Form):
     day0_checked = forms.BooleanField(
         widget=CheckboxInput(default=False), required=False)
 
+    def __init__(self, *args, **kwargs):
+        """Form constructor.
+        """
+        
+        working_hour_entries: list[UserWorkingHours] = kwargs.pop(
+            'working_hours')
+        
+        # Initialize form
+        super(CalendarForm, self).__init__(*args, **kwargs)
+
+        # Terminate if working hours are not set 
+        if not working_hour_entries:
+            return
+        
+        # Collect time range values per day
+        time_ranges: dict[str, list[str]] = {}
+        for working_hours in working_hour_entries:
+            time_result: Match[str] = search(RANGE_PATTERN, working_hours.time)
+            day: str = time_result.group(1)
+
+            if not time_ranges.get(day):
+                time_ranges[day] = []
+            time_ranges[day].append(working_hours.time)
+
+        # Initialize time range fields
+        for day_code in time_ranges:
+            datetime_ranges: list[str] = time_ranges[day_code]
+            for index, datetime_range in enumerate(datetime_ranges):
+                field_name: str = 'day{}_{}'.format(day_code, index+1)
+                self.initial[field_name] = datetime_range
+
+        # Initialize day check fields
+        for day_code in DAYS:
+            field_name: str = 'day{}_checked'.format(day_code)
+            self.initial[field_name] = time_ranges.get(day_code) is not None
+
     def get_day_group(
         self,
         day_code: int
@@ -236,23 +263,6 @@ class CalendarForm(forms.Form):
             time_ranges.sort()
             # print(time_ranges)
 
-    def collect_all(
-        self,
-        working_hour_entries: list[UserWorkingHours],
-    ):
-        """Collects all working hours to the form.
-
-        Args:
-            working_hour_entries (list[UserWorkingHours]): the working hours entries
-        """
-        for working_hours in working_hour_entries:
-            time_result: Match[str] = search(RANGE_PATTERN, working_hours.time)
-            # index: int = 1
-            # day: str = time_result.group(1)
-            # field_name: str = 'day{}_{}'.format(day, index)
-            # self.fields[field_name] = working_hours.time
-
-    
     def save_all(self, user, commit=True):
         """Saves the working hours.
 
@@ -267,7 +277,7 @@ class CalendarForm(forms.Form):
                 day_value = self.cleaned_data.get(day_field)
                 if day_value != '':
                     time_values.append(day_value)
-        
+
         # Delete all former associations
         UserWorkingHours.objects.filter(user=user).delete()
 
