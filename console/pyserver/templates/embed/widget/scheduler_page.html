@@ -1,235 +1,28 @@
 <div class="scheduler__page">
+  <div class="f1 fc frow scheduler__date-label">
+    <p class="scheduler__month-label">{{ page.month }}</p>
+    <p class="scheduler__year-label">{{ page.year }}</p>
+  </div>
+  
+  <div class="scheduler__days">
+  {% for day in page.days %}
   <div class="f1 fcol scheduler__day">
     <div class="f1 fcol scheduler__day-header_wrap">
       <span class="fc scheduler__day-info">row.month row.year</span>
       <div class="fcol scheduler__day-header">
-        <span class="scheduler__day-text scheduler__day-name">row.day</span>
-        <span class="scheduler__day-text">row.name</span>
+        <span class="scheduler__day-text scheduler__day-name">{{ day.day_name }}</span>
+        <span class="scheduler__day-text">{{ day.month_date }}</span>
       </div>
     </div>
-
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-  </div>
-  <div class="f1 fcol scheduler__day">
-    <div class="f1 fcol scheduler__day-header_wrap">
-      <span class="fc scheduler__day-info">row.month row.year</span>
-      <div class="fcol scheduler__day-header">
-        <span class="scheduler__day-text scheduler__day-name">row.day</span>
-        <span class="scheduler__day-text">row.name</span>
+    {% for hour in day.time %}
+      <div
+        class="fc scheduler__button scheduler__button--time scheduler__time"
+        data-time="${date} ${time}"
+      >
+        <span class="scheduler__button-text">{{ hour }}</span>
       </div>
-    </div>
-
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
+    {% endfor %}
   </div>
-
-  <div class="f1 fcol scheduler__day">
-    <div class="f1 fcol scheduler__day-header_wrap">
-      <span class="fc scheduler__day-info">row.month row.year</span>
-      <div class="fcol scheduler__day-header">
-        <span class="scheduler__day-text scheduler__day-name">row.day</span>
-        <span class="scheduler__day-text">row.name</span>
-      </div>
-    </div>
-
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-  </div>
-
-  <div class="f1 fcol scheduler__day">
-    <div class="f1 fcol scheduler__day-header_wrap">
-      <span class="fc scheduler__day-info">row.month row.year</span>
-      <div class="fcol scheduler__day-header">
-        <span class="scheduler__day-text scheduler__day-name">row.day</span>
-        <span class="scheduler__day-text">row.name</span>
-      </div>
-    </div>
-
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-  </div>
-
-  <div class="f1 fcol scheduler__day">
-    <div class="f1 fcol scheduler__day-header_wrap">
-      <span class="fc scheduler__day-info">row.month row.year</span>
-      <div class="fcol scheduler__day-header">
-        <span class="scheduler__day-text scheduler__day-name">row.day</span>
-        <span class="scheduler__day-text">row.name</span>
-      </div>
-    </div>
-
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-    <div
-      class="fc scheduler__button scheduler__button--time scheduler__time"
-      data-time="${date} ${time}"
-    >
-      <span class="scheduler__button-text">time</span>
-    </div>
-  </div>
+  {% endfor %}
+</div>
 </div>

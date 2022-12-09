@@ -1,13 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 27.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+<svg id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
-<style type="text/css">
-	.st0{fill:#001588;}
-</style>
-<g>
-	<path class="st0" d="M394.67,512H117.33C52.56,511.93,0.07,459.44,0,394.67V117.33C0.07,52.56,52.56,0.07,117.33,0h277.33
+	<path fill="#001588" d="M394.67,512H117.33C52.56,511.93,0.07,459.44,0,394.67V117.33C0.07,52.56,52.56,0.07,117.33,0h277.33
 		C459.44,0.07,511.93,52.56,512,117.33v277.33C511.93,459.44,459.44,511.93,394.67,512z M117.33,64C87.88,64,64,87.88,64,117.33
 		v277.33C64,424.12,87.88,448,117.33,448h277.33c29.46,0,53.33-23.88,53.33-53.33V117.33C448,87.88,424.12,64,394.67,64H117.33z"/>
-</g>
 </svg>

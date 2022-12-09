@@ -128,6 +128,10 @@ html {
   img {
     vertical-align: middle;
   }
+
+  img {
+    border: 0;
+  }
   
   button,
   button:focus {
@@ -209,6 +213,47 @@ html {
 
   .messages li.success {
     color: #00a100;
+  }
+
+  div.loader,
+  div.loader:after {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px
+  }
+
+  div.loader {
+    z-index: 1;
+    margin: auto;
+    font-size: .25rem;
+    position: fixed;
+    top: calc(50% - 24px);
+    left: calc(50% - 24px);
+    text-indent: -9999em;
+    border-right: .3em solid #80d100;
+    border-bottom: .3em solid #001588;
+    border-top: .3em solid #001588;
+    border-left: .3em solid #80d100;
+    transform: translateZ(0);
+    animation: load8 1.1s infinite linear
+  }
+
+  @-webkit-keyframes load8 {
+    0% {
+      transform: rotate(0deg)
+    }
+    to {
+      transform: rotate(1turn)
+    }
+  }
+
+  @keyframes load8 {
+    0% {
+      transform: rotate(0deg)
+    }
+    to {
+      transform: rotate(1turn)
+    }
   }
 
   .wrapper--thin {
@@ -953,6 +998,14 @@ div.scheduler__page {
   min-width: 100%;
   @include df;
   @include df-col;
+  overflow-y: auto;
+  height: 100%;
+}
+
+div.scheduler__days {
+  min-width: 100%;
+  @include df;
+  @include df-col;
   @media (min-width: $s-sm) {
     overflow-y: auto;
     height: 100%;
@@ -1111,6 +1164,7 @@ div.scheduler__pages {
   pointer-events: none;
   user-select: none;
   color: white;
+  white-space: nowrap;
 }
 
 .scheduler__day-header_wrap {

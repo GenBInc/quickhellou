@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
+# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = str(os.environ.get('SECRET_KEY'))
@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'api',
+    'svg',
     'accounts',
     'dashboard',
 ]
@@ -195,7 +196,7 @@ DATETIME_FORMAT = '%Y-%m-%d %H:%M'
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
+# https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
@@ -214,3 +215,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+SVG_DIRS = [
+    os.path.join(BASE_DIR, 'static/images'),
+    os.path.join(BASE_DIR, 'console/static/images')
+]

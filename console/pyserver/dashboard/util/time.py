@@ -15,7 +15,8 @@ from accounts.models import (
     User,
 )
 
-TIME_FORMAT = '%d %I:%M %p'
+TIME_FORMAT = '%I:%M %p'
+DAY_TIME_FORMAT = '%d %I:%M %p'
 DEFAULT_FROM_HOUR = '09'
 DEFAULT_TO_HOUR = '05'
 DEFAULT_MINUTES = '00'
@@ -113,11 +114,18 @@ def get_day_group(
     return filter(lambda x: 'day{}'.format(day_code) in x and time_field_key_regex.match(x), self.fields.keys())
 
 
-def weekly_hours(
+def collect_weekly_hours(
     user: User,
-    day_fields: dict[str, list[str]]
 ):
+    """Collects and serializie weekly working hours.
 
+    Args:
+        user (User): the user
+
+    Returns:
+        _type_: the serialized working hours
+    """
+    # Get user related saved working hours
     working_hours_entries: list[UserWorkingHours] = UserWorkingHours.objects.filter(
         user=user).all()
 
@@ -125,27 +133,26 @@ def weekly_hours(
     time_ranges: dict[str, list[str]] = collect_time_ranges(
         working_hours_entries)
 
-    
+    day_fields: dict[str, list[str]] = {}
     for day_code in time_ranges:
         datetime_ranges: list[str] = time_ranges[day_code]
         for index, datetime_range in enumerate(datetime_ranges):
             field_name: str = 'day{}_{}'.format(day_code, index+1)
-            print(field_name)
-            # self.initial[field_name] = datetime_range
-    return
-    for day_code in DAYS:
-        start_hours = []
-        for day_field in get_day_group(day_code):
-            date_time = day_fields.get(day_field)
-            if not date_time:
-                continue
+            if not day_fields.get(field_name):
+                day_fields[field_name] = []
+            day_fields[field_name].append(datetime_range)
+            # s[field_name] = datetime_range
 
-            result: Match[str] = search(RANGE_PATTERN, date_time)
-            day: str = result.group(1)
-
-            datetime_from_str: str = '{} {}'.format(day, result.group(2))
-            datetime_to_str: str = '{} {}'.format(day, result.group(6))
-
+    weekly_hours: dict[str, list[str]] = {}
+    for day_code in time_ranges:
+        datetime_ranges: list[str] = time_ranges[day_code]
+        daily_hours: list[str] = []
+        for index, datetime_range in enumerate(datetime_ranges):
+            print(index, datetime_range)
+            search_result: Match[str] = search(RANGE_PATTERN, datetime_range)
+            day: str = search_result.group(1)
+            datetime_from_str: str = search_result.group(2)
+            datetime_to_str: str = search_result.group(6)
             datetime_from: datetime = datetime.strptime(
                 datetime_from_str, TIME_FORMAT)
             datetime_to: datetime = datetime.strptime(
@@ -155,12 +162,12 @@ def weekly_hours(
             for i in range(hours):
                 working_hour: datetime = datetime_from + \
                     timedelta(hours=i * .5)
-                start_hours.append(working_hour.strftime(TIME_FORMAT))
+                daily_hours.append(working_hour.strftime(TIME_FORMAT))
+        daily_hours = sorted(
+            list(set(daily_hours)), key=lambda x: datetime.strptime(x, TIME_FORMAT))
+        weekly_hours[day_code] = daily_hours
 
-        start_hours = list(set(start_hours))
-        start_hours.sort()
-        print(start_hours)
-        return start_hours
+    return weekly_hours
 
 
 def collect_time_ranges(

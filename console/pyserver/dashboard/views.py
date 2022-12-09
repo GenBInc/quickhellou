@@ -32,7 +32,7 @@ from accounts.models import (
 from dashboard.util.time import (
     HOURS,
     MINUTES,
-    weekly_hours,
+    collect_weekly_hours,
 )
 from dashboard.forms import (
     AssignedWidgetsForm,
@@ -270,7 +270,7 @@ def calendar_time_row(
     index: int,
 ) -> HttpResponse:
     return render(request, 'dashboard/calendar/time_row.html', {
-        'day': day,
+        'day_name': day,
         'index': index,
         'additional': True,
     })
@@ -752,24 +752,41 @@ def widget_calendar_view(
         HttpResponse: the HTTP response
     """
     widget: Widget = Widget.objects.get(id=widget_id)
-    print('widget', widget)
     if not widget:
         raise Http404
 
     user: User = widget.last_editor
 
-    # working_hours = weekly_hours(user)
-
-    today = datetime.today()
-    date_list: list = [today + timedelta(days=x) for x in range(7)]
+    working_hours: dict[str, list[str]] = collect_weekly_hours(user)
     
-    for date in date_list:
-        print('date', date)    
-
-    pages = []
-    start_year: str = '2022'
-    start_month: str = 'December'
+    today: datetime = datetime.today()
     
+    for week in range(0,4):
+        start_date = datetime.today() + timedelta(days=7*week)
+        date_list: list = [start_date + timedelta(days=x) for x in range(7)]
+        days: list[dict] = []
+        print('date_list',date_list.__len__())
+        for index, date in enumerate(date_list):
+            day: dict = {
+                'info': '',
+                'date': date.strftime('%Y-%M-%d'),
+                'day_name': date.strftime('%A'),
+                'month_date': date.strftime('%b %d'),
+                'time': working_hours.get(date.strftime('%w'))
+            }
+            days.append(day)
+
+    start_year: str = today.strftime('%Y')
+    start_month: str = today.strftime('%B')
+
+    payload: dict = {
+        'year': today.strftime('%Y'),
+        'month': today.strftime('%B'),
+        'days': days
+    }
+
+    pages = [payload, payload, payload]
+
     return render(request, 'embed/widget/scheduler_calendar.html', {
         'start_year': start_year,
         'start_month': start_month,
@@ -936,7 +953,7 @@ def widget_schedule_view(
             recipients = [settings.ADMIN_EMAIL]
             # if email address is empty prevent sending email
             console_app_url: str = settings.CONSOLE_APP_URL
-            email_params = {
+            email_params: dict = {
                 'name': clientName, 'email': clientEmail, 'phone': clientPhone, 'message': clientMessage, 'console_app_url': console_app_url}
             try:
                 # send message notification to admin

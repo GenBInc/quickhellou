@@ -11,3 +11,4 @@ djangorestframework
 django-cors-headers
 whitenoise
 gunicorn==20.1.0
+django-inline-svg==0.1.1

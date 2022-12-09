@@ -1,27 +1,23 @@
-{% load static %}
+{% load static %} {% load svg %}
 
 <div class="df fcol flc widget--schedule__scheduler scheduler">
 
   <div class="df fc df-f1 scheduler__paging_row">
     <a class="scheduler__pages-nav-button scheduler__pages-nav-button--prev">
-      <img class="nav-button--prev" src="{% static '/images/prev-icon.svg' %}">
+      {% svg 'prev-icon' %}
     </a>
+
+    <div class="f1"></div>
   
-    <div class="df fc df-f1 frow scheduler__date-label">
-      <p class="scheduler__month-label">page.month</p>
-      <p class="scheduler__year-label">page.year</p>
-    </div>
-    
     <a class="scheduler__pages-nav-button scheduler__pages-nav-button--next">
-      <img class="nav-button--next" src="{% static '/images/next-icon.svg' %}">
+      {% svg 'next-icon' %}
     </a>
     
   </div>
-    
   <div class="flc scheduler__pages">    
-    {% include "embed/widget/scheduler_page.html" %}
-    {% include "embed/widget/scheduler_page.html" %}
-    {% include "embed/widget/scheduler_page.html" %}  
+    {% for page in pages %}
+      {% include "embed/widget/scheduler_page.html" %}
+    {% endfor %}
   </div>  
 </div>
 
