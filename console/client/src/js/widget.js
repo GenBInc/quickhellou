@@ -44,5 +44,6 @@ widgetService
   })
   .catch((reason) => {
     document.querySelector('.qh-root').style.opacity = 1
+    document.querySelector('.qh-root').classList.add('failure')
     document.querySelector('.qh-root').innerHTML = reason
   })

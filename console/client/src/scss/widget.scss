@@ -1325,3 +1325,21 @@ div.scheduler__pages {
   text-decoration: none;
   opacity: 0.6;
 }
+
+.qh-root.failure {
+  background-color: #c90000;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  color: white;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 12px;
+  align-items: center;
+  display: flex;
+  border: solid 3px rgba(255, 255, 255, 0.25);  
+}
