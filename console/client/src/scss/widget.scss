@@ -384,6 +384,10 @@ html {
     z-index: 1;
   }
 
+  .qh_widget-closer:hover {
+    opacity: 0.7;
+  }
+
   .qh_widget-closer--active-operator svg {
     width:36px;
     height:36px;
@@ -1258,12 +1262,13 @@ div.scheduler__pages {
 
   @media (min-width: $s-sm) {
     display: flex !important;
-    margin-bottom: -30px;
+    margin-bottom: -50px;
   }     
 }
 
 .scheduler__date-label {
   width: 100%;
+  margin-bottom: 20px;
 }
 
 .scheduler__month-label {
