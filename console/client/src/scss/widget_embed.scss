@@ -699,11 +699,11 @@ iframe#qh_iframe.js-expanded {
 iframe#qh_iframe.js-expanded.js-expanded--large {
   width:calc(100vw - 40px);
   height:calc(100vh - 40px);
-  @media (min-width: $s-sm) {
+  @media (min-width: $s-md) {
     height:100%;
     max-height:580px;
     width:100%;
-    max-width:$s-sm;
+    max-width:620px;
   }
 }
 
