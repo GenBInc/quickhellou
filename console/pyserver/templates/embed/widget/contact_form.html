@@ -1,6 +1,5 @@
 <div class="qh-widget-ext__contact-form-body contact-details active">
 
-
   {% include "embed/widget/header.html" with label="Add Your Contact Information" sublabel="To Book Your Appointemnt!" closerClass="qh_widget-closer--inactive-operator" %}  
   
   <div class="df f1 frow qh-widget__form">
@@ -24,11 +23,11 @@
     <div class="fc qh-widget__form--calendar-selected">
 
         <div class="fc fcol qh-widget__form--date-selected">
-            <p class="qh-widget__form--time-selected">Monday</p>
-            <p class="qh-widget__form--time-selected">10:00 am</p>
-            <p class="qh-widget__form--day-selected">1st</p>
-            <p class="qh-widget__form--month-selected">December</p>
-            <p class="qh-widget__form--year-selected">2022</p>
+            <p class="qh-widget__form--time-selected">{{ date.day }}</p>
+            <p class="qh-widget__form--time-selected">{{ date.hour }}</p>
+            <p class="qh-widget__form--day-selected">{{ date.day_no }}</p>
+            <p class="qh-widget__form--month-selected">{{ date.month }}</p>
+            <p class="qh-widget__form--year-selected">{{ date.year }}</p>
             <a href="" class="qh-widget__change-date-time_link" style="color:{{ background_color }}">Change</a>
         </div>
         
@@ -38,7 +37,7 @@
 
   <div class="frc widget-extension__controls">
     
-      {% include "embed/widget/button-back.html" with label="Back" %}
+      {% include "embed/widget/button-back.html" with label="Back" id="contact-information" %}
       <div class="df df-f1 f1">
         <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
       </div>  

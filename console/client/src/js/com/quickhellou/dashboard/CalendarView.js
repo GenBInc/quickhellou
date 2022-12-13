@@ -124,7 +124,6 @@ export class CalendarView extends UIView {
         const inputElement = document.querySelector(`input[name='${deleteTimeButton.dataset.id}'`)
         inputElement.value = ''
         this.updateTimeSelectInput()
-        // this.initAddTimeRowControls()
         this.updateAddSlotButtonAvailability()
       })
     })
@@ -175,10 +174,6 @@ export class CalendarView extends UIView {
     
     this.updateTimeSelectInput()
     this.updateAddSlotButtonAvailability()
-    /*this.initDeleteTimeSlots()
-    // this.initTimeSelects()
-    // this.initAddTimeRowControls()
-    this.updateAddSlotButtonAvailability()*/
   }
 
   updateTimeSlotAvailability(day) {

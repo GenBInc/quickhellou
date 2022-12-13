@@ -320,11 +320,19 @@ export class WidgetService extends EventEmitter {
     const url = `${this.consoleAppUrl}/dashboard/widget_calendar_view/${
       this.widgetId
     }`
-    console.log(url)
     return await this.apiService.getAsXMLHttpRequest(url)
-
-    
-
   }
+
+  /**
+   * Gets widget contact form.
+   * 
+   * @returns the contact from view 
+   */
+    async getContactForm() {
+      const url = `${this.consoleAppUrl}/dashboard/widget_contact_form_view/${
+        this.widgetId
+      }`
+      return await this.apiService.getAsXMLHttpRequest(url)
+    }
 }
 

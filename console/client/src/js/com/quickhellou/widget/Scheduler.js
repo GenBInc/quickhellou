@@ -23,67 +23,6 @@ export class Scheduler extends UIView {
       this.element = document.querySelector('.widget--schedule__scheduler')
 
       this.currentPage = 0
-
-      // sample data
-      this.data = [
-      {
-        info: 'Today',
-        date: '2022-11-28',
-        day: 'Monday',
-        name: 'Nov 28',
-        time: [
-          '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM', '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM'
-        ],
-      }, {
-        info: 'Tommorrow',
-        date: '2022-11-29',
-        day: 'Tuesday',
-        name: 'Nov 29',
-        time: [
-          '8:30 AM', '9:00 AM', '10:00 AM'
-        ],
-      }, {
-        info: '',
-        date: '2022-11-30',
-        day: 'Wednesday',
-        name: 'Nov 30',
-        time: [
-          '11:30 AM', '13:00 AM', '13:30 AM'
-        ],
-      }, {
-        info: '',
-        date: '2022-12-01',
-        day: 'Thursday',
-        name: 'Dec 1',
-        time: [
-          '11:30 AM', '13:00 AM', '13:30 AM'
-        ],
-      }, {
-        info: '',
-        date: '2022-12-02',
-        day: 'Friday',
-        name: 'Dec 2',
-        time: [
-          '11:30 AM', '13:00 AM', '13:30 AM', '15:30 AM'
-        ],
-      }, {
-        info: '',
-        date: '2022-12-05',
-        day: 'Monday',
-        name: 'Dec 5',
-        time: [
-          '9:00 AM', '13:00 AM', '13:30 AM', '15:30 AM'
-        ],
-      }, {
-        info: '',
-        date: '2022-12-06',
-        day: 'Tuesday',
-        name: 'Dec 6',
-        time: [
-          '10:00 AM', '14:00 AM', '14:30 AM'
-        ],
-      },
-    ]
   }
 
   /**
@@ -107,7 +46,7 @@ export class Scheduler extends UIView {
       }
     })
     this.updatePageNavigation()
-    this.build(this.data)
+    this.initDatetimeFields()
   }
   
   moveToPage(page) {
@@ -137,32 +76,7 @@ export class Scheduler extends UIView {
    *
    * @memberof Scheduler
   */
-  build(dates) {
-    /*let template = `<div class="flc scheduler__pages">`
-    
-    const size = 5
-    const chunks = this.chunk(dates, size)
-    
-    chunks.forEach(chunk => {
-      template += `
-        <div class="flc scheduler__page">
-          <div class="flc scheduler__page-table scheduler__page-headers">`
-      chunk.forEach(day => {
-        template += this.buildDayHeader(day)
-      })
-      template += `
-        </div>
-        <div class="fcol fct scheduler__page-table scheduler__page-buttons">
-        `
-      chunk.forEach(day => {
-        template += this.buildDay(day)
-      })
-      template += '</div>'
-    })
-
-    template += '</div>'
-    
-    this.element.innerHTML = template*/
+  initDatetimeFields() {
     const radioGroup = new RadioButtonsGroup()
     
     const timeButtonElements = document.querySelectorAll('.scheduler__button--time')
@@ -184,54 +98,6 @@ export class Scheduler extends UIView {
   handleTimeButtonToggle(time) {
     const datetimeInput = document.querySelector('input[name=datetime]')
     datetimeInput.value = time
-  }
-
-  buildTimeButton(date, time) {
-    return `
-      <div class="fc scheduler__button scheduler__button--time scheduler__time" data-time="${date} ${time}">
-        <span class="scheduler__button-text">${time}</span>
-      </div>
-    `
-  }
-
-  buildDayHeader(row) {
-    return `
-    <div class="f1 fcol scheduler__day">
-      <div class="f1 fcol scheduler__day-header">
-        <span class="fc scheduler__day-info">${row.info}</span>
-        <div class="fcol scheduler__day-header">
-          <span class="scheduler__day-text scheduler__day-name">${row.day}</span>
-          <span class="scheduler__day-text">${row.name}</span>
-        </div>
-      </div>
-    </div>
-    `
-  }
-
-  buildDay(row) {
-    let template = ''
-    row.time.forEach(time => {
-      template += this.buildTimeButton(row.date, time)
-    })
-    return template
-  }
-
-  /**
-   * Array partition.
-   *
-   * @param {Array} array source array
-   * @param {number} size size of chunk
-   * @returns the partitions
-   * 
-   * @memberof Scheduler
-   */
-  chunk(array, size) {
-    // This prevents infinite loops
-    const result = []
-    for (let i = 0; i < array.length; i += size) {
-      result.push(array.slice(i, i + size))
-    }
-    return result
   }
 
   /**

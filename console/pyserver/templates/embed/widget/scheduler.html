@@ -1,22 +1,19 @@
-
 <div id="qh_s_frame" class="window widget--schedule">
-
-  <div class="flt fcol qh widget__content widget--schedule__content" style="background-color:{{ background_color }}">
-
+  <div
+    class="flt fcol qh widget__content widget--schedule__content"
+    style="background-color:{{ background_color }}"
+  >
     {% include "embed/widget/header.html" with label="Select a Date & Time" sublabel="To Schedule Free Consultation!" %}
-    
+
     <div class="widget--schedule__datetime-controls">
       <div class="loader"></div>
     </div>
     <div class="frc widget-extension__controls">
       <div class="fc">
         {% include "embed/widget/button-next.html" with label="Schedule Free Consultation" class="widget-extension__button--send-schedule"%}
-        
       </div>
     </div>
 
     {% include "embed/widget/footer.html" %}
-
   </div>
-
 </div>

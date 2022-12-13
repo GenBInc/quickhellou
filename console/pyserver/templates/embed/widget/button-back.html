@@ -1,6 +1,6 @@
 {% load static %}
 
-<div class="flc widget-extension__button widget-extension__button--back {{class}}">
+<div class="flc widget-extension__button widget-extension__button--back widget-extension--{{ id }}__button--back {{ class }}">
     <div class="flc widget-button-icon">
         <img class="widget-extension__send-icon" src="{% if button_icon %}{{button_icon}}{% else %}{% static '/images/prev-icon.svg' %}{% endif %}">
     </div>

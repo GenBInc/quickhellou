@@ -1,7 +1,12 @@
 <div class="scheduler__page">
   <div class="f1 fc frow scheduler__date-label">
-    <p class="scheduler__month-label">{{ page.month }}</p>
-    <p class="scheduler__year-label">{{ page.year }}</p>
+    {% for month in page.months %}
+      {% if forloop.counter is not 1 %}  
+        <p> / </p>
+      {% endif %}
+      <p class="scheduler__month-label">{{ month.month }}</p>
+      <p class="scheduler__year-label">{{ month.year }}</p>
+    {% endfor %}
   </div>
   
   <div class="scheduler__days">
@@ -17,7 +22,7 @@
     {% for hour in day.time %}
       <div
         class="fc scheduler__button scheduler__button--time scheduler__time"
-        data-time="${date} ${time}"
+        data-time="{{ day.date }} {{ hour }}"
       >
         <span class="scheduler__button-text">{{ hour }}</span>
       </div>

@@ -22,9 +22,10 @@ widgetService
       scheduleView.collapseView()
       extView.collapseView()
     }, false)
-    extDispatcher.addEventListener('expand_contact', () => {
+    extDispatcher.addEventListener('expand_contact', (e) => {
       extView.expandView()
       scheduleView.collapseView()
+      // e.detail.date
     }, false)
     extDispatcher.addEventListener('expand_schedule', () => {
       scheduleView.expandView()

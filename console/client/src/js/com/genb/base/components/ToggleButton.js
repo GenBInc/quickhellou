@@ -50,7 +50,6 @@ export class ToggleButton extends UIView {
    * @memberof ToggleButton
    */
   toggle() {
-    console.log('this.enabled', this.enabled)
     if (this.enabled) {
       this.disable()
     } else {

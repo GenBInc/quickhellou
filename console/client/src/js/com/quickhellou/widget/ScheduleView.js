@@ -43,15 +43,36 @@ export class ScheduleView extends UIView {
 
     const submitButton = document.querySelector('.widget-extension__button--send-schedule')
     submitButton.addEventListener('click', () => {
-      this.extDispatcher.dispatchEvent(
-        new CustomEvent('expand_contact', {
-          detail: {
-            source: 'contact',
-          }
-        })
-      )
+      const datetime = document.querySelector('.scheduler__time.js-enabled').dataset.time
+      this.loadContactForm().then((result) => {
+        this.extDispatcher.dispatchEvent(
+          new CustomEvent('expand_contact', {
+            detail: {
+              source: 'contact',
+              date: datetime
+            }
+          })
+        )
+      })
+      
     })
   }
+
+  /**
+   * Loads contact form view.
+   * 
+   * @param {number} 
+   */
+     async loadContactForm() {
+      return new Promise((resolve, reject) => {
+        this.service.getContactForm().then((html) => {
+          document.querySelector('.qh-widget-ext__contact-information').innerHTML = html
+          resolve()
+        }).catch(reason => {
+          reject(reason)
+        })
+      })
+    }
 
   /**
    * Toggles the view.

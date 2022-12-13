@@ -1,24 +1,24 @@
 <div id="qh_e_frame" class="qh-widget-ext">
   <div class="qh widget__content" style="background-color:{{ background_color }}">
-    <!-- active operator module !-->
+    {# active operator module #}
     <div class="fcol qh_module qh_module--active-operator">
-      <!-- active operator -> init form -->
+      {# active operator -> init form #}
       <div class="fcol qh_submodule qh_submodule--init-form qh-widget-ext__contact-form js-enabled">
         {% include "embed/active_operator_form.html" %}
       </div>
-      <!-- active operator -> video -->
+      {# active operator -> video #}
       <div class="fcol qh_submodule qh_submodule--video-chat video-ui__stage ui-view__stage--call-accepted">
         {% include "embed/video.html" %}
       </div>
-      <!-- active operator -> rate ux -->
+      {# active operator -> rate ux #}
       <div class="fcol qh_submodule qh_submodule--rate-ux video-ui__stage">
         {% include "embed/rate_ux.html" %}
       </div>
     </div>
-    <!-- inactive operator form -->
+    {# inactive operator form #}
     <div class="qh_module qh_module--inactive-form js-enabled">
-      <div class="contact-form qh-widget-ext__contact-form">
-        {% include "embed/widget/contact_form.html" %}
+      <div class="contact-form qh-widget-ext__contact-form qh-widget-ext__contact-information">
+        <div class="loader"></div>
       </div>
     </div>
   </div>

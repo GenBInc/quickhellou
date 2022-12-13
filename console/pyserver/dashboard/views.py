@@ -758,40 +758,67 @@ def widget_calendar_view(
     user: User = widget.last_editor
 
     working_hours: dict[str, list[str]] = collect_weekly_hours(user)
-    
-    today: datetime = datetime.today()
-    
-    for week in range(0,4):
+
+    pages: list[dict] = []
+    for week in range(0, 4):
         start_date = datetime.today() + timedelta(days=7*week)
         date_list: list = [start_date + timedelta(days=x) for x in range(7)]
         days: list[dict] = []
-        print('date_list',date_list.__len__())
+        dates: list[datetime] = []
         for index, date in enumerate(date_list):
             day: dict = {
                 'info': '',
-                'date': date.strftime('%Y-%M-%d'),
+                'date': date.strftime('%Y-%m-%d'),
                 'day_name': date.strftime('%A'),
                 'month_date': date.strftime('%b %d'),
                 'time': working_hours.get(date.strftime('%w'))
             }
+            dates.append(date.strptime(date.strftime('%B %Y'), '%B %Y'))
             days.append(day)
 
-    start_year: str = today.strftime('%Y')
-    start_month: str = today.strftime('%B')
+        months: list = []
+        for index, month_date in enumerate(list(set(dates))):
+            months.append({
+                'index': index,
+                'month': month_date.strftime('%B'),
+                'year': month_date.strftime('%Y')
+            })
 
-    payload: dict = {
-        'year': today.strftime('%Y'),
-        'month': today.strftime('%B'),
-        'days': days
-    }
-
-    pages = [payload, payload, payload]
+        page: dict = {
+            'months': months,
+            'days': days
+        }
+        pages.append(page)
 
     return render(request, 'embed/widget/scheduler_calendar.html', {
-        'start_year': start_year,
-        'start_month': start_month,
         'pages': pages,
     })
+
+def widget_contact_form_view(
+    request: HttpRequest,
+    widget_id: int,
+) -> HttpResponse:
+    """Widget contact form view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        widget_id (int): the widget id
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    date_selected: str = request.GET.get('date')
+    date: dict = {
+        'day': 'Monday',
+        'hour': '10:00 AM',
+        'day_no': '1st',
+        'month': 'December',
+        'year': '2022',
+    }
+    return render(request, 'embed/widget/contact_form.html', {
+        'date': date,
+    })
+    
 
 
 @csrf_exempt
