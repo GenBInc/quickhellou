@@ -19,6 +19,22 @@
   <img class="top-header-block__photo" src="{% static '/images/dashboard-calendar.png' %}">
   <p class="fc top-header-block__text">Calendar</p>  
 </div>
+
+<div class="df flc frow top-header__subsection">
+    <div>
+      <img class="meeting-duration--icon" src="{% static '/images/clock-period.svg' %}">
+    </div>
+
+    <p class="subsection__header">Default Meeting Duration:</p>
+
+    <select class="time_select calendar__select--period">
+      <option value="15min">15 min</option>
+      <option value="30min" selected>30 min</option>
+      <option value="45min">45 min</option>
+      <option value="1h">1 hour</option>
+    </select>
+</div>
+
 <div class="wrapper wrapper--thin wrapper--profile">
   <p class="form__header">Working Hours</p>
 </div>

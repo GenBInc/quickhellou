@@ -1034,6 +1034,18 @@ aside.mdc-drawer {
   }    
 }
 
+.top-header__subsection {
+  background-color: #f1f6ff;
+  border-radius: 20px;
+  padding: 20px;
+  flex-direction: column;
+  margin-top: 30px;
+
+  @media (min-width: $s-md) {
+    flex-direction: row;  
+  }      
+}
+
 .top-header-block__photo {
   width: 100px;
   margin-bottom: 20px;
@@ -1181,8 +1193,15 @@ select.time_select {
   margin-right: 8px;
   margin-left: 8px;
   padding: 8px;
+  padding-right: 18px;
 
   cursor: pointer;
+
+  background-image: url('/static/images/arrow-down.svg');
+  background-size: 10px;
+  background-position: calc(100% - 5px) 50%;
+  background-repeat: no-repeat;
+  text-indent: 0;
 }
 
 .calendar__checkbox--day {
@@ -1349,4 +1368,9 @@ select.time_select {
   display: none;
 }
 
+.meeting-duration--icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
 
