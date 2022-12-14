@@ -1,12 +1,6 @@
 from re import (
     compile,
-    search,
     Pattern,
-    Match,
-)
-from datetime import (
-    timedelta,
-    datetime
 )
 from django import forms
 from django.core.exceptions import ValidationError
@@ -14,7 +8,6 @@ from django.core.validators import validate_email
 from accounts.models import User, Profile
 from dashboard.util.time import (
     DAYS,
-    TIME_FORMAT,
 )
 from dashboard.models import (
     Widget,
@@ -30,6 +23,7 @@ from dashboard.util.time import (
     RANGE_PATTERN,
     collect_time_ranges,
 )
+from phonenumber_field.formfields import PhoneNumberField
 
 
 class EmailOrPhoneField(forms.CharField):
@@ -330,3 +324,22 @@ class CommunicationSessionForm(forms.ModelForm):
     class Meta:
         model = CommunicationSession
         fields = ('status',)
+
+
+class ScheduleDatetimeForm(forms.Form):
+    datetime = forms.CharField(required=True)
+
+
+class ContactInformationForm(forms.Form):
+    """Contact information form
+    """
+    datetime = forms.CharField(required=True)
+    name = forms.CharField(required=True, initial='')
+    email_address = forms.EmailField(required=True, initial='')
+    phone_number = PhoneNumberField(required=False, max_length=15, initial='')
+    message = forms.CharField(required=False, initial='')
+
+    def clean(self):
+        """Clean form data.
+        """
+        cleaned_data = super().clean()

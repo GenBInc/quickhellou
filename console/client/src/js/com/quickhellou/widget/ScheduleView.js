@@ -16,7 +16,7 @@ export class ScheduleView extends UIView {
    *
    * @memberof ScheduleView
    */
-   constructor(service) {
+  constructor(service) {
     super()
     this.service = service
     this.isExpanded = false
@@ -29,56 +29,51 @@ export class ScheduleView extends UIView {
    * Initializes the view.
    *
    * @memberof ScheduleView
-  */
+   */
   async init() {
-
     const closeButton = document.querySelector('.qh_widget-closer')
-    closeButton.addEventListener('click', (e) => {
+    closeButton.addEventListener('click', () => {
       this.collapseView()
     })
 
-    this.extDispatcher.addEventListener('expand_schedule', () => {
-      this.element.classList.add('js-expanded')
-    }, false)
+    this.extDispatcher.addEventListener(
+      'expand_schedule',
+      () => {
+        this.element.classList.add('js-expanded')
+      },
+      false
+    )
 
-    const submitButton = document.querySelector('.widget-extension__button--send-schedule')
+    const submitButton = document.querySelector(
+      '.widget-extension__button--send-schedule'
+    )
     submitButton.addEventListener('click', () => {
-      const datetime = document.querySelector('.scheduler__time.js-enabled').dataset.time
-      this.loadContactForm().then((result) => {
-        this.extDispatcher.dispatchEvent(
-          new CustomEvent('expand_contact', {
-            detail: {
-              source: 'contact',
-              date: datetime
-            }
-          })
-        )
-      })
+      let datetime = ''
+      const selectedScheduleTimeElement = document.querySelector('.scheduler__time.js-enabled')
+      if (!!selectedScheduleTimeElement) {
+        datetime = document.querySelector('.scheduler__time.js-enabled')
+        .dataset.time
+      }
+      if (!selectedScheduleTimeElement) {
+        return
+      }
       
+      this.extDispatcher.dispatchEvent(
+        new CustomEvent('expand_contact', {
+          detail: {
+            'source': 'contact',
+            'datetime': datetime
+          },
+        })
+      )
     })
   }
-
-  /**
-   * Loads contact form view.
-   * 
-   * @param {number} 
-   */
-     async loadContactForm() {
-      return new Promise((resolve, reject) => {
-        this.service.getContactForm().then((html) => {
-          document.querySelector('.qh-widget-ext__contact-information').innerHTML = html
-          resolve()
-        }).catch(reason => {
-          reject(reason)
-        })
-      })
-    }
 
   /**
    * Toggles the view.
    *
    * @memberof ScheduleView
-  */
+   */
   toggleView() {
     if (this.isExpanded) {
       this.collapseView()
@@ -107,6 +102,4 @@ export class ScheduleView extends UIView {
     this.isExpanded = false
     this.element.classList.remove('js-expanded')
   }
-
-
 }

@@ -50,13 +50,9 @@
 
 /*! ./ToggleButton */
 
-/*! ./arrayLikeToArray.js */
-
-/*! ./arrayWithHoles.js */
-
-/*! ./assertThisInitialized.js */
-
 /*! ./com/quickhellou/widget/BadgeView */
+
+/*! ./com/quickhellou/widget/ContactInformationView */
 
 /*! ./com/quickhellou/widget/ScheduleView */
 
@@ -64,37 +60,15 @@
 
 /*! ./com/quickhellou/widget/WidgetService */
 
-/*! ./iterableToArrayLimit.js */
+/*! ./toPrimitive.js */
 
-/*! ./nonIterableRest.js */
+/*! ./toPropertyKey.js */
 
-/*! ./setPrototypeOf.js */
-
-/*! ./unsupportedIterableToArray.js */
-
-/*! @babel/runtime/helpers/asyncToGenerator */
-
-/*! @babel/runtime/helpers/classCallCheck */
-
-/*! @babel/runtime/helpers/createClass */
+/*! ./typeof.js */
 
 /*! @babel/runtime/helpers/defineProperty */
 
-/*! @babel/runtime/helpers/getPrototypeOf */
-
-/*! @babel/runtime/helpers/inherits */
-
-/*! @babel/runtime/helpers/possibleConstructorReturn */
-
-/*! @babel/runtime/helpers/slicedToArray */
-
-/*! @babel/runtime/helpers/typeof */
-
-/*! @babel/runtime/regenerator */
-
 /*! js-cookie */
-
-/*! regenerator-runtime */
 
 /*!**********************!*\
   !*** ./js/widget.js ***!
@@ -160,10 +134,6 @@
   !*** ./js/com/quickhellou/base/services/ApiService.js ***!
   \********************************************************/
 
-/*!*********************************************************!*\
-  !*** ../../node_modules/regenerator-runtime/runtime.js ***!
-  \*********************************************************/
-
 /*!**********************************************************!*\
   !*** ./js/com/genb/base/components/RadioButtonsGroup.js ***!
   \**********************************************************/
@@ -180,9 +150,9 @@
   !*** ./js/com/genb/base/controller/ObservableController.js ***!
   \*************************************************************/
 
-/*!**************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/regenerator/index.js ***!
-  \**************************************************************/
+/*!*************************************************************!*\
+  !*** ./js/com/quickhellou/widget/ContactInformationView.js ***!
+  \*************************************************************/
 
 /*!**************************************************************!*\
   !*** ./js/com/quickhellou/base/model/ApplicationSettings.js ***!
@@ -196,62 +166,14 @@
   !*** ../../node_modules/@babel/runtime/helpers/esm/typeof.js ***!
   \***************************************************************/
 
-/*!*****************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/inherits.js ***!
-  \*****************************************************************/
-
 /*!********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/createClass.js ***!
+  !*** ../../node_modules/@babel/runtime/helpers/esm/toPrimitive.js ***!
   \********************************************************************/
 
 /*!**********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/slicedToArray.js ***!
+  !*** ../../node_modules/@babel/runtime/helpers/esm/toPropertyKey.js ***!
   \**********************************************************************/
-
-/*!***********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js ***!
-  \***********************************************************************/
-
-/*!***********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/classCallCheck.js ***!
-  \***********************************************************************/
 
 /*!***********************************************************************!*\
   !*** ../../node_modules/@babel/runtime/helpers/esm/defineProperty.js ***!
   \***********************************************************************/
-
-/*!***********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js ***!
-  \***********************************************************************/
-
-/*!***********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js ***!
-  \***********************************************************************/
-
-/*!************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/nonIterableRest.js ***!
-  \************************************************************************/
-
-/*!*************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js ***!
-  \*************************************************************************/
-
-/*!*************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js ***!
-  \*************************************************************************/
-
-/*!*****************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js ***!
-  \*****************************************************************************/
-
-/*!******************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js ***!
-  \******************************************************************************/
-
-/*!**********************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js ***!
-  \**********************************************************************************/
-
-/*!***********************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js ***!
-  \***********************************************************************************/

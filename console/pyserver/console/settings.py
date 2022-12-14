@@ -80,6 +80,8 @@ INSTALLED_APPS = [
     'svg',
     'accounts',
     'dashboard',
+    'phonenumbers',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [

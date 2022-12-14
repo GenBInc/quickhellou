@@ -32,6 +32,9 @@ from accounts.models import (
 from dashboard.util.time import (
     HOURS,
     MINUTES,
+    TIME_FORMAT,
+    DATETIME_FORMAT,
+    format_day_with_ordinal,
     collect_weekly_hours,
 )
 from dashboard.forms import (
@@ -47,6 +50,7 @@ from dashboard.forms import (
     CommunicationSessionForm,
     WidgetActiveUserForm,
     CalendarForm,
+    ContactInformationForm,
 )
 from dashboard.models import (
     ClientBoard,
@@ -107,7 +111,7 @@ def communication_edit_view(
         form = CommunicationForm(request.POST, instance=communication)
         if form.is_valid():
             instance = form.save(commit=False)
-            instance.modification_time = datetime.datetime.now()
+            instance.modification_time = datetime.now()
             instance.save()
             messages.success(
                 request, 'Communication record has been saved.')
@@ -164,7 +168,7 @@ def widget_create_view(
         if form.is_valid() and assignees_form.is_valid():
             instance = form.save(commit=False)
             instance.client_board = request.user.client_board
-            instance.last_change = make_aware(datetime.datetime.now())
+            instance.last_change = make_aware(datetime.now())
             instance.last_editor = request.user
             instance.save()
             """ Add assignees """
@@ -207,7 +211,7 @@ def widget_edit_view(
         assignees_form = AssigneesForm(request.POST)
         if form.is_valid() and assignees_form.is_valid():
             instance = form.save(commit=False)
-            instance.last_change = make_aware(datetime.datetime.now())
+            instance.last_change = make_aware(datetime.now())
             instance.last_editor = request.user
             instance.save()
             """ Update assignees """
@@ -794,11 +798,42 @@ def widget_calendar_view(
         'pages': pages,
     })
 
-def widget_contact_form_view(
+
+class DatePayload():
+    """Formatted date properties model
+    """
+
+    datetime: str
+    day: str
+    hour: str
+    day_ordinal: str
+    month: str
+    year: str
+
+    def __init__(
+        self,
+        date: datetime,
+    ) -> None:
+        """Constructor
+
+        Args:
+            date (datetime): the date
+        """
+        self.datetime = date.strftime(DATETIME_FORMAT)
+        self.day = date.strftime('%A')
+        self.hour = date.strftime(TIME_FORMAT)
+        self.day_ordinal = format_day_with_ordinal(date)
+        self.month = date.strftime('%B')
+        self.year = date.strftime('%Y')
+
+
+@csrf_exempt
+@require_POST
+def add_widget_contact_form_view(
     request: HttpRequest,
     widget_id: int,
 ) -> HttpResponse:
-    """Widget contact form view.
+    """Add widget contact form view.
 
     Args:
         request (HttpRequest): the HTTP request
@@ -807,18 +842,65 @@ def widget_contact_form_view(
     Returns:
         HttpResponse: the HTTP response
     """
-    date_selected: str = request.GET.get('date')
-    date: dict = {
-        'day': 'Monday',
-        'hour': '10:00 AM',
-        'day_no': '1st',
-        'month': 'December',
-        'year': '2022',
-    }
-    return render(request, 'embed/widget/contact_form.html', {
-        'date': date,
+    widget: Widget = Widget.objects.get(id=widget_id)
+    if not widget:
+        raise Http404
+
+    date_selected: str = request.POST.get('datetime')
+    date: datetime = datetime.strptime(date_selected, DATETIME_FORMAT)
+    date_payload: DatePayload = DatePayload(date)
+    widget_template: WidgetTemplate = widget.template
+    return render(request, 'embed/widget/contact_information_form.html', {
+        'date': date_payload,
+        'form': ContactInformationForm(),
+        'background_color': widget_template.background_color,
     })
-    
+
+
+@csrf_exempt
+@require_POST
+def edit_widget_contact_form_view(
+    request: HttpRequest,
+    widget_id: int,
+) -> HttpResponse:
+    """Edit widget contact form view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        widget_id (int): the widget id
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    widget: Widget = Widget.objects.get(id=widget_id)
+    if not widget:
+        raise Http404
+
+    form: ContactInformationForm = ContactInformationForm(request.POST)
+    if form.is_valid():
+        # Create appointment
+        Communication.objects.create_appointment(
+            form.cleaned_data['name'],
+            form.cleaned_data['email_address'],
+            form.cleaned_data['phone_number'],
+        )
+        # Send client notification
+        # Send admin notification
+        return render(request, 'embed/widget/contact_information_form.html', {
+            'date': date_payload,
+            'background_color': widget_template.background_color,
+    }   )
+
+    date_selected: str = form.cleaned_data['datetime']
+    date: datetime = datetime.strptime(date_selected, DATETIME_FORMAT)
+    date_payload: DatePayload = DatePayload(date)
+
+    widget_template: WidgetTemplate = widget.template
+    return render(request, 'embed/widget/contact_information_form.html', {
+        'date': date_payload,
+        'form': form,
+        'background_color': widget_template.background_color,
+    })
 
 
 @csrf_exempt
@@ -971,6 +1053,10 @@ def widget_schedule_view(
                                                              client_board=widget.client_board, status=2, widget=widget)
             communication.save()
 
+            # TODO: check what is clientMessage and clientName
+            clientMessage = '__clientMessage__'
+            clientName = '__clientName__'
+
             # create communication session
             session: CommunicationSession = CommunicationSession.objects.create_message(
                 communication=communication, attendant=client_user, message=clientMessage, type=2)
@@ -1043,7 +1129,7 @@ def widget_active_operator(
             if '@' in clientEmailOrPhone:
                 clientEmail = clientEmailOrPhone
             else:
-                clientEmail = '{0}@{1}'.format(hashlib.md5(str(datetime.datetime.now()).encode('utf-8')).hexdigest(),
+                clientEmail = '{0}@{1}'.format(hashlib.md5(str(datetime.now()).encode('utf-8')).hexdigest(),
                                                settings.FAKE_EMAIL_DOMAIN)
 
             phone_regex = re.compile(

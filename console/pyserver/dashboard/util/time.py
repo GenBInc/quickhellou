@@ -15,15 +15,16 @@ from accounts.models import (
     User,
 )
 
-TIME_FORMAT = '%I:%M %p'
-DAY_TIME_FORMAT = '%d %I:%M %p'
-DEFAULT_FROM_HOUR = '09'
-DEFAULT_TO_HOUR = '05'
-DEFAULT_MINUTES = '00'
-DEFAULT_FROM_ABBREVIATION = 'AM'
-DEFAULT_TO_ABBREVIATION = 'PM'
+TIME_FORMAT: str = '%I:%M %p'
+DAY_TIME_FORMAT: str = '%d %I:%M %p'
+DATETIME_FORMAT: str = '%Y-%m-%d %I:%M %p'
+DEFAULT_FROM_HOUR: str = '09'
+DEFAULT_TO_HOUR: str = '05'
+DEFAULT_MINUTES: str = '00'
+DEFAULT_FROM_ABBREVIATION: str = 'AM'
+DEFAULT_TO_ABBREVIATION: str = 'PM'
 
-DAYS = ['1', '2', '3', '4', '5', '6', '0']
+DAYS: list[str] = ['1', '2', '3', '4', '5', '6', '0']
 HOURS: list[str] = ['01', '02', '03', '04', '05',
                     '06', '07', '08', '09', '10', '11', '12', ]
 MINUTES: list[str] = ['00', '30', ]
@@ -32,6 +33,8 @@ RANGE_PATTERN: Pattern = compile(
     '^(\d)\s((\d{2})\:(\d{2})\s(AM|PM))\s((\d{2})\:(\d{2})\s(AM|PM))$')
 TIME_PATTERN: Pattern = compile(
     '^(\d{2}):(\d{2})\s(AM|PM)$')
+DAY_PATTERN: Pattern = compile(
+    '^()(\d{2}):(\d{2})\s(AM|PM)$')
 
 
 def get_day(date_time: str) -> str:
@@ -148,7 +151,6 @@ def collect_weekly_hours(
         datetime_ranges: list[str] = time_ranges[day_code]
         daily_hours: list[str] = []
         for index, datetime_range in enumerate(datetime_ranges):
-            print(index, datetime_range)
             search_result: Match[str] = search(RANGE_PATTERN, datetime_range)
             day: str = search_result.group(1)
             datetime_from_str: str = search_result.group(2)
@@ -190,3 +192,15 @@ def collect_time_ranges(
             time_ranges[day] = []
         time_ranges[day].append(working_hours.time)
     return time_ranges
+
+
+def format_day_with_ordinal(date: datetime) -> str:
+    """Formats date with ordinal suffix.
+
+    Args:
+        date (datetime): the date
+
+    Returns:
+        str: the formatted day
+    """
+    return '{}{}'.format(date.day, {'1': 'st', '2': 'nd', '3': 'rd'}.get(str(date.day)[-1:], 'th'))

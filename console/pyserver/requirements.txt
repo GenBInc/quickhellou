@@ -7,3 +7,5 @@ django-cors-headers==3.13.0
 whitenoise==6.2.0
 gunicorn==20.1.0
 django-inline-svg==0.1.1
+phonenumbers==8.13.2
+django-phonenumber-field==7.0.1

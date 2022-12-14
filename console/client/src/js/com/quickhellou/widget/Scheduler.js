@@ -98,6 +98,10 @@ export class Scheduler extends UIView {
   handleTimeButtonToggle(time) {
     const datetimeInput = document.querySelector('input[name=datetime]')
     datetimeInput.value = time
+    const submitButton = document.querySelector(
+      '.widget-extension__button--send-schedule'
+    )
+    submitButton.classList.remove('disabled')
   }
 
   /**

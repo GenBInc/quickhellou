@@ -107,7 +107,7 @@ export class WidgetService extends EventEmitter {
   /**
    * Removes connection data in the videochat application.
    */
-   destroyVideoChatApp() {
+  destroyVideoChatApp() {
     try {
       this.videochatProxy.destroy()
     } catch (e) {
@@ -312,27 +312,35 @@ export class WidgetService extends EventEmitter {
 
   /**
    * Gets scheduler calendar.
-   * 
-   * @returns the scheduler calendar 
+   *
+   * @returns the scheduler calendar
    */
-   async getSchedulerCalendar() {
-    
-    const url = `${this.consoleAppUrl}/dashboard/widget_calendar_view/${
-      this.widgetId
-    }`
+  async getSchedulerCalendar() {
+    const url = `${this.consoleAppUrl}/dashboard/widget_calendar_view/${this.widgetId}`
     return await this.apiService.getAsXMLHttpRequest(url)
   }
 
   /**
    * Gets widget contact form.
-   * 
-   * @returns the contact from view 
+   *
+   * @param {array<object>} fieldSet the field set
+   *
+   * @returns the contact form view
    */
-    async getContactForm() {
-      const url = `${this.consoleAppUrl}/dashboard/widget_contact_form_view/${
-        this.widgetId
-      }`
-      return await this.apiService.getAsXMLHttpRequest(url)
+  async getContactForm(fieldSet) {
+    const url = `${this.consoleAppUrl}/dashboard/add_widget_contact_form_view/${this.widgetId}`
+    return await this.apiService.postAsXMLHttpRequest(fieldSet, url)
+  }
+
+  /**
+   * Gets widget contact form.
+   *
+   * @param {array<object>} fieldSet the field set
+   *
+   * @returns the contact form view
+   */
+    async sendContactForm(fieldSet) {
+      const url = `${this.consoleAppUrl}/dashboard/edit_widget_contact_form_view/${this.widgetId}`
+      return await this.apiService.postAsXMLHttpRequest(fieldSet, url)
     }
 }
-

@@ -27,8 +27,9 @@
     "mini-css-extract-plugin": "^2.4.5",
     "postcss": "^8.3.4",
     "postcss-loader": "^4.3.0",
-    "prettier": "^2.4.1",
-    "sass-loader": "^12.1.0",
+    "prettier": "^2.8.1",
+    "sass": "^1.56.2",
+    "sass-loader": "^12.6.0",
     "webpack": "^5.56.1",
     "webpack-auto-inject-version": "^1.2.2",
     "webpack-cli": "^4.8.0"
@@ -38,7 +39,7 @@
     "core-js": "^3.18.1",
     "css-minimizer-webpack-plugin": "^3.0.2",
     "material-components-web": "^3.2.0",
-    "node-sass": "^6.0.1",
+    "node-sass": "^7.0.3",
     "regenerator-runtime": "^0.13.9",
     "webpack-node-externals": "^3.0.0"
   }

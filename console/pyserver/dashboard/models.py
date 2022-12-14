@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 import re
 import uuid
-from multiprocessing import Manager
-from venv import create
-
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
+from dashboard.managers import (
+    CommunicationManager,
+    CommunicationSessionManager,
+)
 from accounts.models import User
 from console import settings
-
 
 def full_domain_validator(hostname):
     """
@@ -120,16 +118,6 @@ class Widget(models.Model):
     all_objects = models.Manager()
 
 
-class CommunicationQuerySet(models.QuerySet):
-    def pending_sessions(self, communication_id):
-        return self.filter(communication__id=communication_id, status=1)
-
-
-class CommunicationManager(models.Manager):
-    def get_queryset(self):
-        return super(CommunicationManager, self).get_queryset()
-
-
 class Communication(models.Model):
     STATUS_OPEN = 1
     STATUS_PENDING = 2
@@ -183,33 +171,6 @@ class Communication(models.Model):
         if (sessions.count != 0):
             return str(sessions[0].id)
         return None
-
-
-class CommunicationSessionQuerySet(models.QuerySet):
-    def pending_sessions(self, communication_id):
-        return self.filter(communication__id=communication_id, status=1)
-
-
-class CommunicationSessionManager(models.Manager):
-    def get_queryset(self):
-        return CommunicationSessionQuerySet(self.model, using=self._db)
-
-    def create_session(self, communication,):
-        session = self.model(communication=communication,)
-        session.save(using=self._db)
-        return session
-
-    def pending_sessions(self, communication_id):
-        return self.get_queryset().pending_sessions(communication_id)
-
-    def create_message(self, communication, attendant, message, type):
-        session = self.model(communication=communication, attendant=attendant)
-        session.type = type
-        session.status = 2
-        session.content = message
-        session.rate = 0
-        session.save(using=self._db)
-        return session
 
 
 class CommunicationSession(models.Model):

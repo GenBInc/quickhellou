@@ -1,3 +1,3 @@
 /*! For license information please see dashboard-calendar.js.LICENSE.txt */
-!function(){document.addEventListener("DOMContentLoaded",(function(){n()}));var n=function(){document.querySelectorAll(".day_checkbox").forEach((function(n){n&&n.addEventListener("change",e)}))},e=function(n){}}();
+(()=>{document.addEventListener("DOMContentLoaded",(()=>{e()}));const e=()=>{document.querySelectorAll(".day_checkbox").forEach((e=>{e&&e.addEventListener("change",n)}))},n=e=>{}})();
 //# sourceMappingURL=dashboard-calendar.js.map

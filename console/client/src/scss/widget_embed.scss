@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway:400,500,600');
 @import 'common/settings';
 
-$s-xxs:		380px;
-$s-md:		768px;
+$s-xxs: 380px;
+$s-md: 768px;
 
 @mixin df() {
   display: -webkit-flex;
@@ -12,72 +12,62 @@ $s-md:		768px;
 
 @mixin df-lc() {
   -webkit-justify-content: flex-start;
-  -ms-flex-pack: start;
   justify-content: flex-start;
   -webkit-align-items: center;
-  -ms-flex-align: center;
   align-items: center;
 }
 
 @mixin df-lb() {
   -webkit-justify-content: flex-start;
-  -ms-flex-pack: start;
   justify-content: flex-start;
   -webkit-align-items: flex-end;
-  -ms-flex-align: end;
   align-items: flex-end;
 }
 
 @mixin df-cb() {
   -webkit-justify-content: center;
-  -ms-flex-pack: center;
   justify-content: center;
   -webkit-align-items: flex-end;
-  -ms-flex-align: end;
   align-items: flex-end;
 }
 
 @mixin df-col() {
   -webkit-flex-direction: column;
-  -ms-flex-direction: column;
   flex-direction: column;
 }
 
 @mixin df-f1() {
   -webkit-flex: 1 !important;
-  -ms-flex: 1 0 auto;
   flex: 1 0;
 }
 
 @mixin df-c() {
   -webkit-justify-content: center;
-  -ms-flex-pack: center;
   justify-content: center;
   -webkit-align-items: center;
-  -ms-flex-align: center;
   align-items: center;
 }
 
 @mixin transform($transforms) {
-	-webkit-transform: $transforms;
-		-ms-transform: $transforms;
-	   		transform: $transforms;
+  -webkit-transform: $transforms;
+  -ms-transform: $transforms;
+  transform: $transforms;
 }
 
 @mixin transition($transition...) {
-  -moz-transition:    $transition;
+  -moz-transition: $transition;
   -webkit-transition: $transition;
-  transition:         $transition;
+  transition: $transition;
 }
 
 html {
-  font-size:10px;
+  font-size: 10px;
   line-height: normal;
 }
 
 .qh-root {
   font-family: 'Raleway';
-  font-size:16px;
+  font-size: 16px;
   background: transparent;
   border: none;
   bottom: 30px;
@@ -87,17 +77,20 @@ html {
   top: auto;
   width: 70px;
   z-index: 1002;
-  
-  button, input, select, textarea {
+
+  button,
+  input,
+  select,
+  textarea {
     font-family: inherit;
     line-height: inherit;
   }
-  
+
   * {
     line-height: normal;
     box-sizing: border-box;
   }
-  
+
   p {
     margin: 0;
     font-family: Raleway;
@@ -107,7 +100,7 @@ html {
   img {
     vertical-align: middle;
   }
-  
+
   button,
   button:focus {
     outline: none;
@@ -248,27 +241,27 @@ html {
   // EXT
 
   .qh-widget-ext__messages-content {
-    height:100%
+    height: 100%;
   }
 
   .widget-extension__complete-icon {
-    transform: translate(-9px,3px);
+    transform: translate(-9px, 3px);
   }
 
   .widget-extension__messages li {
     color: white;
     font-size: 0.875em;
     font-weight: 600;
-    text-align:center;
+    text-align: center;
   }
 
   .widget-extension__messages li:nth-child(1) {
-    font-size:16px;
-    font-size:500;
+    font-size: 16px;
+    font-size: 500;
   }
 
   .widget-extension__messages li:nth-child(2) {
-    font-size:400;
+    font-size: 400;
   }
 
   .widget-extension__messages li.error {
@@ -297,13 +290,13 @@ html {
   }
 
   .qh_widget-closer--active-operator svg {
-    width:36px;
-    height:36px;
+    width: 36px;
+    height: 36px;
   }
 
   .qh_widget-closer--inactive-operator svg {
-    width:24px;
-    height:24px;
+    width: 24px;
+    height: 24px;
   }
 
   .widget-extension__form-group {
@@ -317,7 +310,7 @@ html {
     left: 2px;
   }
   .widget-extension__errornote li {
-    font-weight:500;
+    font-weight: 500;
   }
 
   .widget-extension__form-text {
@@ -334,22 +327,22 @@ html {
   textarea {
     font-weight: 500;
     font-size: 0.825em;
-    padding:6px 12px;
+    padding: 6px 12px;
     color: $color--nero;
-    border:2px solid white;
+    border: 2px solid white;
     border-radius: 6px;
-    margin-bottom:14px;
+    margin-bottom: 14px;
   }
 
   textarea {
-    height:110px;
+    height: 110px;
     resize: none;
-    width:100%;
+    width: 100%;
   }
 
   input.error,
   textarea.error {
-    border-color:#FC1A19;
+    border-color: #fc1a19;
   }
 
   .widget-extension__button {
@@ -365,29 +358,29 @@ html {
   }
 
   .widget-extension__button p {
-    font-weight:600;
-    font-size:16px;
+    font-weight: 600;
+    font-size: 16px;
     user-select: none;
   }
 
   .widget-extension__button:hover p {
-    color:white;
+    color: white;
   }
 
   .widget-extension__send-icon {
-    height:40px;
+    height: 40px;
   }
 
   .qh_module--active-operator {
-    height:100%;
+    height: 100%;
   }
 
   .qh_video-ui__body {
-    padding:0 10px;
+    padding: 0 10px;
   }
 
   .qh_module {
-    width:100%;
+    width: 100%;
   }
 
   .qh_module,
@@ -403,37 +396,37 @@ html {
   }
 
   .qh_module--inactive-form.js-enabled {
-    display:block;
+    display: block;
   }
 
   .form-complete__logo-icon {
     position: absolute;
-    bottom:19px;
-    right:10px;
+    bottom: 19px;
+    right: 10px;
   }
 
   p.widget__form-label {
     font-weight: 500;
-    line-height:16px;
+    line-height: 16px;
     pointer-events: none;
   }
   p.widget__form-sublabel {
     font-weight: 400;
     pointer-events: none;
   }
-  
+
   .inactive-user__form-label {
-    margin-bottom:4px;
-    font-size:16px;
+    margin-bottom: 4px;
+    font-size: 16px;
   }
-  
+
   .inactive-user__form-sublabel {
-    font-size:1.375rem;
+    font-size: 1.375rem;
     margin-bottom: 20px;
   }
 
   input.widget-extension__input {
-    width:80%;
+    width: 80%;
   }
 
   .qh-widget-ext__content {
@@ -444,21 +437,21 @@ html {
   }
 
   .qh-widget-ext__contact-form-body {
-    padding:0 10px;
-    height:100%;
+    padding: 0 10px;
+    height: 100%;
   }
 
   .el-group {
-    margin-bottom:20px;
+    margin-bottom: 20px;
   }
 
   .active-form__subtext {
-    line-height:1.1em;
-    font-weight:300;
+    line-height: 1.1em;
+    font-weight: 300;
   }
 
   .active-form__subtext span {
-    font-weight:600;
+    font-weight: 600;
   }
 
   .widget_base {
@@ -471,12 +464,12 @@ html {
   }
 
   .widget-outlook__admin-thumbnail {
-    width:30px;
-    height:30px;
-    top:0;
-    left:0;
+    width: 30px;
+    height: 30px;
+    top: 0;
+    left: 0;
     position: absolute;
-    z-index:4;
+    z-index: 4;
   }
 
   .avatar {
@@ -487,34 +480,34 @@ html {
   }
 
   .active-user-form__thumbnail {
-    width:60px;
-    height:60px;
+    width: 60px;
+    height: 60px;
   }
 
   .outlook__circle-blue {
-    position:absolute;
-    top:-6px;
-    left:-6px;
+    position: absolute;
+    top: -6px;
+    left: -6px;
   }
 
   .outlook__user-icon {
-    position:absolute;
-    top:4px;
-    left:5px;
-    width:20px;
-    height:20px;
+    position: absolute;
+    top: 4px;
+    left: 5px;
+    width: 20px;
+    height: 20px;
   }
 
   .widget-outlook__background-circle {
-    fill:#878787;
+    fill: #878787;
   }
 
   .widget-outlook__background-circle.js-active {
-    fill:#7fd100;
+    fill: #7fd100;
   }
 
   .widget-bottom__msg {
-    color:#08005a;
+    color: #08005a;
     font-weight: 300;
   }
 
@@ -523,119 +516,119 @@ html {
   }
 
   .widget-bottom__error {
-    color:#c90000;
+    color: #c90000;
   }
 
   div.qh_widget-bottom__content.js-hidden,
   p.widget-bottom__error.js-hidden {
     display: none;
   }
-  
+
   .widget-bottom__txt {
-    font-size:14px;
+    font-size: 14px;
     text-align: right;
-    width:100%;
+    width: 100%;
   }
 
   .widget-bottom__msgs {
-    margin-right:20px;
+    margin-right: 20px;
   }
 
   .widget-bottom__button p {
-    font-size:1.275rem;
-    color:#08005a;
+    font-size: 1.275rem;
+    color: #08005a;
     pointer-events: none;
     font-weight: 300;
   }
   .widget-bottom__button:hover p {
-    color:white;
-    @include transition(color .1s ease);
+    color: white;
+    @include transition(color 0.1s ease);
   }
   .widget-bottom__button {
-    padding:1px;
+    padding: 1px;
     border-radius: 12px;
     border-style: solid;
     border-width: 2px;
-    padding:4px 10px;
-    cursor:pointer;
+    padding: 4px 10px;
+    cursor: pointer;
   }
 
   .widget-bottom__button--mute {
-    height:44px;
-    margin-right:4px;
-    padding-bottom:4px;
-    cursor:pointer;
+    height: 44px;
+    margin-right: 4px;
+    padding-bottom: 4px;
+    cursor: pointer;
   }
 
   .widget-bottom__button:hover {
     background-color: #08005a;
     border-color: #08005a;
-    @include transition(background-color .1s ease);
+    @include transition(background-color 0.1s ease);
   }
 
   .widget-bottom__button--yes {
-    border-color:#7fd100;
-    margin-right:10px;
+    border-color: #7fd100;
+    margin-right: 10px;
   }
   .widget-bottom__button--no {
-    border-color:#cd0a0a;
+    border-color: #cd0a0a;
   }
 
   .qh-widget-ext__contact-form,
   .qh_module--inactive-form {
-    height:100%;
+    height: 100%;
   }
 
   .qh-widget-ext__content {
-    height:100%;
+    height: 100%;
   }
 
   .qh_video-ui_form {
-    height:100%;
+    height: 100%;
   }
 
   .qh_tight {
-    padding:0 10px;
+    padding: 0 10px;
   }
 
   .qh_video-ui_awating-texts {
-    margin-bottom:40px;
+    margin-bottom: 40px;
   }
 
   .qh_video-ui_awating p {
-    font-size:16px;
-    font-weight:300;
+    font-size: 16px;
+    font-weight: 300;
   }
 
   .qh_video-ui_awating--thankyou {
-    font-weight:500;
+    font-weight: 500;
   }
 
   .qh_submodule {
-    display:none;
+    display: none;
   }
   .qh_submodule.js-enabled {
-    display:block;
+    display: block;
   }
   .qh_submodule--video-chat {
-    width:100%;
-    height:100%;
-    padding:0 6px 2px;
+    width: 100%;
+    height: 100%;
+    padding: 0 6px 2px;
     transform: translateY(-4px);
   }
 
   div.main.qh_video,
   div.view--videos {
-    height:100%;
+    height: 100%;
   }
 
   div.qh_submodule--rate-ux,
   div.qh_rate-ux-content {
-    height:100%;
+    height: 100%;
   }
 
   .qh_rate-ux--top {
-    margin-bottom:100px;
+    margin-bottom: 100px;
   }
 
   p.qh_text--chat-ended {
@@ -643,11 +636,11 @@ html {
   }
   p.qh_text--thank-you {
     font-size: 3rem;
-    font-weight:600;
+    font-weight: 600;
   }
-  
+
   p.qh_rate-desc {
-    font-size:.875em;
+    font-size: 0.875em;
     font-weight: 300;
   }
 }
@@ -657,8 +650,8 @@ html {
 }
 
 .qh_rate-star svg {
-  width:36px;
-  height:auto;
+  width: 36px;
+  height: auto;
 }
 
 .qh_rate-star g.qh_rate-image--disabled,
@@ -681,34 +674,34 @@ html {
 }
 
 iframe#qh_iframe {
-  display: block!important;
-  width:86px;
-  height:86px;
-  z-index:9999999;
-  border:none;
-  position:fixed;
-  bottom:20px;
-  right:20px;
+  display: block !important;
+  width: 86px;
+  height: 86px;
+  z-index: 9999999;
+  border: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
 }
 
 iframe#qh_iframe.js-expanded {
-  width:310px;
-  height:380px;
+  width: 310px;
+  height: 380px;
 }
 
 iframe#qh_iframe.js-expanded.js-expanded--large {
-  width:calc(100vw - 40px);
-  height:calc(100vh - 40px);
+  width: calc(100vw - 40px);
+  height: calc(100vh - 40px);
   @media (min-width: $s-md) {
-    height:100%;
-    max-height:580px;
-    width:100%;
-    max-width:620px;
+    height: 100%;
+    max-height: 580px;
+    width: 100%;
+    max-width: 620px;
   }
 }
 
 #qh_e_frame.js-expanded {
-  opacity:1;
+  opacity: 1;
   display: block;
 }
 
@@ -724,14 +717,14 @@ iframe#qh_iframe.js-expanded.js-expanded--large {
   z-index: 1002;
   transition: bottom 0.2s ease-in;
   box-shadow: 0 0 5px 0 #ddd;
-  opacity:0;
+  opacity: 0;
   border-radius: 12px;
   display: none;
 }
 
 #qh_e_frame.qh_video-mode {
-  width:90vw;
-  height:90vh;
+  width: 90vw;
+  height: 90vh;
 }
 
 #qh_b_frame {
@@ -743,5 +736,5 @@ iframe#qh_iframe.js-expanded.js-expanded--large {
   right: 0;
   left: 0;
   z-index: 1001;
-  padding:4px 20px;
+  padding: 4px 20px;
 }
