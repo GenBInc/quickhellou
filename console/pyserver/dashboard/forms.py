@@ -20,10 +20,12 @@ from dashboard.validators import (
     validate_time_range,
 )
 from dashboard.util.time import (
-    RANGE_PATTERN,
     collect_time_ranges,
 )
 from phonenumber_field.formfields import PhoneNumberField
+from dashboard.emails import send_create_appointment_notification
+from dashboard.util.time import DATETIME_FORMAT
+import datetime
 
 
 class EmailOrPhoneField(forms.CharField):
@@ -119,9 +121,9 @@ class CheckboxInput(forms.CheckboxInput):
 class CalendarForm(forms.Form):
     """The calendar view form.
     """
-    
+
     time_interval = forms.CharField(required=True, initial='30')
-    
+
     # Input slots (5 per day)
     # TODO: make number of slots dynamic
     day1_1 = forms.CharField(required=False, validators=[validate_time_range])
@@ -213,7 +215,7 @@ class CalendarForm(forms.Form):
         for day_code in DAYS:
             field_name: str = 'day{}_checked'.format(day_code)
             self.initial[field_name] = time_ranges.get(day_code) is not None
-            
+
         # Set the initial time interval
         self.initial['time_interval'] = time_interval
 
@@ -258,7 +260,7 @@ class CalendarForm(forms.Form):
                     user=user, time=time)
                 working_hours_entries.append(working_hours)
             UserWorkingHours.objects.abulk_create(working_hours_entries)
-        
+
         # Save time interval
         user.time_interval = self.cleaned_data.get('time_interval')
         user.save()
@@ -351,7 +353,60 @@ class ContactInformationForm(forms.Form):
     phone_number = PhoneNumberField(required=False, max_length=15, initial='')
     message = forms.CharField(required=False, initial='')
 
-    def clean(self):
-        """Clean form data.
-        """
-        cleaned_data = super().clean()
+    def create_appointment(
+        self,
+        widget: Widget,
+    ):
+        client_name: str = self.cleaned_data['name']
+        email_address: str = self.cleaned_data['email_address']
+        phone_number: str = self.cleaned_data['phone_number']
+        message: str = self.cleaned_data['message']
+        datetime_str: str = self.cleaned_data['datetime']
+
+        # Get or create user
+        client_user, created = User.objects.get_or_create(
+            email=email_address,
+            defaults={
+                'client_board': widget.client_board
+            }
+        )
+        print(client_user.__dict__)
+
+        # Get or create user profile
+        Profile.objects.get_or_create(
+            user_id=client_user.id,
+            defaults={
+                'phone': phone_number,
+                'full_name': client_name
+            }
+        )
+
+        # Get or create communication
+        communication, created = Communication.objects.get_or_create(
+            caller=client_user,
+            defaults={
+                'caller_name': client_name,
+                'client_board': widget.client_board,
+                'status': 2,
+                'widget': widget,
+                'datetime': datetime.datetime.strptime(datetime_str, DATETIME_FORMAT)
+            }
+        )
+
+        # Create communication session
+        session: CommunicationSession = CommunicationSession.objects.create_message(
+            communication=communication,
+            attendant=client_user,
+            message=message,
+            type=2
+        )
+        session.save()
+
+        # Send notifications
+        return send_create_appointment_notification(
+            client_name,
+            email_address,
+            phone_number,
+            message,
+            datetime_str,
+        )

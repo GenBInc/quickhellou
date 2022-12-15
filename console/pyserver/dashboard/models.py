@@ -139,6 +139,7 @@ class Communication(models.Model):
     widget = models.ForeignKey(Widget, related_name='communications',
                                default=None, blank=True, null=True, on_delete=models.CASCADE)
     modification_time = models.DateTimeField(auto_now_add=True)
+    datetime = models.DateTimeField()
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     active = models.BooleanField(default=True)
     status = models.SmallIntegerField(

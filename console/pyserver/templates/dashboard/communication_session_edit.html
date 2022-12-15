@@ -10,20 +10,20 @@
     Dashboard
   </a>
   <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:communications' %}">
-    Communications
+    Appointments
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:calendar' %}">
+    Calendar
   </a>
   {% if user.is_default_admin %}
   <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
     Widgets<span></span>
   </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:templates' %}">
+    Templates
+  </a>
   <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
     Team<span></span>
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
-    Billing
-  </a>
-  <a class="aside__navi-item aside__navi-item" href="{% url 'dashboard:settings' %}">
-    Settings
   </a>
   {% endif %}
 </nav>

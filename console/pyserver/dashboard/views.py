@@ -894,17 +894,18 @@ def edit_widget_contact_form_view(
 
     if form.is_valid():
         # Create appointment
-        Communication.objects.create_appointment(
-            form.cleaned_data['name'],
-            form.cleaned_data['email_address'],
-            form.cleaned_data['phone_number'],
-        )
-        # Send client notification
-        # Send admin notification
-        return render(request, 'embed/widget/contact_information_form_complete.html', {
-            'date': date_payload,
-            'background_color': widget_template.background_color,
-        })
+        email_sent: bool = form.create_appointment(widget)
+
+        # If apppointments is created and email are sent, render complete view
+        if email_sent:
+            return render(request, 'embed/widget/contact_information_form_complete.html', {
+                'date': date_payload,
+                'background_color': widget_template.background_color,
+            })
+
+        # If there was an issue with email services, add error message
+        if not email_sent:
+            messages.error(request, 'An error with sending emails has occured.')
 
     return render(request, 'embed/widget/contact_information_form.html', {
         'date': date_payload,

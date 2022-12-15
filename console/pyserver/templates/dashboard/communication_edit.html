@@ -7,23 +7,23 @@
 {% block nav %}
 <nav class="fcol mdc-list aside__navi-list">
   <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
-    Communications
+    Dashboard
   </a>
   <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:communications' %}">
-    Communications
+    Appointments
+  </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:calendar' %}">
+    Calendar
   </a>
   {% if user.is_default_admin %}
   <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
     Widgets<span></span>
   </a>
+  <a class="aside__navi-item" href="{% url 'dashboard:templates' %}">
+    Templates
+  </a>
   <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
     Team<span></span>
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:billing' %}">
-    Billing
-  </a>
-  <a class="aside__navi-item aside__navi-item" href="{% url 'dashboard:settings' %}">
-    Settings
   </a>
   {% endif %}
 </nav>
@@ -35,7 +35,8 @@
   <div class="wrapper wrapper--thin wrapper--profile">
     <div class="fcol">
       <div class="form--settings__form-container form-container">
-        <p class="form__header">Customer information</p>
+        <p class="form__header">Appointment information</p>
+        <p class=""><b>Scheduled datetime:</b> {{ communication.datetime }}</p>
         <form class="fcol site-form form--profile" 
         action="{% url 'dashboard:communication_edit' communication_id=communication.id %}" method="post"
           novalidate enctype="multipart/form-data">

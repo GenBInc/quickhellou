@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.db import models
 
 
@@ -9,14 +10,6 @@ class CommunicationQuerySet(models.QuerySet):
 class CommunicationManager(models.Manager):
     def get_queryset(self):
         return super(CommunicationManager, self).get_queryset()
-
-    def create_appointment(
-            self,
-            name: str,
-            email_address: str,
-            phone_number: str
-    ):
-        pass
 
 
 class CommunicationSessionQuerySet(models.QuerySet):

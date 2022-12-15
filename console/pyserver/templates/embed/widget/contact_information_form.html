@@ -1,6 +1,6 @@
 <div class="qh-widget-ext__contact-form-body contact-details active">
   {% include "embed/widget/header.html" with label="Add Your Contact Information" sublabel="To Book Your Appointemnt!" closerClass="widget-closer--contact-information" %}
-
+  {% include "messages.html" %}
   <div class="df f1 frow qh-widget__form contact-information__form">
     <div class="qh-widget__form--inputs">
       {{ form.name.errors }}
