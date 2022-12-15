@@ -33,16 +33,24 @@ def home_view(
 def signup_view(
     request: HttpRequest
 ) -> HttpResponse:
+    """Signup view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
     if request.method == 'POST':
-        user_form = UserForm(request.POST)
-        profile_form = ProfileForm(request.POST)
-        widget_form = WidgetForm(request.POST)
-        profile_meta_form = ProfileMetaForm(request.POST)
+        user_form: UserForm = UserForm(request.POST)
+        profile_form: ProfileForm = ProfileForm(request.POST)
+        widget_form: WidgetForm = WidgetForm(request.POST)
+        profile_meta_form: ProfileMetaForm = ProfileMetaForm(request.POST)
         if user_form.is_valid() and profile_meta_form.is_valid() and profile_form.is_valid():
             # Create client board
-            client_board = ClientBoard.objects.create()
+            client_board: ClientBoard = ClientBoard.objects.create()
             # Create new user and grant owner permissions
-            user = user_form.save(client_board)
+            user: User = user_form.save(client_board)
             user.set_password(user_form.cleaned_data['password'])
             user.is_admin = True
             user.set_as_default_admin()
@@ -52,14 +60,14 @@ def signup_view(
                 profile_form.cleaned_data['full_name'].strip(), user)
 
             # email notification
-            subject = 'QuickHellou - New User'
-            recipients = [settings.ADMIN_EMAIL]
-            email_params = {'username': user.first_name, 'email': user.email, 'full_name': user.get_full_name,
-                            'phone': user.profile.phone, 'console_app_url': settings.CONSOLE_APP_URL}
+            subject: str = 'QuickHellou - New User'
+            recipients: list[str] = [settings.ADMIN_EMAIL]
+            email_params: dict = {'username': user.first_name, 'email': user.email, 'full_name': user.get_full_name,
+                                  'phone': user.profile.phone, 'console_app_url': settings.CONSOLE_APP_URL}
             send_email_notification(subject, recipients, email_params,
                                     'accounts/email/signup-admin.txt', 'accounts/email/signup-admin.html')
             # send email to client user
-            recipients = [user.email]
+            recipients: list[str] = [user.email]
             send_email_notification(subject, recipients, email_params,
                                     'accounts/email/signup-client.txt', 'accounts/email/signup-client.html')
 
@@ -85,37 +93,69 @@ def signup_view(
 def login_view(
     request: HttpRequest
 ) -> HttpResponse:
+    """Login view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
     if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
+        form: AuthenticationForm = AuthenticationForm(data=request.POST)
         if form.is_valid():
-            user = form.get_user()
+            user: User = form.get_user()
             login(request, user)
             if 'next' in request.POST:
                 return redirect(request.POST.get('next'))
             else:
                 return redirect('dashboard:home')
     else:
-        form = AuthenticationForm()
+        form: AuthenticationForm = AuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
 
 
-def logout_view(request):
+def logout_view(request) -> HttpResponseRedirect:
     if request.method == 'POST':
         logout(request)
         return redirect('accounts:login')
 
 
-def terms_of_use_view(request):
+def terms_of_use_view(request) -> HttpResponse:
+    """Terms of use view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
     return render(request, 'accounts/terms-of-use.html')
 
 
-def privacy_policy_view(request):
+def privacy_policy_view(request) -> HttpResponse:
+    """Privacy policy view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
     return render(request, 'accounts/privacy-policy.html')
 
 
 def forgot_password_view(
     request: HttpRequest
-):
+) -> HttpResponse:
+    """Forget password view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
     if request.method == 'POST':
         form: ForgotPasswordForm = ForgotPasswordForm(data=request.POST)
         if form.is_valid():
@@ -138,10 +178,22 @@ def forgot_password_view(
     return render(request, 'accounts/forgot-password.html', {'form': form})
 
 
-def reset_password_view(request, user_id):
-    user = User.objects.get(id=user_id)
+def reset_password_view(
+    request: HttpRequest,
+    user_id: int
+) -> HttpResponse:
+    """Reset password view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        user_id (HttpRequest): the user id
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    user: User = User.objects.get(id=user_id)
     if request.method == 'POST':
-        form = ResetPasswordForm(data=request.POST)
+        form: ResetPasswordForm = ResetPasswordForm(data=request.POST)
         if form.is_valid():
             user.set_password(form.cleaned_data['new_password'])
             user.save()
@@ -155,7 +207,10 @@ def reset_password_view(request, user_id):
     return render(request, 'accounts/reset-password.html', context={'user_id': user_id, 'form': form})
 
 
-def upload_thumbnail(request, profile_id):
+def upload_thumbnail(
+    request: HttpRequest,
+    profile_id: int
+) -> HttpResponseRedirect:
     if request.method == 'POST':
         form = ProfileThumbnailForm(request.POST, request.FILES)
         if form.is_valid():
@@ -169,7 +224,11 @@ def upload_thumbnail(request, profile_id):
         form = ProfileThumbnailForm()
     return redirect('dashboard:home')
 
-def delete_thumbnail(request, profile_id):
+
+def delete_thumbnail(
+    request: HttpRequest,
+    profile_id: int
+) -> HttpResponseRedirect:
     if request.method == 'POST':
         form = ProfileThumbnailForm(request.POST, request.FILES)
         if form.is_valid():
@@ -182,6 +241,7 @@ def delete_thumbnail(request, profile_id):
     else:
         form = ProfileThumbnailForm()
     return redirect('dashboard:home')
+
 
 def activate_user_view(
     request: HttpRequest,

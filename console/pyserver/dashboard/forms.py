@@ -119,6 +119,9 @@ class CheckboxInput(forms.CheckboxInput):
 class CalendarForm(forms.Form):
     """The calendar view form.
     """
+    
+    time_interval = forms.CharField(required=True, initial='30')
+    
     # Input slots (5 per day)
     # TODO: make number of slots dynamic
     day1_1 = forms.CharField(required=False, validators=[validate_time_range])
@@ -182,6 +185,8 @@ class CalendarForm(forms.Form):
     def __init__(self, *args, **kwargs):
         """Form constructor.
         """
+        time_interval: str = kwargs.pop(
+            'time_interval')
 
         working_hours_entries: list[UserWorkingHours] = kwargs.pop(
             'working_hours')
@@ -208,6 +213,9 @@ class CalendarForm(forms.Form):
         for day_code in DAYS:
             field_name: str = 'day{}_checked'.format(day_code)
             self.initial[field_name] = time_ranges.get(day_code) is not None
+            
+        # Set the initial time interval
+        self.initial['time_interval'] = time_interval
 
     def get_day_group(
         self,
@@ -250,6 +258,10 @@ class CalendarForm(forms.Form):
                     user=user, time=time)
                 working_hours_entries.append(working_hours)
             UserWorkingHours.objects.abulk_create(working_hours_entries)
+        
+        # Save time interval
+        user.time_interval = self.cleaned_data.get('time_interval')
+        user.save()
 
 
 class WidgetActiveUserForm(forms.Form):

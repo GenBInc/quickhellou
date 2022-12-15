@@ -252,7 +252,11 @@ def save_calendar(
         HttpResponse: the HTTP response
     """
     user: User = request.user
-    form: CalendarForm = CalendarForm(request.POST, working_hours=None)
+    form: CalendarForm = CalendarForm(
+        request.POST,
+        time_interval=user.time_interval,
+        working_hours=None
+    )
     if form.is_valid():
         form.save_all(user)
         messages.success(
@@ -496,7 +500,10 @@ def calendar_view(
     return render(request, 'dashboard/calendar/view.html', get_calendar_view_parameters(user) | {
         'user': request.user,
         'is_saved': working_hours_entries.__len__() > 0,
-        'form': CalendarForm(working_hours=working_hours_entries)
+        'form': CalendarForm(
+            working_hours=working_hours_entries,
+            time_interval=user.time_interval,
+        )
     })
 
 
@@ -875,16 +882,16 @@ def edit_widget_contact_form_view(
     widget: Widget = Widget.objects.get(id=widget_id)
     if not widget:
         raise Http404
-    
+
     widget_template: WidgetTemplate = widget.template
 
     form: ContactInformationForm = ContactInformationForm(request.POST)
-    
+
     # Create date payload
     date_selected: str = form.data['datetime']
     date: datetime = datetime.strptime(date_selected, DATETIME_FORMAT)
     date_payload: DatePayload = DatePayload(date)
-    
+
     if form.is_valid():
         # Create appointment
         Communication.objects.create_appointment(

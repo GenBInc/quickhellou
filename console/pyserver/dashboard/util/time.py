@@ -27,7 +27,7 @@ DEFAULT_TO_ABBREVIATION: str = 'PM'
 DAYS: list[str] = ['1', '2', '3', '4', '5', '6', '0']
 HOURS: list[str] = ['01', '02', '03', '04', '05',
                     '06', '07', '08', '09', '10', '11', '12', ]
-MINUTES: list[str] = ['00', '30', ]
+MINUTES: list[str] = ['00', '15', '30', '45', ]
 
 RANGE_PATTERN: Pattern = compile(
     '^(\d)\s((\d{2})\:(\d{2})\s(AM|PM))\s((\d{2})\:(\d{2})\s(AM|PM))$')
@@ -35,6 +35,12 @@ TIME_PATTERN: Pattern = compile(
     '^(\d{2}):(\d{2})\s(AM|PM)$')
 DAY_PATTERN: Pattern = compile(
     '^()(\d{2}):(\d{2})\s(AM|PM)$')
+TIME_INTERVAL_VARIABLES: dict[str, list[float]] = {
+    '15': [4, .25],
+    '30': [2, .5],
+    '45': [1.5, .75],
+    '60': [1, 1],
+}
 
 
 def get_day(date_time: str) -> str:
@@ -117,8 +123,20 @@ def get_day_group(
     return filter(lambda x: 'day{}'.format(day_code) in x and time_field_key_regex.match(x), self.fields.keys())
 
 
+def get_minutes(interval: int) -> list[str]:
+    """Gets minutes list according to declared interval.
+
+    Args:
+        interval (int): the interval in minutes
+
+    Returns:
+        list[str]: the list of available minutes
+    """
+    pass
+
+
 def collect_weekly_hours(
-    user: User,
+    user: User
 ):
     """Collects and serializie weekly working hours.
 
@@ -144,7 +162,6 @@ def collect_weekly_hours(
             if not day_fields.get(field_name):
                 day_fields[field_name] = []
             day_fields[field_name].append(datetime_range)
-            # s[field_name] = datetime_range
 
     weekly_hours: dict[str, list[str]] = {}
     for day_code in time_ranges:
@@ -152,7 +169,6 @@ def collect_weekly_hours(
         daily_hours: list[str] = []
         for index, datetime_range in enumerate(datetime_ranges):
             search_result: Match[str] = search(RANGE_PATTERN, datetime_range)
-            day: str = search_result.group(1)
             datetime_from_str: str = search_result.group(2)
             datetime_to_str: str = search_result.group(6)
             datetime_from: datetime = datetime.strptime(
@@ -160,10 +176,12 @@ def collect_weekly_hours(
             datetime_to: datetime = datetime.strptime(
                 datetime_to_str, TIME_FORMAT)
             delta = datetime_to - datetime_from
-            hours = int(delta.seconds / 60 / 60 * 2)
+            hours = int(delta.seconds / 60 / 60 *
+                        TIME_INTERVAL_VARIABLES[user.time_interval][0])
             for i in range(hours):
                 working_hour: datetime = datetime_from + \
-                    timedelta(hours=i * .5)
+                    timedelta(
+                        hours=i * TIME_INTERVAL_VARIABLES[user.time_interval][1])
                 daily_hours.append(working_hour.strftime(TIME_FORMAT))
         daily_hours = sorted(
             list(set(daily_hours)), key=lambda x: datetime.strptime(x, TIME_FORMAT))

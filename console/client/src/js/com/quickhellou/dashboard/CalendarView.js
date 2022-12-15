@@ -29,18 +29,29 @@ export class CalendarView extends UIView {
     const submitButton = document.querySelector('.calendar__button--submit')
     submitButton.addEventListener('click', () => {
       const form = document.querySelector('form.form--save')
+      
+      // Drop all form fields
       const formInputs = form.querySelectorAll('input.input--data')
       formInputs.forEach(formInput => {
         formInput.remove()
       })
+
+      // Insert time interval
+      form.insertAdjacentHTML('beforeend', `<input class="input--data" type="hidden" name="time_interval" value="${document.querySelector('select[name=time_interval]').value}">`)
+      
+      // Insert day fields
       const days = this.updateTimeSelectInput()
       for (const [dayCode, time] of Object.entries(days)) {
         form.insertAdjacentHTML('beforeend', `<input class="input--data" type="hidden" name="${dayCode}" value="${time}">`)
       }
+      
+      // Insert day checkboxes
       const dayCheckboxes = document.querySelectorAll('input.calendar__checkbox--day')
       dayCheckboxes.forEach(checkbox => {
         form.insertAdjacentHTML('beforeend', `<input class="input--data" type="hidden" name="${checkbox.name}" value="${checkbox.checked ? 'True' : 'False'}">`)
       })
+
+      // Submit form
       form.submit()
     })
   }

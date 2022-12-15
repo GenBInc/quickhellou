@@ -26,12 +26,11 @@
     </div>
 
     <p class="subsection__header">Default Meeting Duration:</p>
-
-    <select class="time_select calendar__select--period">
-      <option value="15min">15 min</option>
-      <option value="30min" selected>30 min</option>
-      <option value="45min">45 min</option>
-      <option value="1h">1 hour</option>
+    <select name="time_interval" class="time_select calendar__select--period">
+      <option value="15" {% if form.time_interval.value == "15" %} selected {% endif %}>15 min</option>
+      <option value="30" {% if form.time_interval.value == "30" %} selected {% endif %}>30 min</option>
+      <option value="45" {% if form.time_interval.value == "45" %} selected {% endif %}>45 min</option>
+      <option value="60" {% if form.time_interval.value == "60" %} selected {% endif %}>1 hour</option>
     </select>
 </div>
 

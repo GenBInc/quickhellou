@@ -1,7 +1,5 @@
 from re import (
-    compile,
     search,
-    Pattern,
     Match,
 )
 from datetime import datetime
