@@ -79,7 +79,6 @@ export class WebSocketService extends FormService {
     }
 
     const responseJson = JSON.parse(response)
-    // console.log('response', responseJson)
     if (responseJson.error !== '') {
       this.emit('error', responseJson.error)
       return

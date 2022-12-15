@@ -33,16 +33,15 @@ export class ScheduleView extends UIView {
   async init() {
     const closeButton = document.querySelector('.qh_widget-closer')
     closeButton.addEventListener('click', () => {
-      this.collapseView()
-    })
+      this.extDispatcher.dispatchEvent(
+        new CustomEvent('collapse', {
+          detail: {
+            'source': 'schedule',
+          },
+        })
+      )
 
-    this.extDispatcher.addEventListener(
-      'expand_schedule',
-      () => {
-        this.element.classList.add('js-expanded')
-      },
-      false
-    )
+    })
 
     const submitButton = document.querySelector(
       '.widget-extension__button--send-schedule'
@@ -61,7 +60,7 @@ export class ScheduleView extends UIView {
       this.extDispatcher.dispatchEvent(
         new CustomEvent('expand_contact', {
           detail: {
-            'source': 'contact',
+            'source': 'schedule',
             'datetime': datetime
           },
         })

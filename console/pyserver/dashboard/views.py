@@ -875,8 +875,16 @@ def edit_widget_contact_form_view(
     widget: Widget = Widget.objects.get(id=widget_id)
     if not widget:
         raise Http404
+    
+    widget_template: WidgetTemplate = widget.template
 
     form: ContactInformationForm = ContactInformationForm(request.POST)
+    
+    # Create date payload
+    date_selected: str = form.data['datetime']
+    date: datetime = datetime.strptime(date_selected, DATETIME_FORMAT)
+    date_payload: DatePayload = DatePayload(date)
+    
     if form.is_valid():
         # Create appointment
         Communication.objects.create_appointment(
@@ -886,16 +894,11 @@ def edit_widget_contact_form_view(
         )
         # Send client notification
         # Send admin notification
-        return render(request, 'embed/widget/contact_information_form.html', {
+        return render(request, 'embed/widget/contact_information_form_complete.html', {
             'date': date_payload,
             'background_color': widget_template.background_color,
-    }   )
+        })
 
-    date_selected: str = form.cleaned_data['datetime']
-    date: datetime = datetime.strptime(date_selected, DATETIME_FORMAT)
-    date_payload: DatePayload = DatePayload(date)
-
-    widget_template: WidgetTemplate = widget.template
     return render(request, 'embed/widget/contact_information_form.html', {
         'date': date_payload,
         'form': form,
