@@ -37,8 +37,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 FAKE_EMAIL_DOMAIN = 'fake.org'
 
 
-ADMIN_EMAIL = 'jmrowczynski@genb.com'
-# ADMIN_EMAIL = 'admin@getfox.io'
+ADMIN_EMAIL = 'admin@getfox.io'
 
 LOGIN_URL = '/login'
 
