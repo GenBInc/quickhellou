@@ -1,5 +1,9 @@
 from accounts.models import (User, )
-from dashboard.models import (Widget, Communication, CommunicationSession,)
+from dashboard.models import (
+    Widget,
+    Communication,
+    CommunicationSession,
+)
 from rest_framework import serializers
 from rest_framework.serializers import (CharField, IntegerField)
 

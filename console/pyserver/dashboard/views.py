@@ -387,7 +387,7 @@ def appointment_delete(
     communication.active = False
     communication.save()
     messages.success(
-        request, 'Communication has been deleted.')
+        request, 'Appointment has been deleted.')
     return redirect('dashboard:appointments')
 
 
@@ -436,7 +436,7 @@ def appointments_view(
 ) -> HttpResponse:
     communications: list[Communication] = Communication.objects.filter(
         client_board=request.user.client_board).filter(active=True)
-    return render(request, 'dashboard/communications.html', {
+    return render(request, 'dashboard/appointments/home.html', {
         'communications': communications,
         'user': request.user,
     })
@@ -453,7 +453,7 @@ def appointments_list_view(
         count = communication.pending_sessions_count
     else:
         count = 0
-    return render(request, 'dashboard/communication_list.html', {
+    return render(request, 'dashboard/appointments/list.html', {
         'user': request.user,
         'communications': communications,
     })
