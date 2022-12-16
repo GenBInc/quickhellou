@@ -5,39 +5,30 @@
 {% block page_title %}Edit Appointment{% endblock %}
 
 {% block nav %}
-<nav class="fcol mdc-list aside__navi-list">
-  <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
-    Dashboard
-  </a>
-  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:appointments' %}">
-    Appointments
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:calendar' %}">
-    Calendar
-  </a>
-  {% if user.is_default_admin %}
-  <a class="aside__navi-item" href="{% url 'dashboard:widgets' %}">
-    Widgets<span></span>
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:templates' %}">
-    Templates
-  </a>
-  <a class="aside__navi-item" href="{% url 'dashboard:team' %}">
-    Team<span></span>
-  </a>
-  {% endif %}
-</nav>
+{% include "dashboard/nav_menu.html" with menu_selected='appointments' %}
 {% endblock %}
 
 {% block content %}
 
+<div class="df flc frow top-header__section">
+  <img class="top-header-block__photo" src="{% static '/images/appointment-info.png' %}">
+  <p class="fc top-header-block__text">Appointment Details</p>  
+</div>
+
+<div class="df flc frow top-header__subsection">
+  <div>
+    <img class="meeting-duration--icon" src="{% static '/images/clock-period.svg' %}">
+  </div>
+
+  <p class="subsection__header">Scheduled Date & Time:</p>
+  <p class="subsection__header subsection__header-scheduled">{{ appointment.datetime }}</p>
+</div>
+
 <div class="fc">
-  <div class="wrapper wrapper--thin wrapper--profile">
+  <div class="wrapper wrapper--thin wrapper--appointment">
     <div class="fcol">
       <div class="form--settings__form-container form-container">
-        <p class="form__header">Appointment information</p>
-        <p class=""><b>Scheduled datetime:</b> {{ appointment.datetime }}</p>
-        <form class="fcol site-form form--profile" 
+        <form class="fcol site-form form--appointment" 
         action="{% url 'dashboard:appointment_edit' appointment_id=appointment.id %}" method="post"
           novalidate enctype="multipart/form-data">
           {% csrf_token %}
@@ -139,19 +130,25 @@
                 </ul>
               </div>
             </div>
-            <p class="form__subheader">Sessions</p>
-            <ul class="mdc-list mdc-list--two-line" role="group" >
-            {% for com_session in com_sessions %}
-              <li class="mdc-list-item com-session-list-item--{{ com_session.status }}" tabindex="0">
-                <a class="mdc-list-item__text" href="{% url 'dashboard:communication_session_edit' session_id=com_session.id %}">
-                  <span class="mdc-list-item__primary-text"><b>#{{ com_session.id }}</b> {{ com_session.type_verbose|title }}</span>
-                  <span class="mdc-list-item__secondary-text">{{ com_session.status_verbose|title }} by <i>{{ com_session.attendant.profile.full_name }}</i> on {{ com_session.creation_time|date:"m/d/Y H:i:s" }}</span>
-                </a>
-              </li>
-            {% empty %}
-              No sessions found.
-            {% endfor %}
-            </ul>
+
+            <div class="form__field--upper widget">
+            
+              <p class="form__header">Sessions</p>
+
+              <ul class="mdc-list mdc-list--two-line" role="group" >
+              {% for com_session in com_sessions %}
+                <li class="mdc-list-item com-session-list-item--{{ com_session.status }}" tabindex="0">
+                  <a class="df f1 fcol mdc-list-item__text" href="{% url 'dashboard:communication_session_edit' session_id=com_session.id %}">
+                    <span class="mdc-list-item__primary-text"><b>#{{ com_session.id }}</b> {{ com_session.type_verbose|title }}</span>
+                    <span class="mdc-list-item__secondary-text">{{ com_session.status_verbose|title }} by <i>{{ com_session.attendant.profile.full_name }}</i> on {{ com_session.creation_time|date:"m/d/Y H:i:s" }}</span>
+                  </a>
+                </li>
+              {% empty %}
+                No sessions found.
+              {% endfor %}
+              </ul>
+
+            </div>
 
             <div class="form__field--upper">
             </div>

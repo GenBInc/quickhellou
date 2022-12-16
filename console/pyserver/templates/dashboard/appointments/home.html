@@ -20,21 +20,23 @@
   <p>Active guests: <span class="active-guests">0</span></p>
 </div>
 {% include "messages.html" %}
-<div class="fcol widget-list">
-          <div class="flc widget-list__header">
+<div class="fcol widget-list appointment-list">
+          <div class="flc widget-list__header appointment-list__header">
             <div class="widget-list__field widget-list__field--id">ID</div>
+            <div class="fc widget-list__field widget-list__field--date">Date & Time</div>
             <div class="fc widget-list__field widget-list__field--name">Name</div>
-            <div class="fc widget-list__field widget-list__field--contact">Contact</div>
-            <div class="fc widget-list__field widget-list__field--url">URL</div>
-            <div class="fc widget-list__field view-list__field--status widget-list__field--status">Status</div>
-            <div class="fc widget-list__field widget-list__field--last-change">Last Change</div>
+            <div class="fc widget-list__field widget-list__field--email">E-mail</div>
+            <div class="fc widget-list__field widget-list__field--last-change">Domain</div>
+            <div class="fc widget-list__field widget-list__field--status">Status</div>
             <div class="f1"></div>
+            <!--
             <div class="frc widget-list__field dao-list__mod-bar">
               <a class="list-header__element list-header__button call-list__button--activate console-button console-button-green" target="_self">Open Session</a>
               <p class="list-header__element list-header__text com-list__text--connecting js-hidden" target="_self">Connecting..</p>
               <p class="list-header__element list-header__text com-list__text--failure js-hidden" target="_self">Connection failure.</p>
               <a class="list-header__element list-header__button call-list__button--deactivate js-hidden console-button" target="_self">Close Session</a>
             </div>
+            -->
           </div>
           <div class="fcol view-list__content call-list__content">
             <div class="loader loader--inbox"></div>

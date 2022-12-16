@@ -34,7 +34,8 @@
 <div class="fc">
   <div class="wrapper wrapper--thin wrapper--profile">
     <div class="fcol">
-      <div class="form--settings__form-container form-container">
+      
+      <div class="form__field--upper widget form--settings__form-container form-container">
         <p class="form__header">Session information</p>
         <form class="fcol site-form form--profile" 
         action="{% url 'dashboard:communication_session_edit' session_id=session.id %}" method="post"

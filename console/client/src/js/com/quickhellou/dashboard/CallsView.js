@@ -17,8 +17,9 @@ export class CallsView extends DashboardView {
     let appSettingsJson = await this.apiService.getSettings()
     this.appSettings = new ApplicationSettings(appSettingsJson)
 
-    this.initWebSocketService()
+    //this.initWebSocketService()
 
+    /*
     const activateButtonElement = this.uiGet('.call-list__button--activate')
     const connectingTextElement = this.uiGet('.com-list__text--connecting')
     const deactivateButtonElement = this.uiGet('.call-list__button--deactivate')
@@ -47,7 +48,7 @@ export class CallsView extends DashboardView {
       activateButtonElement.classList.remove('js-hidden')
       deactivateButtonElement.classList.add('js-hidden')
     })
-
+    */
     // load call record list
     this.showPageLoader()
     this.loadCallViewList()

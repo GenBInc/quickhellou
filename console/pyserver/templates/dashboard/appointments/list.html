@@ -2,7 +2,23 @@
 
 {% for communication in communications %}
   <div class="flc view-list__entry call-list__entry call-list__entry--{{ communication.status_verbose }}">
-    <div class="widget-list__field widget-list__field--id">{{ communication.id }}</div>
+    
+    <div class="widget-list__field widget-list__field--id">      
+      {{ communication.id }}
+    </div>
+
+    <div class="widget-list__field widget-list__field--status-icon"
+      aria-label="{{ communication.status_verbose|title }}"
+      data-microtip-position="bottom"
+      data-role="tooltip"      
+    >
+      <img class="meeting-status--icon" src="/static/images/status-{{ communication.status_verbose|title }}.svg">
+    </div>
+    
+    <div class="df flc widget-list__field widget-list__field--date-time">
+      {{ communication.modification_time|date:"m/d/Y H:i:s" }}
+    </div>
+
     <div class="flc widget-list__field widget-list__field--name">
       <div class="fcol">
         <div class="widget-list__url-label">{{ communication.caller.profile.full_name|truncatechars:32 }}</div>
@@ -16,14 +32,18 @@
         <div class="widget-list__url-label">{{ communication.widget.url|truncatechars:24 }}</div>
       </div>
     </div>
-    <div class="widget-list__field widget-list__field--status">{{ communication.status_verbose|title }}</div>
-    <div class="widget-list__field widget-list__field--last-change">{{ communication.modification_time|date:"m/d/Y H:i:s" }}</div>
+    
     <div class="f1"></div>
     <div class="flc widget-list__field widget-list__field--mod-bar">
+
       {% if communication.status == 1 and communication.pending_sessions_count > 0 %}
       <a class="fc df-f1 com__list-link list-link--accept" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Accept</a>
       <a class="fc df-f1 com__list-link list-link--reject" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Reject</a>
       {% else %}
+
+      <a class="fc df-f1 com__list-link list-link--accept" href="#" >Accept</a>
+      <a class="fc df-f1 com__list-link list-link--reject" href="#" >Reject</a>
+
       <a class="fc df-f1 widgets__list-link list-link--edit" href="{% url 'dashboard:appointment_edit' appointment_id=communication.id  %}"
           target="_self"
           aria-label="Edit"
