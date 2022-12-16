@@ -1361,3 +1361,22 @@ div.scheduler__pages {
   pointer-events: none;
   transition: background-color .3s linear;
 }
+
+.contact-information__confirm_info {
+  padding: 20px;
+}
+
+.contact-information__confirm_info p {
+  font-weight: 600;
+  text-align: center;
+}
+
+.contact-information__confirm__photo {
+  margin: 10px;
+  height: 240px;
+}
+
+.contact-information__confirm_info .header__1 {
+  font-size: 20px;
+}
+

@@ -1,9 +1,14 @@
+{% load static %}
+
 <div class="qh-widget-ext__contact-form-body contact-details active">
   {% include "embed/widget/header.html" with label="Add Your Contact Information" sublabel="To Book Your Appointemnt!" closerClass="widget-closer--contact-information" %}
 
   <div class="df f1 frow qh-widget__form contact-information__form">
-    <p>You've created an appointment.</p>
-    <div class="df f1 df-f1"></div>
+    <div class="df f1 fc contact-information__confirm_info fcol">
+      <p class="header__1">Thank you!</p>
+      <p class="header__2">You've created an appointment.</p>
+      <img class="contact-information__confirm__photo" src="{% static '/images/booking-confirm.png' %}">      
+    </div>    
     <div class="fc qh-widget__form--calendar-selected">
       <div class="fc fcol qh-widget__form--date-selected">
         <p class="qh-widget__form--time-selected">{{ date.day }}</p>
