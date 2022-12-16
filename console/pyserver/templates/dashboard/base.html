@@ -1,4 +1,4 @@
-{% load static %}
+{% load static %} {% load svg %}
 <!doctype html>
 <html>
 
@@ -31,21 +31,15 @@
         </div>
         {% with default_thumbnail='images/user.svg' %}
         <form id="thumbnail-form" class="fc aside__avatar-content" action="{% if user.profile.thumbnail != default_thumbnail %}{% url 'accounts:delete_thumbnail' profile_id=user.profile.id %}{% else %}{% url 'accounts:upload_thumbnail' profile_id=user.profile.id %}{% endif %}" method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-          
-
-          <div class="aside__avatar avatar" style="background-image:url(/media/{{user.profile.thumbnail}})"></div>
-          
+          {% csrf_token %}          
+          <div class="aside__avatar avatar" style="background-image:url(/media/{{user.profile.thumbnail}})"></div>          
           <label {% if user.profile.thumbnail == default_thumbnail %}for="thumbnail"{% else %}onclick="javascript:document.getElementById('thumbnail-form').submit();"{% endif %} class="fc button--add-photo">
-
-          {% if user.profile.thumbnail != default_thumbnail %}
-            <img class="button--photo--icon" src="{% static '/images/delete.svg' %}" alt="add photo">
-          {% else %}
-            <img class="button--photo--icon" src="{% static '/images/photo-add.svg' %}" alt="add photo">
-          {% endif %}
-            
+            {% if user.profile.thumbnail != default_thumbnail %}
+              {% svg "delete" %}  
+            {% else %}
+              {% svg "photo-add" %}
+            {% endif %}   
           </label>
-
           <input type="file" class="input--add-avatar" id="thumbnail" name="thumbnail" onchange="form.submit()">
         </form>
         {% endwith %}

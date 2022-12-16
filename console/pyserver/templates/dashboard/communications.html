@@ -5,7 +5,7 @@
 {% block page_title %}Appointments{% endblock %}
 
 {% block nav %}
-  {% include "./nav_menu.html" with menu_selected='communications' %}   
+  {% include "./nav_menu.html" with menu_selected='appointments' %}   
 {% endblock %}
 
 {% block content %}
@@ -40,8 +40,7 @@
             </div>
           </div>
           <div class="fcol view-list__content call-list__content">
-            <!-- Call record list. -->      
-            
+            <div class="loader loader--inbox"></div>
           </div>
 </div>
 

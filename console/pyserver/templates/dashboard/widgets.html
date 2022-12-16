@@ -1,5 +1,5 @@
 {% extends 'dashboard/base.html' %}
-{% load static %}
+{% load static %} {% load svg %}
 
 {% block title %}Widgets{% endblock %}
 {% block page_title %}Widgets{% endblock %}
@@ -30,7 +30,7 @@
     <div class="flc widget-list__field widget-list__field--status">Status</div>
     <div class="fc widget-list__field widget-list__field--last-change">Last change</div>
     <div class="f1"></div>            
-    <a class="widget-list__create console-button" href="{% url 'dashboard:widget_create' %}" target="_self"><img class="console-button--icon" src="{% static '/images/widget-add.svg' %}">Add Widget</a>
+    <a class="widget-list__create console-button widgets__button--add-widget" href="{% url 'dashboard:widget_create' %}" target="_self">{% svg "widget-add" %}Add Widget</a>
   </div>
   <div class="fcol view-list__content widget-list__content">
     {% for widget in widgets %}
@@ -98,13 +98,12 @@
           data-microtip-position="bottom"
           data-role="tooltip"        
               
-        ><img class="list-link--icon" src="{% static '/images/edit.svg' %}" alt="edit"></a>
+        >{% svg "edit" %}</a>
         <a class="fc df-f1 widgets__list-link list-link--delete" href="{% url 'dashboard:widget_delete' widget_id=widget.id  %}"
         aria-label="Delete"
         data-microtip-position="bottom"
-        data-role="tooltip"              
-              
-        ><img class="list-link--icon" src="{% static '/images/delete.svg' %}" alt="delete"></a>
+        data-role="tooltip"                   
+        >{% svg "delete" %}</a>
       </div>
     </div>
     {% endfor %}

@@ -1,3 +1,5 @@
+{% load static %} {% load svg %}
+
 {% for communication in communications %}
   <div class="flc view-list__entry call-list__entry call-list__entry--{{ communication.status_verbose }}">
     <div class="widget-list__field widget-list__field--id">{{ communication.id }}</div>
@@ -22,8 +24,17 @@
       <a class="fc df-f1 com__list-link list-link--accept" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Accept</a>
       <a class="fc df-f1 com__list-link list-link--reject" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Reject</a>
       {% else %}
-      <a class="fc df-f1 com__list-link list-link--edit" href="{% url 'dashboard:communication_edit' communication_id=communication.id  %}">Edit</a>      
-      <a class="fc df-f1 com__list-link list-link--delete" href="{% url 'dashboard:communication_delete' communication_id=communication.id  %}">Delete</a>      
+      <a class="fc df-f1 widgets__list-link list-link--edit" href="{% url 'dashboard:appointment_edit' communication_id=communication.id  %}"
+          target="_self"
+          aria-label="Edit"
+          data-microtip-position="bottom"
+          data-role="tooltip"
+      >{% svg "edit" %}</a>      
+      <a class="fc df-f1 widgets__list-link list-link--delete" href="{% url 'dashboard:appointment_delete' communication_id=communication.id  %}" target="_self"
+        aria-label="Delete"
+        data-microtip-position="bottom"
+        data-role="tooltip"                   
+      >{% svg "delete" %}</a>
       {% endif %}
     </div>
   </div>

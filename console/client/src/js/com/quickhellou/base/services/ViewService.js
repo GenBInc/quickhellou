@@ -15,6 +15,6 @@ export class ViewService extends FormService {
    * @memberof ViewService
    */
   getCallViewList() {
-    return this.getAsXMLHttpRequest('/dashboard/communications/list/')
+    return this.getAsXMLHttpRequest('/dashboard/appointments/list/')
   }
 }

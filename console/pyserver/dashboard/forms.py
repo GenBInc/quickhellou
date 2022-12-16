@@ -2,6 +2,7 @@ from re import (
     compile,
     Pattern,
 )
+from django.utils.timezone import make_aware
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -389,7 +390,7 @@ class ContactInformationForm(forms.Form):
                 'client_board': widget.client_board,
                 'status': 2,
                 'widget': widget,
-                'datetime': datetime.datetime.strptime(datetime_str, DATETIME_FORMAT)
+                'datetime': make_aware(datetime.datetime.strptime(datetime_str, DATETIME_FORMAT))
             }
         )
 

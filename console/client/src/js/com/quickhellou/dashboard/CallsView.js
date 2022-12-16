@@ -146,7 +146,7 @@ export class CallsView extends DashboardView {
       }
     })
 
-    // if any change occured update communications list
+    // if any change occured update appointments list
     if (isChanged) {
       this.loadCallViewList()
     }

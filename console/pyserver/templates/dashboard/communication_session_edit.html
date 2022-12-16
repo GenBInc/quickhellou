@@ -9,7 +9,7 @@
   <a class="aside__navi-item" href="{% url 'dashboard:home' %}">
     Dashboard
   </a>
-  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:communications' %}">
+  <a class="aside__navi-item aside__navi-item--activated" href="{% url 'dashboard:appointments' %}">
     Appointments
   </a>
   <a class="aside__navi-item" href="{% url 'dashboard:calendar' %}">
@@ -127,20 +127,51 @@
             <div class="errornote">
               {{ form.status.errors }}
             </div>
-            <div class="mdc-select mdc-select--outlined form--widget-create__name form__field--upper">
-              <i class="mdc-select__dropdown-icon"></i>
-              <select class="mdc-select__native-control" name="status" required>
-                <option value="" disabled></option>                
-                {% for value, label in statuses %}
-                  <option value="{{ value }}" {% if session.status == value %} selected {% endif %}>{{ label|title }}</option>
-                {% endfor %}
-              </select>
-              <div class="mdc-notched-outline">
-                <div class="mdc-notched-outline__leading"></div>
-                <div class="mdc-notched-outline__notch">
-                   <label class="mdc-floating-label">Status</label>
-                </div>
-                <div class="mdc-notched-outline__trailing"></div>
+            <div class="mdc-select mdc-select--outlined form__field--upper">
+              <input type="hidden" name="status" value="{{ session.status }}">
+              <div class="mdc-select__anchor" aria-labelledby="outlined-select-label">
+                <span class="mdc-notched-outline">
+                  <span class="mdc-notched-outline__leading"></span>
+                  <span class="mdc-notched-outline__notch">
+                    <span id="outlined-select-label" class="mdc-floating-label">Status</span>
+                  </span>
+                  <span class="mdc-notched-outline__trailing"></span>
+                </span>
+                <span class="mdc-select__selected-text-container">
+                  <span id="demo-selected-text" class="mdc-select__selected-text"></span>
+                </span>
+                <span class="mdc-select__dropdown-icon">
+                  <svg
+                      class="mdc-select__dropdown-icon-graphic"
+                      viewBox="7 10 10 5" focusable="false">
+                    <polygon
+                        class="mdc-select__dropdown-icon-inactive"
+                        stroke="none"
+                        fill-rule="evenodd"
+                        points="7 10 12 15 17 10">
+                    </polygon>
+                    <polygon
+                        class="mdc-select__dropdown-icon-active"
+                        stroke="none"
+                        fill-rule="evenodd"
+                        points="7 15 12 10 17 15">
+                    </polygon>
+                  </svg>
+                </span>
+              </div>
+            
+              <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
+                <ul class="mdc-list">
+                  <li class="mdc-list-item" aria-selected="false" aria-disabled="true" data-value="">
+                    <span class="mdc-list-item__ripple"></span>
+                  </li>            
+                  {% for value, label in statuses %}
+                    <li class="mdc-list-item" data-value="{{ value }}" aria-disabled="false">
+                      <span class="mdc-list-item__ripple"></span>
+                      <span class="mdc-list-item__text">{{ label|title }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
               </div>
             </div>
 
@@ -168,7 +199,7 @@
                 <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
               </div>
               <div>
-                <a href="{% url 'dashboard:communication_edit' communication_id=session.communication.id %}">
+                <a href="{% url 'dashboard:appointment_edit' communication_id=session.communication.id %}">
                   <input type="button" class="form__button" value="Back">
                 </a>
               </div>

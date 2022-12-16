@@ -62,41 +62,105 @@
             <div class="errornote">
               {{ form.lang.errors }}
             </div>
+            
             <div class="mdc-select mdc-select--outlined form--widget-create__name form__field--upper">
-              <input type="hidden" name="demo-input">
-              <i class="mdc-select__dropdown-icon"></i>
-              <select class="mdc-select__native-control" name="lang" required>
-                <option value="" disabled selected></option>
-                {% for value, label in languages %}
-                  <option value="{{ value }}">{{ label }}</option>                
-                {% endfor %}
-              </select>
-              <div class="mdc-notched-outline">
-                <div class="mdc-notched-outline__leading"></div>
-                <div class="mdc-notched-outline__notch">
-                  <label class="mdc-floating-label">Language</label>
-                </div>
-                <div class="mdc-notched-outline__trailing"></div>
+              <input type="hidden" name="lang" value="{{ widget.lang }}">
+              <div class="mdc-select__anchor" aria-labelledby="outlined-select-label">
+                <span class="mdc-notched-outline">
+                  <span class="mdc-notched-outline__leading"></span>
+                  <span class="mdc-notched-outline__notch">
+                    <span id="outlined-select-label" class="mdc-floating-label">Language</span>
+                  </span>
+                  <span class="mdc-notched-outline__trailing"></span>
+                </span>
+                <span class="mdc-select__selected-text-container">
+                  <span id="demo-selected-text" class="mdc-select__selected-text"></span>
+                </span>
+                <span class="mdc-select__dropdown-icon">
+                  <svg
+                      class="mdc-select__dropdown-icon-graphic"
+                      viewBox="7 10 10 5" focusable="false">
+                    <polygon
+                        class="mdc-select__dropdown-icon-inactive"
+                        stroke="none"
+                        fill-rule="evenodd"
+                        points="7 10 12 15 17 10">
+                    </polygon>
+                    <polygon
+                        class="mdc-select__dropdown-icon-active"
+                        stroke="none"
+                        fill-rule="evenodd"
+                        points="7 15 12 10 17 15">
+                    </polygon>
+                  </svg>
+                </span>
+              </div>
+            
+              <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
+                <ul class="mdc-list">
+                  <li class="mdc-list-item" aria-selected="false" aria-disabled="true" data-value="">
+                    <span class="mdc-list-item__ripple"></span>
+                  </li>            
+                  {% for value, label in languages %}
+                    <li class="mdc-list-item" data-value="{{ value }}" aria-disabled="false">
+                      <span class="mdc-list-item__ripple"></span>
+                      <span class="mdc-list-item__text">{{ label }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
               </div>
             </div>
 
             {# Widget template #}
+
             <div class="mdc-select mdc-select--outlined form__field--upper">
-              <i class="mdc-select__dropdown-icon"></i>
-              <select id="template-input" name="template" class="mdc-select__native-control">
-                <option value="" disabled></option>
-                {% for widget_template in widget_templates %}
-                  <option value="{{ widget_template.id }}" {% if widget.template.id == widget_template.id %} selected {% endif %}>{{ widget_template.name }}</option>
-                {% endfor %}
-              </select>
-              <div class="mdc-notched-outline">
-                <div class="mdc-notched-outline__leading"></div>
-                <div class="mdc-notched-outline__notch">
-                  <label for="template-input" class="mdc-floating-label form__text">Select Template</label>
-                </div>
-                <div class="mdc-notched-outline__trailing"></div>
+              <input type="hidden" name="template" value="{{ widget.template.id }}">
+              <div class="mdc-select__anchor" aria-labelledby="outlined-select-label">
+                <span class="mdc-notched-outline">
+                  <span class="mdc-notched-outline__leading"></span>
+                  <span class="mdc-notched-outline__notch">
+                    <span id="outlined-select-label" class="mdc-floating-label">Select Template</span>
+                  </span>
+                  <span class="mdc-notched-outline__trailing"></span>
+                </span>
+                <span class="mdc-select__selected-text-container">
+                  <span id="demo-selected-text" class="mdc-select__selected-text"></span>
+                </span>
+                <span class="mdc-select__dropdown-icon">
+                  <svg
+                      class="mdc-select__dropdown-icon-graphic"
+                      viewBox="7 10 10 5" focusable="false">
+                    <polygon
+                        class="mdc-select__dropdown-icon-inactive"
+                        stroke="none"
+                        fill-rule="evenodd"
+                        points="7 10 12 15 17 10">
+                    </polygon>
+                    <polygon
+                        class="mdc-select__dropdown-icon-active"
+                        stroke="none"
+                        fill-rule="evenodd"
+                        points="7 15 12 10 17 15">
+                    </polygon>
+                  </svg>
+                </span>
+              </div>
+            
+              <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
+                <ul class="mdc-list">
+                  <li class="mdc-list-item" aria-selected="false" aria-disabled="true" data-value="">
+                    <span class="mdc-list-item__ripple"></span>
+                  </li>            
+                  {% for widget_template in widget_templates %}
+                    <li class="mdc-list-item" data-value="{{ widget_template.id }}" aria-disabled="false">
+                      <span class="mdc-list-item__ripple"></span>
+                      <span class="mdc-list-item__text">{{ widget_template.name }}</span>
+                    </li>
+                  {% endfor %}
+                </ul>
               </div>
             </div>
+
             <div class="frc">
               <a class="link-button console-button" href="{% url 'dashboard:widget_template_create' %}" target="_self"><img class="console-button--icon" src="{% static '/images/template-add.svg' %}">Add Template</a>              
             </div>

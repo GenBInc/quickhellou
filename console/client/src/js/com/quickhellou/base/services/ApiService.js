@@ -67,7 +67,7 @@ export class ApiService extends FormService {
    */
   getCommunicationRecord(communicationId) {
     return this.getJson(
-      `${this.baseUrl}/api/communications/${communicationId}/`
+      `${this.baseUrl}/api/appointments/${communicationId}/`
     )
   }
 
@@ -98,7 +98,7 @@ export class ApiService extends FormService {
     }
     return this.postAsXMLHttpRequest(
       fieldSet,
-      `${this.baseUrl}/api/communications/`
+      `${this.baseUrl}/api/appointments/`
     )
   }
 
@@ -124,7 +124,7 @@ export class ApiService extends FormService {
    */
   cancelCall(id) {
     return this.getAsXMLHttpRequest(
-      `${this.baseUrl}/api/communications/cancel/${id}/`
+      `${this.baseUrl}/api/appointments/cancel/${id}/`
     )
   }
 

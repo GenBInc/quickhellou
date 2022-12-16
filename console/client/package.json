@@ -24,6 +24,7 @@
     "css-loader": "^5.2.6",
     "eslint": "^7.32.0",
     "js-cookie": "^2.2.1",
+    "material-components-web": "^14.0.0",
     "mini-css-extract-plugin": "^2.4.5",
     "postcss": "^8.3.4",
     "postcss-loader": "^4.3.0",
@@ -38,7 +39,6 @@
     "copy-webpack-plugin": "^9.1.0",
     "core-js": "^3.18.1",
     "css-minimizer-webpack-plugin": "^3.0.2",
-    "material-components-web": "^3.2.0",
     "node-sass": "^7.0.3",
     "regenerator-runtime": "^0.13.9",
     "webpack-node-externals": "^3.0.0"

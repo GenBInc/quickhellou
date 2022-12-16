@@ -1,3 +1,48 @@
+div.loader,
+div.loader:after {
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+}
+
+div.loader {
+  z-index: 1;
+  margin: auto;
+  font-size: 0.25rem;
+  position: fixed;
+  top: calc(50% - 24px);
+  left: calc(50% - 24px);
+  text-indent: -9999em;
+  border-right: 0.3em solid #80d100;
+  border-bottom: 0.3em solid #001588;
+  border-top: 0.3em solid #001588;
+  border-left: 0.3em solid #80d100;
+  transform: translateZ(0);
+  animation: load8 1.1s infinite linear;
+}
+
+div.loader.loader--inbox {
+  position: absolute;
+}
+
+@-webkit-keyframes load8 {
+  0% {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes load8 {
+  0% {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}
+
 .drawer-frame-root {
   display:flex;
   min-height:100vh;
@@ -56,7 +101,7 @@
   margin-bottom:20px;
 }
 
-.button--photo--icon {
+.button--add-photo svg {
   width:14px;
   height:14px;
 }
@@ -237,6 +282,11 @@ a.aside__navi-item--activated {
   color:$color--red-orange;
 }
 
+.widget-list {
+  position: relative;
+  min-height:250px;
+}
+
 .widget-list__header {
   background-color: white;
   color:white;
@@ -263,7 +313,6 @@ a.aside__navi-item--activated {
 .widget-list__field {
   margin-right: 10px;
   white-space: nowrap;
-  overflow: hidden;
 }
 
 .widget-list__field:last-child {
@@ -865,11 +914,13 @@ aside.mdc-drawer {
   background-color: #4285f4;
 }
 
+.list-link--edit svg,
 .list-link--icon {
   opacity: 0.7;
   width: 90%;
 }
 
+.widgets__button--add-widget svg,
 .console-button--icon {
   height: 20px;
   margin-right: 5px;

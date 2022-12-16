@@ -98,24 +98,24 @@ def templates_view(
 
 @permission_required("is_default_editor")
 @login_required
-def communication_edit_view(
+def appointment_edit_view(
     request: HttpRequest,
     communication_id: int = None
 ) -> HttpResponse:
     if communication_id is not None:
-        communication = Communication.objects.get(id=communication_id)
-        com_sessions = communication.communicationsession_set.all()
+        communication: Communication = Communication.objects.get(id=communication_id)
+        com_sessions: CommunicationSession = communication.communicationsession_set.all()
     else:
-        return redirect('dashboard:communications')
+        return redirect('dashboard:appointments')
     if request.method == 'POST':
-        form = CommunicationForm(request.POST, instance=communication)
+        form: CommunicationForm = CommunicationForm(request.POST, instance=communication)
         if form.is_valid():
-            instance = form.save(commit=False)
-            instance.modification_time = datetime.now()
+            instance: Communication = form.save(commit=False)
+            instance.modification_time = make_aware(datetime.now())
             instance.save()
             messages.success(
-                request, 'Communication record has been saved.')
-            return redirect('dashboard:communications')
+                request, 'Appointment has been saved.')
+            return redirect('dashboard:appointments')
     return render(request, 'dashboard/communication_edit.html', {
         'communication': communication,
         'client_user': communication.caller,
@@ -377,7 +377,7 @@ def widget_template_delete(
 
 
 @login_required
-def communication_delete(
+def appointment_delete(
     request: HttpRequest,
     communication_id: int,
 ) -> HttpResponseRedirect:
@@ -387,7 +387,7 @@ def communication_delete(
     communication.save()
     messages.success(
         request, 'Communication has been deleted.')
-    return redirect('dashboard:communications')
+    return redirect('dashboard:appointments')
 
 
 @login_required
@@ -430,7 +430,7 @@ def widget_unpause(
 
 
 @login_required
-def communications_view(
+def appointments_view(
     request: HttpRequest
 ) -> HttpResponse:
     communications: list[Communication] = Communication.objects.filter(
@@ -442,7 +442,7 @@ def communications_view(
 
 
 @login_required
-def communication_list_view(
+def appointments_list_view(
     request: HttpRequest
 ) -> HttpResponse:
     communications: list[Communication] = Communication.objects.filter(
