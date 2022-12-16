@@ -36,9 +36,9 @@
     <div class="fcol">
       <div class="form--settings__form-container form-container">
         <p class="form__header">Appointment information</p>
-        <p class=""><b>Scheduled datetime:</b> {{ communication.datetime }}</p>
+        <p class=""><b>Scheduled datetime:</b> {{ appointment.datetime }}</p>
         <form class="fcol site-form form--profile" 
-        action="{% url 'dashboard:appointment_edit' communication_id=communication.id %}" method="post"
+        action="{% url 'dashboard:appointment_edit' appointment_id=appointment.id %}" method="post"
           novalidate enctype="multipart/form-data">
           {% csrf_token %}
           {% if request.GET.next %}
@@ -52,19 +52,19 @@
             </div>
             {% endif %}
             <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
-              <input type="text" id="name-input" name="caller_name" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
-                value="{{ client_user.profile.full_name }}" >
+              <input type="text" name="client_username" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input"
+                value="{{ form.client_username.value }}" >
               <div class="mdc-notched-outline">
                 <div class="mdc-notched-outline__leading"></div>
                 <div class="mdc-notched-outline__notch">
-                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Name</label>
+                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Client Name</label>
                 </div>
                 <div class="mdc-notched-outline__trailing"></div>
               </div>
             </div>
             {% if 'fake.org' not in client_user.email %}
             <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
-              <input type="text" id="name-input" name="caller_name" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+              <input type="text" name="caller_name" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
                 value="{{ client_user.email }}" >
               <div class="mdc-notched-outline">
                 <div class="mdc-notched-outline__leading"></div>
@@ -93,7 +93,7 @@
               {{ form.status.errors }}
             </div>
             <div class="mdc-select mdc-select--outlined">
-              <input type="hidden" name="status" value="{{ communication.status }}">
+              <input type="hidden" name="status" value="{{ appointment.status }}">
               <div class="mdc-select__anchor" aria-labelledby="outlined-select-label">
                 <span class="mdc-notched-outline">
                   <span class="mdc-notched-outline__leading"></span>

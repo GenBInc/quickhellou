@@ -100,24 +100,25 @@ def templates_view(
 @login_required
 def appointment_edit_view(
     request: HttpRequest,
-    communication_id: int = None
+    appointment_id: int = None
 ) -> HttpResponse:
-    if communication_id is not None:
-        communication: Communication = Communication.objects.get(id=communication_id)
+    form: CommunicationForm = None
+    if appointment_id is not None:
+        communication: Communication = Communication.objects.get(id=appointment_id)
         com_sessions: CommunicationSession = communication.communicationsession_set.all()
+        form = CommunicationForm(instance=communication)
     else:
         return redirect('dashboard:appointments')
     if request.method == 'POST':
-        form: CommunicationForm = CommunicationForm(request.POST, instance=communication)
+        form = CommunicationForm(request.POST, instance=communication)
         if form.is_valid():
-            instance: Communication = form.save(commit=False)
-            instance.modification_time = make_aware(datetime.now())
-            instance.save()
+            form.save_all()
             messages.success(
                 request, 'Appointment has been saved.')
             return redirect('dashboard:appointments')
-    return render(request, 'dashboard/communication_edit.html', {
-        'communication': communication,
+    return render(request, 'dashboard/appointments/edit.html', {
+        'form': form,
+        'appointment': communication,
         'client_user': communication.caller,
         'statuses': Communication.STATUS_CHOICES,
         'com_sessions': com_sessions,
@@ -379,10 +380,10 @@ def widget_template_delete(
 @login_required
 def appointment_delete(
     request: HttpRequest,
-    communication_id: int,
+    appointment_id: int,
 ) -> HttpResponseRedirect:
     communication: Communication = Communication.objects.get(
-        id=communication_id)
+        id=appointment_id)
     communication.active = False
     communication.save()
     messages.success(

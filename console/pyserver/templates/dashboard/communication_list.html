@@ -24,13 +24,13 @@
       <a class="fc df-f1 com__list-link list-link--accept" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Accept</a>
       <a class="fc df-f1 com__list-link list-link--reject" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Reject</a>
       {% else %}
-      <a class="fc df-f1 widgets__list-link list-link--edit" href="{% url 'dashboard:appointment_edit' communication_id=communication.id  %}"
+      <a class="fc df-f1 widgets__list-link list-link--edit" href="{% url 'dashboard:appointment_edit' appointment_id=communication.id  %}"
           target="_self"
           aria-label="Edit"
           data-microtip-position="bottom"
           data-role="tooltip"
       >{% svg "edit" %}</a>      
-      <a class="fc df-f1 widgets__list-link list-link--delete" href="{% url 'dashboard:appointment_delete' communication_id=communication.id  %}" target="_self"
+      <a class="fc df-f1 widgets__list-link list-link--delete" href="{% url 'dashboard:appointment_delete' appointment_id=communication.id  %}" target="_self"
         aria-label="Delete"
         data-microtip-position="bottom"
         data-role="tooltip"                   

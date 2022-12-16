@@ -330,9 +330,32 @@ class WidgetTemplateForm(forms.ModelForm):
 
 
 class CommunicationForm(forms.ModelForm):
+
+    client_username = forms.CharField(required=True)
+
     class Meta:
         model = Communication
         fields = ('caller_name', 'status')
+
+    def __init__(self, *args, **kwargs):
+        """Constructor.
+        """
+        super(CommunicationForm, self).__init__(*args, **kwargs)
+        self.initial['client_username'] = self.instance.caller.profile.full_name
+
+    def save_all(self):
+        """Saves appointment and related data.
+        """
+        # Save appointment fields
+        appointment: Communication = self.save(commit=False)
+        appointment.modification_time = make_aware(datetime.datetime.now())
+        appointment.save()
+
+        # Save client user fields
+        client_username: str = self.cleaned_data.get('client_username')
+        client_profile: Profile = appointment.caller.profile
+        client_profile.full_name = client_username
+        client_profile.save()
 
 
 class CommunicationSessionForm(forms.ModelForm):

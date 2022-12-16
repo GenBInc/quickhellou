@@ -199,7 +199,7 @@
                 <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
               </div>
               <div>
-                <a href="{% url 'dashboard:appointment_edit' communication_id=session.communication.id %}">
+                <a href="{% url 'dashboard:appointment_edit' appointment_id=session.communication.id %}">
                   <input type="button" class="form__button" value="Back">
                 </a>
               </div>
