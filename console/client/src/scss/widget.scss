@@ -201,13 +201,18 @@ html {
   }
 
   .errorlist li {
-    padding:3px 12px;
-    margin-bottom: 2px;
-    border-radius: 6px;
+    padding:5px 7px;
+    margin-bottom: 10px;
+    border-radius: 30px;
     color: white;
     background-color: #c90000;
     font-size:.75rem;
     font-weight:500;
+    background-image: url('/static/images/alert-circle.svg');
+    background-repeat: no-repeat;
+    background-position-x: calc(100% - 5px);
+    background-position-y: center;
+    background-size: 17px;
   }
 
   .errorlist {
