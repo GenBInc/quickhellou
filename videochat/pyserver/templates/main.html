@@ -119,6 +119,7 @@
   </style>
   <script src="{% static 'js/adapter-latest.js' %}"></script>
   <script src="{% static 'js/quickhellou.js' %}" defer></script>
+  <link rel="stylesheet" type="text/css" href="{% static 'css/ext/microtip.css' %}">
   <link rel="stylesheet" type="text/css" href="{% static 'css/quickhellou.css' %}">
   
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-24219456-8"></script>
@@ -164,11 +165,29 @@
             <div class="fullscreen">
             </div>
             <div class="icons hidden">
-              <div class="mute-audio">
+              <div class="mute-audio"
+                aria-label="Audio"
+                data-microtip-position="bottom"
+                role="tooltip"
+              >
               </div>
-              <div class="mute-video">
+              <div class="mute-video"
+                aria-label="Video"
+                data-microtip-position="bottom"
+                role="tooltip"
+              >
               </div>
-              <div class="button--chat-window">
+              <div class="button--chat-window"
+                aria-label="Chat"
+                data-microtip-position="bottom"
+                role="tooltip"
+              >
+              </div>
+              <div class="button--screenshare button--share-screen js-disabled"
+                aria-label="Screen Share"
+                data-microtip-position="bottom"
+                role="tooltip"
+              >
               </div>
               <div class="button--hangup hidden">
               </div>

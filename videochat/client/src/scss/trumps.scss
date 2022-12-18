@@ -436,13 +436,22 @@ h1 {
   background-image: url('/static/images/text-chat.svg');
 }
 
+.button--screenshare {
+  transition: 200ms;
+  background-image: url('/static/images/share-screen.svg');
+}
+
+.button--screenshare.js-active {
+  background-color: #f4a261 !important;
+}
+
 #switch-video {
   transition: 200ms;
 }
 
 .button--hangup {
   transition: 280ms;
-  background-color: #e20f00 !important;
+  background-color: #e5332a !important;
   background-image: url('/static/images/hangup.svg');
 }
 
