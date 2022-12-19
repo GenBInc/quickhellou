@@ -39,6 +39,7 @@ urlpatterns = [
     path('com_sessions/edit/<int:session_id>',
          views.communication_session_edit_view, name="communication_session_edit"),
     path('team/', views.team_view, name="team"),
+    path('appointment/status/<int:appointment_id>/<int:status>',views.change_appointment_status, name='change_appointment_status'),
     path('user/edit/<int:user_id>/',
          views.client_user_edit_view, name="client_user_edit"),
     path('user/edit/', views.client_user_edit_view, name="client_user_edit"),

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.http import (
     HttpRequest,
+    JsonResponse,
 )
 from accounts.models import User
 from dashboard.models import (Widget, Communication, CommunicationSession,)
@@ -77,27 +78,30 @@ class CommunicationSessionViewSet(viewsets.ModelViewSet):
         return Response({'uuid': uuid.uuid5(uuid.NAMESPACE_DNS, kwargs['str'])})
 
     @action(detail=True, renderer_classes=[JSONRenderer])
-    def set_status(self, request, *args, **kwargs):
-        communication_session = self.get_object()
-        status = int(kwargs['status'])
+    def set_status(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        communication_session: CommunicationSession = self.get_object()
+        status: int = int(kwargs['status'])
         communication_session.status = status
-        # if status change is caused by an user interaction
-        if (status > 4):
+
+        # If status change is caused by an user interaction
+        if (status > CommunicationSession.STATUS_CANCELLED):
             communication_session.attendant = self.request.user
         communication_session.save()
-        # complete communication if session is accepted
+
+        # Complete communication if session is accepted
         if (status in [6]):
-            communication = communication_session.communication
+            communication: Communication = communication_session.communication
             if communication is not None:
-                communication.status = 4
+                communication.status = Communication.STATUS_COMPLETED
                 communication.save()
-        # close communication if session is rejected or cancelled
-        if (status in [4, 5]):
-            communication = communication_session.communication
+
+        # Close communication if session is rejected or cancelled
+        if (status in [CommunicationSession.STATUS_CANCELLED, CommunicationSession.STATUS_REJECTED]):
+            communication: Communication = communication_session.communication
             if communication is not None:
-                communication.status = 3
+                communication.status = Communication.CLOSED
                 communication.save()
-        return Response({'result': 'ok'})
+        return JsonResponse({'result': 'ok'})
 
     @action(detail=True, renderer_classes=[JSONRenderer])
     def set_rate(self, request, *args, **kwargs):

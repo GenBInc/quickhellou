@@ -1,6 +1,7 @@
 import re
 import uuid
 import hashlib
+import short_url
 
 
 def generate_uuid_code():
@@ -34,3 +35,15 @@ def hash_string(s: str) -> str:
     """
     return hashlib.sha256(
         s.encode()).hexdigest()
+
+
+def encode_short_url(value: int) -> str:
+    """Encodes short URL.
+
+    Args:
+        value (str): the value
+
+    Returns:
+        str: encoded short URL
+    """
+    return short_url.encode_url(value)

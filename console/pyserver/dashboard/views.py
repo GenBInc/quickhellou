@@ -14,6 +14,7 @@ from django.views.decorators.http import (
 from django.http import (
     HttpRequest,
     HttpResponse,
+    JsonResponse,
     HttpResponseRedirect
 )
 from django.utils.timezone import make_aware
@@ -51,6 +52,7 @@ from dashboard.forms import (
     WidgetActiveUserForm,
     CalendarForm,
     ContactInformationForm,
+    AppointmentActivationForm,
 )
 from dashboard.models import (
     ClientBoard,
@@ -104,7 +106,8 @@ def appointment_edit_view(
 ) -> HttpResponse:
     form: CommunicationForm = None
     if appointment_id is not None:
-        communication: Communication = Communication.objects.get(id=appointment_id)
+        communication: Communication = Communication.objects.get(
+            id=appointment_id)
         com_sessions: CommunicationSession = communication.communicationsession_set.all()
         form = CommunicationForm(instance=communication)
     else:
@@ -150,6 +153,30 @@ def communication_session_edit_view(
         'client_user': instance.communication.caller,
         'statuses': CommunicationSession.STATUS_CHOICES,
     })
+
+
+def change_appointment_status(
+    request: HttpRequest,
+    appointment_id: str,
+    status: int,
+) -> HttpResponseRedirect:
+    appointment: Communication = Communication.objects.get(
+        id=appointment_id)
+
+    if not appointment:
+        raise Http404
+
+    form: AppointmentActivationForm = AppointmentActivationForm(
+        request.POST, instance=appointment)
+
+    print(form.errors.as_text())
+    if form.is_valid():
+        form.set_status(status)
+
+    messages.success(
+        request, 'Appointment has been accepted.')
+
+    return redirect('dashboard:appointments')
 
 
 @permission_required("is_default_admin")
@@ -382,10 +409,19 @@ def appointment_delete(
     request: HttpRequest,
     appointment_id: int,
 ) -> HttpResponseRedirect:
-    communication: Communication = Communication.objects.get(
+    """Delete appointment action.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (int): the appointment id
+
+    Returns:
+        HttpResponseRedirect: the HTTP redirect response
+    """
+    appointment: Communication = Communication.objects.get(
         id=appointment_id)
-    communication.active = False
-    communication.save()
+    appointment.active = False
+    appointment.save()
     messages.success(
         request, 'Appointment has been deleted.')
     return redirect('dashboard:appointments')
@@ -434,6 +470,14 @@ def widget_unpause(
 def appointments_view(
     request: HttpRequest
 ) -> HttpResponse:
+    """Appointment view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
     communications: list[Communication] = Communication.objects.filter(
         client_board=request.user.client_board).filter(active=True)
     return render(request, 'dashboard/appointments/home.html', {
@@ -446,6 +490,14 @@ def appointments_view(
 def appointments_list_view(
     request: HttpRequest
 ) -> HttpResponse:
+    """List of appointments view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
     communications: list[Communication] = Communication.objects.filter(
         client_board=request.user.client_board).filter(active=True).order_by('-modification_time')
     if communications.count() > 0:
@@ -906,7 +958,8 @@ def edit_widget_contact_form_view(
 
         # If there was an issue with email services, add error message
         if not email_sent:
-            messages.error(request, 'An error with sending emails has occured.')
+            messages.error(
+                request, 'An error with sending emails has occured.')
 
     return render(request, 'embed/widget/contact_information_form.html', {
         'date': date_payload,

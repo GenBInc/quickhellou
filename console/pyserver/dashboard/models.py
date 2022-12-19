@@ -2,15 +2,19 @@
 from __future__ import unicode_literals
 import re
 import uuid
+import short_url
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from common.strings import encode_short_url
 from dashboard.managers import (
     CommunicationManager,
     CommunicationSessionManager,
 )
 from accounts.models import User
 from console import settings
+
 
 def full_domain_validator(hostname):
     """
@@ -98,7 +102,7 @@ class Widget(models.Model):
         max_length=256, default="", blank=False)
     url = models.CharField(max_length=512, validators=[
                            full_domain_validator], blank=False)
-    lang = models.CharField(max_length=5, default="en", blank=False)
+    lang = models.CharField(max_length=5, default='en', blank=False)
     last_change = models.DateTimeField(auto_now_add=True)
     client_board = models.ForeignKey(
         ClientBoard, default=None, blank=True, null=True, on_delete=models.CASCADE)
@@ -119,8 +123,8 @@ class Widget(models.Model):
 
 
 class Communication(models.Model):
-    STATUS_OPEN = 1
-    STATUS_PENDING = 2
+    STATUS_PENDING = 1
+    STATUS_OPEN = 2
     STATUS_CLOSED = 3
     STATUS_COMPLETED = 4
     STATUS_CHOICES = (
@@ -140,6 +144,8 @@ class Communication(models.Model):
                                default=None, blank=True, null=True, on_delete=models.CASCADE)
     modification_time = models.DateTimeField(auto_now_add=True)
     datetime = models.DateTimeField()
+    short_url = models.CharField(
+        max_length=16, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     active = models.BooleanField(default=True)
     status = models.SmallIntegerField(
@@ -152,6 +158,12 @@ class Communication(models.Model):
     class Meta:
         get_latest_by = ['modification_time']
 
+    def encode_short_url(self):
+        """Encodes short URL.
+        """
+        self.short_url = encode_short_url(self.id)
+        self.save()
+
     def is_open(self):
         return self.status in (self.STATUS_PENDING, self.STATUS_ENQUEUED)
 
@@ -162,13 +174,28 @@ class Communication(models.Model):
         return dict(Communication.STATUS_CHOICES)[self.status]
 
     @property
-    def pending_sessions_count(self):
-        return self.communicationsession_set.filter(status=1).count
+    def link_url(self) -> str:
+        """Gets associated videochat room URL. 
 
+        Returns:
+            str: the videochat room URL
+        """
+        return '{}/room/{}'.format(settings.VIDEOCHAT_APP_URL, self.short_url)
+
+    @property
+    def pending_sessions_count(self):
+        return self.communicationsession_set.filter(status=CommunicationSession.STATUS_CREATED).count
+
+    @property
+    def initial_session(self):
+        return self.communicationsession_set.filter(
+            communication__id=self.id, status=CommunicationSession.STATUS_CREATED).first()
+        
+    
     @property
     def current_session_id(self):
         sessions = self.communicationsession_set.filter(
-            communication__id=self.id, status=1)
+            communication__id=self.id, status=CommunicationSession.STATUS_CREATED)
         if (sessions.count != 0):
             return str(sessions[0].id)
         return None

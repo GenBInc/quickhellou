@@ -24,7 +24,12 @@ from dashboard.util.time import (
     collect_time_ranges,
 )
 from phonenumber_field.formfields import PhoneNumberField
-from dashboard.emails import send_create_appointment_notification
+from dashboard.emails import (
+    send_create_appointment_notifications,
+    send_activation_appointment_notifications,
+    send_accept_appointment_notifications,
+    send_reject_appointment_notifications,
+)
 from dashboard.util.time import DATETIME_FORMAT
 import datetime
 
@@ -329,6 +334,40 @@ class WidgetTemplateForm(forms.ModelForm):
         return widget_template
 
 
+class AppointmentActivationForm(forms.ModelForm):
+
+    class Meta:
+        model = Communication
+        fields = ['id', ]
+
+    def set_status(self, status: int):
+        # Open appointment
+        appointment: Communication = self.save(False)
+        appointment.status = Communication.STATUS_OPEN
+        self.save()
+
+        # Change session status
+        initial_session: CommunicationSession = appointment.initial_session
+        if initial_session:
+            initial_session.status = status
+            initial_session.save()
+
+        # Send email notifications
+        date = datetime.datetime.strftime(
+            appointment.datetime, DATETIME_FORMAT)
+
+        send_activation_appointment_notifications(
+            status,
+            appointment.caller.profile.full_name,
+            appointment.caller.email,
+            '',
+            date,
+            appointment.link_url,
+        )
+
+        return appointment
+
+
 class CommunicationForm(forms.ModelForm):
 
     client_username = forms.CharField(required=True)
@@ -394,7 +433,6 @@ class ContactInformationForm(forms.Form):
                 'client_board': widget.client_board
             }
         )
-        print(client_user.__dict__)
 
         # Get or create user profile
         Profile.objects.get_or_create(
@@ -411,11 +449,14 @@ class ContactInformationForm(forms.Form):
             defaults={
                 'caller_name': client_name,
                 'client_board': widget.client_board,
-                'status': 2,
+                'status': Communication.STATUS_PENDING,
                 'widget': widget,
                 'datetime': make_aware(datetime.datetime.strptime(datetime_str, DATETIME_FORMAT))
             }
         )
+
+        # Encode communication short URL for videochat room id.
+        communication.encode_short_url()
 
         # Create communication session
         session: CommunicationSession = CommunicationSession.objects.create_message(
@@ -427,7 +468,7 @@ class ContactInformationForm(forms.Form):
         session.save()
 
         # Send notifications
-        return send_create_appointment_notification(
+        return send_create_appointment_notifications(
             client_name,
             email_address,
             phone_number,

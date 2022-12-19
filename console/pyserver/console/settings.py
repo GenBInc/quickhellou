@@ -37,7 +37,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 FAKE_EMAIL_DOMAIN = 'fake.org'
 
 
-ADMIN_EMAIL = 'support@qhellou.com'
+ADMIN_EMAIL = str(os.environ.get('ADMIN_EMAIL'))
 
 LOGIN_URL = '/login'
 
@@ -195,7 +195,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-DATETIME_FORMAT = '%Y-%m-%d %H:%M'
+DATETIME_FORMAT = '%Y-%m-%d %I:%M %p'
 
 
 # Static files (CSS, JavaScript, Images)

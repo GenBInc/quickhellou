@@ -96,9 +96,13 @@ export class FormService extends EventEmitter {
    */
   sendAsForm(fieldSet, action) {
     let html = `<form id="__form__" action='${action}' method="POST" enctype="multipart/form-data">`
-    fieldSet.forEach((field) => {
-      html += `<input type="hidden" name="${field.name}" value='${field.value}'>`
-    })
+    var csrftoken = Cookie.get('csrftoken')
+    if (csrftoken !== 'undefined') {
+      html += `<input type="hidden" name="csrfmiddlewaretoken" value="${csrftoken}">`
+    }
+    for (const [key, value] of Object.entries(fieldSet)) {
+      html += `<input type="hidden" name="${key}" value='${value}'>`
+    }
     html += `</form>`
     document.body.insertAdjacentHTML('beforeend', html)
     const form = document.getElementById('__form__')

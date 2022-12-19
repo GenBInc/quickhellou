@@ -17,38 +17,6 @@ export class CallsView extends DashboardView {
     let appSettingsJson = await this.apiService.getSettings()
     this.appSettings = new ApplicationSettings(appSettingsJson)
 
-    //this.initWebSocketService()
-
-    /*
-    const activateButtonElement = this.uiGet('.call-list__button--activate')
-    const connectingTextElement = this.uiGet('.com-list__text--connecting')
-    const deactivateButtonElement = this.uiGet('.call-list__button--deactivate')
-    activateButtonElement.addEventListener('click', () => {
-      const installedWidgets = this.user.widget_list.filter((widget) => widget.is_installed)
-      if (!installedWidgets.length) {
-        const failureTextElement = this.uiGet('.com-list__text--failure')
-        failureTextElement.innerHTML = 'No installed widgets.'
-        failureTextElement.classList.remove('js-hidden')
-      }
-      if (installedWidgets.length) {
-        this.webSocketService.registerOperatorsList(
-          this.adminId,
-          installedWidgets
-          )
-          activateButtonElement.classList.add('js-hidden')
-          connectingTextElement.classList.remove('js-hidden')
-      }
-    })
-
-    deactivateButtonElement.addEventListener('click', () => {
-      this.webSocketService.deregisterList(
-        this.adminId,
-        this.user.widget_list
-      )
-      activateButtonElement.classList.remove('js-hidden')
-      deactivateButtonElement.classList.add('js-hidden')
-    })
-    */
     // load call record list
     this.showPageLoader()
     this.loadCallViewList()
@@ -225,31 +193,56 @@ export class CallsView extends DashboardView {
    * @memberof CallsView
    */
   async loadCallViewList() {
-    let html = await this.viewService.getCallViewList()
+    let html = await this.viewService.getAppointmentsViewList()
     const containerElement = this.uiGet('.call-list__content')
     containerElement.innerHTML = html
-    this.attachCallListEventListeners()
+    this.attachAppointmentListEventListeners()
   }
 
   /**
-   * Attaches event listeners to the call list button entries.
+   * Attaches appointments list html text.
    *
    * @memberof CallsView
    */
-  attachCallListEventListeners() {
-    const acceptCallButtonElements = this.uiArray('.list-link--accept')
-    acceptCallButtonElements.forEach((acceptCallButtonElement) => {
-      acceptCallButtonElement.addEventListener('click', (event) => {
-        this.acceptCall(event)
+    attachAppointmentsList(html) {
+      const containerElement = this.uiGet('.call-list__content')
+      containerElement.innerHTML = html
+      this.attachAppointmentListEventListeners()
+    }
+
+  /**
+   * Attaches event listeners to the appointments list button entries.
+   *
+   * @memberof CallsView
+   */
+  attachAppointmentListEventListeners() {
+    const acceptAppointmentButtonElements = this.uiArray('.list-link--accept')
+    acceptAppointmentButtonElements.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        const id = button.dataset.id
+        this.acceptAppointment(id)
       })
     })
 
-    const rejectCallButtonElements = this.uiArray('.list-link--reject')
-    rejectCallButtonElements.forEach((rejectCallButtonElement) => {
-      rejectCallButtonElement.addEventListener('click', (event) => {
-        this.rejectCall(event)
+    const rejectAppointmentButtonElements = this.uiArray('.list-link--reject')
+    rejectAppointmentButtonElements.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        const id = button.dataset.id
+        this.rejectAppointment(id)
       })
     })
+  }
+
+  acceptAppointment(id) {
+    this.showPageLoader()
+    const form = document.querySelector(`.form--accept-appointment[data-id='${id}']`)
+    form.submit()
+  }
+
+  async rejectAppointment(id) {
+    this.showPageLoader()
+    const form = document.querySelector(`.form--reject-appointment[data-id='${id}']`)
+    form.submit()
   }
 
   /**

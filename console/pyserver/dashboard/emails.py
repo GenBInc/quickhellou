@@ -2,9 +2,124 @@ from typing import Any
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
+from dashboard.models import CommunicationSession
+
+def send_activation_appointment_notifications(
+    session_status: int,
+    client_name: str,
+    client_email_address: str,
+    client_message: str,
+    datetime: str,
+    videochat_url: str,
+) -> int:
+    print('action', session_status)
+    if session_status == CommunicationSession.STATUS_ACCEPTED:
+        print('activate')
+        send_accept_appointment_notifications(
+            client_name,
+            client_email_address,
+            client_message,
+            datetime,
+            videochat_url,
+        )
+        
+    if session_status == CommunicationSession.STATUS_REJECTED:
+        print('decline')
+        send_reject_appointment_notifications(
+            client_name,
+            client_email_address,
+            client_message,
+            datetime,
+            videochat_url,
+        )
+    
+
+def send_accept_appointment_notifications(
+    client_name: str,
+    client_email_address: str,
+    client_message: str,
+    datetime: str,
+    videochat_url: str,
+) -> int:
+    subject: str = 'QuickHellou - Appointment Accepted'
+    recipients: list[str] = [settings.ADMIN_EMAIL]
+
+    console_app_url: str = settings.CONSOLE_APP_URL
+    email_params: dict = {
+        'name': client_name,
+        'email': client_email_address,
+        'message': client_message,
+        'datetime': datetime,
+        'videochat_url': videochat_url,
+        'console_app_url': console_app_url
+    }
+
+    # send message notification to admin
+    send_email_notification(
+        subject,
+        recipients,
+        email_params,
+        'dashboard/email/accept-appointment-admin.txt',
+        'dashboard/email/accept-appointment-admin.html'
+    )
+
+    # send message notification to client
+    if settings.FAKE_EMAIL_DOMAIN not in client_email_address:
+        recipients = [client_email_address]
+
+    return send_email_notification(
+        subject,
+        recipients,
+        email_params,
+        'dashboard/email/accept-appointment-client.txt',
+        'dashboard/email/accept-appointment-client.html'
+    )
 
 
-def send_create_appointment_notification(
+def send_reject_appointment_notifications(
+    client_name: str,
+    client_email_address: str,
+    client_message: str,
+    datetime: str,
+    videochat_url: str,
+) -> int:
+    print('send_reject_appointment_notifications')
+    subject: str = 'QuickHellou - Appointment Rejected'
+    recipients: list[str] = [settings.ADMIN_EMAIL]
+
+    console_app_url: str = settings.CONSOLE_APP_URL
+    email_params: dict = {
+        'name': client_name,
+        'email': client_email_address,
+        'message': client_message,
+        'datetime': datetime,
+        'videochat_url': videochat_url,
+        'console_app_url': console_app_url
+    }
+
+    # send message notification to admin
+    send_email_notification(
+        subject,
+        recipients,
+        email_params,
+        'dashboard/email/reject-appointment-admin.txt',
+        'dashboard/email/reject-appointment-admin.html'
+    )
+
+    # send message notification to client
+    if settings.FAKE_EMAIL_DOMAIN not in client_email_address:
+        recipients = [client_email_address]
+
+    return send_email_notification(
+        subject,
+        recipients,
+        email_params,
+        'dashboard/email/reject-appointment-client.txt',
+        'dashboard/email/reject-appointment-client.html'
+    )
+
+
+def send_create_appointment_notifications(
     client_name: str,
     client_email_address: str,
     client_phone_number: str,
@@ -36,7 +151,7 @@ def send_create_appointment_notification(
     # send message notification to client
     if settings.FAKE_EMAIL_DOMAIN not in client_email_address:
         recipients = [client_email_address]
-    
+
     return send_email_notification(
         subject,
         recipients,
@@ -44,7 +159,7 @@ def send_create_appointment_notification(
         'dashboard/email/create-appointment-client.txt',
         'dashboard/email/create-appointment-client.html'
     )
-    
+
 
 def send_email_notification(
     subject: str,

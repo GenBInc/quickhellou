@@ -1,5 +1,4 @@
 {% load static %} {% load svg %}
-
 {% for communication in communications %}
   <div class="flc view-list__entry call-list__entry call-list__entry--{{ communication.status_verbose }}">
     
@@ -29,20 +28,20 @@
     </div>
     <div class="flc widget-list__field widget-list__field--url">
       <div class="fcol">
-        <div class="widget-list__url-label">{{ communication.widget.url|truncatechars:24 }}</div>
+        <a class="widget-list__url-label widget-list__label--link-url" href="{{ communication.link_url }}" target="_blank" >{{ communication.short_url }}</a>
       </div>
     </div>
     
     <div class="f1"></div>
     <div class="flc widget-list__field widget-list__field--mod-bar">
-
       {% if communication.status == 1 and communication.pending_sessions_count > 0 %}
-      <a class="fc df-f1 com__list-link list-link--accept" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Accept</a>
-      <a class="fc df-f1 com__list-link list-link--reject" href="#" data-id="{{ communication.id }}" data-uuid="{{ communication.current_session_id }}">Reject</a>
+      <form class="form--accept-appointment" data-id="{{ communication.id }}" action="{% url 'dashboard:change_appointment_status' appointment_id=communication.id status=6 %}" method="post">{% csrf_token %}
+        <div class="fc df-f1 com__list-link list-link--accept" data-id="{{ communication.id }}" >Accept</div>
+      </form>
+      <form class="form--reject-appointment" data-id="{{ communication.id }}" action="{% url 'dashboard:change_appointment_status' appointment_id=communication.id status=5 %}" method="post">{% csrf_token %}
+        <div class="fc df-f1 com__list-link list-link--reject" value="Reject" data-id="{{ communication.id }}">Reject</div>
+      </form>
       {% else %}
-
-      <a class="fc df-f1 com__list-link list-link--accept" href="#" >Accept</a>
-      <a class="fc df-f1 com__list-link list-link--reject" href="#" >Reject</a>
 
       <a class="fc df-f1 widgets__list-link list-link--edit" href="{% url 'dashboard:appointment_edit' appointment_id=communication.id  %}"
           target="_self"

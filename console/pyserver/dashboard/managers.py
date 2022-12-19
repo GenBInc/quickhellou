@@ -32,7 +32,7 @@ class CommunicationSessionManager(models.Manager):
     def create_message(self, communication, attendant, message, type):
         session = self.model(communication=communication, attendant=attendant)
         session.type = type
-        session.status = 2
+        session.status = 1
         session.content = message
         session.rate = 0
         session.save(using=self._db)

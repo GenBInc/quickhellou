@@ -12,3 +12,4 @@ django-cors-headers
 whitenoise
 gunicorn==20.1.0
 django-inline-svg==0.1.1
+short_url==1.2.2
