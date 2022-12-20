@@ -387,9 +387,9 @@ class AppointmentActivationForm(forms.ModelForm):
         message: str = ''
 
         message_url: str = '{}/dashboard/appointment/message/{}'.format(
-            settings.CONSOLE_APP_URL)
+            settings.CONSOLE_APP_URL, appointment.id)
         cancel_url: str = '{}/dashboard/appointment/cancel/{}'.format(
-            settings.CONSOLE_APP_URL)
+            settings.CONSOLE_APP_URL, appointment.id)
 
         send_activation_appointment_notifications(
             status,
@@ -481,7 +481,7 @@ class ContactInformationForm(forms.Form):
         )
 
         # Get or create communication
-        communication, created = Communication.objects.get_or_create(
+        appointment, created = Communication.objects.get_or_create(
             caller=client_user,
             defaults={
                 'caller_name': client_name,
@@ -493,22 +493,22 @@ class ContactInformationForm(forms.Form):
         )
 
         # Encode communication short URL for videochat room id.
-        communication.encode_short_url()
+        appointment.encode_short_url()
 
         # Create communication session
-        session: CommunicationSession = CommunicationSession.objects.create_message(
-            communication=communication,
+        message_session: CommunicationSession = CommunicationSession.objects.create_message(
+            communication=appointment,
             attendant=client_user,
             message=message,
             type=2
         )
-        session.save()
+        message_session.save()
 
         # Send notifications
         message_url: str = '{}/dashboard/appointment/message/{}'.format(
-            settings.CONSOLE_APP_URL)
+            settings.CONSOLE_APP_URL, appointment.id)
         cancel_url: str = '{}/dashboard/appointment/cancel/{}'.format(
-            settings.CONSOLE_APP_URL)
+            settings.CONSOLE_APP_URL, appointment.id)
         return send_create_appointment_notifications(
             client_name,
             email_address,

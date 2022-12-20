@@ -91,14 +91,14 @@ export class WidgetService extends EventEmitter {
                   this.onCloseVideoChat()
                 })
               } catch (e) {
-                console.log('Videochat is not defined.')
+                // console.log('Videochat is not defined.')
               }
 
               resolve()
             })
           })
         } catch (e) {
-          console.log(e)
+          // console.log(e)
         }
       })
     })
