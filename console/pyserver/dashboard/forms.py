@@ -29,6 +29,7 @@ from dashboard.emails import (
     send_create_appointment_notifications,
     send_activation_appointment_notifications,
     send_appointment_message,
+    send_appointment_reminder,
 )
 from dashboard.util.time import DATETIME_FORMAT
 import datetime
@@ -334,12 +335,36 @@ class WidgetTemplateForm(forms.ModelForm):
         return widget_template
 
 
+class SendAppointmentReminderForm(forms.Form):
+    def send_reminder(self, appointment: Communication):
+        
+        # Send reminder notification
+        time_left: str = '__time_left__'
+        caller: User = appointment.caller
+        
+        message_url: str = '{}/dashboard/appointment/message/{}'.format(
+            settings.CONSOLE_APP_URL, appointment.id)
+        cancel_url: str = '{}/dashboard/appointment/cancel/{}'.format(
+            settings.CONSOLE_APP_URL, appointment.id)
+        
+        send_appointment_reminder(
+            appointment.link_url,
+            appointment.datetime,
+            time_left,
+            caller.profile.full_name,
+            caller.email,
+            caller.profile.phone,
+            message_url,
+            cancel_url,
+        )
+
+
 class SendAppointmentMessageForm(forms.Form):
     message = forms.CharField(required=True)
 
-    def add_message(self, appointment: Communication):
+    def add_message(self, appointment: Communication) -> int:
         message = self.cleaned_data.get('message')
-        
+
         # Create message session
         message_session: CommunicationSession = CommunicationSession.objects.create_message(
             appointment,
@@ -352,7 +377,7 @@ class SendAppointmentMessageForm(forms.Form):
         caller: User = appointment.caller
         appointment_url: str = '{}/dashboard/appointment/edit/{}'.format(
             settings.CONSOLE_APP_URL, appointment.id)
-        send_appointment_message(
+        return send_appointment_message(
             appointment_url,
             caller.profile.full_name,
             caller.email,

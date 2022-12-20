@@ -24,6 +24,11 @@
   <p class="subsection__header subsection__header-scheduled">{{ appointment.datetime }}</p>
 </div>
 
+<form action="{% url 'dashboard:send_appointment_reminder' appointment_id=appointment.id  %}" method="post" novalidate>
+  {% csrf_token %}
+  <input type="submit" value="Send Reminder">
+</form>
+
 <div class="fc">
   <div class="wrapper wrapper--thin wrapper--appointment">
     <div class="fcol">
@@ -118,9 +123,6 @@
             
               <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
                 <ul class="mdc-list">
-                  <li class="mdc-list-item" aria-selected="false" aria-disabled="true" data-value="">
-                    <span class="mdc-list-item__ripple"></span>
-                  </li>            
                   {% for value, label in statuses %}
                     <li class="mdc-list-item" data-value="{{ value }}" aria-disabled="false">
                       <span class="mdc-list-item__ripple"></span>
@@ -133,7 +135,7 @@
 
             <div class="form__field--upper widget">
             
-              <p class="form__header">Sessions</p>
+              <p class="form__header">Log</p>
 
               <ul class="mdc-list mdc-list--two-line" role="group" >
               {% for com_session in com_sessions %}

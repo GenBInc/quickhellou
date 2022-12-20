@@ -23,7 +23,7 @@
   <div class="drawer-frame-root">
     <aside class="aside mdc-drawer">
       <div class="aside-close-button mobile-objects">        
-        <img src="{% static '/images/close-icon-white.svg' %}" alt="close aside">
+        {% svg "close-icon-white" %}
       </div>
       <div class="mdc-drawer__header">
         <div class="fc m-logo__image drawer__logo desktop-objects">
@@ -61,7 +61,7 @@
       <header class="mdc-top-app-bar drawer-top-app-bar">
         <div class="flc mdc-top-app-bar__row">
           <div class="flc mobile-objects">
-            <a href="/dashboard"><img class="mobile-logo_icon" src="{% static '/images/hellou-quick.svg' %}" alt="quickhellou logo"></a>
+            <a href="/dashboard" class="mobile-logo_icon">{% svg "hellou-quick" %}</a>
           </div>
           <div class="flc mdc-top-app-bar__breadcrumb">
             <a href="/dashboard" class="breadcrumb_link_home desktop-objects">Dashboard</a>

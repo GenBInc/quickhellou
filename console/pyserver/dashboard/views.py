@@ -53,6 +53,7 @@ from dashboard.forms import (
     ContactInformationForm,
     AppointmentActivationForm,
     SendAppointmentMessageForm,
+    SendAppointmentReminderForm
 )
 from dashboard.models import (
     ClientBoard,
@@ -117,7 +118,7 @@ def appointment_edit_view(
     if appointment_id is not None:
         communication: Communication = Communication.objects.get(
             id=appointment_id)
-        com_sessions: CommunicationSession = communication.communicationsession_set.all()
+        com_sessions: list[CommunicationSession] = communication.communicationsession_set.all()
         form = CommunicationForm(instance=communication)
     else:
         return redirect('dashboard:appointments')
@@ -239,6 +240,33 @@ def cancel_appointment(
     })
 
 
+def send_appointment_reminder(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponseRedirect:
+    appointment: Communication = Communication.objects.get(
+        id=appointment_id)
+
+    if not appointment:
+        raise Http404
+    
+    form: SendAppointmentReminderForm = SendAppointmentReminderForm(request.POST)
+    if form.is_valid():
+        form.send_reminder(appointment)
+        
+    messages.success(
+        request, 'Reminder has been sent.')
+
+    com_sessions: list[CommunicationSession] = appointment.communicationsession_set.all()
+
+    return render(request, 'dashboard/appointments/edit.html', {
+        'form': form,
+        'appointment': appointment,
+        'client_user': appointment.caller,
+        'statuses': Communication.STATUS_CHOICES,
+        'com_sessions': com_sessions,
+    })
+
 @csrf_exempt
 def send_appointment_message(
     request: HttpRequest,
@@ -265,12 +293,11 @@ def send_appointment_message(
     form: SendAppointmentMessageForm = SendAppointmentMessageForm(request.POST)
     if form.is_valid():
         form.add_message(appointment)
-
-    messages.success(
-        request, 'Message has been sent.')
+        messages.success(
+                request, 'Message has been sent.')
 
     return render(request, 'dashboard/appointments/front/message.html', {
-        'username': appointment.caller_name,
+        'username': appointment.caller.profile.full_name,
         'form': form,
         'appointment': appointment,
     })
@@ -301,8 +328,9 @@ def appointment_message_view(
     appointment.status = Communication.STATUS_CANCELLED
     appointment.save()
 
+    print(1, appointment.caller.profile.__dict__)
     return render(request, 'dashboard/appointments/front/message.html', {
-        'username': appointment.caller_name,
+        'username': appointment.caller.profile.full_name,
         'appointment': appointment,
     })
 

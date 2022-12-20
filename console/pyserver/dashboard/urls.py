@@ -49,6 +49,8 @@ urlpatterns = [
          views.appointment_message_view, name='appointment_message_view'),
     path('appointment/send_message/<int:appointment_id>',
          views.send_appointment_message, name='send_appointment_message'),
+    path('appointment/send_reminder/<int:appointment_id>',
+         views.send_appointment_reminder, name='send_appointment_reminder'),
     path('user/edit/<int:user_id>/',
          views.client_user_edit_view, name="client_user_edit"),
     path('user/edit/', views.client_user_edit_view, name="client_user_edit"),

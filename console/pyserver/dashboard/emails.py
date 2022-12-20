@@ -6,6 +6,43 @@ from dashboard.models import (
     Communication,
 )
 
+
+def send_appointment_reminder(
+    appointment_url: str,
+    datetime: str,
+    time_left: str,
+    client_name: str,
+    client_email_address: str,
+    client_phone_number: str,
+    message_url: str,
+    cancel_url: str,
+):
+    subject: str = 'QuickHellou - Appointment Reminder'
+    recipients: list[str] = [settings.ADMIN_EMAIL]
+
+    console_app_url: str = settings.CONSOLE_APP_URL
+    email_params: dict = {
+        'appointment_url': appointment_url,
+        'datetime': datetime,
+        'time_left': time_left,
+        'name': client_name,
+        'email': client_email_address,
+        'phone_number': client_phone_number,
+        'console_app_url': console_app_url,
+        'message_url': message_url,
+        'cancel_url': cancel_url,
+    }
+
+    # send message notification to admin
+    send_email_notification(
+        subject,
+        recipients,
+        email_params,
+        'dashboard/email/appointments/reminder.txt',
+        'dashboard/email/appointments/reminder.html'
+    )
+    
+
 def send_appointment_message(
     appointment_url: str,
     client_name: str,
@@ -97,8 +134,8 @@ def send_accept_appointment_notifications(
         subject,
         recipients,
         email_params,
-        'dashboard/email/accept-appointment-admin.txt',
-        'dashboard/email/accept-appointment-admin.html'
+        'dashboard/email/appointments/accept-appointment-admin.txt',
+        'dashboard/email/appointments/accept-appointment-admin.html'
     )
 
     # send message notification to client
@@ -109,8 +146,8 @@ def send_accept_appointment_notifications(
         subject,
         recipients,
         email_params,
-        'dashboard/email/accept-appointment-client.txt',
-        'dashboard/email/accept-appointment-client.html'
+        'dashboard/email/appointments/accept-appointment-client.txt',
+        'dashboard/email/appointments/accept-appointment-client.html'
     )
 
 
@@ -140,8 +177,8 @@ def send_reject_appointment_notifications(
         subject,
         recipients,
         email_params,
-        'dashboard/email/reject-appointment-admin.txt',
-        'dashboard/email/reject-appointment-admin.html'
+        'dashboard/email/appointments/reject-appointment-admin.txt',
+        'dashboard/email/appointments/reject-appointment-admin.html'
     )
 
     # send message notification to client
@@ -152,8 +189,8 @@ def send_reject_appointment_notifications(
         subject,
         recipients,
         email_params,
-        'dashboard/email/reject-appointment-client.txt',
-        'dashboard/email/reject-appointment-client.html'
+        'dashboard/email/appointments/reject-appointment-client.txt',
+        'dashboard/email/appointments/reject-appointment-client.html'
     )
 
 
@@ -186,8 +223,8 @@ def send_create_appointment_notifications(
         subject,
         recipients,
         email_params,
-        'dashboard/email/create-appointment-admin.txt',
-        'dashboard/email/create-appointment-admin.html'
+        'dashboard/email/appointments/create-appointment-admin.txt',
+        'dashboard/email/appointments/create-appointment-admin.html'
     )
 
     # send message notification to client
@@ -198,8 +235,8 @@ def send_create_appointment_notifications(
         subject,
         recipients,
         email_params,
-        'dashboard/email/create-appointment-client.txt',
-        'dashboard/email/create-appointment-client.html'
+        'dashboard/email/appointments/create-appointment-client.txt',
+        'dashboard/email/appointments/create-appointment-client.html'
     )
 
 
