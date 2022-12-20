@@ -1,0 +1,32 @@
+{% load static %} {% load svg %}
+<!doctype html>
+<html>
+
+<head>
+  <title>QuickHellou | {% block title %}{% endblock title %}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta property="qh:view" content="{{ request.resolver_match.url_name }}">
+
+  <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static '/css/dashboard.css' %}" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  {% block css %}{% endblock %}
+  <script src="{% static '/js/dashboard.js' %}"></script>
+  {% block js %}{% endblock %}
+  <style>ul.messages{opacity:1!important;}</style>
+</head>
+
+<body class="{% block bodyclass %}{% endblock bodyclass %}">
+  <div class="drawer-frame-root">
+    <div class="mdc-drawer-app-content">
+      <header class="">
+      </header>
+
+      <main class="main-content">
+          {% block content %}{% endblock content %}
+      </main>
+    </div>
+  </div>
+</body>
+
+</html>

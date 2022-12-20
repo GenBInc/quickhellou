@@ -5,18 +5,15 @@
   <h3>The appointment has been accepted.</h3>
   <p><b>Customer Name:</b></p>
   <p><b>{{ name }}</b></p>
-  <br/>
   <p><b>Customer Email:</b></p>
   <p><b>{{ email }}</b></p>
-  <br/>
   <p><b>Appointment Date:</b></p>
   <p><b>{{ datetime }}</b></p>
-  <br/>
-  <p><b>Message:</b></p>
+  <p><b>Your Message:</b></p>
   <p><b>{{ message }}</b></p>
-  <br/>
   <p><b>The Appointment Link URL:</b></p>
   <p><b>{{ videochat_url }}</b></p>
-  <br/>
+  <a href="{{ message_url }}"><b>Send us a message</b></a>
+  <a href="{{ cancel_url }}"><b>Cancel appointment</b></a>
 </body>
 </html>

@@ -2,35 +2,69 @@ from typing import Any
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
-from dashboard.models import CommunicationSession
+from dashboard.models import (
+    Communication,
+)
 
+def send_appointment_message(
+    appointment_url: str,
+    client_name: str,
+    client_email_address: str,
+    client_phone_number: str,
+    client_message: str,
+):
+    subject: str = 'QuickHellou - Appointment Message'
+    recipients: list[str] = [settings.ADMIN_EMAIL]
+
+    console_app_url: str = settings.CONSOLE_APP_URL
+    email_params: dict = {
+        'appointment_url': appointment_url,
+        'name': client_name,
+        'email': client_email_address,
+        'phone_number': client_phone_number,
+        'message': client_message,
+        'console_app_url': console_app_url,
+    }
+
+    # send message notification to admin
+    send_email_notification(
+        subject,
+        recipients,
+        email_params,
+        'dashboard/email/appointments/message-admin.txt',
+        'dashboard/email/appointments/message-admin.html'
+    )
+    
 def send_activation_appointment_notifications(
-    session_status: int,
+    status: int,
     client_name: str,
     client_email_address: str,
     client_message: str,
     datetime: str,
     videochat_url: str,
+    message_url: str,
+    cancel_url: str,
 ) -> int:
-    print('action', session_status)
-    if session_status == CommunicationSession.STATUS_ACCEPTED:
-        print('activate')
+    if status == Communication.STATUS_OPEN:
         send_accept_appointment_notifications(
             client_name,
             client_email_address,
             client_message,
             datetime,
             videochat_url,
+            message_url,
+            cancel_url,
         )
         
-    if session_status == CommunicationSession.STATUS_REJECTED:
-        print('decline')
+    if status == Communication.STATUS_REJECTED:
         send_reject_appointment_notifications(
             client_name,
             client_email_address,
             client_message,
             datetime,
             videochat_url,
+            message_url,
+            cancel_url,
         )
     
 
@@ -40,6 +74,8 @@ def send_accept_appointment_notifications(
     client_message: str,
     datetime: str,
     videochat_url: str,
+    message_url: str,
+    cancel_url: str,
 ) -> int:
     subject: str = 'QuickHellou - Appointment Accepted'
     recipients: list[str] = [settings.ADMIN_EMAIL]
@@ -51,7 +87,9 @@ def send_accept_appointment_notifications(
         'message': client_message,
         'datetime': datetime,
         'videochat_url': videochat_url,
-        'console_app_url': console_app_url
+        'console_app_url': console_app_url,
+        'message_url': message_url,
+        'cancel_url': cancel_url,
     }
 
     # send message notification to admin
@@ -125,6 +163,8 @@ def send_create_appointment_notifications(
     client_phone_number: str,
     client_message: str,
     datetime: str,
+    message_url: str,
+    cancel_url: str,
 ) -> int:
     # send message
     subject: str = 'QuickHellou - New Appointment'
@@ -137,7 +177,9 @@ def send_create_appointment_notifications(
         'phone': client_phone_number,
         'message': client_message,
         'datetime': datetime,
-        'console_app_url': console_app_url
+        'console_app_url': console_app_url,
+        'message_url': message_url,
+        'cancel_url': cancel_url,
     }
     # send message notification to admin
     send_email_notification(

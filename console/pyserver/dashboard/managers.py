@@ -29,7 +29,7 @@ class CommunicationSessionManager(models.Manager):
     def pending_sessions(self, communication_id):
         return self.get_queryset().pending_sessions(communication_id)
 
-    def create_message(self, communication, attendant, message, type):
+    def create_message(self, communication, attendant, message, type = 2):
         session = self.model(communication=communication, attendant=attendant)
         session.type = type
         session.status = 1

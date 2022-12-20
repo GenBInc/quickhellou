@@ -59,7 +59,7 @@ div.loader.loader--inbox {
   margin-bottom: 30px;
 }
 
-.drawer__logo img {
+.drawer__logo svg {
   height: 76px;
   display: block;
 }
@@ -1454,7 +1454,7 @@ div.list-link--reject:hover {
   }
 }
 
-.meeting-status--icon {
+.widget-list__field--status-icon svg {
   width: 30px;
   min-width: 30px;
   height: 30px;

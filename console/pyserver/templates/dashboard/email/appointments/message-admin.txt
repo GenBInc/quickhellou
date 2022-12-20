@@ -1,0 +1,6 @@
+{{ name }} sent a message.
+
+Customer Email: {{ email }}
+Customer Phone Number: {{ phone_number }}
+Message: {{ message }}
+Appointment Link URL: {{ appointment_url }}

@@ -14,7 +14,6 @@ from django.views.decorators.http import (
 from django.http import (
     HttpRequest,
     HttpResponse,
-    JsonResponse,
     HttpResponseRedirect
 )
 from django.utils.timezone import make_aware
@@ -53,6 +52,7 @@ from dashboard.forms import (
     CalendarForm,
     ContactInformationForm,
     AppointmentActivationForm,
+    SendAppointmentMessageForm,
 )
 from dashboard.models import (
     ClientBoard,
@@ -104,6 +104,15 @@ def appointment_edit_view(
     request: HttpRequest,
     appointment_id: int = None
 ) -> HttpResponse:
+    """Appointment edit view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (int, optional): the appointment id. Defaults to None.
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
     form: CommunicationForm = None
     if appointment_id is not None:
         communication: Communication = Communication.objects.get(
@@ -169,7 +178,6 @@ def change_appointment_status(
     form: AppointmentActivationForm = AppointmentActivationForm(
         request.POST, instance=appointment)
 
-    print(form.errors.as_text())
     if form.is_valid():
         form.set_status(status)
 
@@ -177,6 +185,147 @@ def change_appointment_status(
         request, 'Appointment has been accepted.')
 
     return redirect('dashboard:appointments')
+
+
+@login_required
+def accept_appointment(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponseRedirect:
+    """Accepts appointment.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (str): the appointment id
+
+    Returns:
+        HttpResponseRedirect: the HTTP response redirect
+    """
+    return change_appointment_status(
+        request,
+        appointment_id,
+        Communication.STATUS_OPEN
+    )
+
+
+def cancel_appointment(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponse:
+    """Cancel appointment view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (str): the appointment id
+
+    Raises:
+        Http404: the error
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    appointment: Communication = Communication.objects.get(
+        id=appointment_id)
+
+    if not appointment:
+        raise Http404
+
+    appointment.status = Communication.STATUS_CANCELLED
+    appointment.save()
+
+    return render(request, 'dashboard/appointments/front/cancel.html', {
+        'username': appointment.caller_name,
+        'appointment': appointment,
+    })
+
+
+@csrf_exempt
+def send_appointment_message(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponseRedirect:
+    """Handles appointment message sent by caller.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (str): the appointment id
+
+    Raises:
+        Http404: the error
+
+    Returns:
+        HttpResponseRedirect: the HTTP response redirect
+    """
+    appointment: Communication = Communication.objects.get(
+        id=appointment_id)
+
+    if not appointment:
+        raise Http404
+
+    form: SendAppointmentMessageForm = SendAppointmentMessageForm(request.POST)
+    if form.is_valid():
+        form.add_message(appointment)
+
+    messages.success(
+        request, 'Message has been sent.')
+
+    return render(request, 'dashboard/appointments/front/message.html', {
+        'username': appointment.caller_name,
+        'form': form,
+        'appointment': appointment,
+    })
+
+
+def appointment_message_view(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponse:
+    """Appointment message view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (str): the appointment id
+
+    Raises:
+        Http404: the error
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    appointment: Communication = Communication.objects.get(
+        id=appointment_id)
+
+    if not appointment:
+        raise Http404
+
+    appointment.status = Communication.STATUS_CANCELLED
+    appointment.save()
+
+    return render(request, 'dashboard/appointments/front/message.html', {
+        'username': appointment.caller_name,
+        'appointment': appointment,
+    })
+
+
+@login_required
+def reject_appointment(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponseRedirect:
+    """Rejects appointment.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (str): the appointment id
+
+    Returns:
+        HttpResponseRedirect: the HTTP response redirect
+    """
+    return change_appointment_status(
+        request,
+        appointment_id,
+        Communication.STATUS_REJECTED,
+    )
 
 
 @permission_required("is_default_admin")
@@ -230,8 +379,8 @@ def widget_edit_view(
         client_board=request.user.client_board, is_admin=True)
     if widget_id is not None:
         widget = Widget.objects.get(id=widget_id)
-        widget_code = '<script>' + \
-            create_widget_embed_script(widget) + '</script>'
+        widget_code = '<script>{}</script>'.format(
+            create_widget_embed_script(widget))
     else:
         return redirect('dashboard:widgets')
     if request.method == 'POST':

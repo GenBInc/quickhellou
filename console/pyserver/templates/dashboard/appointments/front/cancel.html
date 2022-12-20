@@ -1,0 +1,17 @@
+{% extends 'front/base.html' %}
+{% load static %}
+
+{% block title %}Cancel Appointment{% endblock %}
+{% block page_title %}Cancel Appointment{% endblock %}
+
+{% block content %}
+<div class="df flc frow top-header__section">
+  <img class="top-header-block__photo" src="{% static '/images/dashboard-appointments.png' %}">
+  <p class="fc top-header-block__text">Cancel Appointment</p>  
+</div>
+<br/>
+<p><b>Dear {{ username }},</b></p>
+<br/>
+<p>Your appointment scheduled to <i>{{ appointment.datetime }}</i> has been cancelled.</p>
+{% include "messages.html" %}
+{% endblock %}

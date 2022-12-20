@@ -2,14 +2,13 @@
 
 <body>
   <img src="{{console_app_url}}/static/images/logo.png" alt="quickhellou" >
-  <h3>Hello <strong>{{username}}</strong>,</h3>
-  <br/>
-  <p>You've created a new appointment.</p>
-  <br/>
+  <h3>Hello <strong>{{ name }}</strong>,</h3>
+  <p>You've created a new appointment. Please wait for confirmation from our consultant.</p>
   <p><b>Date:</b></p>
   <p><b>{{ datetime }}</b></p>
+  <a href="{{ message_url }}"><b>Send us a message</b></a>
+  <a href="{{ cancel_url }}"><b>Cancel appointment</b></a>
   <br/>
-  <br /><br />
     <p><a href="https://www.qhellou.com">QuickHellou</a> Team</p>
 </body>
 

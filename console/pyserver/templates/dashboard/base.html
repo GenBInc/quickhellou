@@ -27,7 +27,7 @@
       </div>
       <div class="mdc-drawer__header">
         <div class="fc m-logo__image drawer__logo desktop-objects">
-          <a href="/dashboard"><img src="{% static '/images/hellou-quick-white.svg' %}" alt="quickhellou logo"></a>
+          <a href="/dashboard">{% svg "hellou-quick-white" %}</a>
         </div>
         {% with default_thumbnail='images/user.svg' %}
         <form id="thumbnail-form" class="fc aside__avatar-content" action="{% if user.profile.thumbnail != default_thumbnail %}{% url 'accounts:delete_thumbnail' profile_id=user.profile.id %}{% else %}{% url 'accounts:upload_thumbnail' profile_id=user.profile.id %}{% endif %}" method="post" enctype="multipart/form-data">
@@ -51,12 +51,6 @@
         <p class="fc aside__subtitle">{{ user.email }}</p>
       </div>
       <div class="mdc-drawer__content">
-        <!--
-        <div class="fc df-col aside__version">
-          <p class="version__text version__label">FREE</p>
-          <a class="fc version__text version__enterprise" href="#" target="_self">Switch To ENTERPRISE</a>
-        </div>
-        -->
         
         {% block nav %}{% endblock nav %}
         
@@ -75,7 +69,7 @@
           </div>
           <div class="f1"></div>
           <div class="mobile-menu_button mobile-objects">
-            <img src="{% static '/images/menu.svg' %}" alt="menu">
+            {% svg "menu" %}
           </div>  
           <div class="df mdc-top-app-bar__logout desktop-objects">
             <form class="logout-link" action="{% url 'accounts:logout' %}" method="post">

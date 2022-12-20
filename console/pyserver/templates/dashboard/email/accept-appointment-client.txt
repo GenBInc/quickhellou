@@ -4,3 +4,6 @@ Email: {{ email }}
 Message: {{ message }}
 Appointment Date: {{ datetime }}
 Videochat Link URL: {{ videochat_url }}
+
+Send us a message {{ message_url }}
+Cancel the appointment {{ cancel_url }}

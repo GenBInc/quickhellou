@@ -2,6 +2,7 @@ from re import (
     compile,
     Pattern,
 )
+from django.conf import settings
 from django.utils.timezone import make_aware
 from django import forms
 from django.core.exceptions import ValidationError
@@ -27,8 +28,7 @@ from phonenumber_field.formfields import PhoneNumberField
 from dashboard.emails import (
     send_create_appointment_notifications,
     send_activation_appointment_notifications,
-    send_accept_appointment_notifications,
-    send_reject_appointment_notifications,
+    send_appointment_message,
 )
 from dashboard.util.time import DATETIME_FORMAT
 import datetime
@@ -334,6 +334,33 @@ class WidgetTemplateForm(forms.ModelForm):
         return widget_template
 
 
+class SendAppointmentMessageForm(forms.Form):
+    message = forms.CharField(required=True)
+
+    def add_message(self, appointment: Communication):
+        message = self.cleaned_data.get('message')
+        
+        # Create message session
+        message_session: CommunicationSession = CommunicationSession.objects.create_message(
+            appointment,
+            appointment.caller,
+            message
+        )
+        message_session.save()
+
+        # Send email notification
+        caller: User = appointment.caller
+        appointment_url: str = '{}/dashboard/appointment/edit/{}'.format(
+            settings.CONSOLE_APP_URL, appointment.id)
+        send_appointment_message(
+            appointment_url,
+            caller.profile.full_name,
+            caller.email,
+            caller.profile.phone,
+            message
+        )
+
+
 class AppointmentActivationForm(forms.ModelForm):
 
     class Meta:
@@ -343,26 +370,36 @@ class AppointmentActivationForm(forms.ModelForm):
     def set_status(self, status: int):
         # Open appointment
         appointment: Communication = self.save(False)
-        appointment.status = Communication.STATUS_OPEN
+        appointment.status = status
         self.save()
 
         # Change session status
         initial_session: CommunicationSession = appointment.initial_session
         if initial_session:
-            initial_session.status = status
+            initial_session.status = CommunicationSession.STATUS_CREATED
             initial_session.save()
 
         # Send email notifications
         date = datetime.datetime.strftime(
             appointment.datetime, DATETIME_FORMAT)
 
+        # TODO: handle initial message
+        message: str = ''
+
+        message_url: str = '{}/dashboard/appointment/message/{}'.format(
+            settings.CONSOLE_APP_URL)
+        cancel_url: str = '{}/dashboard/appointment/cancel/{}'.format(
+            settings.CONSOLE_APP_URL)
+
         send_activation_appointment_notifications(
             status,
             appointment.caller.profile.full_name,
             appointment.caller.email,
-            '',
+            message,
             date,
             appointment.link_url,
+            message_url,
+            cancel_url,
         )
 
         return appointment
@@ -468,10 +505,16 @@ class ContactInformationForm(forms.Form):
         session.save()
 
         # Send notifications
+        message_url: str = '{}/dashboard/appointment/message/{}'.format(
+            settings.CONSOLE_APP_URL)
+        cancel_url: str = '{}/dashboard/appointment/cancel/{}'.format(
+            settings.CONSOLE_APP_URL)
         return send_create_appointment_notifications(
             client_name,
             email_address,
             phone_number,
             message,
             datetime_str,
+            message_url,
+            cancel_url,
         )

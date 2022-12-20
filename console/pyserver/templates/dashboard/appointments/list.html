@@ -11,7 +11,9 @@
       data-microtip-position="bottom"
       data-role="tooltip"      
     >
-      <img class="meeting-status--icon" src="/static/images/status-{{ communication.status_verbose|title }}.svg">
+    {% with "status-"|add:communication.status_verbose|title as svg_name %}
+      {% svg svg_name %}
+    {% endwith %}  
     </div>
     
     <div class="df flc widget-list__field widget-list__field--date-time">
@@ -35,10 +37,10 @@
     <div class="f1"></div>
     <div class="flc widget-list__field widget-list__field--mod-bar">
       {% if communication.status == 1 and communication.pending_sessions_count > 0 %}
-      <form class="form--accept-appointment" data-id="{{ communication.id }}" action="{% url 'dashboard:change_appointment_status' appointment_id=communication.id status=6 %}" method="post">{% csrf_token %}
+      <form class="form--accept-appointment" data-id="{{ communication.id }}" action="{% url 'dashboard:accept_appointment' appointment_id=communication.id %}" method="post">{% csrf_token %}
         <div class="fc df-f1 com__list-link list-link--accept" data-id="{{ communication.id }}" >Accept</div>
       </form>
-      <form class="form--reject-appointment" data-id="{{ communication.id }}" action="{% url 'dashboard:change_appointment_status' appointment_id=communication.id status=5 %}" method="post">{% csrf_token %}
+      <form class="form--reject-appointment" data-id="{{ communication.id }}" action="{% url 'dashboard:reject_appointment' appointment_id=communication.id %}" method="post">{% csrf_token %}
         <div class="fc df-f1 com__list-link list-link--reject" value="Reject" data-id="{{ communication.id }}">Reject</div>
       </form>
       {% else %}

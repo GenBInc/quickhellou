@@ -123,15 +123,23 @@ class Widget(models.Model):
 
 
 class Communication(models.Model):
+    # Appointment is created, pending for creator's response
     STATUS_PENDING = 1
+    # Creator accepts pending appointment
     STATUS_OPEN = 2
-    STATUS_CLOSED = 3
-    STATUS_COMPLETED = 4
+    # Creator rejects pending appointment
+    STATUS_REJECTED = 3
+    # Creator closes open/rejected appointment
+    STATUS_CLOSED = 4
+    # Client cancels appointment
+    STATUS_CANCELLED = 5
+    
     STATUS_CHOICES = (
-        (STATUS_OPEN, 'open'),
         (STATUS_PENDING, 'pending'),
+        (STATUS_OPEN, 'open'),
+        (STATUS_REJECTED, 'rejected'),
+        (STATUS_CANCELLED, 'cancelled'),
         (STATUS_CLOSED, 'closed'),
-        (STATUS_COMPLETED, 'completed'),
     )
     id = models.AutoField(primary_key=True)
     client_board = models.ForeignKey(
@@ -150,7 +158,7 @@ class Communication(models.Model):
     active = models.BooleanField(default=True)
     status = models.SmallIntegerField(
         choices=STATUS_CHOICES,
-        default=STATUS_OPEN,
+        default=STATUS_PENDING,
     )
 
     objects = CommunicationManager()
@@ -238,7 +246,7 @@ class CommunicationSession(models.Model):
 
     type = models.SmallIntegerField(
         choices=TYPE_CHOICES,
-        default=TYPE_VIDEO_CALL,
+        default=TYPE_MESSAGE,
     )
     status = models.SmallIntegerField(
         choices=STATUS_CHOICES,

@@ -1,0 +1,26 @@
+{% extends 'front/base.html' %}
+{% load static %}
+
+{% block title %}Send Appointment Message{% endblock %}
+{% block page_title %}Send Appointment Message{% endblock %}
+
+{% block nav %}
+  {% include "dashboard/nav_menu.html" with menu_selected='appointments' %}   
+{% endblock %}
+
+{% block content %}
+<div class="df flc frow top-header__section">
+  <img class="top-header-block__photo" src="{% static '/images/dashboard-appointments.png' %}">
+  <p class="fc top-header-block__text">Send Message</p>  
+</div>
+<p><b>Dear {{ username }},</b></p>
+<br/>
+<p>Send a message regarding appointment that has been scheduled to <i>{{ appointment.datetime }}</i></p>
+<br/>
+{% include "messages.html" %}
+<form action="{% url 'dashboard:send_appointment_message' appointment_id=appointment.id %}" method="post" novalidate>
+  {{ form.message.errors }}
+  <textarea name="message" placeholder="Your message">{{ form.message.value }}</textarea>
+  <input type="submit" value="Send message">
+</form>
+{% endblock %}
