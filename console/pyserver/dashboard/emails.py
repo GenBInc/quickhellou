@@ -260,6 +260,8 @@ def send_reject_appointment_notifications(
     client_message: str,
     datetime: str,
     videochat_url: str,
+    message_url: str,
+    cancel_url: str,
 ) -> int:
     """Sends reject appointment notification.
 
@@ -283,7 +285,9 @@ def send_reject_appointment_notifications(
         'message': client_message,
         'datetime': datetime,
         'videochat_url': videochat_url,
-        'console_app_url': console_app_url
+        'console_app_url': console_app_url,
+        'message_url': message_url,
+        'cancel_url': cancel_url,
     }
 
     # send message notification to admin

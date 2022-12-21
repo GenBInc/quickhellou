@@ -2,15 +2,14 @@
 <html>
 <body>
   <img src="{{console_app_url}}/static/images/logo.png" alt="quickhellou" >
+  <h3>Hello <strong>{{ name }}</strong>,</h3>
   <h3>The appointment has been accepted.</h3>
-  <p><b>Customer Name:</b></p>
-  <p><b>{{ name }}</b></p>
-  <p><b>Customer Email:</b></p>
-  <p><b>{{ email }}</b></p>
   <p><b>Appointment Date:</b></p>
   <p><b>{{ datetime }}</b></p>
+  {% if message %}
   <p><b>Your Message:</b></p>
   <p><b>{{ message }}</b></p>
+  {% endif %}
   <p><b>The Appointment Link URL:</b></p>
   <p><b>{{ videochat_url }}</b></p>
   <a href="{{ message_url }}"><b>Send us a message</b></a>

@@ -498,28 +498,29 @@ class ContactInformationForm(forms.Form):
         )
 
         # Get or create communication
-        appointment, created = Communication.objects.get_or_create(
+        appointment: Communication = Communication.objects.create(
             caller=client_user,
-            defaults={
-                'caller_name': client_name,
-                'client_board': widget.client_board,
-                'status': Communication.STATUS_PENDING,
-                'widget': widget,
-                'datetime': make_aware(datetime.datetime.strptime(datetime_str, DATETIME_FORMAT))
-            }
+            caller_name=client_name,
+            client_board=widget.client_board,
+            status=Communication.STATUS_PENDING,
+            widget=widget,
+            datetime=make_aware(datetime.datetime.strptime(
+                datetime_str, DATETIME_FORMAT))
         )
 
         # Encode communication short URL for videochat room id.
         appointment.encode_short_url()
 
-        # Create communication session
-        message_session: CommunicationSession = CommunicationSession.objects.create_message(
-            communication=appointment,
-            attendant=client_user,
-            message=message,
-            type=2
-        )
-        message_session.save()
+
+        if message:
+            # Create communication session
+            message_session: CommunicationSession = CommunicationSession.objects.create_message(
+                communication=appointment,
+                attendant=client_user,
+                message=message,
+                type=2
+            )
+            message_session.save()
 
         # Send notifications
         return send_create_appointment_notifications(

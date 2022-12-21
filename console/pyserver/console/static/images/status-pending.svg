@@ -2,7 +2,7 @@
 	 viewBox="0 0 91.15 91.15" xml:space="preserve">
 <style type="text/css">
 	.st1{fill:#283371;}
-	.st2{fill:#EAC56A;}
+	.st2-pending{fill:#eeee00;}
 	.st3{fill:#FFFFFF;stroke:#283371;stroke-miterlimit:10;}
 	.st4{fill:#283371;stroke:#283371;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
 </style>
@@ -14,7 +14,7 @@
 </g>
 <g>
 	
-		<ellipse transform="matrix(0.9951 -0.0985 0.0985 0.9951 -4.1023 4.5326)" class="st2" cx="43.84" cy="43.8" rx="36.48" ry="36.48"/>
+		<ellipse transform="matrix(0.9951 -0.0985 0.0985 0.9951 -4.1023 4.5326)" class="st2-pending" cx="43.84" cy="43.8" rx="36.48" ry="36.48"/>
 	<path class="st1" d="M6.84,43.8c0-20.4,16.6-37,37-37c20.4,0,37,16.6,37,37c0,20.4-16.6,37-37,37C23.43,80.8,6.84,64.2,6.84,43.8z
 		 M7.87,43.8c0,19.83,16.14,35.97,35.97,35.97c19.83,0,35.97-16.14,35.97-35.97c0-19.83-16.14-35.97-35.97-35.97
 		C24,7.83,7.87,23.96,7.87,43.8z"/>
