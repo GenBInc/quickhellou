@@ -22,12 +22,19 @@
 
   <p class="subsection__header">Scheduled Date & Time:</p>
   <p class="subsection__header subsection__header-scheduled">{{ appointment.datetime }}</p>
+
+  <div class="f1">
+
+  </div>
+
+  <form action="{% url 'dashboard:send_appointment_reminder' appointment_id=appointment.id  %}" method="post" novalidate>
+    {% csrf_token %}
+    <input class="form__button form__submit form--dashboard__submit save__submit" type="submit" value="Send Reminder">
+  </form>
+
 </div>
 
-<form action="{% url 'dashboard:send_appointment_reminder' appointment_id=appointment.id  %}" method="post" novalidate>
-  {% csrf_token %}
-  <input type="submit" value="Send Reminder">
-</form>
+
 
 <div class="fc">
   <div class="wrapper wrapper--thin wrapper--appointment">
@@ -158,7 +165,7 @@
           <div class="fc">
             <div class="flc form__ui">
               <div>
-                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Save">
+                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Update">
               </div>
               <div>
                 <a href="{% url 'dashboard:appointments' %}">
