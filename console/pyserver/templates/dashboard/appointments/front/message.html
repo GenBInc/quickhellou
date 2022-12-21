@@ -4,10 +4,6 @@
 {% block title %}Send Appointment Message{% endblock %}
 {% block page_title %}Send Appointment Message{% endblock %}
 
-{% block nav %}
-  {% include "dashboard/nav_menu.html" with menu_selected='appointments' %}   
-{% endblock %}
-
 {% block content %}
 <div class="df flc frow top-header__section">
   <img class="top-header-block__photo" src="{% static '/images/dashboard-appointments.png' %}">
@@ -18,9 +14,22 @@
 <p>Send a message regarding appointment that has been scheduled to <i>{{ appointment.datetime }}</i></p>
 <br/>
 {% include "messages.html" %}
-<form action="{% url 'dashboard:send_appointment_message' appointment_id=appointment.id %}" method="post" novalidate>
+<form class="fcol f1 fc" action="{% url 'dashboard:send_appointment_message' appointment_id=appointment.id %}" method="post" novalidate>
   {{ form.message.errors }}
-  <textarea name="message" placeholder="Your message">{{ form.message.value }}</textarea>
-  <input type="submit" value="Send message">
+
+  <div class="mdc-text-field mdc-text-field--outlined">
+    
+    <textarea class="mdc-text-field__input" rows="8" cols="40" name="message" placeholder="Your message">{{ form.message.value }}</textarea>
+
+    <div class="mdc-notched-outline">
+      <div class="mdc-notched-outline__leading"></div>
+      <div class="mdc-notched-outline__notch">
+        <label for="message" class="mdc-floating-label ">Textarea Label</label>
+      </div>
+      <div class="mdc-notched-outline__trailing"></div>
+    </div>    
+  </div>  
+  
+  <input class="form__button form__submit form--dashboard__submit save__submit" type="submit" value="Send message">
 </form>
 {% endblock %}
