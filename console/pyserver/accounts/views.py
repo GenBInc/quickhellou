@@ -14,6 +14,7 @@ from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
 
 from accounts.models import User, Profile
 from accounts.forms import ForgotPasswordForm, ProfileForm, ProfileMetaForm, \
@@ -90,6 +91,7 @@ def signup_view(
         'profile_meta_form': profile_meta_form})
 
 
+@csrf_exempt
 def login_view(
     request: HttpRequest
 ) -> HttpResponse:

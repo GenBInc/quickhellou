@@ -10,6 +10,7 @@ from django.core.validators import validate_email
 from accounts.models import User, Profile
 from dashboard.util.time import (
     DAYS,
+    time_left_verbose,
 )
 from dashboard.models import (
     Widget,
@@ -30,6 +31,8 @@ from dashboard.emails import (
     send_activation_appointment_notifications,
     send_appointment_message,
     send_appointment_reminder,
+    message_url,
+    cancel_url,
 )
 from dashboard.util.time import DATETIME_FORMAT
 import datetime
@@ -337,25 +340,19 @@ class WidgetTemplateForm(forms.ModelForm):
 
 class SendAppointmentReminderForm(forms.Form):
     def send_reminder(self, appointment: Communication):
-        
+
         # Send reminder notification
-        time_left: str = '__time_left__'
         caller: User = appointment.caller
-        
-        message_url: str = '{}/dashboard/appointment/message/{}'.format(
-            settings.CONSOLE_APP_URL, appointment.id)
-        cancel_url: str = '{}/dashboard/appointment/cancel/{}'.format(
-            settings.CONSOLE_APP_URL, appointment.id)
-        
+
         send_appointment_reminder(
             appointment.link_url,
             appointment.datetime,
-            time_left,
+            time_left_verbose(appointment.datetime),
             caller.profile.full_name,
             caller.email,
             caller.profile.phone,
-            message_url,
-            cancel_url,
+            message_url(appointment.id),
+            cancel_url(appointment.id),
         )
 
 
@@ -411,11 +408,6 @@ class AppointmentActivationForm(forms.ModelForm):
         # TODO: handle initial message
         message: str = ''
 
-        message_url: str = '{}/dashboard/appointment/message/{}'.format(
-            settings.CONSOLE_APP_URL, appointment.id)
-        cancel_url: str = '{}/dashboard/appointment/cancel/{}'.format(
-            settings.CONSOLE_APP_URL, appointment.id)
-
         send_activation_appointment_notifications(
             status,
             appointment.caller.profile.full_name,
@@ -423,8 +415,8 @@ class AppointmentActivationForm(forms.ModelForm):
             message,
             date,
             appointment.link_url,
-            message_url,
-            cancel_url,
+            message_url(appointment.id),
+            cancel_url(appointment.id),
         )
 
         return appointment
@@ -436,7 +428,7 @@ class CommunicationForm(forms.ModelForm):
 
     class Meta:
         model = Communication
-        fields = ('caller_name', 'status')
+        fields = ('caller_name', 'status', 'reminders')
 
     def __init__(self, *args, **kwargs):
         """Constructor.
@@ -530,16 +522,12 @@ class ContactInformationForm(forms.Form):
         message_session.save()
 
         # Send notifications
-        message_url: str = '{}/dashboard/appointment/message/{}'.format(
-            settings.CONSOLE_APP_URL, appointment.id)
-        cancel_url: str = '{}/dashboard/appointment/cancel/{}'.format(
-            settings.CONSOLE_APP_URL, appointment.id)
         return send_create_appointment_notifications(
             client_name,
             email_address,
             phone_number,
             message,
             datetime_str,
-            message_url,
-            cancel_url,
+            message_url(appointment.id),
+            cancel_url(appointment.id),
         )

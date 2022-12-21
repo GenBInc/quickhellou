@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 import re
 import uuid
-import short_url
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -160,6 +159,12 @@ class Communication(models.Model):
         choices=STATUS_CHOICES,
         default=STATUS_PENDING,
     )
+    # Turn reminders on/off
+    reminders = models.BooleanField(default=True)
+    # Is one hour reminder sent
+    one_hour_reminder_sent = models.BooleanField(default=False)
+    # Is one day reminder sent
+    one_day_reminder_sent = models.BooleanField(default=False)
 
     objects = CommunicationManager()
 

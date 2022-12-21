@@ -116,14 +116,15 @@ def appointment_edit_view(
     """
     form: CommunicationForm = None
     if appointment_id is not None:
-        communication: Communication = Communication.objects.get(
+        appointment: Communication = Communication.objects.get(
             id=appointment_id)
-        com_sessions: list[CommunicationSession] = communication.communicationsession_set.all()
-        form = CommunicationForm(instance=communication)
+        com_sessions: list[CommunicationSession] = appointment.communicationsession_set.all(
+        )
+        form = CommunicationForm(instance=appointment)
     else:
         return redirect('dashboard:appointments')
     if request.method == 'POST':
-        form = CommunicationForm(request.POST, instance=communication)
+        form = CommunicationForm(request.POST, instance=appointment)
         if form.is_valid():
             form.save_all()
             messages.success(
@@ -131,8 +132,8 @@ def appointment_edit_view(
             return redirect('dashboard:appointments')
     return render(request, 'dashboard/appointments/edit.html', {
         'form': form,
-        'appointment': communication,
-        'client_user': communication.caller,
+        'appointment': appointment,
+        'client_user': appointment.caller,
         'statuses': Communication.STATUS_CHOICES,
         'com_sessions': com_sessions,
     })
@@ -235,7 +236,7 @@ def cancel_appointment(
     appointment.save()
 
     return render(request, 'dashboard/appointments/front/cancel.html', {
-        'username': appointment.caller_name,
+        'username': appointment.caller.profile.full_name,
         'appointment': appointment,
     })
 
@@ -249,11 +250,12 @@ def send_appointment_reminder(
 
     if not appointment:
         raise Http404
-    
-    form: SendAppointmentReminderForm = SendAppointmentReminderForm(request.POST)
+
+    form: SendAppointmentReminderForm = SendAppointmentReminderForm(
+        request.POST)
     if form.is_valid():
         form.send_reminder(appointment)
-        
+
     messages.success(
         request, 'Reminder has been sent.')
 
@@ -266,6 +268,7 @@ def send_appointment_reminder(
         'statuses': Communication.STATUS_CHOICES,
         'com_sessions': com_sessions,
     })
+
 
 @csrf_exempt
 def send_appointment_message(
@@ -294,7 +297,7 @@ def send_appointment_message(
     if form.is_valid():
         form.add_message(appointment)
         messages.success(
-                request, 'Message has been sent.')
+            request, 'Message has been sent.')
 
     return render(request, 'dashboard/appointments/front/message.html', {
         'username': appointment.caller.profile.full_name,
@@ -677,11 +680,7 @@ def appointments_list_view(
     """
     communications: list[Communication] = Communication.objects.filter(
         client_board=request.user.client_board).filter(active=True).order_by('-modification_time')
-    if communications.count() > 0:
-        communication = communications[0]
-        count = communication.pending_sessions_count
-    else:
-        count = 0
+
     return render(request, 'dashboard/appointments/list.html', {
         'user': request.user,
         'communications': communications,

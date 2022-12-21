@@ -14,6 +14,7 @@ from dashboard.models import (
 from accounts.models import (
     User,
 )
+from django.utils.timezone import make_aware
 
 TIME_FORMAT: str = '%I:%M %p'
 DAY_TIME_FORMAT: str = '%d %I:%M %p'
@@ -188,6 +189,57 @@ def collect_weekly_hours(
         weekly_hours[day_code] = daily_hours
 
     return weekly_hours
+
+
+def time_left_delta(datetime_to: datetime) -> timedelta:
+    """Returns time left to given datetime as time diff.
+
+    Args:
+        datetime_to (datetime): end date time 
+
+    Returns:
+        str: the time delta
+    """
+    datetime_from: datetime = make_aware(datetime.now())
+    return datetime_to - datetime_from
+
+
+def one_day_left_delta(datetime_to: datetime) -> bool:
+    """Checks if one day left to date.
+
+    Args:
+        datetime_to (datetime): the end date
+
+    Returns:
+        bool: True if one day left
+    """
+    delta: timedelta = time_left_delta(datetime_to)
+    return delta.days == 1 and delta.seconds < (60 * 60 * 1.5)
+
+
+def one_hour_left_delta(datetime_to: datetime) -> bool:
+    """Checks if one hour left to date.
+
+    Args:
+        datetime_to (datetime): the end date
+
+    Returns:
+        bool: True if one hour left
+    """
+    delta: timedelta = time_left_delta(datetime_to)
+    return delta.days == 0 and delta.seconds in range(60 * 60, (60 * 60 * 1.5) - 1)
+
+
+def time_left_verbose(datetime_to: datetime) -> str:
+    """Returns time left to given datetime.
+
+    Args:
+        datetime_to (datetime): end date time 
+
+    Returns:
+        str: the time diff verbose
+    """
+    return time_left_delta(datetime_to).__str__().split('.')[0]
 
 
 def collect_time_ranges(
