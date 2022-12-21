@@ -1,5 +1,5 @@
 {% extends 'accounts/base.html' %}
-{% load static %}
+{% load static %} {% load svg %}
 
 {% block title %}QuickHellou | Sign Up{% endblock %}
 
@@ -22,7 +22,7 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
   <div class="fcol signup">
     <div class="m-logo">
       <div class="m-logo__image">
-        <a href="https://www.qhellou.com"><img src="{% static '/images/hellou-quick.svg' %}" alt="quickhellou logo"></a>
+        <a href="https://www.qhellou.com">{% svg "hellou-quick" %}</a>
       </div>
       <div class="m-logo__description">
         <p><span>sign up</span>&nbsp;to start your widget</p>

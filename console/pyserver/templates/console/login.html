@@ -1,4 +1,4 @@
-{% load cms_tags menu_tags static %}
+{% load cms_tags menu_tags static svg %}
 <!doctype html>
 <html lang="en">
 
@@ -14,7 +14,7 @@
         <div class="fcol login">
             <div class="m-logo">
                 <div class="m-logo__image">
-                    <img src="{% static '/app/images/hellou-quick.svg' %}" alt="quickhellou logo">
+                    {% svg "hellou-quick" %}
                 </div>
                 <div class="m-logo__description">
                     <p><span>login in</span>&nbsp;to your account</p>
