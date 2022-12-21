@@ -37,11 +37,13 @@ function initPhone() {}
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  initColorPicker()
-
-  const list = MDCList.attachTo(document.querySelector('.mdc-list'))
-  list.wrapFocus = true
-
+  try {
+    initColorPicker()
+    const list = MDCList.attachTo(document.querySelector('.mdc-list'))
+    if (!!list) {
+      list.wrapFocus = true
+    }
+  } catch (e) {}
   const topAppBarElement = document.querySelector('.mdc-top-app-bar')
   if (topAppBarElement) {
     MDCTopAppBar.attachTo(topAppBarElement)
@@ -117,10 +119,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   uiView.init()
 
-  initMobileMenu()
-  initMessages()
-
-  initIconInput()
+  try {
+    initMobileMenu()
+    initMessages()
+    initIconInput()
+  } catch(e) {}
 
 })
 
