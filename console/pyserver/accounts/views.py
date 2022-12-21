@@ -203,7 +203,7 @@ def reset_password_view(
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
-        form = ResetPasswordForm(data=request.POST)
+        form = ResetPasswordForm()
     return render(request, 'accounts/reset-password.html', context={'user_id': user_id, 'form': form})
 
 

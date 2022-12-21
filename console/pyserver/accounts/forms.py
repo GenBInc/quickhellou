@@ -87,7 +87,7 @@ class ResetPasswordForm(forms.Form):
             return valid
 
         if self.cleaned_data['new_password'] != self.cleaned_data['repeat_new_password']:
-            self._errors['passwords_not_match'] = 'Passwords don\'t match.'
+            self.add_error('new_password', 'Passwords don\'t match.')
             return False
         return True
 
