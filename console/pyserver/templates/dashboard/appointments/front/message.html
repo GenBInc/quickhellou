@@ -9,27 +9,36 @@
   <img class="top-header-block__photo" src="{% static '/images/dashboard-appointments.png' %}">
   <p class="fc top-header-block__text">Send Message</p>  
 </div>
-<p><b>Dear {{ username }},</b></p>
-<br/>
-<p>Send a message regarding appointment that has been scheduled to <i>{{ appointment.datetime }}</i></p>
-<br/>
+
 {% include "messages.html" %}
 <form class="fcol f1 fc" action="{% url 'dashboard:send_appointment_message' appointment_id=appointment.id %}" method="post" novalidate>
+
+  <div>
+    <br/>
+    <br/>
+    <p><b>Dear {{ username }},</b></p>
+    <br/>
+    <p>Send a message regarding appointment that has been scheduled to <b>{{ appointment.datetime }}</b></p>
+    <br/>  
+  </div>
+
   {{ form.message.errors }}
 
-  <div class="mdc-text-field mdc-text-field--outlined">
+  <div class="mdc-textarea mdc-text-field mdc-text-field--outlined">
     
-    <textarea class="mdc-text-field__input" rows="8" cols="40" name="message" placeholder="Your message">{{ form.message.value }}</textarea>
+    <textarea class="mdc-text-field__input" rows="8" cols="40" name="message">{{ form.message.value }}</textarea>
 
     <div class="mdc-notched-outline">
       <div class="mdc-notched-outline__leading"></div>
       <div class="mdc-notched-outline__notch">
-        <label for="message" class="mdc-floating-label ">Textarea Label</label>
+        <label for="message" class="mdc-floating-label ">Your Message</label>
       </div>
       <div class="mdc-notched-outline__trailing"></div>
     </div>    
   </div>  
-  
+  <div>
+    <br/><br/>
+  </div>
   <input class="form__button form__submit form--dashboard__submit save__submit" type="submit" value="Send message">
 </form>
 {% endblock %}

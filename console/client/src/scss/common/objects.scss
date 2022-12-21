@@ -386,3 +386,7 @@ ul.messages {
 }
 
 a:focus {outline:none;}
+
+.mdc-textarea.mdc-text-field {
+  padding: 0 !important;
+}
