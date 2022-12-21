@@ -58,7 +58,7 @@ def send_appointment_reminder(
         cancel_url (str): the cancel URL
         email_template (str): the email template file path name
     """
-    recipients: list[str] = [settings.ADMIN_EMAIL]
+    recipients: list[str] = [client_email_address]
 
     console_app_url: str = settings.CONSOLE_APP_URL
     email_params: dict = {
