@@ -188,7 +188,7 @@ class Communication(models.Model):
         Returns:
             str: the videochat room URL
         """
-        return '{}/room/{}'.format(settings.VIDEOCHAT_APP_URL, self.short_url)
+        return '{}/r/{}'.format(settings.VIDEOCHAT_APP_URL, self.short_url)
 
     @property
     def pending_sessions_count(self):
