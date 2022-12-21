@@ -1,5 +1,6 @@
 {% extends 'front/base.html' %}
 {% load static %}
+{% load svg %}
 
 {% block title %}Send Appointment Message{% endblock %}
 {% block page_title %}Send Appointment Message{% endblock %}
@@ -10,14 +11,18 @@
   <p class="fc top-header-block__text">Send Message</p>  
 </div>
 
-{% include "messages.html" %}
 <form class="fcol f1 fc" action="{% url 'dashboard:send_appointment_message' appointment_id=appointment.id %}" method="post" novalidate>
 
   <div>
     <br/>
+    {% include "messages.html" %}
     <br/>
     <p><b>Dear {{ username }},</b></p>
     <br/>
+  </div>
+
+  <div class="frow flc info-content--status-icon">
+    {% svg 'status-posted' %}
     <p>Send a message regarding appointment that has been scheduled to <b>{{ appointment.datetime }}</b></p>
     <br/><br/>
   </div>

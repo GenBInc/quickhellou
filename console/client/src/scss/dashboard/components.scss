@@ -1459,3 +1459,15 @@ div.list-link--reject:hover {
   min-width: 30px;
   height: 30px;
 }
+
+.info-content {
+  margin: 0 auto;
+}
+
+.info-content--status-icon svg {
+  max-width: 70px;
+  width: 70px;
+  height: 70px;
+  margin: 10px;
+}
+

@@ -1,5 +1,6 @@
 {% extends 'front/base.html' %}
 {% load static %}
+{% load svg %}
 
 {% block title %}Cancel Appointment{% endblock %}
 {% block page_title %}Cancel Appointment{% endblock %}
@@ -9,9 +10,20 @@
   <img class="top-header-block__photo" src="{% static '/images/dashboard-appointments.png' %}">
   <p class="fc top-header-block__text">Cancel Appointment</p>  
 </div>
-<br/>
-<p><b>Dear {{ username }},</b></p>
-<br/>
-<p>Your appointment scheduled to <i>{{ appointment.datetime }}</i> has been cancelled.</p>
+
+<div class="df fc f1 fcol info-content">
+  <div>
+    <br/>
+    <br/>
+    <p><b>Dear {{ username }},</b></p>
+  </div>
+  <div>
+    <br/>
+  </div>
+  <div class="frow flc info-content--status-icon">
+    {% svg 'status-cancelled' %}
+    <p>Your appointment scheduled to <b>{{ appointment.datetime }}</b> has been cancelled.</p>
+  </div>
+</div>
 {% include "messages.html" %}
 {% endblock %}
