@@ -182,9 +182,13 @@ def change_appointment_status(
 
     if form.is_valid():
         form.set_status(status)
+        if status == Communication.STATUS_OPEN:
+            messages.success(
+                request, 'Appointment has been accepted.')
 
-    messages.success(
-        request, 'Appointment has been accepted.')
+        if status == Communication.STATUS_REJECTED:
+            messages.error(
+                request, 'Appointment has been rejected.')
 
     return redirect('dashboard:appointments')
 

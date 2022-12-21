@@ -1,6 +1,5 @@
 The appointment has been accepted.
 
-Email: {{ email }}
 Message: {{ message }}
 Appointment Date: {{ datetime }}
 Videochat Link URL: {{ videochat_url }}
