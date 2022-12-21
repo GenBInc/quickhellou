@@ -414,6 +414,7 @@ a.aside__navi-item--activated {
 }
 
 div.com__list-link,
+a.appointment-list_open_chat_button,
 a.team__list-link,
 a.widgets__list-link {
   padding: 5px;
@@ -1410,19 +1411,32 @@ select.time_select {
   color: #e5332a;
 }
 
+a.appointment-list_open_chat_button,
 div.list-link--accept,
 div.list-link--reject {
   width: unset;
   min-width: unset;
   max-width: unset;
   border-radius: 30px;
-  padding: 5px 10px 2px 10px;
+  padding: 5px 10px 5px 10px;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 500;  
 }
+
+a.appointment-list_open_chat_button {
+  border-color: #001588;
+  color: black;
+}
+
+a.appointment-list_open_chat_button:hover {
+  background-color: #001588;
+  color: white;
+}
+
 
 div.list-link--accept {
   border-color: #00a100;
+  margin-right: 10px !important;
 }
 
 div.list-link--reject {

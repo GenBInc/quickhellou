@@ -17,7 +17,7 @@
     </div>
     
     <div class="df flc widget-list__field widget-list__field--date-time">
-      {{ communication.modification_time|date:"m/d/Y H:i:s" }}
+      {{ communication.datetime|date:"m/d/Y H:i:s" }}
     </div>
 
     <div class="flc widget-list__field widget-list__field--name">
@@ -27,11 +27,6 @@
     </div>
     <div class="flc widget-list__field widget-list__field--contact">
         {{ communication.caller.profile.email_or_phone|truncatechars:32 }}
-    </div>
-    <div class="flc widget-list__field widget-list__field--url">
-      <div class="fcol">
-        <a class="widget-list__url-label widget-list__label--link-url" href="{{ communication.link_url }}" target="_blank" >{{ communication.short_url }}</a>
-      </div>
     </div>
     
     <div class="f1"></div>
@@ -45,6 +40,10 @@
       </form>
       {% else %}
 
+      {% if communication.status == 2 %}
+        <a class="fc df-f1 appointment-list_open_chat_button widgets__list-link" href="{{ communication.link_url }}" target="_blank" >Open Chat</a>
+      {% endif %}
+  
       <a class="fc df-f1 widgets__list-link list-link--edit" href="{% url 'dashboard:appointment_edit' appointment_id=communication.id  %}"
           target="_self"
           aria-label="Edit"

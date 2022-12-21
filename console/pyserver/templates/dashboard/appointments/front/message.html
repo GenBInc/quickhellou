@@ -23,7 +23,7 @@
 
   <div class="frow flc info-content--status-icon">
     {% svg 'status-posted' %}
-    <p>Send a message regarding appointment that has been scheduled to <b>{{ appointment.datetime }}</b></p>
+    <p>Send a message regarding appointment that has been scheduled to <b>{{ appointment.datetime|date:"m/d/Y H:i:s" }}</b></p>
     <br/><br/>
   </div>
 

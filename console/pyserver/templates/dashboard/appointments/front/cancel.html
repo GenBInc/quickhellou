@@ -22,7 +22,7 @@
   </div>
   <div class="frow flc info-content--status-icon">
     {% svg 'status-cancelled' %}
-    <p>Your appointment scheduled to <b>{{ appointment.datetime }}</b> has been cancelled.</p>
+    <p>Your appointment scheduled to <b>{{ appointment.datetime|date:"m/d/Y H:i:s" }}</b> has been cancelled.</p>
   </div>
 </div>
 {% include "messages.html" %}
