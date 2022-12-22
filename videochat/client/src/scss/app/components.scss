@@ -1333,10 +1333,12 @@ body.subpage {
   flex-direction: column;
   max-width: 1000px;
   width: 90%;
-  margin-top:120px;
-  margin-bottom:120px;
+  margin-top:0px; 
+  margin-bottom:20px;
 
   @media (min-width: $s-md) {
+    margin-top:120px; 
+    margin-bottom:120px;   
     flex-direction: row;
   }  
 
