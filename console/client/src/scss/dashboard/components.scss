@@ -607,6 +607,12 @@ a.call-list__button--deactivate {
   background-color: $color--apricot;
 }
 
+.call-list__entry--past {
+  filter: grayscale(1);
+  background-color: #f1f6ff !important;
+}
+
+
 .call-list__entry--completed {
   background-color: lightgreen;
 }

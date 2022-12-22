@@ -9,25 +9,39 @@
     {% endfor %}
   </div>
   
+  {% now "Y-m-d" as todays_date %}
+  {% now "H:i A" as todays_hour %}
+
   <div class="scheduler__days">
   {% for day in page.days %}
+
+  {% if day.time|length > 0 %}
+
   <div class="f1 fcol scheduler__day">
     <div class="f1 fcol scheduler__day-header_wrap">
-      <span class="fc scheduler__day-info">row.month row.year</span>
       <div class="fcol scheduler__day-header">
         <span class="scheduler__day-text scheduler__day-name">{{ day.day_name }}</span>
         <span class="scheduler__day-text">{{ day.month_date }}</span>
       </div>
     </div>
+
+   
+    
     {% for hour in day.time %}
-      <div
-        class="fc scheduler__button scheduler__button--time scheduler__time"
-        data-time="{{ day.date }} {{ hour }}"
-      >
-        <span class="scheduler__button-text">{{ hour }}</span>
-      </div>
+
+        <div
+          class="fc scheduler__button scheduler__button--time scheduler__time {% if todays_date == day.date and todays_hour > hour|date:'H:i A' %}past-time{% endif %}"
+          data-time="{{ day.date }} {{ hour|date:'h:i A' }}"
+        >
+          <span class="scheduler__button-text">{{ hour|date:"h:i A" }}</span>
+        </div>
+      
     {% endfor %}
+
   </div>
+
+  {% endif %}
+
   {% endfor %}
 </div>
 </div>

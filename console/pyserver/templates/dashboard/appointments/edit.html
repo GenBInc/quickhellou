@@ -25,10 +25,14 @@
 
   <div class="f1"></div>
 
+  {% now "m/d/Y H:i" as todays_date %}
+
+  {% if todays_date < appointment.datetime|date:'m/d/Y H:i' %}
   <form action="{% url 'dashboard:send_appointment_reminder' appointment_id=appointment.id  %}" method="post" novalidate>
     {% csrf_token %}
     <input class="form__button form__submit form--dashboard__submit save__submit" type="submit" value="Send Reminder">
   </form>
+  {% endif %}
 </div>
 
 

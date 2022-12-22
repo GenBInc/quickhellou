@@ -1,6 +1,11 @@
 {% load static %} {% load svg %}
 {% for communication in communications %}
-  <div class="flc view-list__entry call-list__entry call-list__entry--{{ communication.status_verbose }}">
+
+  {% now "m/d/Y H:i" as todays_date %}
+
+  <div class="flc view-list__entry call-list__entry call-list__entry--{{ communication.status_verbose }} 
+  {% if todays_date > communication.datetime|date:'m/d/Y H:i' %}call-list__entry--past{% endif %}"
+  >
     
     <div class="widget-list__field widget-list__field--id">      
       {{ communication.id }}
@@ -17,7 +22,7 @@
     </div>
     
     <div class="df flc widget-list__field widget-list__field--date-time">
-      {{ communication.datetime|date:"m/d/Y H:i:s" }}
+      {{ communication.datetime|date:"m/d/Y H:i" }}
     </div>
 
     <div class="flc widget-list__field widget-list__field--name">
@@ -31,7 +36,7 @@
     
     <div class="f1"></div>
     <div class="flc widget-list__field widget-list__field--mod-bar">
-      {% if communication.status == 1 %}
+      {% if communication.status == 1 and todays_date < communication.datetime|date:'m/d/Y H:i' %}
       <form class="form--accept-appointment" data-id="{{ communication.id }}" action="{% url 'dashboard:accept_appointment' appointment_id=communication.id %}" method="post">{% csrf_token %}
         <div class="fc df-f1 com__list-link list-link--accept" data-id="{{ communication.id }}" >Accept</div>
       </form>

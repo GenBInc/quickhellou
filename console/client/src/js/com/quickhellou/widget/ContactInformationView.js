@@ -101,6 +101,7 @@ export class ContactInformationView extends UIView {
    * @returns
    */
     async sendContactForm() {
+      this.showPageLoader();
       const formElement = document.querySelector('.contact-information__form')
       return new Promise((resolve, reject) => {
         const fieldSet = {
@@ -122,4 +123,26 @@ export class ContactInformationView extends UIView {
           })
       })
     }
+
+  /**
+   * Shows page loader.
+   *
+   * @memberof ContactInformationView
+   */
+  showPageLoader() {
+    if (this.uiExists('div.loader-wrap')) {
+      const pageLoader = this.uiGet('div.loader-wrap')
+      pageLoader.classList.add('js-active')
+    }
+  }
+
+  /**
+   * Hides page loader.
+   *
+   * @memberof ContactInformationView
+   */
+  hidePageLoader() {
+    const pageLoader = this.uiGet('div.loader-wrap')
+    pageLoader.classList.remove('js-active')
+  }    
 }

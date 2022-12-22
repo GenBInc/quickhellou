@@ -167,7 +167,7 @@ def collect_weekly_hours(
     weekly_hours: dict[str, list[str]] = {}
     for day_code in time_ranges:
         datetime_ranges: list[str] = time_ranges[day_code]
-        daily_hours: list[str] = []
+        daily_hours: list[datetime] = []
         for index, datetime_range in enumerate(datetime_ranges):
             search_result: Match[str] = search(RANGE_PATTERN, datetime_range)
             datetime_from_str: str = search_result.group(2)
@@ -183,9 +183,9 @@ def collect_weekly_hours(
                 working_hour: datetime = datetime_from + \
                     timedelta(
                         hours=i * TIME_INTERVAL_VARIABLES[user.time_interval][1])
-                daily_hours.append(working_hour.strftime(TIME_FORMAT))
+                daily_hours.append(working_hour)
         daily_hours = sorted(
-            list(set(daily_hours)), key=lambda x: datetime.strptime(x, TIME_FORMAT))
+            list(set(daily_hours)), key=lambda x: x)
         weekly_hours[day_code] = daily_hours
 
     return weekly_hours

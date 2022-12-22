@@ -683,7 +683,7 @@ def appointments_list_view(
         HttpResponse: the HTTP response
     """
     communications: list[Communication] = Communication.objects.filter(
-        client_board=request.user.client_board).filter(active=True).order_by('-modification_time')
+        client_board=request.user.client_board).filter(active=True).order_by('-datetime')
 
     return render(request, 'dashboard/appointments/list.html', {
         'user': request.user,
@@ -1013,6 +1013,7 @@ def widget_calendar_view(
             day: dict = {
                 'info': '',
                 'date': date.strftime('%Y-%m-%d'),
+                'datetime': date,
                 'day_name': date.strftime('%A'),
                 'month_date': date.strftime('%b %d'),
                 'time': working_hours.get(date.strftime('%w'))
