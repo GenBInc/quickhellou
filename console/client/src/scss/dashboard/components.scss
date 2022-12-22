@@ -309,8 +309,21 @@ a.aside__navi-item--activated {
 }
 
 .widget-list__field {
-  margin-right: 10px;
+  margin: 5px;  
   white-space: nowrap;
+
+  @media (min-width: $s-sm) {
+    margin: 0px;
+    margin-right: 10px;    
+  }  
+}
+
+.widget-list__row {
+  width: 100%;
+
+  @media (min-width: $s-sm) {
+    width: auto;
+  }    
 }
 
 .widget-list__field:last-child {
@@ -318,7 +331,11 @@ a.aside__navi-item--activated {
 }
 
 .widget-list__field--id {
-  min-width: 30px;
+  min-width: auto;
+
+  @media (min-width: $s-sm) {
+    min-width: 30px;
+  }    
 }
 
 .widget-list__label--link-url {
