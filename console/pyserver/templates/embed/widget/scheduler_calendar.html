@@ -1,0 +1,24 @@
+{% load static %} {% load svg %}
+
+<div class="df fcol flc widget--schedule__scheduler scheduler">
+
+  <div class="df fc df-f1 scheduler__paging_row">
+    <a class="scheduler__pages-nav-button scheduler__pages-nav-button--prev">
+      {% svg 'prev-icon' %}
+    </a>
+
+    <div class="f1"></div>
+  
+    <a class="scheduler__pages-nav-button scheduler__pages-nav-button--next">
+      {% svg 'next-icon' %}
+    </a>
+    
+  </div>
+  <div class="flc scheduler__pages">    
+    {% for page in pages %}
+      {% include "embed/widget/scheduler_page.html" %}
+    {% endfor %}
+  </div>  
+</div>
+
+<input type="hidden" name="datetime" value="2022-11-29 11:00 AM">

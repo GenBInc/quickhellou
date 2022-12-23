@@ -1,0 +1,6 @@
+New appointment has been created.
+
+Email: {{ email }}
+Phone: {{ phone }}
+Message: {{ message }}
+Date: {{ datetime }}

@@ -1156,7 +1156,7 @@ export class AppController extends EventDispatcherService {
   }
 
   private updateInvitationLinks(roomID: string): void {
-    const tmpRoomLink: string = `https://www.quickhellou.com/r/${roomID}`
+    const tmpRoomLink: string = `https://www.qhellou.com/r/${roomID}`
 
     const invitationLink: HTMLLinkElement = HTMLUtils.get(
       `.overlay--send-invitation__message-editable a`

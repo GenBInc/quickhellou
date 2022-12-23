@@ -7,6 +7,7 @@ import { MDCFormField } from '@material/form-field'
 import { MDCCheckbox } from '@material/checkbox'
 import { MDCRadio } from '@material/radio'
 import { QhUtils } from './com/quickhellou/base/utils/QhUtils'
+import { CalendarView } from './com/quickhellou/dashboard/CalendarView'
 import { DashboardView } from './com/quickhellou/dashboard/DashboardView'
 import { WidgetView } from './com/quickhellou/dashboard/WidgetView'
 import { CallsView } from './com/quickhellou/dashboard/CallsView'
@@ -35,13 +36,19 @@ export function initUrlInput(formQuerySelector) {
 function initPhone() {}
 
 document.addEventListener('DOMContentLoaded', () => {
-  const list = MDCList.attachTo(document.querySelector('.mdc-list'))
-  list.wrapFocus = true
 
+  try {
+    initColorPicker()
+    const list = MDCList.attachTo(document.querySelector('.mdc-list'))
+    if (!!list) {
+      list.wrapFocus = true
+    }
+  } catch (e) {}
   const topAppBarElement = document.querySelector('.mdc-top-app-bar')
   if (topAppBarElement) {
     MDCTopAppBar.attachTo(topAppBarElement)
   }
+  
   const inputElements = Array.from(document.querySelectorAll('.mdc-text-field'))
   inputElements.forEach((inputElement) => {
     MDCTextField.attachTo(inputElement)
@@ -73,19 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     radioFormFieldElement.input = radioElement
   })
 
-  const colorSchemeRadioElements = document.querySelectorAll(
-    "input[name='background_color']"
-  )
-  const backgroundGraphicElement = document.querySelector(
-    '.widget-outlook__background-circle'
-  )
-
-  colorSchemeRadioElements.forEach((colorSchemeRadioElement) => {
-    colorSchemeRadioElement.addEventListener('change', (event) => {
-      backgroundGraphicElement.style.fill = `#${event.target.value}`
-    })
-  })
-
+  
   const messageInput = document.querySelector('.message')
   if (messageInput) {
     const snackbarElement = document.querySelector('.mdc-snackbar')
@@ -102,21 +97,221 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const selectElement = document.querySelector('.mdc-select')
-  if (selectElement) {
-    MDCSelect.attachTo(selectElement)
-  }
+  const selectElements = document.querySelectorAll('.mdc-select')
+  selectElements.forEach(selectElement => {
+    if (selectElement) {
+      MDCSelect.attachTo(selectElement)
+    }
+  })
   initUrlInput('.form--profile')
-  initPhone()
+  //initPhone()
 
   // init current view
   let uiView
   if (QhUtils.isPage('widget_detail')) {
     uiView = new WidgetView()
-  } else if (QhUtils.isPage('communications')) {
+  } else if (QhUtils.isPage('appointments')) {
     uiView = new CallsView()
+  } else if (QhUtils.isPage('calendar') || QhUtils.isPage('calendar_edit')) {
+    uiView = new CalendarView()
   } else {
     uiView = new DashboardView()
   }
   uiView.init()
+
+  try {
+    initMobileMenu()
+    initMessages()
+    initIconInput()
+  } catch(e) {}
+
 })
+
+const initColorPicker = () => {
+
+  Coloris({
+    parent: '.color-dot-wrap',
+    alpha: true,
+    focusInput: false,
+    theme: 'polaroid',
+    /*format: 'rgb',
+    saveButton: {
+      show: true,
+      label: 'Save',
+    },
+    clearButton: {
+      show: true,
+      label: 'Cancel',
+    },*/
+    swatches: [
+      '#231f20',
+      '#264653',
+      '#2a9d8f',
+      '#e9c46a',
+      '#f4a261',
+      '#e76f51',
+      '#d62828',
+      '#023e8a',
+      '#0096c7',
+      '#00b4d8',
+      '#48cae4',
+      '#ffffff',
+    ],
+  })
+
+  
+  const colorDot = document.querySelector('.color-dot');
+  if (!!colorDot) {
+    updateColor();
+    colorDot.addEventListener('click', openColorPicker);
+  }
+
+  const colorInput = document.querySelector('.widget-color-field')
+  if (!!colorInput) {
+    colorInput.addEventListener('input', updateColor)
+  }
+
+}
+
+const updateColor = () => {
+  const colorInput = document.querySelector('.widget-color-field')
+  const colorDot = document.querySelector('.color-dot')
+  const previewDot = document.querySelector('.widget-outlook__background-circle')
+
+  if (!!colorInput && !!colorDot && !!previewDot) {
+    previewDot.style.fill = colorDot.style.backgroundColor = colorInput.value;
+  }
+
+}
+
+
+
+const openColorPicker = (e) => {
+
+  const colorInput = document.querySelector('.widget-color-field')
+  colorInput.dispatchEvent(new Event('openPicker', { bubbles: true }));
+  
+}
+
+const initMessages = () => {
+  const ulMessages = document.querySelector('ul.messages')
+  if (!!ulMessages) {
+    ulMessages.classList.add('js-fade')
+  }
+}
+
+const initMobileMenu = () => {
+
+  const mobileMenu = document.querySelector('.mobile-menu_button')
+
+
+  mobileMenu.addEventListener('click', () => {
+
+    const asideDrawer = document.querySelector('aside.mdc-drawer')
+
+    if (asideDrawer.classList.contains("aside-active")) {
+      asideDrawer.classList.remove("aside-active")
+    } else {
+      asideDrawer.classList.add("aside-active")
+    }
+    
+  }) 
+
+
+  const pageContent = document.querySelector('.main-content')
+
+  pageContent.addEventListener('click', function (e) {
+    const asideDrawer = document.querySelector('aside.mdc-drawer')
+    asideDrawer.classList.remove("aside-active")
+    e.stopPropagation();
+  })  
+
+  const asideCloseButton = document.querySelector('.aside-close-button  ')
+
+  asideCloseButton.addEventListener('click', function (e) {
+    const asideDrawer = document.querySelector('aside.mdc-drawer')
+    asideDrawer.classList.remove("aside-active")
+    e.stopPropagation();
+  })  
+
+}
+
+const initIconInput = () => {
+  
+  const iconInput = document.querySelector('#icon-input')
+  if (!!iconInput) {
+    iconInput.addEventListener('change', updateIconName)
+  }
+
+  window.clearWidgetIcon = clearWidgetIcon;
+  window.onChangeBrowseIcon = onChangeBrowseIcon;
+}
+
+const updateIconName = (e) => {
+  
+  const iconNameLabel = document.querySelector('.icon-name-label')
+  if (!!iconNameLabel) {
+    iconNameLabel.innerHTML=e.currentTarget.files[0].name;
+    iconNameLabel.setAttribute('href', "#");
+    iconNameLabel.setAttribute('target', "_self");
+  }
+  
+}
+
+export function clearWidgetIcon() {
+
+  const iconInput = document.querySelector('#icon-input')
+  if (!!iconInput) {
+    iconInput.value="";
+
+
+    const iconNameLabel = document.querySelector('.icon-name-label')
+    if (!!iconNameLabel) {
+      iconNameLabel.innerHTML="images/logo.svg";
+      iconNameLabel.setAttribute('href', "/media/images/logo.svg");
+      iconNameLabel.setAttribute('target', "_blank");
+    }
+
+    const outlookIcon = document.querySelector('.widget-outlook__icon')
+    if (!!outlookIcon) {  
+  
+      outlookIcon.style.backgroundImage = "url(/media/images/logo.svg)"
+  
+    }    
+  
+  }
+  
+  const buttonBrowse = document.querySelector('.console-button_browse-icon')
+  if (!!buttonBrowse) {  
+    buttonBrowse.classList.remove("js-hidden");
+  }
+
+  const buttonClear = document.querySelector('.console-button_clear-icon')
+  if (!!buttonClear) {  
+    buttonClear.classList.add("js-hidden");
+  }
+
+}
+
+export function onChangeBrowseIcon(target) {
+
+  const outlookIcon = document.querySelector('.widget-outlook__icon')
+  if (!!outlookIcon) {  
+
+    outlookIcon.style.backgroundImage = "url("+window.URL.createObjectURL(target.files[0])+")"
+
+  }
+
+
+  const buttonBrowse = document.querySelector('.console-button_browse-icon')
+  if (!!buttonBrowse) {  
+    buttonBrowse.classList.add("js-hidden");
+  }
+
+  const buttonClear = document.querySelector('.console-button_clear-icon')
+  if (!!buttonClear) {  
+    buttonClear.classList.remove("js-hidden");
+  }
+
+
+}

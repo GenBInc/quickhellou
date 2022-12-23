@@ -2,6 +2,38 @@ version: "3"
    
 services:
 
+  console_db:
+    container_name: console_db
+    image: postgres:alpine
+    volumes: 
+      - ./temp/db:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    environment:
+      - POSTGRES_NAME=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    networks:
+      console_network:
+        ipv4_address: 192.180.0.21
+  
+  pgadmin:
+    container_name: pgadmin4_qh
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    depends_on:
+      - console_db
+    networks:
+      - console_network
+    logging:
+      driver: none
+
   console_pyserver:
     container_name: console_pyserver
     build:
@@ -14,6 +46,7 @@ services:
       - "${HELPDESK_APP_PORT}:${HELPDESK_APP_PORT}"
     volumes:
       - "./console/pyserver:/pyserver"
+      - "./console/client/dist:/pyserver/console/static"
     networks:
       console_network:
         ipv4_address: 192.180.0.20
@@ -21,6 +54,9 @@ services:
     environment:
       - HELPDESK_APP_PORT=${HELPDESK_APP_PORT}
       - HELPDESK_APP_HOST=${HELPDESK_APP_HOST}
+      - VIDEOCHAT_APP_HOST=${VIDEOCHAT_APP_HOST}
+      - WEB_SERVICE_URL=${COLLIDER_SERVER_BASE_URL}
+      - WEB_SERVICE_PROTOCOL=${WEB_SERVICE_PROTOCOL}
       - EMAIL_HOST=${EMAIL_HOST}
       - EMAIL_PORT=${EMAIL_PORT}
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
@@ -28,10 +64,11 @@ services:
       - EMAIL_USE_SSL=${EMAIL_USE_SSL}
 
       - CERT_FILE=${CERT_FILE}
-      - CERT_CHAIN_FILE=${CERT_CHAIN_FILE}      
+      - CERT_CHAIN_FILE=${CERT_CHAIN_FILE}
       - KEY_FILE=${KEY_FILE}
 
-      - SUPPORT_EMAIL=${SUPPORT_EMAIL}      
+      - SUPPORT_EMAIL=${SUPPORT_EMAIL}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
       - SECRET_KEY=${SECRET_KEY}
 
       - POSTGRES_NAME=${POSTGRES_NAME}
@@ -42,23 +79,7 @@ services:
 
     depends_on:
       - console_db
-      - goserver
-
-  console_db:
-    container_name: console_db
-    image: postgres:alpine
-    volumes: 
-      - ./temp/db:/var/lib/postgresql/data
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
-    environment:
-      - POSTGRES_NAME=${POSTGRES_NAME}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}      
-      - POSTGRES_HOST_AUTH_METHOD=trust
-    networks:
-      console_network:
-        ipv4_address: 192.180.0.21     
+      - goserver 
 
 networks:
   console_network:

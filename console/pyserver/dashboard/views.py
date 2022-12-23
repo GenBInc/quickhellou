@@ -1,13 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import ast
-import datetime
-import io
-import os
+from datetime import (
+    datetime,
+    timedelta,
+)
 import re
 import hashlib
-
+from io import BytesIO, TextIOWrapper
+from django.views.decorators.http import (
+    require_POST,
+)
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseRedirect
+)
+from django.utils.timezone import make_aware
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.mail import send_mail
@@ -15,95 +24,125 @@ from django.http import FileResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from accounts.models import (
+    Profile,
+    User,
+)
+from dashboard.util.time import (
+    HOURS,
+    MINUTES,
+    TIME_FORMAT,
+    DATETIME_FORMAT,
+    format_day_with_ordinal,
+    collect_weekly_hours,
+)
+from dashboard.forms import (
+    AssignedWidgetsForm,
+    AssigneesForm,
+    CommunicationForm,
+    ProfileForm,
+    ProfileMetaForm,
+    UserForm,
+    WidgetScheduleForm,
+    WidgetForm,
+    WidgetTemplateForm,
+    CommunicationSessionForm,
+    WidgetActiveUserForm,
+    CalendarForm,
+    ContactInformationForm,
+    AppointmentActivationForm,
+    SendAppointmentMessageForm,
+    SendAppointmentReminderForm
+)
+from dashboard.models import (
+    ClientBoard,
+    Communication,
+    CommunicationSession,
+    Widget,
+    WidgetTemplate,
+    UserWorkingHours,
+)
 
-from console import settings
-from accounts.models import Profile, User
 
-from .forms import (ApplicationSettingsForm, AssignedWidgetsForm,
-                    AssigneesForm, CommunicationForm, ProfileForm,
-                    ProfileMetaForm, UserForm, WidgetExtensionViewForm,
-                    WidgetForm, WidgetTemplateForm, CommunicationSessionForm,
-                    WidgetActiveUserForm)
-from .models import (ApplicationSettings, Communication, CommunicationSession,
-                     Widget, WidgetTemplate)
-
-
-@login_required(login_url="/accounts/login")
-def home_view(request):
+@login_required
+def home_view(request: HttpRequest):
     user = request.user
     return render(request, 'dashboard/home.html', {'user': request.user})
 
-@login_required(login_url="/accounts/login")
-def widgets_view(request):
-    widgets = Widget.objects.filter(
+
+@login_required
+def widgets_view(
+    request: HttpRequest
+) -> HttpResponse:
+    widgets: list[Widget] = Widget.objects.filter(
         active=True, client_board=request.user.client_board).order_by('id')
-    active_widgets_len = len(widgets.filter(paused=False))
+    active_widgets_len: int = len(widgets.filter(paused=False))
     return render(request, 'dashboard/widgets.html', {
-        'user': request.user, 
-        'widgets': widgets, 
-        'languages': Widget.LANG_CHOICES, 
+        'user': request.user,
+        'widgets': widgets,
+        'languages': Widget.LANG_CHOICES,
         'active_widgets_len': active_widgets_len})
+
 
 @permission_required("is_default_admin")
 @permission_required("is_default_editor")
-@login_required(login_url="/accounts/login")
-def settings_view(request):
-    widget_templates = WidgetTemplate.objects.all()
-    video_app_url = ApplicationSettings.objects.get(property='video_app_url')
-    console_app_url = ApplicationSettings.objects.get(property='console_app_url')
-    ws_service_url = ApplicationSettings.objects.get(property='ws_service_url')        
-    admin_email_address = ApplicationSettings.objects.get(property='admin_email_address')        
-    if request.method == 'POST':
-        form = ApplicationSettingsForm(request.POST)
-        if form.is_valid():
-            video_app_url.value = form.cleaned_data['video_app_url']
-            video_app_url.save()
-
-            console_app_url.value = form.cleaned_data['console_app_url']
-            console_app_url.save()
-
-            admin_email_address.value = form.cleaned_data['admin_email_address']
-            admin_email_address.save()
-
-            ws_service_url.value = form.cleaned_data['ws_service_url']
-            ws_service_url.save()
-
-            messages.success(
-                request, 'Settings have been saved.')
-            return redirect('dashboard:settings')
-    return render(request, 'dashboard/settings.html', {
-        'widget_templates' : widget_templates,
-        'video_app_url':video_app_url.value,
-        'console_app_url':console_app_url.value,
-        'ws_service_url':ws_service_url.value,
-        'admin_email_address':admin_email_address.value
+@login_required
+def templates_view(
+    request: HttpRequest
+) -> HttpResponse:
+    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.filter(
+        active=True, last_editor=request.user
+    ).order_by('id')
+    return render(request, 'dashboard/templates.html', {
+        'widget_templates': widget_templates
     })
+
 
 @permission_required("is_default_editor")
-@login_required(login_url="/accounts/login")
-def communication_edit_view(request, communication_id=None):
-    if communication_id is not None:
-        communication = Communication.objects.get(id=communication_id)
-        com_sessions = communication.communicationsession_set.all()
+@login_required
+def appointment_edit_view(
+    request: HttpRequest,
+    appointment_id: int = None
+) -> HttpResponse:
+    """Appointment edit view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (int, optional): the appointment id. Defaults to None.
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    form: CommunicationForm = None
+    if appointment_id is not None:
+        appointment: Communication = Communication.objects.get(
+            id=appointment_id)
+        com_sessions: list[CommunicationSession] = appointment.communicationsession_set.all(
+        )
+        form = CommunicationForm(instance=appointment)
     else:
-        return redirect('dashboard:communications')
+        return redirect('dashboard:appointments')
     if request.method == 'POST':
-        form = CommunicationForm(request.POST, instance=communication)
+        form = CommunicationForm(request.POST, instance=appointment)
         if form.is_valid():
-            instance = form.save(commit=False)
-            instance.modification_time = datetime.datetime.now()
-            instance.save()
+            form.save_all()
             messages.success(
-                request, 'Communication record has been saved.')
-            return redirect('dashboard:communications')
-    return render(request, 'dashboard/communication_edit.html', {
-        'communication' : communication,
-        'client_user' : communication.caller,
+                request, 'Appointment has been saved.')
+            return redirect('dashboard:appointments')
+    return render(request, 'dashboard/appointments/edit.html', {
+        'form': form,
+        'appointment': appointment,
+        'client_user': appointment.caller,
         'statuses': Communication.STATUS_CHOICES,
-        'com_sessions' : com_sessions,
+        'com_sessions': com_sessions,
     })
 
-def communication_session_edit_view(request, session_id):
+
+def communication_session_edit_view(
+    request: HttpRequest,
+    session_id: int
+) -> HttpResponse:
     instance = get_object_or_404(CommunicationSession, id=session_id)
     form = CommunicationSessionForm(request.POST or None, instance=instance)
     if form.is_valid():
@@ -121,24 +160,227 @@ def communication_session_edit_view(request, session_id):
         messages.success(
             request, 'Communication session has been saved.')
     return render(request, 'dashboard/communication_session_edit.html', {
-        'session' : instance,
-        'client_user' : instance.communication.caller,
+        'session': instance,
+        'client_user': instance.communication.caller,
         'statuses': CommunicationSession.STATUS_CHOICES,
     })
 
+
+def change_appointment_status(
+    request: HttpRequest,
+    appointment_id: str,
+    status: int,
+) -> HttpResponseRedirect:
+    appointment: Communication = Communication.objects.get(
+        id=appointment_id)
+
+    if not appointment:
+        raise Http404
+
+    form: AppointmentActivationForm = AppointmentActivationForm(
+        request.POST, instance=appointment)
+
+    if form.is_valid():
+        form.set_status(status)
+        if status == Communication.STATUS_OPEN:
+            messages.success(
+                request, 'Appointment has been accepted.')
+
+        if status == Communication.STATUS_REJECTED:
+            messages.error(
+                request, 'Appointment has been rejected.')
+
+    return redirect('dashboard:appointments')
+
+
+@login_required
+def accept_appointment(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponseRedirect:
+    """Accepts appointment.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (str): the appointment id
+
+    Returns:
+        HttpResponseRedirect: the HTTP response redirect
+    """
+    return change_appointment_status(
+        request,
+        appointment_id,
+        Communication.STATUS_OPEN
+    )
+
+
+def cancel_appointment(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponse:
+    """Cancel appointment view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (str): the appointment id
+
+    Raises:
+        Http404: the error
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    appointment: Communication = Communication.objects.get(
+        id=appointment_id)
+
+    if not appointment:
+        raise Http404
+
+    appointment.status = Communication.STATUS_CANCELLED
+    appointment.save()
+
+    return render(request, 'dashboard/appointments/front/cancel.html', {
+        'username': appointment.caller.profile.full_name,
+        'appointment': appointment,
+    })
+
+
+def send_appointment_reminder(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponseRedirect:
+    appointment: Communication = Communication.objects.get(
+        id=appointment_id)
+
+    if not appointment:
+        raise Http404
+
+    form: SendAppointmentReminderForm = SendAppointmentReminderForm(
+        request.POST)
+    if form.is_valid():
+        form.send_reminder(appointment)
+
+    messages.success(
+        request, 'Reminder has been sent.')
+
+    com_sessions: list[CommunicationSession] = appointment.communicationsession_set.all()
+
+    return render(request, 'dashboard/appointments/edit.html', {
+        'form': form,
+        'appointment': appointment,
+        'client_user': appointment.caller,
+        'statuses': Communication.STATUS_CHOICES,
+        'com_sessions': com_sessions,
+    })
+
+
+@csrf_exempt
+def send_appointment_message(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponseRedirect:
+    """Handles appointment message sent by caller.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (str): the appointment id
+
+    Raises:
+        Http404: the error
+
+    Returns:
+        HttpResponseRedirect: the HTTP response redirect
+    """
+    appointment: Communication = Communication.objects.get(
+        id=appointment_id)
+
+    if not appointment:
+        raise Http404
+
+    form: SendAppointmentMessageForm = SendAppointmentMessageForm(request.POST)
+    if form.is_valid():
+        form.add_message(appointment)
+        messages.success(
+            request, 'Message has been sent.')
+
+    return render(request, 'dashboard/appointments/front/message.html', {
+        'username': appointment.caller.profile.full_name,
+        'form': form,
+        'appointment': appointment,
+    })
+
+
+def appointment_message_view(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponse:
+    """Appointment message view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (str): the appointment id
+
+    Raises:
+        Http404: the error
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    appointment: Communication = Communication.objects.get(
+        id=appointment_id)
+
+    if not appointment:
+        raise Http404
+
+    appointment.status = Communication.STATUS_CANCELLED
+    appointment.save()
+
+    print(1, appointment.caller.profile.__dict__)
+    return render(request, 'dashboard/appointments/front/message.html', {
+        'username': appointment.caller.profile.full_name,
+        'appointment': appointment,
+    })
+
+
+@login_required
+def reject_appointment(
+    request: HttpRequest,
+    appointment_id: str,
+) -> HttpResponseRedirect:
+    """Rejects appointment.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (str): the appointment id
+
+    Returns:
+        HttpResponseRedirect: the HTTP response redirect
+    """
+    return change_appointment_status(
+        request,
+        appointment_id,
+        Communication.STATUS_REJECTED,
+    )
+
+
 @permission_required("is_default_admin")
 @permission_required("is_default_editor")
-@login_required(login_url="/accounts/login")
-def widget_create_view(request):
-    users = User.objects.filter(client_board=request.user.client_board)
-    widget_templates = WidgetTemplate.objects.all()
+@login_required
+def widget_create_view(
+    request: HttpRequest
+) -> HttpResponse:
+    users: list[User] = User.objects.filter(
+        client_board=request.user.client_board)
+    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.filter(
+        active=True, last_editor=request.user
+    ).order_by('id')
     if request.method == 'POST':
-        form = WidgetForm(request.POST)
-        assignees_form = AssigneesForm(request.POST)
+        form: WidgetForm = WidgetForm(request.POST)
+        assignees_form: AssigneesForm = AssigneesForm(request.POST)
         if form.is_valid() and assignees_form.is_valid():
             instance = form.save(commit=False)
             instance.client_board = request.user.client_board
-            instance.last_change = datetime.datetime.now()
+            instance.last_change = make_aware(datetime.now())
             instance.last_editor = request.user
             instance.save()
             """ Add assignees """
@@ -155,17 +397,25 @@ def widget_create_view(request):
     return render(request, 'dashboard/widget_create.html', {
         'assignees_form': assignees_form,
         'form': form,
-        'languages' : Widget.LANG_CHOICES,
-        'widget_templates' : widget_templates,
+        'languages': Widget.LANG_CHOICES,
+        'widget_templates': widget_templates,
         'users': users})
 
-@login_required(login_url="/accounts/login")
-def widget_edit_view(request, widget_id=None):
-    widget_templates = WidgetTemplate.objects.all()
-    users = User.objects.filter(client_board=request.user.client_board, is_admin=True)
+
+@login_required
+def widget_edit_view(
+    request: HttpRequest,
+    widget_id: int = None
+) -> HttpResponse:
+    widget_templates: list[WidgetTemplate] = WidgetTemplate.objects.filter(
+        active=True, last_editor=request.user
+    ).order_by('id')
+    users: list[User] = User.objects.filter(
+        client_board=request.user.client_board, is_admin=True)
     if widget_id is not None:
         widget = Widget.objects.get(id=widget_id)
-        widget_code = '<script>' + create_widget_embed_script(widget) + '</script>'
+        widget_code = '<script>{}</script>'.format(
+            create_widget_embed_script(widget))
     else:
         return redirect('dashboard:widgets')
     if request.method == 'POST':
@@ -173,7 +423,7 @@ def widget_edit_view(request, widget_id=None):
         assignees_form = AssigneesForm(request.POST)
         if form.is_valid() and assignees_form.is_valid():
             instance = form.save(commit=False)
-            instance.last_change = datetime.datetime.now()
+            instance.last_change = make_aware(datetime.now())
             instance.last_editor = request.user
             instance.save()
             """ Update assignees """
@@ -193,66 +443,180 @@ def widget_edit_view(request, widget_id=None):
         'assignees_form': assignees_form,
         'client_board': request.user.client_board,
         'users': users,
-        'languages' : Widget.LANG_CHOICES,
-        'widget_templates' : widget_templates,
+        'languages': Widget.LANG_CHOICES,
+        'widget_templates': widget_templates,
         'widget': widget,
-        'widget_code' : widget_code})
+        'widget_code': widget_code
+    })
+
+
+@require_POST
+@login_required
+def save_calendar(
+    request: HttpRequest,
+) -> HttpResponse:
+    """Saves calendar.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    user: User = request.user
+    form: CalendarForm = CalendarForm(
+        request.POST,
+        time_interval=user.time_interval,
+        working_hours=None
+    )
+    if form.is_valid():
+        form.save_all(user)
+        messages.success(
+            request, 'Working hours have been saved.')
+
+    return render(request, 'dashboard/calendar/view.html', get_calendar_view_parameters(user) | {
+        'user': user,
+        'form': form,
+        'is_saved': True,
+        'date_time': request.POST.getlist('date_time')
+    })
+
+
+@require_POST
+@login_required
+def calendar_time_row(
+    request: HttpRequest,
+    day: str,
+    index: int,
+) -> HttpResponse:
+    return render(request, 'dashboard/calendar/time_row.html', {
+        'day_name': day,
+        'index': index,
+        'additional': True,
+    })
+
 
 @permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def widget_template_create_view(request):
+@login_required
+def widget_template_create_view(
+    request: HttpRequest
+) -> HttpResponse:
     if request.method == 'POST':
         form = WidgetTemplateForm(request.POST, request.FILES)
         if form.is_valid():
             instance = form.save(request.user)
             messages.success(
                 request, 'Widget template has been created.')
-            return redirect('dashboard:settings')
+            return redirect('dashboard:templates')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = WidgetTemplateForm()
     return render(request, 'dashboard/widget_template_create.html', {
         'form': form,
-        'default_colors' : WidgetTemplate.DEFAULT_COLOR_CHOICES,
+        'default_colors': WidgetTemplate.DEFAULT_COLOR_CHOICES,
     })
 
+
 @permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def widget_template_edit_view(request, widget_template_id=None):
+@login_required
+def widget_template_edit_view(
+    request: HttpRequest,
+    widget_template_id: int = None
+) -> HttpResponse:
     if widget_template_id is not None:
         widget_template = WidgetTemplate.objects.get(id=widget_template_id)
     else:
-        return redirect('dashboard:settings')
+        return redirect('dashboard:templates')
     if request.method == 'POST':
-        form = WidgetTemplateForm(request.POST, request.FILES, instance=widget_template)
+        form = WidgetTemplateForm(
+            request.POST, request.FILES, instance=widget_template)
         if form.is_valid():
-            instance = form.save(request.user)
+            form.save(request.user)
             messages.success(
                 request, 'Widget template has been saved.')
-            return redirect('dashboard:settings')
+            return redirect('dashboard:templates')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = WidgetTemplateForm()
     return render(request, 'dashboard/widget_template_edit.html', {
-        'form' : form,
-        'widget_template' : widget_template,
-        'default_colors' : WidgetTemplate.DEFAULT_COLOR_CHOICES
+        'form': form,
+        'widget_template': widget_template,
+        'default_colors': WidgetTemplate.DEFAULT_COLOR_CHOICES
     })
 
-@login_required(login_url="/accounts/login")
-def communication_delete(request, communication_id):
-    communication = Communication.objects.get(id=communication_id)
-    communication.active = False
-    communication.save()
-    messages.success(
-        request, 'Communication has been deleted.')
-    return redirect('dashboard:communications')
 
-@login_required(login_url="/accounts/login")
-def widget_delete(request, widget_id):
-    widget = Widget.objects.get(id=widget_id)
+@permission_required("is_default_admin")
+@login_required
+def widget_template_del_icon_view(
+    request: HttpRequest,
+    widget_template_id: int = None
+) -> HttpResponse:
+    if widget_template_id is not None:
+        widget_template = WidgetTemplate.objects.get(id=widget_template_id)
+    else:
+        return redirect('dashboard:widget_template_edit')
+    if request.method == 'POST':
+        form = WidgetTemplateForm(
+            request.POST, request.FILES, instance=widget_template)
+        widget_template.icon = "/images/logo.svg"
+        widget_template.save()
+        messages.success(
+            request, 'Widget template icon cleared.')
+        return redirect('/dashboard/widgets/template/edit/{}'.format(widget_template_id))
+    else:
+        form = WidgetTemplateForm()
+
+    return render(request, '/dashboard/widgets/template/edit/{}'.format(widget_template_id), {
+        'form': form,
+        'widget_template': widget_template,
+        'default_colors': WidgetTemplate.DEFAULT_COLOR_CHOICES
+    })
+
+
+@login_required
+def widget_template_delete(
+    request: HttpRequest,
+    widget_template_id: int
+) -> HttpResponseRedirect:
+    widget_template = WidgetTemplate.objects.get(id=widget_template_id)
+    widget_template.active = False
+    widget_template.save()
+    messages.success(
+        request, 'Template has been deleted.')
+    return redirect('dashboard:templates')
+
+
+@login_required
+def appointment_delete(
+    request: HttpRequest,
+    appointment_id: int,
+) -> HttpResponseRedirect:
+    """Delete appointment action.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        appointment_id (int): the appointment id
+
+    Returns:
+        HttpResponseRedirect: the HTTP redirect response
+    """
+    appointment: Communication = Communication.objects.get(
+        id=appointment_id)
+    appointment.active = False
+    appointment.save()
+    messages.success(
+        request, 'Appointment has been deleted.')
+    return redirect('dashboard:appointments')
+
+
+@login_required
+def widget_delete(
+    request: HttpRequest,
+    widget_id: int
+) -> HttpResponseRedirect:
+    widget: Widget = Widget.objects.get(id=widget_id)
     widget.active = False
     widget.save()
     messages.success(
@@ -260,9 +624,12 @@ def widget_delete(request, widget_id):
     return redirect('dashboard:widgets')
 
 
-@login_required(login_url="/accounts/login")
-def widget_pause(request, widget_id):
-    widget = Widget.objects.get(id=widget_id)
+@login_required
+def widget_pause(
+    request: HttpRequest,
+    widget_id: int
+) -> HttpResponseRedirect:
+    widget: Widget = Widget.objects.get(id=widget_id)
     widget.paused = True
     widget.save()
     messages.success(
@@ -270,75 +637,150 @@ def widget_pause(request, widget_id):
     return redirect('dashboard:widgets')
 
 
-@login_required(login_url="/accounts/login")
-def widget_unpause(request, widget_id):
-    widget = Widget.objects.get(id=widget_id)
+@login_required
+def widget_unpause(
+    request: HttpRequest,
+    widget_id: int
+) -> HttpResponseRedirect:
+    widget: Widget = Widget.objects.get(id=widget_id)
     widget.paused = False
     widget.save()
     messages.success(
         request, 'Widget has been activated.')
     return redirect('dashboard:widgets')
 
-@login_required(login_url="/accounts/login")
-def communications_view(request):
-    communications = Communication.objects.filter(
-        client_board=request.user.client_board).filter(active=True)
-    return render(request, 'dashboard/communications.html', {
-        'communications':communications,
-        'user': request.user,})
 
-@login_required(login_url="/accounts/login")
-def communication_list_view(request):
-    communications = Communication.objects.filter(
-        client_board=request.user.client_board).filter(active=True).order_by('-modification_time')
-    if communications.count() > 0: 
-        communication = communications[0]
-        count = communication.pending_sessions_count
-    else:
-        count = 0
-    return render(request, 'dashboard/communication_list.html', {
+@login_required
+def appointments_view(
+    request: HttpRequest
+) -> HttpResponse:
+    """Appointment view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    communications: list[Communication] = Communication.objects.filter(
+        client_board=request.user.client_board).filter(active=True)
+    return render(request, 'dashboard/appointments/home.html', {
+        'communications': communications,
+        'user': request.user,
+    })
+
+
+@login_required
+def appointments_list_view(
+    request: HttpRequest
+) -> HttpResponse:
+    """List of appointments view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    communications: list[Communication] = Communication.objects.filter(
+        client_board=request.user.client_board).filter(active=True).order_by('-datetime')
+
+    return render(request, 'dashboard/appointments/list.html', {
         'user': request.user,
         'communications': communications,
-        })
+    })
 
-@login_required(login_url="/accounts/login")
-def call_create_view(request):
+
+@login_required
+def call_create_view(
+    request: HttpRequest
+) -> HttpResponse:
     return render(request, 'dashboard/call_create.html', {
         'user': request.user,
     })
 
+
 @permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def team_view(request):
-    users = User.objects.filter(
-        is_active=True, is_admin=True, is_superuser=False, \
-            client_board=request.user.client_board).order_by('id')
+@login_required
+def team_view(
+    request: HttpRequest
+) -> HttpResponse:
+    users: list[User] = User.objects.filter(
+        is_active=True, is_admin=True, is_superuser=False,
+        client_board=request.user.client_board).order_by('id')
     return render(request, 'dashboard/team.html', {'users': users})
 
-@permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def billing_view(request):
-    return render(request, 'dashboard/billing.html', {'user': request.user})
 
 @permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def client_user_edit_view(request, user_id=None):
+@login_required
+def calendar_view(
+    request: HttpRequest
+) -> HttpResponse:
+    """Calendar view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    user: User = request.user
+
+    # Collect all existing working hours.
+    working_hours_entries: list[UserWorkingHours] = UserWorkingHours.objects.filter(
+        user=user).all()
+
+    return render(request, 'dashboard/calendar/view.html', get_calendar_view_parameters(user) | {
+        'user': request.user,
+        'is_saved': working_hours_entries.__len__() > 0,
+        'form': CalendarForm(
+            working_hours=working_hours_entries,
+            time_interval=user.time_interval,
+        )
+    })
+
+
+def get_calendar_view_parameters(user: User) -> dict:
+    """Gets calendar views common parameters.
+
+    Args:
+        user (User): the user
+
+    Returns:
+        dict: the parameters
+    """
+    return {
+        'user': user,
+        'hours': HOURS,
+        'minutes': MINUTES,
+    }
+
+
+@permission_required("is_default_admin")
+@login_required
+def client_user_edit_view(
+    request: HttpRequest,
+    user_id: int = None
+) -> HttpResponse:
     if user_id is not None:
-        client_user = User.objects.get(id=user_id)
-        board_widgets = Widget.objects.filter(client_board=request.user.client_board)
-        user_widgets = Widget.objects.filter(assignees__id=user_id)
+        client_user: User = User.objects.get(id=user_id)
+        board_widgets = Widget.objects.filter(
+            client_board=request.user.client_board)
+        user_widgets: list[Widget] = Widget.objects.filter(
+            assignees__id=user_id)
     else:
         return redirect('dashboard:team')
     if request.method == 'POST':
-        user_form = UserForm(request.POST, instance=client_user)
-        print(user_form)
-        profile_form = ProfileForm(request.POST, request.FILES, instance=client_user.profile)
+        user_form: UserForm = UserForm(request.POST, instance=client_user)
+        profile_form: ProfileForm = ProfileForm(
+            request.POST, request.FILES, instance=client_user.profile)
         profile_meta_form = ProfileMetaForm(request.POST)
         widgets_form = AssignedWidgetsForm(request.POST)
         if user_form.is_valid() and profile_form.is_valid() and widgets_form.is_valid():
             client_user = user_form.save()
             client_user.is_admin = True
-            profile_form.save(profile_form.cleaned_data['full_name'].strip(), client_user)
+            profile_form.save(
+                profile_form.cleaned_data['full_name'].strip(), client_user)
             # Assign widgets
             client_user.widget_user.clear()
             for widget in widgets_form.cleaned_data['widget']:
@@ -354,44 +796,51 @@ def client_user_edit_view(request, user_id=None):
         profile_form = ProfileForm()
         profile_meta_form = ProfileMetaForm()
     return render(request, 'dashboard/client_user_edit.html', {'client_user': client_user,
-                                                          'user_widgets': user_widgets,
-                                                          'board_widgets': board_widgets,
-                                                          'user_form': user_form,
-                                                          'profile_form': profile_form,
-                                                          'profile_meta_form': profile_meta_form, })
+                                                               'user_widgets': user_widgets,
+                                                               'board_widgets': board_widgets,
+                                                               'user_form': user_form,
+                                                               'profile_form': profile_form,
+                                                               'profile_meta_form': profile_meta_form, })
+
 
 @permission_required("is_default_admin")
-@login_required(login_url="/accounts/login")
-def client_user_create_view(request):
-    client_board = request.user.client_board
-    widgets = Widget.objects.filter(client_board=client_board)
+@login_required
+def client_user_create_view(
+    request: HttpRequest
+) -> HttpResponse:
+    client_board: ClientBoard = request.user.client_board
+    widgets: list[Widget] = Widget.objects.filter(client_board=client_board)
     if request.method == 'POST':
         user_form = UserForm(request.POST)
         profile_form = ProfileForm(
             request.POST, request.FILES)
         profile_meta_form = ProfileMetaForm(request.POST)
         widgets_form = AssignedWidgetsForm(request.POST)
-        if user_form.is_valid() and profile_form.is_valid() and widgets_form.is_valid   ():
+        if user_form.is_valid() and profile_form.is_valid() and widgets_form.is_valid():
             client_user = user_form.save()
             # Attach user to client board.
             client_user.client_board = request.user.client_board
             client_user.is_admin = True
             client_user.save()
-            # Set client user permissions. 
+            # Set client user permissions.
             client_user.set_as_default_editor()
             client_user.save()
             # Save profile form.
-            profile = profile_form.save(profile_form.cleaned_data['full_name'].strip(), client_user)
+            profile = profile_form.save(
+                profile_form.cleaned_data['full_name'].strip(), client_user)
             # Assign widgets.
             for widget in widgets_form.cleaned_data['widget']:
                 client_user.widget_user.add(widget)
             # send activation email
             subject = 'QuickHellou - Account Activation'
             recipients = [client_user.email]
-            email_params = {'console_app_url':ApplicationSettings.objects.get_console_app_url(),
-                'user_id': client_user.id, 'username': profile.full_name}
-            send_email_notification(subject, recipients, email_params, 'accounts/email/client-activation.txt', 'accounts/email/client-activation.html')    
-            
+            email_params = app_params() | {
+                'user_id': client_user.id,
+                'username': profile.full_name,
+            }
+            send_email_notification(subject, recipients, email_params,
+                                    'accounts/email/client-activation.txt', 'accounts/email/client-activation.html')
+
             messages.success(
                 request, 'User has been created.')
             return redirect('dashboard:team')
@@ -402,15 +851,18 @@ def client_user_create_view(request):
         profile_form = ProfileForm()
         profile_meta_form = ProfileMetaForm()
     return render(request, 'dashboard/client_user_create.html', {
-                                                          'widgets': widgets,
-                                                          'user_form': user_form,
-                                                          'profile_form': profile_form,
-                                                          'profile_meta_form': profile_meta_form, })
+        'widgets': widgets,
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'profile_meta_form': profile_meta_form, })
 
 
-@login_required(login_url="/accounts/login")
-def user_delete(request, user_id):
-    user = User.objects.get(id=user_id)
+@login_required
+def user_delete(
+    request: HttpRequest,
+    user_id: int
+) -> HttpResponseRedirect:
+    user: User = User.objects.get(id=user_id)
     user.is_active = False
     user.save()
     messages.success(
@@ -418,8 +870,11 @@ def user_delete(request, user_id):
     return redirect('dashboard:team')
 
 
-@login_required(login_url="/accounts/login")
-def user_deactivate(request, user_id):
+@login_required
+def user_deactivate(
+    request: HttpRequest,
+    user_id: int
+) -> HttpResponseRedirect:
     profile = Profile.objects.get(user_id=user_id)
     profile.available = False
     profile.save()
@@ -428,8 +883,11 @@ def user_deactivate(request, user_id):
     return redirect('dashboard:team')
 
 
-@login_required(login_url="/accounts/login")
-def user_activate(request, user_id):
+@login_required
+def user_activate(
+    request: HttpRequest,
+    user_id: int
+) -> HttpResponseRedirect:
     profile = Profile.objects.get(user_id=user_id)
     profile.available = True
     profile.save()
@@ -437,66 +895,272 @@ def user_activate(request, user_id):
         request, 'User has been activated.')
     return redirect('dashboard:team')
 
-def create_widget_embed_script(widget):    
-    widget_source_file = open('console/static/js/embed/widget_embed_script.js', "r", encoding="utf-8")
-    widget_source = widget_source_file.readlines()
-    
-    code = ''
+
+def create_widget_embed_script(
+    widget: Widget
+) -> str:
+    widget_source_file: TextIOWrapper = open(
+        'console/static/js/embed/widget_embed_script.js', "r", encoding="utf-8")
+    widget_source: list[str] = widget_source_file.readlines()
+
+    code: str = ''
     if widget is not None:
         for line in widget_source:
-            line = line.format(widget_id=widget.id, uuid=widget.uuid, console_app_url=ApplicationSettings.objects.get_console_app_url())
+            line = line.format(
+                widget_id=widget.id,
+                uuid=widget.uuid,
+                console_app_url=settings.CONSOLE_APP_URL
+            )
             code += line
     return code
 
-def create_widget_content_script(widget):
-    template_params = {'widget_id':widget.id, 'uuid':str(widget.uuid), 'console_app_url':ApplicationSettings.objects.get_console_app_url(),
-            'video_app_url':ApplicationSettings.objects.get_video_app_url(),
-            'background_color':widget.template.background_color, 'icon':widget.template.icon.url}
-    template_code = render_to_string('embed/widget_content.html', template_params)
-    
-    widget_source_file = open('console/static/js/embed/widget_content_script.js', 'r', encoding='utf-8')
-    widget_source = widget_source_file.readlines()
-    
 
-    code = ''
-    if widget is not None:        
+def create_widget_content_script(
+    widget: Widget
+) -> str:
+    """Creates widget content script with iframe.
+
+    Args:
+        widget (Widget): the widget object
+
+    Returns:
+        str: the script code
+    """
+    widget_template: WidgetTemplate = widget.template
+    template_params: dict = app_params() | {
+        'widget_id': widget.id,
+        'uuid': str(widget.uuid),
+        'background_color': widget_template.background_color,
+        'icon': widget_template.icon}
+    template_iframe: str = render_to_string(
+        'embed/widget_iframe.html', template_params)
+
+    widget_source_file: TextIOWrapper = open(
+        'console/static/js/embed/widget_content_script.js', 'r', encoding='utf-8')
+    widget_source: list[str] = widget_source_file.readlines()
+
+    code: str = ''
+    if widget is not None:
         for line in widget_source:
-            line = line.format(template_code=template_code, console_app_url=ApplicationSettings.objects.get_console_app_url(), video_app_url=ApplicationSettings.objects.get_video_app_url())
+            line = line.format(
+                template_code=template_iframe,
+                console_app_url=settings.CONSOLE_APP_URL,
+                video_app_url=settings.VIDEOCHAT_APP_URL,
+            )
             code += line
     return code
 
-def widget_embed_script_file(request, widget_id):
-    widget = Widget.objects.get(id=widget_id)
+
+def widget_embed_script_file(
+    request: HttpRequest,
+    widget_id: int
+) -> FileResponse:
+    widget: Widget = Widget.objects.get(id=widget_id)
 
     if not widget:
         raise Http404
-    
-    code = create_widget_embed_script(widget)
 
-    buffer = io.BytesIO(code.encode())
-    
+    code: str = create_widget_embed_script(widget)
+
+    buffer: BytesIO = BytesIO(code.encode())
+
     return FileResponse(buffer, as_attachment=False)
 
-def widget_content_script_file(request, widget_id):
-    widget = Widget.objects.get(id=widget_id)
-    
+
+def widget_content_script_file(
+    request: HttpRequest,
+    widget_id: int
+) -> FileResponse:
+    widget: Widget = Widget.objects.get(id=widget_id)
     if not widget:
         raise Http404
-    
-    code = create_widget_content_script(widget)
 
-    buffer = io.BytesIO(code.encode())
-    
-    return FileResponse(buffer, as_attachment=False, filename='quickhellou.js')    
+    code: str = create_widget_content_script(widget)
+    buffer: BytesIO = BytesIO(code.encode())
+
+    return FileResponse(buffer, as_attachment=False, filename='quickhellou.js')
+
 
 @csrf_exempt
-def install(request, widget_id, domain, uuid):
-    widget = Widget.objects.get(id=widget_id, uuid=uuid)
+def widget_calendar_view(
+    request: HttpRequest,
+    widget_id: int,
+) -> HttpResponse:
+    """Widget calendar page view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        widget_id (int): the widget id
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    widget: Widget = Widget.objects.get(id=widget_id)
+    if not widget:
+        raise Http404
+
+    user: User = widget.last_editor
+
+    working_hours: dict[str, list[str]] = collect_weekly_hours(user)
+
+    pages: list[dict] = []
+    for week in range(0, 4):
+        start_date = datetime.today() + timedelta(days=7*week)
+        date_list: list = [start_date + timedelta(days=x) for x in range(7)]
+        days: list[dict] = []
+        dates: list[datetime] = []
+        for index, date in enumerate(date_list):
+            day: dict = {
+                'info': '',
+                'date': date.strftime('%Y-%m-%d'),
+                'datetime': date,
+                'day_name': date.strftime('%A'),
+                'month_date': date.strftime('%b %d'),
+                'time': working_hours.get(date.strftime('%w'))
+            }
+            dates.append(date.strptime(date.strftime('%B %Y'), '%B %Y'))
+            days.append(day)
+
+        months: list = []
+        for index, month_date in enumerate(list(set(dates))):
+            months.append({
+                'index': index,
+                'month': month_date.strftime('%B'),
+                'year': month_date.strftime('%Y')
+            })
+
+        page: dict = {
+            'months': months,
+            'days': days
+        }
+        pages.append(page)
+
+    return render(request, 'embed/widget/scheduler_calendar.html', {
+        'pages': pages,
+    })
+
+
+class DatePayload():
+    """Formatted date properties model
+    """
+
+    datetime: str
+    day: str
+    hour: str
+    day_ordinal: str
+    month: str
+    year: str
+
+    def __init__(
+        self,
+        date: datetime,
+    ) -> None:
+        """Constructor
+
+        Args:
+            date (datetime): the date
+        """
+        self.datetime = date.strftime(DATETIME_FORMAT)
+        self.day = date.strftime('%A')
+        self.hour = date.strftime(TIME_FORMAT)
+        self.day_ordinal = format_day_with_ordinal(date)
+        self.month = date.strftime('%B')
+        self.year = date.strftime('%Y')
+
+
+@csrf_exempt
+@require_POST
+def add_widget_contact_form_view(
+    request: HttpRequest,
+    widget_id: int,
+) -> HttpResponse:
+    """Add widget contact form view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        widget_id (int): the widget id
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    widget: Widget = Widget.objects.get(id=widget_id)
+    if not widget:
+        raise Http404
+
+    date_selected: str = request.POST.get('datetime')
+    date: datetime = datetime.strptime(date_selected, DATETIME_FORMAT)
+    date_payload: DatePayload = DatePayload(date)
+    widget_template: WidgetTemplate = widget.template
+    return render(request, 'embed/widget/contact_information_form.html', {
+        'date': date_payload,
+        'form': ContactInformationForm(),
+        'background_color': widget_template.background_color,
+    })
+
+
+@csrf_exempt
+@require_POST
+def edit_widget_contact_form_view(
+    request: HttpRequest,
+    widget_id: int,
+) -> HttpResponse:
+    """Edit widget contact form view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        widget_id (int): the widget id
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    widget: Widget = Widget.objects.get(id=widget_id)
+    if not widget:
+        raise Http404
+
+    widget_template: WidgetTemplate = widget.template
+
+    form: ContactInformationForm = ContactInformationForm(request.POST)
+
+    # Create date payload
+    date_selected: str = form.data['datetime']
+    date: datetime = datetime.strptime(date_selected, DATETIME_FORMAT)
+    date_payload: DatePayload = DatePayload(date)
+
+    if form.is_valid():
+        # Create appointment
+        email_sent: bool = form.create_appointment(widget)
+
+        # If apppointments is created and email are sent, render complete view
+        if email_sent:
+            return render(request, 'embed/widget/contact_information_form_complete.html', {
+                'date': date_payload,
+                'background_color': widget_template.background_color,
+            })
+
+        # If there was an issue with email services, add error message
+        if not email_sent:
+            messages.error(
+                request, 'An error with sending emails has occured.')
+
+    return render(request, 'embed/widget/contact_information_form.html', {
+        'date': date_payload,
+        'form': form,
+        'background_color': widget_template.background_color,
+    })
+
+
+@csrf_exempt
+def install(
+    request: HttpRequest,
+    widget_id: int,
+    domain: str,
+    uuid: str
+) -> HttpResponse:
+    widget: Widget = Widget.objects.get(id=widget_id, uuid=uuid)
 
     if not widget:
         raise Http404
 
-    print(domain, widget.url)
     domain_match = domain in widget.url
     if widget is not None and not domain_match:
         result = "Widget not installed. Incorrect domain."
@@ -512,81 +1176,118 @@ def install(request, widget_id, domain, uuid):
 
     return render(request, 'embed/install.html', {'status': status, 'result': result})
 
+
 @csrf_exempt
-def test_widget(request):
+def test_widget(
+    request: HttpRequest
+) -> HttpResponse:
     return render(request, 'embed/test_widget_v2.html', {})
 
-def active_operator_init_form(request):
+
+def active_operator_init_form(
+    request: HttpRequest
+) -> HttpResponse:
     return render(request, 'embed/active_operator_init_form.html', {})
 
-def inactive_operator_init_form(request):
+
+def inactive_operator_init_form(
+    request: HttpRequest
+) -> HttpResponse:
     return render(request, 'embed/inactive_operator_init_form.html', {})
 
-def widget_embed_view(request, widget_id, hostname, uuid):
+
+def widget_content_view(
+    request: HttpRequest,
+    widget_id: int,
+) -> HttpResponse:
+    """Widget content view that is rendered within the iframe.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        widget_id (int): the widget id
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
+    widget: Widget = Widget.objects.get(id=widget_id)
+    widget_template: WidgetTemplate = widget.template
+    template_params: dict = app_params() | {
+        'widget_id': widget.id,
+        'uuid': str(widget.uuid),
+        'background_color': widget_template.background_color,
+        'icon': widget_template.icon}
+    return render(request, 'embed/widget_content.html', template_params)
+
+
+def widget_embed_view(
+    request: HttpRequest,
+    widget_id: int,
+    hostname: str,
+    uuid: str
+) -> HttpResponse:
     widget = Widget.objects.get(id=widget_id, uuid=uuid)
-    
+
     if not widget:
         raise Http404
-    
+
     domain_match = hostname == widget.url
-    print (domain_match, hostname, widget.url)
     if widget is not None and domain_match and not widget.is_installed:
         widget.is_installed = True
         widget.save()
-    
+
     if (widget.is_installed):
         return render(request, 'embed/widget.html', {'widget': widget})
     else:
         return render(request, 'embed/widget.html', {'widget': None})
 
+
 @csrf_exempt
-def widget_extension_embed_view(request, widget_id, hostname, uuid):
-    widget = Widget.objects.get(id=widget_id, uuid=uuid)
-    
+def widget_schedule_view(
+    request: HttpRequest,
+    widget_id: int,
+    hostname: str,
+    uuid: str
+) -> HttpResponse:
+    widget: Widget = Widget.objects.get(id=widget_id, uuid=uuid)
+
     if not widget:
         raise Http404
-    
-    domain_match = hostname == widget.url
 
-    user_id = None
-    
+    domain_match: bool = hostname == widget.url
+
+    user_id: int = None
+
     if widget is not None and domain_match and not widget.is_installed:
         widget.is_installed = True
         widget.save()
 
     if request.method == 'POST':
-        form = WidgetExtensionViewForm(request.POST)
+        form = WidgetScheduleForm(request.POST)
         if form.is_valid():
-            clientName = form.cleaned_data['name']
-            clientEmailOrPhone = form.cleaned_data['email_or_phone']
-            clientMessage = form.cleaned_data['message']
-            
+            client_name = form.cleaned_data['name']
+            email_address = form.cleaned_data['email_address']
+            phone_number: str = form.cleaned_data['phone_number']
+            datetime: str = form.cleaned_data['datetime']
+
             clientEmail = ''
             clientPhone = ''
-            
-            if '@' in clientEmailOrPhone:
-                clientEmail = clientEmailOrPhone
-            else:
-                clientEmail = hashlib.md5(str(datetime.datetime.now()).encode('utf-8')).hexdigest() + '@' + settings.FAKE_EMAIL_DOMAIN
-            
-            phone_regex = re.compile('^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
-            if phone_regex.match(clientEmailOrPhone):
-                clientPhone = clientEmailOrPhone
+
             # get or create user
             try:
-                client_user = User.objects.get(email=clientEmail)
+                client_user: User = User.objects.get(email=email_address)
             except:
-                client_user = User.objects.create(email=clientEmail, client_board=widget.client_board)
+                client_user: User = User.objects.create(
+                    email=email_address, client_board=widget.client_board)
                 client_user.save()
-            user_id = client_user.id
+            user_id: int = client_user.id
             # get or create user profile
             try:
-                profile = Profile.objects.get(user=client_user)
+                profile: Profile = Profile.objects.get(user=client_user)
             except:
-                profile = Profile.objects.create(user=client_user)
-                profile.phone = clientPhone
+                profile: Profile = Profile.objects.create(user=client_user)
+                profile.phone = phone_number
 
-            profile.full_name = clientName
+            profile.full_name = client_name
             profile.save()
 
             # get or create communication
@@ -594,58 +1295,70 @@ def widget_extension_embed_view(request, widget_id, hostname, uuid):
                 communication = Communication.objects.get(caller=client_user)
                 communication.status = 2
             except:
-                communication = Communication.objects.create(caller=client_user, caller_name=clientName, \
-                    client_board=widget.client_board, status=2, widget=widget)
+                communication = Communication.objects.create(caller=client_user, caller_name=client_name,
+                                                             client_board=widget.client_board, status=2, widget=widget)
             communication.save()
 
-            # create communication session
-            session = CommunicationSession.objects.create_message(communication=communication, attendant=client_user, message = clientMessage, type = 2)
+            # TODO: check what is clientMessage and clientName
+            clientMessage = '__clientMessage__'
+            clientName = '__clientName__'
 
-            #send message
+            # create communication session
+            session: CommunicationSession = CommunicationSession.objects.create_message(
+                communication=communication, attendant=client_user, message=clientMessage, type=2)
+
+            # send message
             subject = 'QuickHellou - Message'
-            recipients = [ApplicationSettings.objects.get_admin_email_address()]
+            recipients = [settings.ADMIN_EMAIL]
             # if email address is empty prevent sending email
-            console_app_url = ApplicationSettings.objects.get_console_app_url()
-            email_params = {
+            console_app_url: str = settings.CONSOLE_APP_URL
+            email_params: dict = {
                 'name': clientName, 'email': clientEmail, 'phone': clientPhone, 'message': clientMessage, 'console_app_url': console_app_url}
             try:
-                #send message notification to admin
-                send_email_notification(subject, recipients, email_params, 'dashboard/email/widget-message-admin.txt', 'dashboard/email/widget-message-admin.html')    
-                
-                #send message notification to client
+                # send message notification to admin
+                send_email_notification(subject, recipients, email_params,
+                                        'dashboard/email/widget-message-admin.txt', 'dashboard/email/widget-message-admin.html')
+
+                # send message notification to client
                 if settings.FAKE_EMAIL_DOMAIN not in clientEmail:
                     recipients = [clientEmail]
-                    send_email_notification(subject, recipients, email_params, 'dashboard/email/widget-message-client.txt', 'dashboard/email/widget-message-client.html')    
+                    send_email_notification(
+                        subject, recipients, email_params, 'dashboard/email/widget-message-client.txt', 'dashboard/email/widget-message-client.html')
                 messages.success(
                     request, "Thank You!")
                 messages.success(
                     request, "Message sent successfully.")
             except Exception as e:
-                print('e', e)
                 messages.error(request, "Error sending email.")
                 messages.error(request, "Please try again later.")
-            #set success message
-            form = WidgetExtensionViewForm()
+            # set success message
+            form = WidgetScheduleForm()
     else:
-        form = WidgetExtensionViewForm()
+        form = WidgetScheduleForm()
     return render(request, 'embed/widget_form_response.html', {
         'widget': widget,
         'form': form,
         'user_id': user_id,
         'hostname': hostname})
 
+
 @csrf_exempt
-def widget_active_operator(request, widget_id, hostname, uuid):
+def widget_active_operator(
+    request: HttpRequest,
+    widget_id: int,
+    hostname: str,
+    uuid: str
+) -> HttpResponse:
     widget = Widget.objects.get(id=widget_id, uuid=uuid)
-    
+
     if not widget:
         raise Http404
-    
+
     domain_match = hostname == widget.url
 
     status = ''
     user_id = None
-    
+
     if widget is not None and domain_match and not widget.is_installed:
         widget.is_installed = True
         widget.save()
@@ -655,24 +1368,26 @@ def widget_active_operator(request, widget_id, hostname, uuid):
         if form.is_valid():
             clientName = form.cleaned_data['name']
             clientEmailOrPhone = form.cleaned_data['email_or_phone']
-            
+
             clientEmail = ''
             clientPhone = ''
-            
+
             if '@' in clientEmailOrPhone:
                 clientEmail = clientEmailOrPhone
             else:
-                clientEmail = '{0}@{1}'.format(hashlib.md5(str(datetime.datetime.now()).encode('utf-8')).hexdigest(), \
-                    settings.FAKE_EMAIL_DOMAIN)
-            
-            phone_regex = re.compile('^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
+                clientEmail = '{0}@{1}'.format(hashlib.md5(str(datetime.now()).encode('utf-8')).hexdigest(),
+                                               settings.FAKE_EMAIL_DOMAIN)
+
+            phone_regex = re.compile(
+                '^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{3,6}$')
             if phone_regex.match(clientEmailOrPhone):
                 clientPhone = clientEmailOrPhone
             # create or update user
             try:
                 client_user = User.objects.get(email=clientEmail)
             except Exception as e:
-                client_user = User.objects.create(email=clientEmail, client_board=widget.client_board)
+                client_user = User.objects.create(
+                    email=clientEmail, client_board=widget.client_board)
                 client_user.save()
             user_id = client_user.id
             # create user profile
@@ -683,13 +1398,13 @@ def widget_active_operator(request, widget_id, hostname, uuid):
                 profile.full_name = clientName
                 profile.phone = clientPhone
                 profile.save()
-            
+
             # update profile data
             profile.full_name = form.cleaned_data['name']
             profile.save()
 
             status = 'ok'
-            #set success message
+            # set success message
             form = WidgetActiveUserForm()
     else:
         form = WidgetActiveUserForm()
@@ -698,10 +1413,35 @@ def widget_active_operator(request, widget_id, hostname, uuid):
         'form': form,
         'status': status,
         'user_id': user_id,
-        'hostname':hostname})
+        'hostname': hostname})
 
-def send_email_notification(subject, recipients, email_params, text_template_url, html_template_url):
-    message_plain = render_to_string(text_template_url, email_params)
-    message_html = render_to_string(html_template_url, email_params)
-    send_mail(subject, message_plain, 'support@<you_company.com>',
-              recipients, html_message=message_html)
+
+def send_email_notification(
+    subject: str,
+    recipients: list[str],
+    email_params: dict,
+    text_template_url: str,
+    html_template_url: str
+) -> int:
+    message_plain: str = render_to_string(text_template_url, email_params)
+    message_html: str = render_to_string(html_template_url, email_params)
+    return send_mail(
+        subject,
+        message_plain,
+        settings.ADMIN_EMAIL,
+        recipients,
+        html_message=message_html
+    )
+
+
+def app_params() -> dict[str]:
+    """Application settings object.
+
+    Returns:
+        dict[str]: the applcaition settings
+    """
+    return {
+        'video_app_url': settings.VIDEOCHAT_APP_URL,
+        'console_app_url': settings.CONSOLE_APP_URL,
+        'ws_service_url': settings.WEB_SERVICE_URL,
+    }

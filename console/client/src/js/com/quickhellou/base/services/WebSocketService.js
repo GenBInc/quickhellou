@@ -79,7 +79,6 @@ export class WebSocketService extends FormService {
     }
 
     const responseJson = JSON.parse(response)
-    // console.log('response', responseJson)
     if (responseJson.error !== '') {
       this.emit('error', responseJson.error)
       return
@@ -171,7 +170,6 @@ export class WebSocketService extends FormService {
    * @memberof WebSocketService
    */
   registerOperatorsList(userId, widgets) {
-    widgets = widgets.filter((widget) => widget.is_installed === true)
     this.registerList(userId, UserType.ADMIN, widgets)
   }
 

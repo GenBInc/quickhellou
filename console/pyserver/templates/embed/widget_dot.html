@@ -1,0 +1,23 @@
+{% load static %}
+
+<div class="fc qh widget_base">
+  <div class="widget-outlook__graphics widget-outlook__graphics--widget">
+    <svg class="outlook--background" width="100" height="100">
+      <rect width="100" height="100" class="widget-outlook__background-circle outlook--circle" fill="{% if background_color %}{{ background_color }}{% else %}#7fd100{%endif%}" />
+    </svg>
+  </div>
+  <div class="widget-outlook__alert">
+    <svg class="outlook--background">
+      <circle class="outlook__circle-blue" cx="15" cy="15" r="15" fill="#001588" />
+    </svg>
+    <svg class="outlook__user-icon" viewBox="0 0 24 24" fill="#FFFFFF">
+      <path d="M0 0h24v24H0V0z" fill="none"/>
+      <path d="M12 6c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2m0 10c2.7 0 5.8 1.29 6 2H6c.23-.72 3.31-2 6-2m0-12C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 10c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+    </svg>
+    <div class="widget-outlook__admin-thumbnail avatar"></div> 
+  </div>
+  <div class="fc widget-outlook__icon_wrap" >
+    <div id="widget-outlook__icon" class="fc widget-outlook__icon" style="background-image: url({% if icon %}/media/{{ icon }}{% else %}/media/images/logo.svg{%endif%});">      
+    </div>    
+  </div>
+</div>

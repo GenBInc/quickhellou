@@ -6,21 +6,6 @@
  * Released under the MIT license
  */
 
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-
 /*! ../../../genb/base/service/FormService */
 
 /*! ../../../genb/base/utils/BaseUtils */
@@ -63,17 +48,13 @@ PERFORMANCE OF THIS SOFTWARE.
 
 /*! ./ObservableController */
 
-/*! ./arrayLikeToArray.js */
-
-/*! ./arrayWithHoles.js */
-
-/*! ./assertThisInitialized.js */
-
 /*! ./character-counter/component */
 
 /*! ./character-counter/foundation */
 
 /*! ./com/quickhellou/base/utils/QhUtils */
+
+/*! ./com/quickhellou/dashboard/CalendarView */
 
 /*! ./com/quickhellou/dashboard/CallsView */
 
@@ -82,6 +63,8 @@ PERFORMANCE OF THIS SOFTWARE.
 /*! ./com/quickhellou/dashboard/WidgetView */
 
 /*! ./constants */
+
+/*! ./events */
 
 /*! ./fixed/foundation */
 
@@ -93,39 +76,21 @@ PERFORMANCE OF THIS SOFTWARE.
 
 /*! ./icon/component */
 
-/*! ./iterableToArrayLimit.js */
-
-/*! ./nonIterableRest.js */
-
-/*! ./setPrototypeOf.js */
-
 /*! ./short/foundation */
 
 /*! ./standard/foundation */
 
-/*! ./unsupportedIterableToArray.js */
+/*! ./toPrimitive.js */
+
+/*! ./toPropertyKey.js */
+
+/*! ./typeahead */
+
+/*! ./typeof.js */
 
 /*! ./util */
 
-/*! @babel/runtime/helpers/asyncToGenerator */
-
-/*! @babel/runtime/helpers/classCallCheck */
-
-/*! @babel/runtime/helpers/createClass */
-
 /*! @babel/runtime/helpers/defineProperty */
-
-/*! @babel/runtime/helpers/getPrototypeOf */
-
-/*! @babel/runtime/helpers/inherits */
-
-/*! @babel/runtime/helpers/possibleConstructorReturn */
-
-/*! @babel/runtime/helpers/slicedToArray */
-
-/*! @babel/runtime/helpers/typeof */
-
-/*! @babel/runtime/regenerator */
 
 /*! @material/animation/util */
 
@@ -136,6 +101,8 @@ PERFORMANCE OF THIS SOFTWARE.
 /*! @material/checkbox */
 
 /*! @material/dom/events */
+
+/*! @material/dom/keyboard */
 
 /*! @material/dom/ponyfill */
 
@@ -183,8 +150,6 @@ PERFORMANCE OF THIS SOFTWARE.
 
 /*! js-cookie */
 
-/*! regenerator-runtime */
-
 /*! tslib */
 
 /*!*************************!*\
@@ -228,6 +193,10 @@ PERFORMANCE OF THIS SOFTWARE.
   \**************************************************/
 
 /*!***************************************************!*\
+  !*** ../../node_modules/@material/list/events.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
   !*** ../../node_modules/@material/ripple/util.js ***!
   \***************************************************/
 
@@ -238,6 +207,10 @@ PERFORMANCE OF THIS SOFTWARE.
 /*!***************************************************!*\
   !*** ./js/com/quickhellou/dashboard/CallsView.js ***!
   \***************************************************/
+
+/*!****************************************************!*\
+  !*** ../../node_modules/@material/dom/keyboard.js ***!
+  \****************************************************/
 
 /*!****************************************************!*\
   !*** ../../node_modules/@material/dom/ponyfill.js ***!
@@ -272,11 +245,19 @@ PERFORMANCE OF THIS SOFTWARE.
   \******************************************************/
 
 /*!******************************************************!*\
+  !*** ../../node_modules/@material/list/typeahead.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
   !*** ../../node_modules/@material/menu/component.js ***!
   \******************************************************/
 
 /*!******************************************************!*\
   !*** ../../node_modules/@material/menu/constants.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./js/com/quickhellou/dashboard/CalendarView.js ***!
   \******************************************************/
 
 /*!*******************************************************!*\
@@ -328,19 +309,11 @@ PERFORMANCE OF THIS SOFTWARE.
   \********************************************************/
 
 /*!*********************************************************!*\
-  !*** ../../node_modules/@material/menu-surface/util.js ***!
-  \*********************************************************/
-
-/*!*********************************************************!*\
   !*** ../../node_modules/@material/ripple/foundation.js ***!
   \*********************************************************/
 
 /*!*********************************************************!*\
   !*** ../../node_modules/@material/select/foundation.js ***!
-  \*********************************************************/
-
-/*!*********************************************************!*\
-  !*** ../../node_modules/regenerator-runtime/runtime.js ***!
   \*********************************************************/
 
 /*!*********************************************************!*\
@@ -428,10 +401,6 @@ PERFORMANCE OF THIS SOFTWARE.
   \*************************************************************/
 
 /*!**************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/regenerator/index.js ***!
-  \**************************************************************/
-
-/*!**************************************************************!*\
   !*** ../../node_modules/@material/line-ripple/foundation.js ***!
   \**************************************************************/
 
@@ -484,10 +453,6 @@ PERFORMANCE OF THIS SOFTWARE.
   \****************************************************************/
 
 /*!*****************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/inherits.js ***!
-  \*****************************************************************/
-
-/*!*****************************************************************!*\
   !*** ../../node_modules/@material/floating-label/foundation.js ***!
   \*****************************************************************/
 
@@ -508,7 +473,7 @@ PERFORMANCE OF THIS SOFTWARE.
   \******************************************************************/
 
 /*!********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/createClass.js ***!
+  !*** ../../node_modules/@babel/runtime/helpers/esm/toPrimitive.js ***!
   \********************************************************************/
 
 /*!********************************************************************!*\
@@ -532,27 +497,11 @@ PERFORMANCE OF THIS SOFTWARE.
   \*********************************************************************/
 
 /*!**********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/slicedToArray.js ***!
+  !*** ../../node_modules/@babel/runtime/helpers/esm/toPropertyKey.js ***!
   \**********************************************************************/
 
 /*!***********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js ***!
-  \***********************************************************************/
-
-/*!***********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/classCallCheck.js ***!
-  \***********************************************************************/
-
-/*!***********************************************************************!*\
   !*** ../../node_modules/@babel/runtime/helpers/esm/defineProperty.js ***!
-  \***********************************************************************/
-
-/*!***********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js ***!
-  \***********************************************************************/
-
-/*!***********************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js ***!
   \***********************************************************************/
 
 /*!***********************************************************************!*\
@@ -568,24 +517,8 @@ PERFORMANCE OF THIS SOFTWARE.
   \***********************************************************************/
 
 /*!************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/nonIterableRest.js ***!
-  \************************************************************************/
-
-/*!************************************************************************!*\
   !*** ../../node_modules/@material/textfield/helper-text/foundation.js ***!
   \************************************************************************/
-
-/*!*************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js ***!
-  \*************************************************************************/
-
-/*!*************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js ***!
-  \*************************************************************************/
-
-/*!*****************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js ***!
-  \*****************************************************************************/
 
 /*!*****************************************************************************!*\
   !*** ../../node_modules/@material/textfield/character-counter/component.js ***!
@@ -596,20 +529,8 @@ PERFORMANCE OF THIS SOFTWARE.
   \*****************************************************************************/
 
 /*!******************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js ***!
-  \******************************************************************************/
-
-/*!******************************************************************************!*\
   !*** ../../node_modules/@material/textfield/character-counter/foundation.js ***!
   \******************************************************************************/
-
-/*!**********************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/possibleConstructorReturn.js ***!
-  \**********************************************************************************/
-
-/*!***********************************************************************************!*\
-  !*** ../../node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js ***!
-  \***********************************************************************************/
 
 /**
  * @license
@@ -683,6 +604,29 @@ PERFORMANCE OF THIS SOFTWARE.
 /**
  * @license
  * Copyright 2019 Google Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/**
+ * @license
+ * Copyright 2020 Google Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

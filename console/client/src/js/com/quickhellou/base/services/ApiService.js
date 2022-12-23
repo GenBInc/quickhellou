@@ -1,5 +1,4 @@
 import { FormService } from '../../../genb/base/service/FormService'
-
 import { ComSessionStatus } from '../model/ComSessionStatus'
 
 /**
@@ -67,7 +66,7 @@ export class ApiService extends FormService {
    */
   getCommunicationRecord(communicationId) {
     return this.getJson(
-      `${this.baseUrl}/api/communications/${communicationId}/`
+      `${this.baseUrl}/api/appointments/${communicationId}/`
     )
   }
 
@@ -98,7 +97,7 @@ export class ApiService extends FormService {
     }
     return this.postAsXMLHttpRequest(
       fieldSet,
-      `${this.baseUrl}/api/communications/`
+      `${this.baseUrl}/api/appointments/`
     )
   }
 
@@ -110,7 +109,7 @@ export class ApiService extends FormService {
    */
   rateComSession(id, rate) {
     return this.getAsXMLHttpRequest(
-      `${this.baseUrl}/api/comSessions/rate/${id}/${rate}`
+      `${this.baseUrl}/api/com_sessions/rate/${id}/${rate}`
     )
   }
 
@@ -124,7 +123,7 @@ export class ApiService extends FormService {
    */
   cancelCall(id) {
     return this.getAsXMLHttpRequest(
-      `${this.baseUrl}/api/communications/cancel/${id}/`
+      `${this.baseUrl}/api/appointments/cancel/${id}/`
     )
   }
 
@@ -137,7 +136,7 @@ export class ApiService extends FormService {
   getUuid(str) {
     // TODO: make it as POST
     return this.getAsXMLHttpRequest(
-      `${this.baseUrl}/api/comSessions/room-uuid/${str}`
+      `${this.baseUrl}/api/com_sessions/room-uuid/${str}`
     )
   }
 
@@ -206,7 +205,7 @@ export class ApiService extends FormService {
    */
   setComSessionStatus(id, status) {
     return this.getAsXMLHttpRequest(
-      `${this.baseUrl}/api/comSessions/status/${id}/${status}`
+      `${this.baseUrl}/api/com_sessions/status/${id}/${status}`
     )
   }
 
@@ -216,6 +215,6 @@ export class ApiService extends FormService {
    * @memberof ApiService
    */
   getPendingSessions() {
-    return this.getAsXMLHttpRequest(`${this.baseUrl}/api/comSessions/pending/1`)
+    return this.getAsXMLHttpRequest(`${this.baseUrl}/api/com_sessions/pending/1`)
   }
 }

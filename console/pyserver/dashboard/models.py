@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 import re
 import uuid
-from multiprocessing import Manager
-from venv import create
-
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
-
+from django.utils.translation import gettext_lazy as _
+from common.strings import encode_short_url
+from dashboard.managers import (
+    CommunicationManager,
+    CommunicationSessionManager,
+)
 from accounts.models import User
 from console import settings
 
@@ -33,7 +34,7 @@ def full_domain_validator(hostname):
         # strip exactly one dot from the right, if present
         hostname = hostname[:-1]
     #parts = hostname.split(".")
-    #if len(parts) <= 1:
+    # if len(parts) <= 1:
     #    raise ValidationError(
     #            _("The URL is not valid."))
     for label in hostname.split("."):
@@ -44,13 +45,15 @@ def full_domain_validator(hostname):
             raise ValidationError(
                 _("Unallowed characters in label '%(label)s'.") % {'label': label})
 
+
 class ClientBoard(models.Model):
-  """Client board."""
-  id = models.AutoField(primary_key=True)
-  active = models.BooleanField(default=True)
-  creation_date = models.DateTimeField(auto_now_add=True)
-  uuid = models.UUIDField(default=uuid.uuid4, editable=False)  
-  
+    """Client board."""
+    id = models.AutoField(primary_key=True)
+    active = models.BooleanField(default=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+
+
 class WidgetManager(models.Manager):
     def get_queryset(self):
         return super(WidgetManager, self).get_queryset().filter(active=True)
@@ -59,11 +62,12 @@ class WidgetManager(models.Manager):
         widget.last_editor = User.objects.get(id=user_id)
         widget = self.create(url=url)
         return widget
-    
+
+
 class WidgetTemplate(models.Model):
     """ Widget template model. """
-    DEFAULT_COLOR_1 = '7FD100'
-    DEFAULT_COLOR_2 = '29327d'
+    DEFAULT_COLOR_1 = '#7FD100'
+    DEFAULT_COLOR_2 = '#29327d'
     DEFAULT_COLOR_CHOICES = (
         (DEFAULT_COLOR_1, 'DEFAULT_COLOR_1'),
         (DEFAULT_COLOR_2, 'DEFAULT_COLOR_2'),
@@ -72,10 +76,13 @@ class WidgetTemplate(models.Model):
     name = models.CharField(max_length=256, blank=False)
     code = models.TextField(default=None, null=True, blank=True)
     active = models.BooleanField(default=True)
-    background_color = models.CharField(max_length=6, default=DEFAULT_COLOR_1, blank=False)
+    background_color = models.CharField(
+        max_length=12, default=DEFAULT_COLOR_1, blank=False)
     icon = models.FileField(
         default='images/logo.svg', blank=True, upload_to='widget_templates/images')
-    last_editor = models.ForeignKey(User, default=None, null=True, on_delete=models.CASCADE)
+    last_editor = models.ForeignKey(
+        User, default=None, null=True, on_delete=models.CASCADE)
+
 
 class Widget(models.Model):
     """ Widget model. """
@@ -91,107 +98,120 @@ class Widget(models.Model):
     )
     id = models.AutoField(primary_key=True)
     name = models.CharField(
-        max_length=256, default="Your Domain", blank=False)
+        max_length=256, default="", blank=False)
     url = models.CharField(max_length=512, validators=[
                            full_domain_validator], blank=False)
-    lang = models.CharField(max_length=5, default="en", blank=False)
+    lang = models.CharField(max_length=5, default='en', blank=False)
     last_change = models.DateTimeField(auto_now_add=True)
-    client_board = models.ForeignKey(ClientBoard, default=None, blank=True, null=True, on_delete=models.CASCADE)
+    client_board = models.ForeignKey(
+        ClientBoard, default=None, blank=True, null=True, on_delete=models.CASCADE)
     assignees = models.ManyToManyField(User, related_name='widget_user')
-    last_editor = models.ForeignKey(User, related_name='last_editor', default=None, null=True, on_delete=models.CASCADE)
+    last_editor = models.ForeignKey(
+        User, related_name='last_editor', default=None, null=True, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
     is_installed = models.BooleanField(default=False)
     paused = models.BooleanField(default=False)
-    template = models.ForeignKey(WidgetTemplate, default=None, blank=True, null=True, on_delete=models.CASCADE)
-    """ Properties merged into template. """
+    template = models.ForeignKey(
+        WidgetTemplate, default=None, blank=True, null=True, on_delete=models.CASCADE)
+    # Properties merged into template.
     header = models.CharField(max_length=256, blank=True)
     content = models.TextField(blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     objects = WidgetManager()
     all_objects = models.Manager()
 
-class CommunicationQuerySet(models.QuerySet):
-    def pending_sessions(self, communication_id):
-        return self.filter(communication__id=communication_id, status=1)
-
-class CommunicationManager(models.Manager):
-    def get_queryset(self):
-        return super(CommunicationManager, self).get_queryset()
 
 class Communication(models.Model):
-    STATUS_OPEN = 1
-    STATUS_PENDING = 2
-    STATUS_CLOSED = 3
-    STATUS_COMPLETED = 4
+    # Appointment is created, pending for creator's response
+    STATUS_PENDING = 1
+    # Creator accepts pending appointment
+    STATUS_OPEN = 2
+    # Creator rejects pending appointment
+    STATUS_REJECTED = 3
+    # Creator closes open/rejected appointment
+    STATUS_CLOSED = 4
+    # Client cancels appointment
+    STATUS_CANCELLED = 5
+    
     STATUS_CHOICES = (
-        (STATUS_OPEN, 'open'),
         (STATUS_PENDING, 'pending'),
+        (STATUS_OPEN, 'open'),
+        (STATUS_REJECTED, 'rejected'),
+        (STATUS_CANCELLED, 'cancelled'),
         (STATUS_CLOSED, 'closed'),
-        (STATUS_COMPLETED, 'completed'),
     )
     id = models.AutoField(primary_key=True)
-    client_board = models.ForeignKey('ClientBoard', default=None, blank=True, null=True, on_delete=models.CASCADE)
-    caller_name = models.CharField(max_length=256, default="anonymous_guest", blank=False)
-    caller = models.ForeignKey(User, default=None, null=True, on_delete=models.CASCADE)
-    widget = models.ForeignKey(Widget, related_name='communications', default=None, blank=True, null=True, on_delete=models.CASCADE)
+    client_board = models.ForeignKey(
+        'ClientBoard', default=None, blank=True, null=True, on_delete=models.CASCADE)
+    caller_name = models.CharField(
+        max_length=256, default="anonymous_guest", blank=False)
+    caller = models.ForeignKey(
+        User, default=None, null=True, on_delete=models.CASCADE)
+    widget = models.ForeignKey(Widget, related_name='communications',
+                               default=None, blank=True, null=True, on_delete=models.CASCADE)
     modification_time = models.DateTimeField(auto_now_add=True)
+    datetime = models.DateTimeField()
+    short_url = models.CharField(
+        max_length=16, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     active = models.BooleanField(default=True)
     status = models.SmallIntegerField(
         choices=STATUS_CHOICES,
-        default=STATUS_OPEN,
+        default=STATUS_PENDING,
     )
+    # Turn reminders on/off
+    reminders = models.BooleanField(default=True)
+    # Is one hour reminder sent
+    one_hour_reminder_sent = models.BooleanField(default=False)
+    # Is one day reminder sent
+    one_day_reminder_sent = models.BooleanField(default=False)
 
     objects = CommunicationManager()
 
     class Meta:
         get_latest_by = ['modification_time']
 
+    def encode_short_url(self):
+        """Encodes short URL.
+        """
+        self.short_url = encode_short_url(self.id)
+        self.save()
+
     def is_open(self):
         return self.status in (self.STATUS_PENDING, self.STATUS_ENQUEUED)
-    
+
     def is_closed(self):
         return self.status in (self.STATUS_MISSED, self.STATUS_REJECTED, self.STATUS_COMPLETED)
-    
+
     def status_verbose(self):
         return dict(Communication.STATUS_CHOICES)[self.status]
 
     @property
-    def pending_sessions_count(self):
-        return self.communicationsession_set.filter(status=1).count
+    def link_url(self) -> str:
+        """Gets associated videochat room URL. 
+
+        Returns:
+            str: the videochat room URL
+        """
+        return '{}/r/{}'.format(settings.VIDEOCHAT_APP_URL, self.short_url)
 
     @property
+    def pending_sessions_count(self):
+        return self.communicationsession_set.filter(status=CommunicationSession.STATUS_CREATED).count
+
+    @property
+    def initial_session(self):
+        return self.communicationsession_set.filter(
+            communication__id=self.id, status=CommunicationSession.STATUS_CREATED).first()
+        
+    
+    @property
     def current_session_id(self):
-        sessions =  self.communicationsession_set.filter(communication__id=self.id, status=1)
+        sessions = self.communicationsession_set.filter(
+            communication__id=self.id, status=CommunicationSession.STATUS_CREATED)
         if (sessions.count != 0):
             return str(sessions[0].id)
         return None
-
-class CommunicationSessionQuerySet(models.QuerySet):
-    def pending_sessions(self, communication_id):
-        return self.filter(communication__id=communication_id, status=1)
-
-
-class CommunicationSessionManager(models.Manager):
-    def get_queryset(self):
-        return CommunicationSessionQuerySet(self.model, using=self._db)
-
-    def create_session(self, communication,):
-        session = self.model(communication = communication,)
-        session.save(using=self._db)
-        return session
-
-    def pending_sessions(self, communication_id):
-        return self.get_queryset().pending_sessions(communication_id)
-
-    def create_message(self, communication, attendant, message, type):
-        session = self.model(communication = communication, attendant = attendant)
-        session.type = type
-        session.status = 2
-        session.content = message
-        session.rate = 0
-        session.save(using=self._db)
-        return session
 
 
 class CommunicationSession(models.Model):
@@ -220,16 +240,18 @@ class CommunicationSession(models.Model):
     )
 
     id = models.AutoField(primary_key=True)
-    communication = models.ForeignKey(Communication, default=None, null=True, on_delete=models.CASCADE)
-    attendant = models.ForeignKey(User, default=None, null=True, on_delete=models.CASCADE)
-    creation_time = models.DateTimeField(auto_now_add=True)    
+    communication = models.ForeignKey(
+        Communication, default=None, null=True, on_delete=models.CASCADE)
+    attendant = models.ForeignKey(
+        User, default=None, null=True, on_delete=models.CASCADE)
+    creation_time = models.DateTimeField(auto_now_add=True)
     close_time = models.DateTimeField(auto_now_add=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     content = models.TextField(default=None, null=True, blank=True)
 
     type = models.SmallIntegerField(
         choices=TYPE_CHOICES,
-        default=TYPE_VIDEO_CALL,
+        default=TYPE_MESSAGE,
     )
     status = models.SmallIntegerField(
         choices=STATUS_CHOICES,
@@ -249,7 +271,7 @@ class CommunicationSession(models.Model):
             return self.attendant.profile.full_name
         else:
             return self.communication.caller_name
-        return None 
+        return None
 
     def contact_data(self):
         if self.attendant is not None:
@@ -259,7 +281,7 @@ class CommunicationSession(models.Model):
                 return self.attendant.profile.phone
         else:
             return self.communication.caller_name
-        return None 
+        return None
 
     def type_verbose(self):
         return dict(CommunicationSession.TYPE_CHOICES)[self.type]
@@ -269,24 +291,12 @@ class CommunicationSession(models.Model):
         verbose_name = "communication_session"
         verbose_name_plural = "communication_sessions"
 
-class ApplicationSettingsManager(models.Manager):
-    
-    def get_value(self, property_name):
-        return self.get_queryset().get(property=property_name).value
-    
-    def get_video_app_url(self):
-        return self.get_value('video_app_url')
-        
-    def get_console_app_url(self):
-        return self.get_value('console_app_url')
-        
-    def get_admin_email_address(self):
-        return self.get_value('admin_email_address')
-    
 
-class ApplicationSettings(models.Model):
+class UserWorkingHours(models.Model):
+    """ User working hours model. """
     id = models.AutoField(primary_key=True)
-    property=models.CharField(max_length=256, default='', blank=False)
-    value=models.CharField(max_length=256, default='', blank=False)
-   
-    objects = ApplicationSettingsManager()
+    # Assigned user
+    user = models.ForeignKey(
+        User, null=False, on_delete=models.CASCADE)
+    # Time range entries in RANGE_PATTERN format
+    time = models.CharField(max_length=256, blank=False)

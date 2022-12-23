@@ -19,7 +19,7 @@
 
   <base target="_blank">
 
-  <title>Quick Hellou by GenB, Inc. | open source video chat made easy</title>
+  <title>Quick Hellou | open source video meeting scheduling made easy</title>
 
   <link rel="manifest" href="{% static '/manifest.json' %}">
   <link rel="icon" type="image/svg+xml" href="{% static '/images/icons/favicon.svg' %}" />
@@ -141,6 +141,7 @@
     <div class="df df-col room-selection view view--room-selection">
       <div class="df df-col view-column view-column--left room-selection-column--left">
               <div class="df home__column-lt">
+
                 <div class="df df-c logo-image-wrap home__column-hw">
                   <img class="logo-image" src="{% static '/images/hellou-quick-white.svg' %}" alt="Quick Hellou">
                 </div>
@@ -148,13 +149,14 @@
                   <div class="df df-col df-c safe_proc">
                     <p>100% free</p>
                     <p>and secure</p>
+                    <p>video chats</p>
                   </div>
                 </div>
               </div>
               <div class="df df-f1 df-col df-ct room-id-input-buttons">                
                 <div class="df df-col df-c feature-option feature-option--quick-talk">
                   <div class="df df-c feature-option__icon-button open-quick-talk button--quick-talk">
-                    <img src="{% static '/images/quick-talk.svg' %}" alt="Quick Hellou">
+                    <img src="{% static '/images/quick-talk-blue.svg' %}" alt="Quick Hellou">
                   </div>
                   <button class="feature-option__button join-button button--quick-talk">
                     <label>
@@ -168,44 +170,79 @@
                 <div class="df df-f1"></div>
               </div>
               <p class="copyright-note copyright-note--desktop">
-                Quick Hellou by <a href="http://www.genb.com" target="_blank" rel="noopener">GenB, Inc</a>.<br/>Open Source (MIT License). <a href="https://github.com/genbinc/quickhellou">Check out @ Github</a>.
+                Quick Hellou by <a href="https://www.genb.pro" target="_blank" rel="noopener">GenB</a><br/>Open Source (MIT License) <a href="https://github.com/genbinc/quickhellou">Check out @ Github</a>
               </p>
             </div>
-            <div class="df df-ct df-col df-f1 view-column room-selection-column--right">
+            <div class="df df-ct df-col df-f1 view-column room-selection-column--right home-column-right">
+
+              <div class="df df-row home__g1 menu-top">
+
+                <div class="df df-f1 df-row">
+
+                  <div class="flc">
+                    <img class="qh-icon-top" src="{% static '/images/qh-icon-orange.svg' %}" alt="QH Icon">
+                  </div>                
+  
+                  <div class="flc top-texts-menu df-f1">
+                    <p><strong><a class="top-link-signup" href="http://console.qhellou.com/signup/">Sign up</a> to setup</strong> your custom video chat scheduling dot on your webpage!</p>
+                  </div>
+  
+                </div>
+
+                <div class="flc top-menu-buttons">
+                  <a href="http://console.qhellou.com" class="top-menu-link">Log In</a>
+                  <a href="http://console.qhellou.com/signup/" class="top-menu-link button-sign-up">Sign Up</a>
+                </div>
+              </div>
               <div class="df df-col df-f1 home__column--rt">
                 <div class="df df-f1"></div>
-                <div class="df df-col home__g1 home__group room-selection-column--right__group-texts">
-                  <img class="open-source-chat-image" src="{% static '/images/open-source-videochat.svg' %}" alt="Open Source">                    
+                <div class="df df-col home__g1 home__group room-selection-column--right__group-texts qh-brand-home-row">
+
+                  <div class="df qh-brand-home-row_wrap">
+                    <img class="open-source-chat-image" src="{% static '/images/open-source-videochat.svg' %}" alt="Open Source">                    
+                    <img class="open-source-chat-brand" src="{% static '/images/qh-brand-mark.png' %}" alt="Open Source">                                      
+                  </div>
+
                 </div>
                 <div class="df df-f1"></div>
-                <div class="df df-col home__g3 home__group room-selection-column--right__group-texts">
-                  <p class="home__text3 home__text--g3t1">100% free</p>
+
+                
+                <div class="df flc df-col home__g3 home__group room-selection-column--right__group-texts">
+
+
+                  <p class="home__text3 home__text--g3t1">Video Meetings Scheduler</p>
                   <div class="df df-lc home__g3tg">
                     <div class="df df-lc">
                       <p class="home__text4">
-                        quick, easy and secure with just</p>
+                        easy to integrate with your webpage
+                      </p>
                     </div>
-                    <a class="home__link--one-click button--quick-talk">one click</a>
+                    <a class="home__link--one-click" href="http://console.qhellou.com/signup/">Sign Up</a>
                   </div>
+
                 </div>
                 <div class="df df-f1"></div>
-                <div class="df df-col home__g2 home__group room-selection-column--right__group-texts">
-                  <p class="techstack-header"></p>
-                  <img class="techstack-image" src="{% static '/images/techstack-logos.png' %}" alt="Open Source">                    
-                    
-                </div>
-                <div class="df df-f1"></div>
-                <a href="https://github.com/GenBInc/quickhellou" target="_blank" class="df flc df-row home__g2 home__group github-texts">
-                  <p class="checkout-header">Check Out at</p>
-                  <img class="github-image" src="{% static '/images/githib-logo.png' %}" alt="Github">                    
-                    
-                </a>
+
+                
                 
                 <div class="df df-f1"></div>
               </div>
               <div class="home__bottom-bar">
                 <div class="df df-col home__bottom-bar--top">
 
+
+                  <div class="df df-col home__g2 home__group room-selection-column--right__group-texts">
+                    <img class="techstack-image" src="{% static '/images/techstack-logos.png' %}" alt="Open Source">                    
+                      
+                  </div>
+                  <div class="df df-f1"></div>
+                  <a href="https://github.com/GenBInc/quickhellou" target="_blank" class="df flc df-row home__g2 home__group github-texts">
+                    <p class="checkout-header">Check Out at</p>
+                    <img class="github-image" src="{% static '/images/githib-logo.png' %}" alt="Github">                    
+                      
+                  </a>
+
+                  <!--
                   <div class="df df-col df-c home__g4 home__group room-selection-column--right__group--bottom">
                     <div class="df df-lc enjoy-quick-hellou">
                       <p class="enjoy-quick-hellou__text">enjoy a</p>
@@ -233,6 +270,8 @@
                       </div>
                     </div>
                   </div>
+
+                  -->
   
                 </div>
                 <div class="privacy home__bottom-bar--bottom">
@@ -241,7 +280,7 @@
                 </div>
   
                 <p class="copyright-note copyright-note--mobile">
-                  Quick Hellou by <a href="http://www.genb.com" target="_blank" rel="noopener">GenB, Inc</a>.<br/>Open Source (MIT License). <a href="https://github.com/genbinc/quickhellou">Check out @ Github</a>.
+                  Quick Hellou by <a href="https://www.genb.pro" target="_blank" rel="noopener">GenB</a><br/>Open Source (MIT License) <a href="https://github.com/genbinc/quickhellou">Check out @ Github</a>
                 </p>
               </div>
             </div>

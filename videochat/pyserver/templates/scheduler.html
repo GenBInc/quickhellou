@@ -43,7 +43,7 @@
   <script src="{% static '/js/scheduler.bundle.js' %}"></script>
 </head>
 
-<!-- loader code -->
+{# loader code #}
 <style>
     body *,
     body:after,
@@ -89,35 +89,24 @@
       border-bottom: .3em solid #001588;
       border-top: .3em solid #001588;
       border-left: .3em solid #80d100;
-      -webkit-transform: translateZ(0);
-      -ms-transform: translateZ(0);
       transform: translateZ(0);
-      -webkit-animation: load8 1.1s infinite linear;
       animation: load8 1.1s infinite linear
     }
 
     @-webkit-keyframes load8 {
       0% {
-        -webkit-transform: rotate(0deg);
-        -ms-transform: rotate(0deg);
         transform: rotate(0deg)
       }
       to {
-        -webkit-transform: rotate(1turn);
-        -ms-transform: rotate(1turn);
         transform: rotate(1turn)
       }
     }
 
     @keyframes load8 {
       0% {
-        -webkit-transform: rotate(0deg);
-        -ms-transform: rotate(0deg);
         transform: rotate(0deg)
       }
       to {
-        -webkit-transform: rotate(1turn);
-        -ms-transform: rotate(1turn);
         transform: rotate(1turn)
       }
     }
@@ -134,10 +123,7 @@
 
     gtag('config', 'UA-24219456-8');
   </script>
-
-
 </head>
-
 <body>
   <div class="main df-col" style="opacity:0;">
   <div class="f1 df-c scheduler overlay--setup-future-talk">
@@ -223,7 +209,7 @@
       <div class="df df-col sharing-div">
         {% if room_link %}
         <div class="room-link">Waiting for someone to join this room:
-          <span class="room-link-href" href="/r/{{ room_id }}" target="_blank" rel="noopener">https://www.quickhellou.com/r/{{ room_id }}</span>
+          <span class="room-link-href" href="/r/{{ room_id }}" target="_blank" rel="noopener">https://www.qhellou.com/r/{{ room_id }}</span>
         </div>
         {% endif %}
         <div class="df df-lc">

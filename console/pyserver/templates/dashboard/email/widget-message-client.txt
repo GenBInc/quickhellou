@@ -1,0 +1,4 @@
+Hello {{username}},
+  
+Your message has been received. We'll contact to you soon.
+QuickHellou Team

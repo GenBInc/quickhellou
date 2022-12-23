@@ -1,4 +1,5 @@
 import { FormService } from '../../../genb/base/service/FormService'
+import { ComSessionStatus } from '../model/ComSessionStatus'
 
 /**
  * Service for URL based views interaction.
@@ -9,12 +10,12 @@ import { FormService } from '../../../genb/base/service/FormService'
  */
 export class ViewService extends FormService {
   /**
-   * Get call list view.
+   * Get appointments list.
    *
    * @returns Promise<string> html
    * @memberof ViewService
    */
-  getCallViewList() {
-    return this.getAsXMLHttpRequest('/dashboard/communications/list/')
+  getAppointmentsViewList() {
+    return this.getAsXMLHttpRequest('/dashboard/appointments/list/')
   }
 }

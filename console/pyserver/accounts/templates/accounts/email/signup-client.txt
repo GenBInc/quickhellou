@@ -1,6 +1,0 @@
-Hello {{username}},
-  
-You've registered to the quickhellou.com service.</p>
-In order to log in please go to the {{console_app_url}}/accounts/login/ page.
-Sincerely,
-QuickHellou Team

@@ -1,0 +1,81 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Templates{% endblock %}
+{% block page_title %}Templates{% endblock %}
+
+{% block nav %}
+  {% include "./nav_menu.html" with menu_selected='templates' %}   
+{% endblock %}
+
+{% block content %}
+
+{% block css %}
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}
+
+<div class="df flc frow top-header__section">
+  <img class="top-header-block__photo" src="{% static '/images/dashboard-templates.png' %}">
+  <p class="fc top-header-block__text">Templates</p>  
+</div>
+
+<div class="fc">
+<div class="wrapper wrapper--thin wrapper--profile">
+  {% include "messages.html" %}
+  <div class="fcol">
+    <div class="form--settings__form-container form-container">
+      <div class="form__field--upper widget">
+
+        <div class="">
+
+          <p class="form__header">Widget Templates</p>
+          <div class="f1"></div>
+
+          <div class="frc content-box__controls">
+            <a class="link-button console-button" href="{% url 'dashboard:widget_template_create' %}" target="_self"><img class="console-button--icon" src="{% static '/images/template-add.svg' %}">Add Template</a>
+          </div>
+        </div>
+        <div class="content-box__content">
+          <ul class="mdc-list">
+          {% for widget_template in widget_templates %}
+            <li class="df widget_templates--item" tabindex="0">
+              
+              <a class="df-f1 flc widget_templates--data" href="{% url 'dashboard:widget_template_edit' widget_template_id=widget_template.id %}">
+                <span class="template-row-id">#{{ widget_template.id}}</span>&nbsp;&nbsp;&nbsp;&nbsp;<strong>{{widget_template.name}}</strong></a>
+                            
+              
+
+              <div class="flc widget-list__field widget-list__field--mod-bar widget-list__buttons">
+
+                <a class="fc df-f1 team__list-link list-link--edit" href="{% url 'dashboard:widget_template_edit' widget_template_id=widget_template.id %}" target="_self"
+                  aria-label="Edit"
+                  data-microtip-position="bottom"
+                  data-role="tooltip"        
+                >
+                  <img class="list-link--icon" src="{% static '/images/edit.svg' %}" alt="edit">
+                </a>
+                <a class="fc df-f1 team__list-link list-link--delete" href="{% url 'dashboard:widget_template_delete' widget_template_id=widget_template.id %}"
+                  aria-label="Delete"
+                  data-microtip-position="bottom"
+                  data-role="tooltip"              
+                >
+                  <img class="list-link--icon" src="{% static '/images/delete.svg' %}" alt="delete">
+                </a>
+              </div>
+
+            </li>
+          {% empty %}
+            <p>No widget templates.</p>
+          {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

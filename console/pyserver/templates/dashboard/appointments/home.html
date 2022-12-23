@@ -1,0 +1,37 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Appointments{% endblock %}
+{% block page_title %}Appointments{% endblock %}
+
+{% block nav %}
+  {% include "dashboard/nav_menu.html" with menu_selected='appointments' %}   
+{% endblock %}
+
+{% block content %}
+<div class="df flc frow top-header__section">
+  <img class="top-header-block__photo" src="{% static '/images/dashboard-appointments.png' %}">
+  <p class="fc top-header-block__text">Appointments</p>  
+</div>
+
+<div class="flc widgets__top-header">
+
+  <p>Your appointments: {{ communications|length }}</p>
+
+</div>
+{% include "messages.html" %}
+<div class="fcol widget-list appointment-list">
+          <div class="flc widget-list__header appointment-list__header">
+            <div class="widget-list__field widget-list__field--id">ID</div>
+            <div class="fc widget-list__field widget-list__field--date">Date & Time</div>
+            <div class="fc widget-list__field widget-list__field--name">Name</div>
+            <div class="fc widget-list__field widget-list__field--email">E-mail</div>
+            <div class="fc widget-list__field widget-list__field--last-change">Videochat URL</div>
+            <div class="fc widget-list__field widget-list__field--status">Status</div>
+            <div class="f1"></div>
+          </div>
+          <div class="fcol view-list__content call-list__content">
+            <div class="loader loader--inbox"></div>
+          </div>
+</div>
+{% endblock %}

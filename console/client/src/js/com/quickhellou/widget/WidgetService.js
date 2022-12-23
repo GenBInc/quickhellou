@@ -82,19 +82,23 @@ export class WidgetService extends EventEmitter {
               )
 
               // attach videochat events
-              this.videochatProxy = videochat.proxy()
-              this.videochatProxy.addEventListener('close', () => {
-                this.onCloseVideoChat()
-              })
-              this.videochatProxy.addEventListener('remote_hangup', () => {
-                this.onCloseVideoChat()
-              })
+              try {
+                this.videochatProxy = videochat.proxy()
+                this.videochatProxy.addEventListener('close', () => {
+                  this.onCloseVideoChat()
+                })
+                this.videochatProxy.addEventListener('remote_hangup', () => {
+                  this.onCloseVideoChat()
+                })
+              } catch (e) {
+                // console.log('Videochat is not defined.')
+              }
 
               resolve()
             })
           })
         } catch (e) {
-          console.log(e)
+          // console.log(e)
         }
       })
     })
@@ -103,7 +107,7 @@ export class WidgetService extends EventEmitter {
   /**
    * Removes connection data in the videochat application.
    */
-   destroyVideoChatApp() {
+  destroyVideoChatApp() {
     try {
       this.videochatProxy.destroy()
     } catch (e) {
@@ -212,8 +216,8 @@ export class WidgetService extends EventEmitter {
    *
    * @param {array<object>} fieldSet the field set
    */
-  sendContactForm(fieldSet) {
-    const url = `${this.consoleAppUrl}/dashboard/widget_extension_embed/${
+  sendScheduleForm(fieldSet) {
+    const url = `${this.consoleAppUrl}/dashboard/widget_schedule/${
       this.widgetId
     }/${encodeURIComponent(window.location.hostname.toLowerCase())}/${
       this.widget.uuid
@@ -305,4 +309,38 @@ export class WidgetService extends EventEmitter {
       `${this.consoleAppUrl}/dashboard/inactive_operator_init_form`
     )
   }
+
+  /**
+   * Gets scheduler calendar.
+   *
+   * @returns the scheduler calendar
+   */
+  async getSchedulerCalendar() {
+    const url = `${this.consoleAppUrl}/dashboard/widget_calendar_view/${this.widgetId}`
+    return await this.apiService.getAsXMLHttpRequest(url)
+  }
+
+  /**
+   * Gets widget contact form.
+   *
+   * @param {array<object>} fieldSet the field set
+   *
+   * @returns the contact form view
+   */
+  async getContactForm(fieldSet) {
+    const url = `${this.consoleAppUrl}/dashboard/add_widget_contact_form_view/${this.widgetId}`
+    return await this.apiService.postAsXMLHttpRequest(fieldSet, url)
+  }
+
+  /**
+   * Gets widget contact form.
+   *
+   * @param {array<object>} fieldSet the field set
+   *
+   * @returns the contact form view
+   */
+    async sendContactForm(fieldSet) {
+      const url = `${this.consoleAppUrl}/dashboard/edit_widget_contact_form_view/${this.widgetId}`
+      return await this.apiService.postAsXMLHttpRequest(fieldSet, url)
+    }
 }

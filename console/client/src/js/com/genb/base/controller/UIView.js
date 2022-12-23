@@ -53,4 +53,27 @@ export class UIView extends ObservableController {
     var newElement = element.cloneNode(true)
     element.parentNode.replaceChild(newElement, element)
   }
+
+  /**
+   * Removes all element listeners by replacing it with a clone.
+   *
+   * @param {HTMLElement} element
+   * @memberof UIView
+   */
+  removeElementListeners(element) {
+    var newElement = element.cloneNode(true)
+    element.parentNode.replaceChild(newElement, element)
+  }
+
+  /**
+   * Removes all listeners from list of HTMLElements by replacing it with a clone.
+   *
+   * @param {string} cssSelector
+   * @memberof UIView
+   */
+  removeListListeners(cssSelector) {
+    this.uiArray(cssSelector).forEach(element => {
+      this.removeElementListeners(element)
+    })
+  }
 }

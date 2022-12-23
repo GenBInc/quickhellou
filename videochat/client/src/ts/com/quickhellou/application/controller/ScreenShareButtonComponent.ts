@@ -111,8 +111,11 @@ export class ScreenShareButtonComponent extends HTMLComponent {
    * @memberof ScreenShareButtonComponent
    */
   public setStartSharingLabel() {
-    const labelElement:HTMLElement = HTMLUtils.get(".button--share-screen__label");
+    const labelElement:HTMLElement = HTMLUtils.get(".button--share-screen__label");    
     labelElement.innerHTML = "Share Screen";
+
+    const buttonElement:HTMLElement = HTMLUtils.get(".button--share-screen");    
+    buttonElement.classList.remove("js-active");
   }
 
   /**
@@ -124,5 +127,9 @@ export class ScreenShareButtonComponent extends HTMLComponent {
   private setStopSharingLabel() {
     const labelElement:HTMLElement = HTMLUtils.get(".button--share-screen__label");
     labelElement.innerHTML = "Stop Sharing Screen";
+
+    const buttonElement:HTMLElement = HTMLUtils.get(".button--share-screen");    
+    buttonElement.classList.add("js-active");
+
   }
 }

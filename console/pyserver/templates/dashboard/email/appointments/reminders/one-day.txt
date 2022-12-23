@@ -1,0 +1,6 @@
+Hello {{username}},
+  
+You have an appointment scheduled in one day! Scheduled time is {{ datetime }}.
+The Appointment Link URL: {{ videochat_url }}
+
+QuickHellou Team

@@ -20,7 +20,8 @@ export class WidgetBottomBarView extends UIView {
     super()
     this.service = service
     this.isExpanded = false
-    this.element = window.parent.document.getElementById('qh_b_frame')
+    this.element = document.getElementById('qh_b_frame')
+    this.extDispatcher = window.parent.document.QHDispatcher
   }
 
   /**
@@ -38,6 +39,14 @@ export class WidgetBottomBarView extends UIView {
     agreeButton.addEventListener('click', () => {
       this.collapseView()
       this.emit('expandExtView')
+      this.extDispatcher.dispatchEvent(
+        new CustomEvent('expandExtView', {
+          detail: {
+            isExpanded: false,
+            source: 'bottomBarView',
+          }
+        })
+      )
     })
     const disagreeButton = this.uiGet('.widget-bottom__button--no')
     disagreeButton.addEventListener('click', () => {
@@ -143,6 +152,14 @@ export class WidgetBottomBarView extends UIView {
     this.isExpanded = false
     this.element.classList.remove('js-active')
     this.emit('toggleBadgeTopState', false)
+    this.extDispatcher.dispatchEvent(
+      new CustomEvent('toggleBadgeTopState', {
+        detail: {
+          isExpanded: false,
+          source: 'bottomBarView',
+        }
+      })
+    )
   }
 
   /**

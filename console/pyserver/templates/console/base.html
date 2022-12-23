@@ -1,0 +1,13 @@
+{% load cms_tags menu_tags static %}
+<!doctype html>
+<html>
+    <head>
+        <title>{% block title %}QuickHellou{% endblock title %}</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        {% block css %}{% endblock %}
+        {% block js %}{% endblock %}
+    </head>
+    <body>
+        {% block content %}{% endblock content %}
+    </body>
+</html>

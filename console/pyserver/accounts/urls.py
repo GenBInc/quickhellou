@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from accounts import views
 
 app_name = 'accounts'
 
@@ -9,9 +9,13 @@ urlpatterns = [
     path('login/', views.login_view, name="login"),
     path('logout/', views.logout_view, name="logout"),
     path('activate/<int:user_id>/', views.activate_user_view, name="activate_user"),
-    path('upload_thumbnail/<int:profile_id>/', views.upload_thumbnail, name="upload_thumbnail"),
+    path('upload_thumbnail/<int:profile_id>/',
+         views.upload_thumbnail, name="upload_thumbnail"),
+    path('delete_thumbnail/<int:profile_id>/',
+         views.delete_thumbnail, name="delete_thumbnail"),
     path('forgot-password/', views.forgot_password_view, name="forgot-password"),
-    path('reset-password/<int:user_id>/', views.reset_password_view, name="reset-password"),
+    path('reset-password/<int:user_id>/',
+         views.reset_password_view, name="reset-password"),
     path('reset-password/', views.login_view, name="reset-password"),
     path('terms-of-use/', views.terms_of_use_view, name="terms-of-use"),
     path('privacy-policy/', views.privacy_policy_view, name="privacy-policy"),

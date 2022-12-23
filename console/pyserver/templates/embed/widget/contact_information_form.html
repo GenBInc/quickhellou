@@ -1,0 +1,75 @@
+<div class="qh-widget-ext__contact-form-body contact-details active">
+  {% include "embed/widget/header.html" with label="Add Your Contact Information" sublabel="To Book Your Appointemnt!" closerClass="widget-closer--contact-information" %}
+
+  <div class="loader-wrap">
+    <div class="loader"></div>
+  </div>
+
+  <div class="contact-information__form-wrap">
+
+    {% include "messages.html" %}
+    <div class="df f1 frow qh-widget__form contact-information__form">
+      <div class="qh-widget__form--inputs">
+        {{ form.name.errors }}
+        <div class="fc fcol widget-extension__form-group">
+          <input name="datetime" type="hidden" value="{{ date.datetime }}" />
+          <input
+            name="name"
+            placeholder="Your Name"
+            class="widget-extension__input"
+            value="{{ form.name.value }}"
+          />
+        </div>
+        {{ form.email_address.errors }}
+        <div class="fc fcol widget-extension__form-group">
+          <input
+            name="email_address"
+            class="widget-extension__input"
+            placeholder="Email address"
+            value="{{ form.email_address.value }}"
+          />
+        </div>
+        {{ form.phone_number.errors }}
+        <div class="fc fcol widget-extension__form-group">
+          <input
+            name="phone_number"
+            class="widget-extension__input"
+            placeholder="Phone Number (optional)"
+            value="{{ form.phone_number.value }}"
+          />
+        </div>
+        {{ form.message.errors }}
+        <div class="fc fcol widget-extension__form-group">
+          <textarea
+            name="message"
+            class="widget-extension__input"
+            placeholder="Message (optional)"
+          >{{ form.message.value }}</textarea>
+        </div>
+      </div>
+      <div class="df f1 df-f1"></div>
+      <div class="fc qh-widget__form--calendar-selected">
+        <div class="fc fcol qh-widget__form--date-selected">
+          <p class="qh-widget__form--time-selected">{{ date.day }}</p>
+          <p class="qh-widget__form--time-selected">{{ date.hour }}</p>
+          <p class="qh-widget__form--day-selected">{{ date.day_ordinal }}</p>
+          <p class="qh-widget__form--month-selected">{{ date.month }}</p>
+          <p class="qh-widget__form--year-selected">{{ date.year }}</p>
+          <div
+            class="qh-widget__change-date-time_link contact-information__button--back"
+            style="color:{{ background_color }}"
+          >Change</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="frc widget-extension__controls">
+      {% include "embed/widget/button-back.html" with label="Back" id="contact-information" class="contact-information__button--back" %}
+      <div class="df df-f1 f1">
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+      </div>
+      {% include "embed/widget/button-next.html" with label="Confirm Booking" class="contact-information__button--submit" %}
+    </div>
+    {% include "embed/widget/footer.html" %}
+  </div>
+</div>

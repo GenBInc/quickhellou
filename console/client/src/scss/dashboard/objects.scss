@@ -1,31 +1,32 @@
 .form--dashboard__submit {
   padding: 10px 30px;
-  border-radius: 20px;
-  border-color:$color--green;
-  color:$color--green;
+  border-radius: 50px;
+  border-color:$color--red-orange;
+  color:white;
 }
 
 .content-box {
-  border-radius: 4px;
+  border-radius: 20px;
   border:1px solid $color--dark-orange;
+  overflow: hidden;
 }
 
 .content-box__topbar {
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-  padding:6px;
+  padding:15px;
   background-color: $color--dark-orange;
   width:100%;
 }
 
 .content-box__header {
-  font-size:.75rem;
+  font-size:.95rem;
   color: white;
   font-weight: 600;
 }
 
 .content-box__content {
-  padding:10px;
+  padding:0px;
 }
 
 .link-button {
@@ -33,11 +34,12 @@
   font-weight: 600;
   display: inline-block;
   font-family: 'Raleway';
-  font-weight: 600;
+  font-weight: 700;
   color: white;
   border-radius: 15px;
   text-decoration: none;
   transition: background-color .2s ease, color .2s ease;
+  text-transform: uppercase;
 }
 
 .link-button:hover {
@@ -62,4 +64,16 @@ a.list-header__button {
 
 .list-header__element.js-hidden {
   display: none;
+}
+
+a.a--theme-primary {
+  text-decoration: none;
+  color: $color--resolution-blue;
+  font-size: .875rem;
+  font-weight: 600;
+}
+
+a.a--theme-primary:hover {
+  text-decoration: underline;
+  color: $color--dark-orange;
 }

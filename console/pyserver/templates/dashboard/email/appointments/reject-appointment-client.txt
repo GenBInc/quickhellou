@@ -1,0 +1,5 @@
+The appointment has been rejected.
+
+Message: {{ message }}
+
+Send us a message {{ message_url }}

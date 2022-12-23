@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager)
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager
+)
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib import admin
-from django.contrib.auth.models import (PermissionsMixin, Permission)
+from django.contrib.auth.models import (
+    PermissionsMixin,
+    Permission
+)
 
-from console import settings
+from django.conf import settings
 
 import uuid
-import profile
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None):
@@ -52,14 +57,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         permissions = (
-            ("is_owner","is owner"),
-            ("is_enterprise_admin","is enterprise admin"),
-            ("is_enterprise_editor","is enterprise editor"),
-            ("is_enterprise_viewer","is enterprise viewer"),
-            ("is_default_admin","is default admin"),            
-            ("is_default_editor","is default editor"),            
-            ("is_default_viewer","is default viewer"),            
-            ("is_guest","is guest"),)
+            ("is_owner", "is owner"),
+            ("is_enterprise_admin", "is enterprise admin"),
+            ("is_enterprise_editor", "is enterprise editor"),
+            ("is_enterprise_viewer", "is enterprise viewer"),
+            ("is_default_admin", "is default admin"),
+            ("is_default_editor", "is default editor"),
+            ("is_default_viewer", "is default viewer"),
+            ("is_guest", "is guest"),)
     id = models.AutoField(primary_key=True)
     username = None
     email = models.EmailField(_('email address'), unique=True)
@@ -68,6 +73,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_password_set = models.BooleanField(default=False)
+
+    time_interval = models.CharField(blank=False, default='30', max_length=2)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -96,18 +103,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def set_as_guest(self):
         self.set_as_permission('is_guest')
-    
+
     def set_as_default_admin(self):
         self.set_as_default_admin_only()
         self.set_as_default_editor()
-    
+
     def set_as_default_editor(self):
         self.set_as_default_editor_only()
         self.set_as_default_viewer()
-    
+
     def set_as_default_admin_only(self):
         self.set_as_permission('is_default_admin')
-    
+
     def set_as_default_editor_only(self):
         self.set_as_permission('is_default_editor')
 
@@ -117,7 +124,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def set_as_permission(self, codename):
         permission = Permission.objects.get(codename=codename)
         self.user_permissions.add(permission)
-    
+
     def set_full_name(self, full_name):
         self.profile.full_name = full_name
 
@@ -130,22 +137,22 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_owner(self):
         "Is the user an owner?"
         return self.has_perm("is_owner")
-    
+
     @property
     def is_default_admin(self):
         "Is the user an default admin user?"
         return self.has_perm("is_default_admin")
-    
+
     @property
     def is_default_editor(self):
         "Is the user an default editor user?"
         return self.has_perm("is_default_editor")
-    
+
     @property
     def is_default_viewer(self):
         "Is the user an default viewer user?"
         return self.has_perm("is_default_viewer")
-    
+
     @property
     def is_default_rw(self):
         "Is the user an default admin or editor user?"
@@ -163,14 +170,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def get_full_name(self):
         return self.profile.full_name
-    
+
     @property
     def first_name(self):
         firstname = ''
         try:
             firstname = self.profile.full_name.split()[0]
         except Exception as e:
-            print (e)
+            print(e)
         return firstname
 
     @property
@@ -179,24 +186,26 @@ class User(AbstractBaseUser, PermissionsMixin):
         try:
             lastname = self.profile.full_name.split()[1]
         except Exception as e:
-            print (e)
+            print(e)
         return lastname
-
 
     @property
     def uuid(self):
         return uuid.uuid5(uuid.NAMESPACE_DNS, str(self.id))
-    
+
     def permission_required(self, *perms):
         return user_passes_test(lambda u: any(u.has_perm(perm) for perm in perms), login_url='/login')
+
 
 class ProfileManager(models.Manager):
     def get_queryset(self):
         return super(ProfileManager, self).get_queryset()
+
     def create_profile(self, user, full_name):
-        profile = self.model(user = user,)
+        profile = self.model(user=user,)
         profile.save(using=self._db)
         return profile
+
 
 class Profile(models.Model):
     """ User Profile """
@@ -210,6 +219,7 @@ class Profile(models.Model):
     thumbnail = models.FileField(
         default='images/user.svg', blank=True, upload_to='users/images')
     objects = ProfileManager()
+
     @property
     def email_or_phone(self):
         if settings.FAKE_EMAIL_DOMAIN not in self.user.email:

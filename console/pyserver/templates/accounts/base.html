@@ -1,0 +1,14 @@
+{% load static %}
+<!doctype html>
+<html>
+    <head>
+        <title>{% block title %}QuickHellou{% endblock title %}</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
+        {% block css %}{% endblock %}
+        {% block js %}{% endblock %}
+    </head>
+    <body>
+        {% block content %}{% endblock content %}
+    </body>
+</html>

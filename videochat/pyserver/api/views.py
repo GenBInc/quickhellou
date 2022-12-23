@@ -2,6 +2,7 @@ import uuid
 import random
 import os
 import json
+import logging
 
 from django.shortcuts import render
 from rest_framework import (views, viewsets, status)
@@ -15,6 +16,7 @@ from django.conf import settings
 
 # Create your views here.
 
+
 def get_room_parameters(request, room_id, client_id, sessions):
     error_messages = []
     warning_messages = []
@@ -22,7 +24,7 @@ def get_room_parameters(request, room_id, client_id, sessions):
     base_url = request.path
     request_get = request.GET
     user_agent = request.headers['User-Agent']
-    
+
     # HTML or JSON.
     response_type = request_get.get('t')
     # Which ICE candidates to allow. This is useful for forcing a call to run
@@ -77,7 +79,7 @@ def get_room_parameters(request, room_id, client_id, sessions):
     # doesn't actually support HD modes.
     hd = request_get.get('hd')
     if hd:
-      hd = hd.lower()
+        hd = hd.lower()
     if hd and video:
         message = 'The "hd" parameter has overridden video=' + video
         logging.warning(message)
@@ -164,7 +166,7 @@ def get_room_parameters(request, room_id, client_id, sessions):
         params['room_link'] = room_link
         params['canonical'] = room_link
     else:
-        params['canonical'] = 'https://www.quickhellou.com'
+        params['canonical'] = 'https://www.qhellou.com'
 
     if client_id is not None:
         params['client_id'] = client_id
@@ -172,7 +174,7 @@ def get_room_parameters(request, room_id, client_id, sessions):
         params['sessions'] = sessions
     else:
         params['sessions'] = []
-    
+
     return params
 
 # HD is on by default for desktop Chrome, but not Android or Firefox (yet)
@@ -234,9 +236,15 @@ def make_media_track_constraints(constraints_string):
 
 
 def make_media_stream_constraints(audio, video, firefox_fake_device):
+    
     stream_constraints = (
         {'audio': make_media_track_constraints(audio),
-         'video': make_media_track_constraints(video)})
+         'video': {
+            'width': {'min': 640, 'ideal': 1280, 'max': 1920},
+            'height': {'min': 480, 'ideal': 720, 'max': 1080}
+            }
+         })
+
     if firefox_fake_device:
         stream_constraints['fake'] = True
     return stream_constraints
@@ -244,10 +252,10 @@ def make_media_stream_constraints(audio, video, firefox_fake_device):
 
 def maybe_add_constraint(constraints, param, constraint):
     if param:
-      if (param.lower() == 'true'):
-          constraints['optional'].append({constraint: True})
-      elif (param.lower() == 'false'):
-          constraints['optional'].append({constraint: False})
+        if (param.lower() == 'true'):
+            constraints['optional'].append({constraint: True})
+        elif (param.lower() == 'false'):
+            constraints['optional'].append({constraint: False})
 
     return constraints
 
@@ -265,7 +273,7 @@ def get_wss_parameters(request):
     request_get = request.GET
     wss_host_port_pair = request_get.get('wshpp')
     wss_tls = settings.WSTLS
-    
+
     if not wss_host_port_pair:
         wss_host_port_pair = settings.WSS_HOST_PORT_PAIRS[0]
     if wss_tls == False:
@@ -275,6 +283,7 @@ def get_wss_parameters(request):
         wss_url = 'wss://' + wss_host_port_pair + '/ws'
         wss_post_url = 'https://' + wss_host_port_pair
     return (wss_url, wss_post_url)
+
 
 def get_version_info():
     try:
@@ -291,7 +300,6 @@ def get_version_info():
     return None
 
 
-
 @permission_classes((AllowAny,))
 class VideoSettingsViewSet(views.APIView):
     def post(self, request, *args, **kwargs):
@@ -300,6 +308,7 @@ class VideoSettingsViewSet(views.APIView):
         params = get_room_parameters(request, room_id, client_id, None)
         # results = YourSerializer(yourdata, many=True).data
         return Response(params, content_type="application/json")
+
 
 def generate_random(length):
     word = ''

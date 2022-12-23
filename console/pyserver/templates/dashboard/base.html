@@ -1,0 +1,105 @@
+{% load static %} {% load svg %}
+<!doctype html>
+<html>
+
+<head>
+  <title>QuickHellou | {% block title %}{% endblock title %}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta property="qh:view" content="{{ request.resolver_match.url_name }}">
+
+  <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static '/css/dashboard.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static '/css/ext/microtip.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static '/css/ext/form-switch.css' %}" />
+  <link rel="stylesheet" href="{% static '/css/ext/coloris.css' %}"/>
+  <script src="{% static '/js/ext/coloris.js' %}"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  {% block css %}{% endblock %}
+  <script src="{% static '/js/dashboard.js' %}"></script>
+  {% block js %}{% endblock %}
+</head>
+
+<body class="{% block bodyclass %}{% endblock bodyclass %}">
+  <div class="drawer-frame-root">
+    <aside class="aside mdc-drawer">
+      <div class="aside-close-button mobile-objects">        
+        {% svg "close-icon-white" %}
+      </div>
+      <div class="mdc-drawer__header">
+        <div class="fc m-logo__image drawer__logo desktop-objects">
+          <a href="/dashboard">{% svg "hellou-quick-white" %}</a>
+        </div>
+        {% with default_thumbnail='images/user.svg' %}
+        <form id="thumbnail-form" class="fc aside__avatar-content" action="{% if user.profile.thumbnail != default_thumbnail %}{% url 'accounts:delete_thumbnail' profile_id=user.profile.id %}{% else %}{% url 'accounts:upload_thumbnail' profile_id=user.profile.id %}{% endif %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}          
+          <div class="aside__avatar avatar" style="background-image:url(/media/{{user.profile.thumbnail}})"></div>          
+          <label {% if user.profile.thumbnail == default_thumbnail %}for="thumbnail"{% else %}onclick="javascript:document.getElementById('thumbnail-form').submit();"{% endif %} class="fc button--add-photo">
+            {% if user.profile.thumbnail != default_thumbnail %}
+              {% svg "delete" %}  
+            {% else %}
+              {% svg "photo-add" %}
+            {% endif %}   
+          </label>
+          <input type="file" class="input--add-avatar" id="thumbnail" name="thumbnail" onchange="form.submit()">
+        </form>
+        {% endwith %}
+        <a class="fc aside__title" href="{% url 'dashboard:client_user_edit' user_id=user.profile.id  %}" target="_self"
+        >
+          {{ user.profile.full_name }}
+        </a>
+
+        <p class="fc aside__subtitle">{{ user.email }}</p>
+      </div>
+      <div class="mdc-drawer__content">
+        
+        {% block nav %}{% endblock nav %}
+        
+      </div>
+    </aside>
+
+    <div class="mdc-drawer-app-content">
+      <header class="mdc-top-app-bar drawer-top-app-bar">
+        <div class="flc mdc-top-app-bar__row">
+          <div class="flc mobile-objects">
+            <a href="/dashboard" class="mobile-logo_icon">{% svg "hellou-quick" %}</a>
+          </div>
+          <div class="flc mdc-top-app-bar__breadcrumb">
+            <a href="/dashboard" class="breadcrumb_link_home desktop-objects">Dashboard</a>
+            <p class="breadcrumb__next desktop-objects"></p> <a>{% block page_title %}{% endblock page_title %}</a>
+          </div>
+          <div class="f1"></div>
+          <div class="mobile-menu_button mobile-objects">
+            {% svg "menu" %}
+          </div>  
+          <div class="df mdc-top-app-bar__logout desktop-objects">
+            <form class="logout-link" action="{% url 'accounts:logout' %}" method="post">
+              {% csrf_token %}
+              <button class="button--logout button--logout-border console-button" type="submit">Logout</button>
+            </form>
+          </div>
+        </div>
+      </header>
+      </header>
+
+      <main class="main-content" id="main-content">
+        <div class="mdc-top-app-bar--fixed-adjust">
+
+          <div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate mdc-linear-progress--page" >
+            <div class="mdc-linear-progress__buffering-dots"></div>
+            <div class="mdc-linear-progress__buffer"></div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+              <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+            <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+              <span class="mdc-linear-progress__bar-inner"></span>
+            </div>
+          </div>
+
+          {% block content %}{% endblock content %}
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+
+</html>

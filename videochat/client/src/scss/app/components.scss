@@ -52,6 +52,7 @@
   background: white;
   -webkit-background-size: cover;
   background-size: cover;
+  flex-direction: column;
   @media (min-width: $s-lg) {
     @include df-row();
   }
@@ -156,7 +157,8 @@
 }
 
 .open-quick-talk {
-  background-color: $color--lawn-green;
+  background-color: #fce509;
+  box-shadow: 0px 0px 0px 5px rgba(255, 255, 255, 0.15);;
 }
 
 div.open-quick-talk img {
@@ -175,16 +177,15 @@ div.open-quick-talk img {
 .feature-option__button {
   width: auto;
   display: block;
-  font-size: 1rem;
-  border: 2px solid #4285f4;
+  font-size: 0.9rem;
+  border: 3px solid #4285f4;
   color: white;
   border-radius: 60px;
   padding: 15px 20px;
   background: none;
   cursor: pointer;
   margin-bottom: 6px;
-  font-weight: 600;
-  font-style: italic;
+  font-weight: 700;
   @include transition(all .2s ease);
 
   @media (min-width: $s-sm) {
@@ -204,8 +205,8 @@ div.open-quick-talk img {
 }
 
 .feature-option__button:hover {
-  border: 2px solid #5db8ff;
-  opacity: .8;
+  border: 3px solid #5db8ff;
+  background: #5db8ff;
 }
 
 .desc-invite {
@@ -256,16 +257,7 @@ div.open-quick-talk img {
 
 .home__g2 {
   @media (min-width: $s-lg) {
-    margin-left:36px;
-  }
-}
-
-.home__g3 {
-  @media (min-width: $screen-WXGA) {
-    margin-left:28px;
-  }
-  @media (min-width: $s-lg) {
-    margin-left: 46px;
+    
   }
 }
 
@@ -393,16 +385,16 @@ p.home__text6 {
 
 .home__text--g3t1 {
   @media (min-width: $s-lg) {
-    margin-left:75px;
+    
   }
 }
 
 .home__link--one-click {
   color: white;
-  background-color: $color--cornflower-blue;
+  background-color: #e5332a;
   font-size: 1.5rem;
   line-height: 1em;
-  font-weight: 200;
+  font-weight: 700;
   border-radius: 2em;
   padding: 10px 15px;
   padding-bottom: 12px;
@@ -425,7 +417,7 @@ p.home__text6 {
 .home__link--one-click:hover {
   color: white;
   text-decoration: none;
-  background-color: $color--lawn-green;
+  background-color: $color--cornflower-blue;
 }
 
 .home__link2 {
@@ -437,8 +429,8 @@ p.home__text6 {
 
 .home__column--rt {
   padding: 20px;
+  width: 100%;
   @media (min-width: $s-lg) {
-    margin-left: 100px;
     padding: 0;
   }
   @media (min-width: $s-xl) {
@@ -520,28 +512,6 @@ p.home__text6 {
   height: 54px;
   @media (min-width: $s-xl) {
     height:64px;
-  }
-}
-
-.home__bottom-bar {
-  background-color: white;
-  border-top: 6px solid $color--cornflower-blue;
-  width: 100%;
-  padding-top: 42px;
-  padding-right: 20px;
-  padding-left: 20px;
-  padding-bottom: 22px;
-  margin-top:40px;
-
-  @media (min-width: $screen-WXGA) {
-    padding-top: 22px;
-    padding-right:30px;
-    padding-left: 30px;
-  }
-  @media (min-width: $s-xl) and (min-height:$screen-VGA) {
-    padding-top: 38px;
-    padding-right: 38px;
-    padding-left: 48px;
   }
 }
 
@@ -893,21 +863,29 @@ a.invite-waiting-button:hover {
 }
 
 a.invite-waiting-button--send-invitation:hover {
-  background-color: $color--cornflower-blue;
+  background-color: $color--red-orange;
 }
 
 a.invite-waiting-button--send-invitation {
-  border-color: $color--cornflower-blue;
+  border-color: $color--red-orange;
   font-weight: 300;
 }
 
 .invite-waiting-button--thanks {
-  border-color: $color--red-orange;
+  border-color: $color--cornflower-blue;
   font-weight: 400;
 }
 
 a.invite-waiting-button--thanks:hover {
-  background-color: $color--red-orange;
+  background-color: $color--cornflower-blue;
+}
+
+.send-invitation__error {
+  color: $color--cornflower-blue !important;
+}
+
+.room-link-href-waiting {
+  color:$color--cornflower-blue;
 }
 
 .button--setup-text-chat {
@@ -1235,13 +1213,6 @@ body.subpage {
 
 }
 
-.open-source-chat-image {
-  max-width: 600px;
-  width: 90%;
-  margin: 0 auto;
-  margin-top: 41px;
-}
-
 .home__g3tg {
   
   flex-direction: column;
@@ -1286,4 +1257,166 @@ body.subpage {
   @media (min-width: $s-md) {    
     font-size:2.5rem;
   }    
+}
+
+.menu-top {
+  background-color: #171717;
+  padding: 20px;
+  width: 100%;
+
+  flex-direction: column;
+
+  @media (min-width: $s-md) {
+    padding: 25px;    
+    flex-direction: row;
+  }  
+
+}
+
+.top-texts-menu {
+  color: white;
+  font-size: 14px;
+  @media (min-width: $s-lg) {
+    font-size: 16px;
+  }  
+}
+
+.qh-icon-top {
+  width: 33px;
+  margin-right: 8px;
+
+  @media (min-width: $s-lg) {
+    width: 43px;
+    margin-right: 15px;  
+  }  
+
+}
+
+.top-menu-link {
+  margin-left: 25px;
+  color: white;
+  font-weight: 700;
+}
+
+.top-menu-link:hover {
+  color: white;
+}
+
+.button-sign-up {
+  background-color: #e5332a;
+  border-radius: 30px;
+  padding: 8px 12px ;
+}
+
+.top-menu-buttons {
+
+  margin-top: 15px;
+
+  justify-content: flex-end;
+
+  @media (min-width: $s-lg) {
+    margin-top: 0px;
+  }    
+}
+
+.qh-brand-home-row {
+  flex-direction: column;
+
+  @media (min-width: $s-lg) {
+    flex-direction: row;
+  }  
+
+}
+
+.qh-brand-home-row_wrap {
+  margin: 0 auto;
+  flex-direction: column;
+  max-width: 1000px;
+  width: 90%;
+  margin-top:0px; 
+  margin-bottom:20px;
+
+  @media (min-width: $s-md) {
+    margin-top:100px; 
+    margin-bottom:100px;   
+    flex-direction: row;
+  }  
+
+}
+
+
+.open-source-chat-image {
+  max-width: 550px;
+  width: 90%;
+  margin: 0 auto;
+  z-index: 1;
+  margin-right: 0px;
+  margin-top: 41px;
+  margin-bottom: 41px;
+
+  @media (min-width: $s-md) {    
+    margin-bottom: 0px;
+    margin-right: -85px;
+  
+  }  
+
+}
+
+.open-source-chat-brand {
+  max-width: 780px;
+  margin: 0 auto;
+  width: 90%;
+
+  @media (min-width: $s-lg) {
+    max-width: 580px;
+  }  
+
+}
+
+.home__bottom-bar {
+  background-color: white;
+  width: 100%;
+  padding-top: 0px;
+  padding-right: 20px;
+  padding-left: 20px;
+  padding-bottom: 22px;
+  margin-top:40px;
+
+  @media (min-width: $screen-WXGA) {
+    padding-top: 22px;
+    padding-right:30px;
+    padding-left: 30px;
+  }
+  @media (min-width: $s-xl) and (min-height:$screen-VGA) {
+    padding-top: 38px;
+    padding-right: 38px;
+    padding-left: 48px;
+  }
+}
+
+.home-column-right {
+  overflow-y: auto;
+}
+
+.top-link-signup {
+  color: white;
+  text-decoration: underline;
+}
+
+.top-link-signup:hover {
+  color: white;
+  text-decoration: none;
+}
+
+.home__g3 {
+
+  margin-bottom: 30px;
+  
+  @media (min-width: $screen-WXGA) {
+    margin-left:28px;
+  }
+  @media (min-width: $s-lg) {
+    margin-left: 46px;
+    margin-bottom: 80px;
+  }
 }

@@ -1,18 +1,20 @@
 from django.contrib import admin
 from django import forms
-from console.accounts.models import User
-from console.dashboard.models import Widget, ClientBoard
+from accounts.models import User
+from dashboard.models import Widget
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 # Register your models here.
 
+
 class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
     fields, plus a repeated password."""
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
+    password2 = forms.CharField(
+        label='Password confirmation', widget=forms.PasswordInput)
 
     class Meta:
         model = User
@@ -62,10 +64,10 @@ class UserAdmin(BaseUserAdmin):
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
     list_display = ('email', 'is_admin', 'is_superuser')
-    list_filter = ('is_admin','is_superuser',)
+    list_filter = ('is_admin', 'is_superuser',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Permissions', {'fields': ('is_admin','is_superuser',)}),
+        ('Permissions', {'fields': ('is_admin', 'is_superuser',)}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -73,11 +75,12 @@ class UserAdmin(BaseUserAdmin):
         (None, {
             'classes': ('wide',),
             'fields': ('email', 'password1', 'password2')}
-        ),
+         ),
     )
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ()
+
 
 class WidgetAdmin(admin.ModelAdmin):
     list_display = (
@@ -85,6 +88,7 @@ class WidgetAdmin(admin.ModelAdmin):
         'url',
         'lang',
     )
+
 
 # Now register the new UserAdmin...
 admin.site.register(User, UserAdmin)

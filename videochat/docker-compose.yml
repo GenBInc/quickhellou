@@ -38,6 +38,7 @@ services:
       - KEY_FILE=${KEY_FILE}
 
       - SUPPORT_EMAIL=${SUPPORT_EMAIL}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
       - SECRET_KEY=${SECRET_KEY}      
 
     depends_on:

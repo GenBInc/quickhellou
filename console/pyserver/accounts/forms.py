@@ -1,18 +1,17 @@
 from django import forms
-from django.core.exceptions import ValidationError
-from django.core.validators import URLValidator, validate_email
+from django.core.validators import validate_email
 
-from .models import User, Profile
-from dashboard.models import (Widget, ClientBoard)
+from accounts.models import User, Profile
+from dashboard.models import Widget
+
 
 class ProfileMetaForm(forms.Form):
-    """ User Profile Helpers """ 
-    
+    """ User Profile Helpers """
+
     password = forms.CharField(required=True)
     confirm_password = forms.CharField(required=True)
-    recaptcha = forms.CharField(required=True)
-    phone_raw = forms.CharField(required=True)
-   
+    #recaptcha = forms.CharField(required=False)
+
     def is_valid(self):
         valid = super(ProfileMetaForm, self).is_valid()
         if not valid:
@@ -22,9 +21,10 @@ class ProfileMetaForm(forms.Form):
             self._errors['passwords_not_match'] = 'Passwords don\'t match.'
             return False
 
-        if self.cleaned_data['recaptcha'] == "0":
-            self._errors['no_captcha'] = 'Please check the Captcha field.'
-            return False
+
+#        if self.cleaned_data['recaptcha'] == "0":
+#            self._errors['no_captcha'] = 'Please check the Captcha field.'
+#            return False
         return True
 
 
@@ -46,7 +46,7 @@ class UserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('full_name', 'phone', 'thumbnail')
+        fields = ('full_name', 'thumbnail')
 
     def is_valid(self):
         valid = super(ProfileForm, self).is_valid()
@@ -65,13 +65,17 @@ class ProfileForm(forms.ModelForm):
         if commit:
             profile.save()
         return profile
+
+
 class ProfileThumbnailForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('id', 'thumbnail')
 
+
 class ForgotPasswordForm(forms.Form):
     email = forms.CharField(required=True, validators=[validate_email])
+
 
 class ResetPasswordForm(forms.Form):
     new_password = forms.CharField(required=True)
@@ -83,27 +87,37 @@ class ResetPasswordForm(forms.Form):
             return valid
 
         if self.cleaned_data['new_password'] != self.cleaned_data['repeat_new_password']:
-            self._errors['passwords_not_match'] = 'Passwords don\'t match.'
+            self.add_error('new_password', 'Passwords don\'t match.')
             return False
         return True
 
 
 class WidgetForm(forms.ModelForm):
+
+    template = forms.CharField(required=True)
+
     class Meta:
         model = Widget
-        fields = ['url']
-    
-    def is_valid(self):
-        valid = super(WidgetForm, self).is_valid()
-        return valid
+        fields = ['url', 'template']
 
-    def save(self, user=None, client_board=None, commit=True):
+    def clean(self):
+        cleaned_data = super().clean()
+        template: str = cleaned_data.get('template')
+        if not template:
+            self.add_error('template', 'Please select a template.')
+
+    def save(
+        self,
+        user=None,
+        client_board=None,
+        commit=True
+    ):
         widget = super(WidgetForm, self).save(commit=False)
         widget.last_editor = user
         widget.client_board = client_board
         if commit:
             widget.save()
-            widget.assignees.add(user)        
+            widget.assignees.add(user)
         return widget
 
 
@@ -112,7 +126,7 @@ def get_first_name(fullname):
     try:
         firstname = fullname.split()[0]
     except Exception as e:
-        print (e)
+        print(e)
     return firstname
 
 
@@ -121,6 +135,5 @@ def get_last_name(fullname):
     try:
         return " ".join(fullname.split()[1:])
     except Exception as e:
-        print (e)
+        print(e)
     return lastname
-

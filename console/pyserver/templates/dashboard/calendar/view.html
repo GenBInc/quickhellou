@@ -1,0 +1,72 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% load dashboard_extras %}
+
+{% block title %}Calendar{% endblock %}
+{% block page_title %}Calendar{% endblock %}
+
+{% block nav %}
+{% include "dashboard/nav_menu.html" with menu_selected='calendar' %}
+{% endblock %}
+
+{% block js %}
+<script src="{% static '/js/dashboard-calendar.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+{% include "messages.html" %}
+<div class="df flc frow top-header__section">
+  <img class="top-header-block__photo" src="{% static '/images/dashboard-calendar.png' %}">
+  <p class="fc top-header-block__text">Calendar</p>  
+</div>
+
+<div class="df flc frow top-header__subsection">
+    <div>
+      <img class="meeting-duration--icon" src="{% static '/images/clock-period.svg' %}">
+    </div>
+
+    <p class="subsection__header">Default Meeting Duration:</p>
+    <select name="time_interval" class="time_select calendar__select--period">
+      <option value="15" {% if form.time_interval.value == "15" %} selected {% endif %}>15 min</option>
+      <option value="30" {% if form.time_interval.value == "30" %} selected {% endif %}>30 min</option>
+      <option value="45" {% if form.time_interval.value == "45" %} selected {% endif %}>45 min</option>
+      <option value="60" {% if form.time_interval.value == "60" %} selected {% endif %}>1 hour</option>
+    </select>
+</div>
+
+<div class="wrapper wrapper--thin wrapper--profile">
+  <p class="form__header">Working Hours</p>
+</div>
+
+<div>
+  <div class="df fc fcol calendar-wrap">
+      {% include "dashboard/calendar/day_row.html" with day='monday' day_code="1" form_field=form.day1_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='tuesday' day_code="2" form_field=form.day2_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='wednesday' day_code="3" form_field=form.day3_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='thursday' day_code="4" form_field=form.day4_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='friday' day_code="5" form_field=form.day5_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='saturday' day_code="6" form_field=form.day6_checked %}
+      {% include "dashboard/calendar/day_row.html" with day='sunday' day_code="0" form_field=form.day0_checked %}
+  </div>
+
+  <div class="fc">
+    <div class="flc form__ui">
+      <div>
+        <div class="form__button form__submit form--dashboard__submit calendar__button--submit">Update</div>
+      </div>
+    </div>
+  </div>  
+</div>
+
+<form
+  class="form--save"
+  action="{% url 'dashboard:calendar_edit' %}"
+  novalidate
+  method="post">
+  {% csrf_token %}
+  {% for date_time_value in date_time %}
+  <input type="hidden" name="date_time" value="{{ date_time_value }}">
+  {% endfor %}
+</form>
+
+{% endblock %}

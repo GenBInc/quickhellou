@@ -23,6 +23,7 @@ export class WidgetExtensionView extends UIView {
     this.isExpanded = false
     this.videoMode = false
     this.anyOperatorActive = false
+    this.extDispatcher = window.parent.document.QHDispatcher
   }
 
   /**
@@ -78,12 +79,12 @@ export class WidgetExtensionView extends UIView {
    * @memberof WidgetExtensionView
    */
   initContactForm() {
-    const sendButtonClassName = '.widget-extension__button--send'
+    const sendButtonClassName = '.widget-extension__button--send-contact'
     if (this.uiExists(sendButtonClassName)) {
       HTMLUtils.removeAllEventListeners(sendButtonClassName)
       const submitButtonElement = this.uiGet(sendButtonClassName)
       submitButtonElement.addEventListener('click', () => {
-        this.sendContactForm()
+        this.sendScheduleForm()
       })
     }
     this.initInactiveOperatorCloser()
@@ -195,6 +196,7 @@ export class WidgetExtensionView extends UIView {
       document.querySelector('.qh_video-ui_replace').innerHTML = html
       this.activateActiveOperatorInitForm()
       this.collapseView()
+      this.dispatchExtEvent('collapse')
       if (forceDestroyVideoChat) {
         this.service.destroyVideoChatApp()
       }
@@ -211,28 +213,31 @@ export class WidgetExtensionView extends UIView {
       document.querySelector('.contact-form').innerHTML = html
       this.initContactForm()
       this.collapseView()
+      this.dispatchExtEvent('collapse')
     })
   }
 
   /**
-   * Sends contact form.
+   * Sends schedule form.
    *
    * @memberof WidgetExtensionView
    */
-  sendContactForm() {
+   sendScheduleForm() {
     const fieldSet = {
       name: document.querySelector('.qh_module--inactive-form input[name=name]')
         .value,
-      email_or_phone: document.querySelector(
-        '.qh_module--inactive-form input[name=email_or_phone]'
+      email_address: document.querySelector(
+        '.qh_module--inactive-form input[name=email_address]'
       ).value,
-      message: document.querySelector('textarea[name=message]').value,
+      phone_number: document.querySelector('input[name=phone_number]').value,
+      datetime: document.querySelector('input[name=datetime]').value,
     }
     this.service
-      .sendContactForm(fieldSet)
+      .sendScheduleForm(fieldSet)
       .then((response) => {
         document.querySelector('.contact-form').innerHTML = response
         this.initContactForm()
+        this.collapseView()
       })
       .catch((reason) => {
         console.log('reason', reason)
@@ -246,8 +251,11 @@ export class WidgetExtensionView extends UIView {
     const fieldSet = {
       name: document.querySelector('.qh_active-user-form__input[name=name]')
         .value,
-      email_or_phone: document.querySelector(
-        '.qh_active-user-form__input[name=email_or_phone]'
+      email_address: document.querySelector(
+        '.qh_active-user-form__input[name=email_address]'
+      ).value,
+      phone_number: document.querySelector(
+        '.qh_active-user-form__input[name=phone_number]'
       ).value,
     }
     this.service
@@ -297,6 +305,7 @@ export class WidgetExtensionView extends UIView {
   toggleView() {
     if (this.isExpanded) {
       this.collapseView()
+      this.dispatchExtEvent('collapse')
     } else {
       this.expandView()
     }
@@ -339,6 +348,7 @@ export class WidgetExtensionView extends UIView {
     } else if (!this.videoMode) {
       this.activateActiveOperatorInitForm()
       this.emit('collapse')
+      this.dispatchExtEvent('expand')
     }
   }
 
@@ -502,5 +512,15 @@ export class WidgetExtensionView extends UIView {
     this.element.classList.remove('qh_video-mode')
     this.videoMode = false
     // remove connection data from videochat app
+  }
+
+  dispatchExtEvent(eventName) {
+    this.extDispatcher.dispatchEvent(
+      new CustomEvent(eventName, {
+        detail: {
+          source: 'widgetExtView',
+        }
+      })
+    )
   }
 }

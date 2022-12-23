@@ -160,15 +160,72 @@ $mdc-typography-styles-button: (
   padding:0;
 }
 
+@keyframes fade-in-out {
+  5%,
+  90% {
+    opacity: 0;
+  }
+  15%,
+  80% {
+    opacity: 1;
+  }
+  99% {
+    height: initial;
+  }
+  100% {
+    height: 0;
+  }
+}
+
+ul.messages {
+  opacity: 0;
+}
+
+.js-fade {
+  animation: fade-in-out 6s linear forwards;
+}
+
 .messages {
   margin:0;
   margin-bottom:20px;
+  transform: all .5 ease;
 }
 
-.errornote {
-  color:#c90000;
+.parrot-message {
+  width: 50px;
+}
+
+.message-bubble {
+  background-color: #001487;
+  border-radius: 8px;
+  color: #fff;
+  margin-left: 7px;
+  padding: 10px;
+  position: relative;
+  font-size: 14px;
+  margin-top: -18px;
+}
+
+.message-bubble::before {
+  background-color: #001487;
+  border-radius: 0 0 0 3px;
+  content: "";
+  height: 12px;
+  left: -3px;
+  margin: 0 auto;
+  position: absolute;
+  top: calc(50% - 6px);
+  transform: rotate(45deg);
+  width: 12px;
+}
+
+.errornote li {
+  color: #c90000;
   font-size:.75rem;
-  text-align:right;
+  text-align:left;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 50px;
 }
 
 .errorlist {
@@ -181,17 +238,28 @@ $mdc-typography-styles-button: (
   list-style: none;
 }
 
-.messages li.error {
-  color:#c90000;
+.errorlist li {
+  background-color:#c90000;
+  color: white;
+  padding:4px 16px;
+  font-weight: 500;
+  border-radius: 16px;
 }
 
-.messages li.success {
-  color:#00a100;
+.messages li.error .message-bubble::before,
+.messages li.error .message-bubble {
+  background-color:#c90000;
+}
+
+.messages li.success .message-bubble::before,
+.messages li.success .message-bubble {
+  background-color:#00a100;
 }
 
 .wrapper--thin {
-  width:600px;
-  margin-top:78px;
+  max-width: 700px;
+  width:95%;
+  margin-top:60px;
 }
 
 .form__content {
@@ -199,25 +267,45 @@ $mdc-typography-styles-button: (
   flex-direction: column;   
 }
 
+.form__content-signup {
+  flex-direction: column;   
+
+  @media (min-width: $s-lg) {
+    flex-direction: row;   
+  }  
+}
+
+.block,
 .form__content_widget,
 .form__content_user_edit,
 .form__content_settings,
 .form__content_widget_create,
 .form__content_widget_edit {
+  margin-bottom: $spacing-default;
+}
 
- margin-bottom: 20px;
- 
+.block--small {
+  margin-bottom: 10px;
 }
 
 .form__header {
   color:$color--resolution-blue;
   font-weight:600;
   margin-bottom:20px;
+  font-size: 24px;
+  user-select: none;
+}
+
+.subsection__header {
+  color:$color--resolution-blue;
+  font-weight:600;
+  font-size: 24px;
 }
 
 .form__subheader {
   color:$color--resolution-blue;
   font-weight:600;
+  font-size: 14px;
 }
 
 .form {
@@ -227,12 +315,12 @@ $mdc-typography-styles-button: (
 .form__submit {
   cursor: pointer;
   font-family:'Raleway';
-  font-weight:600;
+  font-weight:700;
   font-size:1.125rem;
-  background-color: white;
-  border-color:$color--green;
-  color:$color--green;
-  border-width: 1px;
+  background-color: $color--red-orange;
+  border-color:$color--red-orange;
+  color:white;
+  border-width: 2px;
   border-style: solid;
   /*margin-bottom:40px;*/
   transition: background-color .2s ease, color .2s ease;
@@ -244,22 +332,21 @@ $mdc-typography-styles-button: (
   font-family:'Raleway';
   font-weight:600;
   padding: 10px 30px;
-  border-radius: 20px;
-  border-width: 1px;
+  border-radius: 50px;
+  border-width: 2px;
   border-style: solid;
-  background-color: white;  
 }
 
 .form__button:hover {
   background-color:$color--white;
-  border-color:black;
-  color:black;
+  border-color:#001588;
+  color:#001588;
 }
 
 .form__submit:hover {
   background-color:$color--white;
-  border-color:black;
-  color:black;
+  border-color:#001588;
+  color:#001588;
 }
 
 .form__input {
@@ -280,3 +367,31 @@ $mdc-typography-styles-button: (
 .form__phone {
   z-index:2;
 }
+
+.intl-tel-input.separate-dial-code .selected-dial-code {
+  background-color: white;
+}
+
+.flag-container {
+  height: 40px;
+  margin-top: 7px;
+}
+
+.form--signup__label_phone_no {
+  padding-left: 64px;
+}
+
+.form--signup__label_phone_no.mdc-floating-label--float-above {
+  padding-left: 0px;
+}
+
+a:focus {outline:none;}
+
+.mdc-textarea.mdc-text-field {
+  padding: 0 !important;
+}
+
+textarea {
+  padding: 10px !important;
+}
+

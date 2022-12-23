@@ -1,0 +1,6 @@
+You've accepted the appointment.
+
+Email: {{ email }}
+Message: {{ message }}
+Appointment Date: {{ datetime }}
+Videochat Link URL: {{ videochat_url }}

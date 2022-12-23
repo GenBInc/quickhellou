@@ -8,6 +8,7 @@ import uuid
 import smtplib
 import ssl
 from ssl import SSLError
+from distutils.util import strtobool
 
 import threading, queue
 import requests
@@ -516,7 +517,7 @@ class SendInvitation(View):
     calendarData = request_post.get('calendar')
     dateTime = request_post.get('dateTime')
     attachCalendar = request_post.get('attachCalendar')
-    sender_address = 'Quick Hellou <no-reply@quickhellou.com>'
+    sender_address = 'Quick Hellou <no-reply@qhellou.com>'
     subject = request_post.get('subject')
     msg = MIMEMultipart('mixed')
     msg['From'] = sender_address
@@ -551,8 +552,17 @@ class SendInvitation(View):
       attachment = MIMEText(calendarData)
       attachment.add_header('Content-Disposition', 'attachment', filename='calendar.csv')
       msg.attach(attachment)
-    smtp = smtplib.SMTP(str(os.environ.get('EMAIL_HOST')), int(os.environ.get('EMAIL_PORT')))
+    
+    if strtobool(os.environ.get('EMAIL_USE_SSL')):
+      smtp = smtplib.SMTP_SSL(str(os.environ.get('EMAIL_HOST')), int(os.environ.get('EMAIL_PORT')))
+    else:
+      smtp = smtplib.SMTP(str(os.environ.get('EMAIL_HOST')), int(os.environ.get('EMAIL_PORT')))
+
+    if str(os.environ.get('EMAIL_HOST_USER')) != "":
+      smtp.login(str(os.environ.get('EMAIL_HOST_USER')),str(os.environ.get('EMAIL_HOST_PASSWORD')))
+
     smtp.set_debuglevel(True)
+    
     try:
       smtp.sendmail(str(os.environ.get('SUPPORT_EMAIL')), receiver, msg.as_string())
     finally:
@@ -827,7 +837,7 @@ def get_room_parameters(request, room_id, client_id, sessions):
         params['room_link'] = room_link
         params['canonical'] = room_link
     else:
-        params['canonical'] = 'https://www.quickhellou.com'
+        params['canonical'] = 'https://www.qhellou.com'
 
     if client_id is not None:
         params['client_id'] = client_id
@@ -896,9 +906,15 @@ def make_media_track_constraints(constraints_string):
 
 
 def make_media_stream_constraints(audio, video, firefox_fake_device):
+
     stream_constraints = (
         {'audio': make_media_track_constraints(audio),
-         'video': make_media_track_constraints(video)})
+         'video': {
+            'width': {'min': 640, 'ideal': 1280, 'max': 1920},
+            'height': {'min': 480, 'ideal': 720, 'max': 1080}
+            }
+         })
+           
     if firefox_fake_device:
         stream_constraints['fake'] = True
     return stream_constraints

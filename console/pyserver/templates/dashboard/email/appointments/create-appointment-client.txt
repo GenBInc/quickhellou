@@ -1,0 +1,6 @@
+Hello {{username}},
+  
+You've created a new appointment.
+Date: {{ datetime }}
+
+QuickHellou Team

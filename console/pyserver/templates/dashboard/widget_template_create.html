@@ -1,0 +1,140 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Create Widget Template{% endblock %}
+{% block page_title %}Create Widget Template{% endblock %}
+
+{% block nav %}
+  {% include "./nav_menu.html" with menu_selected='settings' %}   
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static '/css/widget.css' %}"/>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="fc">
+  <div class="wrapper wrapper--thin wrapper--profile">
+    <div class="fcol">
+      <div class="form--settings__form-container form-container">
+
+        <div class="flc form__header">
+          <div class="form__header_text">
+            Create<br/>
+            <span class="form__header_subtext">Widget Template</span>  
+          </div>
+        </div>
+
+        <form class="fcol site-form form--profile" action="{% url 'dashboard:widget_template_create' %}" method="post"
+          novalidate enctype="multipart/form-data">
+          {% csrf_token %}
+          {% if request.GET.next %}
+          <input type="hidden" name="next" value="{{request.GET.next}}">
+          {% endif %}
+          {% include "messages.html" %}
+          <div class="fcol form__content_widget_create">
+            <div class="errornote">
+              {{ form.name.errors }}
+            </div>
+            <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__email">
+              <input type="text" id="name-input" name="name" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input "
+                {% if form.name.value is not None %} value="{{ form.name.value }}" {% endif %} required>
+              <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Name</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+
+            <!-- Outlook -->
+            <div class="form__field--upper widget">
+
+              <p class="form__header">Widget Outlook</p>
+              <div class="f1"></div>
+              
+              <div class="fcol content-box__content">
+                  <div class="flc form__field--upper background-block">
+                    <div class="flc">
+                    <p class="form__subheader form__subheader--column">Background Color</p>
+                    </div>
+
+                    <div class="color-dot-wrap"></div>
+
+                    <div class="color-dot" style="background-color: #c90000;">
+                        <label class="mdc-text-field">
+                          <input class="mdc-text-field__input df color-button widget-color-field" type="hidden" name="background_color" value="{% if color %}{{color}}{% else %}#7FD100{% endif %}" data-coloris>
+                        </label>
+                    </div>                    
+
+                  </div>
+
+                  <div class="errornote">
+                      {{ form.icon.errors }}
+                  </div>
+                    
+                  <div class="flc form__field--upper">
+                    <div class="fcol df-f1">
+                      <div class="flc content-box__block">
+                      <p class="form__subheader form__subheader--column">Icon file</p>
+                      <p class="">
+                        <a href="/media/images/logo.svg" class="icon-name-label" target="_blank">/media/images/logo.svg</a>
+                      </p>
+                      </div>
+
+                      <div class="frc content-box__controls">
+
+                          <a class="link-button console-button console-button_clear-icon js-hidden" href="#" onclick="javascript:clearWidgetIcon()" target="_self">
+                            <img class="console-button--icon" src="{% static '/images/delete-white.svg' %}">Clear Icon
+                          </a>
+
+                          <a class="link-button console-button console-button_browse-icon" href="#" onclick="javascript:document.getElementById('icon-input').click();" target="_self">
+                            <img class="console-button--icon" src="{% static '/images/photo-add-white.svg' %}">Browse Icon
+                          </a>
+
+                      </div>
+
+                      <div class="mdc-text-field mdc-text-field--outlined form__field signup__thumbnail">
+                        <input type="file" id="icon-input" name="icon" class="mdc-text-field__input form__text form--signup__text form__input form--signup__input" onchange="javascript:onChangeBrowseIcon(this);">
+                        <div class="mdc-notched-outline">
+                          <div class="mdc-notched-outline__leading"></div>
+                          <div class="mdc-notched-outline__notch">
+                            <label for="icon-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Icon</label>
+                          </div>
+                          <div class="mdc-notched-outline__trailing"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="fc outlook">
+                    <div class="qh-root">
+                      {% include "embed/widget_dot.html" with background_color=form.background_color.value %}
+                    </div>                    
+                  </div>
+                </div>
+              </div>
+            </div> 
+
+          </div>
+          <div class="fc">
+            <div class="flc form__ui">
+              <div>
+                <a href="{% url 'dashboard:templates' %}">
+                  <input type="button" class="form__button" value="Back">
+                </a>
+              </div>
+              <div>
+                <input type="submit" class="form__button form__submit form--dashboard__submit save__submit" value="Create">
+              </div>
+
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

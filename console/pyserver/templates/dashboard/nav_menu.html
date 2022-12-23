@@ -1,0 +1,33 @@
+{% load static %}
+
+<nav class="fcol mdc-list aside__navi-list">
+    <a class="aside__navi-item {% if menu_selected == 'home' %}aside__navi-item--activated{% endif %}" href="{% url 'dashboard:home' %}">
+      Dashboard<span></span>
+    </a>
+    <a class="aside__navi-item {% if menu_selected == 'appointments' %}aside__navi-item--activated{% endif %}" href="{% url 'dashboard:appointments' %}">
+      Appointments
+    </a>
+    <a class="aside__navi-item {% if menu_selected == 'calendar' %}aside__navi-item--activated{% endif %}" href="{% url 'dashboard:calendar' %}">
+      Calendar
+    </a>
+    {% if user.is_default_admin %}
+    <a class="aside__navi-item {% if menu_selected == 'widgets' %}aside__navi-item--activated{% endif %}" href="{% url 'dashboard:widgets' %}">
+      Widgets
+    </a>
+    <a class="aside__navi-item aside__navi-item {% if menu_selected == 'templates' %}aside__navi-item--activated{% endif %}" href="{% url 'dashboard:templates' %}">
+      Templates
+    </a>
+    <a class="aside__navi-item {% if menu_selected == 'team' %}aside__navi-item--activated{% endif %}" href="{% url 'dashboard:team' %}">
+      Team
+    </a>
+
+    {% endif %}
+
+    <div class="df mdc-top-app-bar__logout mobile-objects mobile-form-logout">
+      <form class="logout-link" action="{% url 'accounts:logout' %}" method="post">
+        {% csrf_token %}
+        <button class="button--logout console-button mobile-logout" type="submit">Logout</button>
+      </form>
+    </div>
+
+</nav>

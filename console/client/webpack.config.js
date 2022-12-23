@@ -21,6 +21,9 @@ module.exports = () => {
           MiniCssExtractPlugin.loader,
           {
             loader: "css-loader",
+            options: {
+              url: false,
+            }            
           },
           "postcss-loader",
           {
@@ -42,7 +45,7 @@ module.exports = () => {
         },
       },
       {
-        test: /\.svg/,
+        test: /\.(svg|png|jpeg|jpg)/,
         type: 'asset/resource'
       }
     ],
@@ -89,9 +92,11 @@ module.exports = () => {
     "js/accounts": "./js/accounts.js",
     "css/accounts": "./scss/accounts.scss",
     "css/widget": "./scss/widget.scss",
+    "css/widget_embed": "./scss/widget_embed.scss",
     "js/dashboard": "./js/dashboard.js",
+    "js/dashboard-calendar": "./js/dashboard-calendar.js",
     "js/widget": "./js/widget.js",
-    "js/embed/widget_content_script": "./js/embed/widget_content_script.js",
+    "js/widget_embed": "./js/widget_embed.js",
     "css/dashboard": "./scss/dashboard.scss"
   }
   config.output = {
