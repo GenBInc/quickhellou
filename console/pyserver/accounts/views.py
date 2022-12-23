@@ -281,7 +281,7 @@ def send_email_notification(
     return send_mail(
         subject,
         message_plain,
-        'support@genb.com',
+        settings.ADMIN_EMAIL,
         recipients,
         html_message=message_html
     )

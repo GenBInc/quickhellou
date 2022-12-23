@@ -52,7 +52,7 @@
   background: white;
   -webkit-background-size: cover;
   background-size: cover;
-  flex-direction: column-reverse;
+  flex-direction: column;
   @media (min-width: $s-lg) {
     @include df-row();
   }
