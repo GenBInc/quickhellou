@@ -50,11 +50,11 @@
           <div class="fc df-f1 com__list-link list-link--reject" value="Reject" data-id="{{ communication.id }}">Reject</div>
         </form>
 
-        {% if communication.status == 2 %}
-          <a class="fc df-f1 appointment-list_open_chat_button widgets__list-link" href="{{ communication.link_url }}" target="_blank" >Open Chat</a>
-        {% endif %}
-
       {% else %}
+
+      {% if communication.status == 2 and todays_date < communication.datetime|date:'m/d/Y H:i' %}
+        <a class="fc df-f1 appointment-list_open_chat_button widgets__list-link" href="{{ communication.link_url }}" target="_blank" >Open Chat</a>
+      {% endif %}
   
       <a class="fc df-f1 widgets__list-link list-link--edit" href="{% url 'dashboard:appointment_edit' appointment_id=communication.id  %}"
           target="_self"
