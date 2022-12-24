@@ -17,8 +17,7 @@ a.footer__button-have-problem {
   margin-right: 28px;
   line-height: 1em;
   text-decoration: underline;
-  cursor: pointer;
-  @media (min-width: $s-md) {
+  cursor: pointer;@media (min-width: $s-md) {
     display:block;
   }
 }
@@ -90,4 +89,15 @@ a.footer__button-have-problem {
 
 .button--share-screen.js-locked {
   pointer-events: none;
+}
+
+.open-source-screens {
+  width: 90%;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.qh-mark-home-row_wrap {
+  margin-top: 20px !important;
+  margin-bottom: 10px !important;
 }
