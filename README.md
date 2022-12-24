@@ -32,6 +32,10 @@ The application includes:
 * creating multi-peer video conference sessions
 * create instalable in-page plugins and create customer service communications.
 
+<div align="center">
+  <img src="https://github.com/GenBInc/quickhellou/blob/main/social_assets/qh-screens-2.png" alt="Quick Hellou Stay Connected"/>
+</div>
+
 [Demo qhellou.com](http://qhellou.com)
  
 
