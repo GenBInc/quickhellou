@@ -34,7 +34,7 @@
           {% include "messages.html" %}
           <div class="form__content">
             <div class="errornote">
-              {{ form.errors.passwords_not_match }}
+              {{ form.passwords_not_match.errors }}
             </div>
             <div class="errornote">
               {{ form.new_password.errors }}

@@ -18,7 +18,7 @@ class ProfileMetaForm(forms.Form):
             return valid
 
         if self.cleaned_data['password'] != self.cleaned_data['confirm_password']:
-            self._errors['passwords_not_match'] = 'Passwords don\'t match.'
+            self.add_error('password', 'Passwords don\'t match.')
             return False
 
 

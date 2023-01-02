@@ -1,10 +1,12 @@
+import zoneinfo
 from django.http import HttpRequest
-from django.utils import translation
+from django.utils import timezone, translation
 from django.utils.deprecation import MiddlewareMixin
 from django.contrib.auth.models import AnonymousUser
 from django.conf import settings
 
 from common.requests import add_to_session, get_from_session
+
 
 class UserLanguageMiddleware(MiddlewareMixin):
     """ User language middleware. """
@@ -32,3 +34,16 @@ class UserLanguageMiddleware(MiddlewareMixin):
                 language = translation.get_language()
                 add_to_session(request, 'language', language)
                 translation.activate(language)
+
+
+class TimezoneMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        tzname = request.session.get('django_timezone')
+        if tzname:
+            timezone.activate(zoneinfo.ZoneInfo(tzname))
+        else:
+            timezone.deactivate()
+        return self.get_response(request)

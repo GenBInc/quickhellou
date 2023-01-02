@@ -1,3 +1,4 @@
+import zoneinfo
 from re import (
     search,
     compile,
@@ -10,11 +11,14 @@ from datetime import (
 )
 from dashboard.models import (
     UserWorkingHours,
+    Communication,
 )
 from accounts.models import (
     User,
 )
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, is_aware
+
+TIMEZONE_UTC = zoneinfo.ZoneInfo('UTC')
 
 TIME_FORMAT: str = '%I:%M %p'
 DAY_TIME_FORMAT: str = '%d %I:%M %p'
@@ -189,6 +193,86 @@ def collect_weekly_hours(
         weekly_hours[day_code] = daily_hours
 
     return weekly_hours
+
+
+def filter_upcoming_hours(
+    user: User,
+    day_date: datetime,
+    all_working_hours: list
+) -> list:
+    """Filter upcoming hours.
+
+    Args:
+        user (User): the user
+        day_date (datetime): the current date
+        all_working_hours (list): all working hours 
+
+    Returns:
+        list: the hours list
+    """
+    if not all_working_hours:
+        return []
+
+    now: datetime = datetime.now(user.tzinfo)
+
+    if not day_date.date().__eq__(now.date()):
+        return list(map(lambda working_hour: datetime(
+            day_date.year,
+            day_date.month,
+            day_date.day,
+            working_hour.hour,
+            working_hour.minute,
+            0,
+            0,
+            user.tzinfo
+        ), all_working_hours))
+
+    upcoming_dates: list = []
+    for working_time in all_working_hours:
+        working_time_aware: datetime = make_aware(
+            working_time, user.tzinfo)
+        today_working_time: datetime = now.replace(hour=working_time_aware.hour,
+                                                   minute=working_time_aware.minute)
+        if now < today_working_time:
+            upcoming_dates.append(today_working_time)
+    return upcoming_dates
+
+
+def filter_available_hours(
+    user: User,
+    day: datetime,
+    upcoming_working_hours: list
+) -> list:
+    """Filters available hours.
+
+    Args:
+        user (User): the user
+        day (datetime): the current day
+        upcoming_working_hours (list): working hours
+
+    Returns:
+        list: the hours list
+    """
+    now: datetime = datetime.now(user.tzinfo)
+
+    appointments: list[Communication] = Communication.objects.filter(
+        client_board=user.client_board).all()
+
+    busy_terms: list = []
+    for appointment in appointments:
+        busy_terms.append(appointment.datetime)
+
+    available_dates: list = []
+    for working_time in upcoming_working_hours:
+        today_working_time: datetime = now.replace(year=day.year, month=day.month, day=day.day, hour=working_time.hour,
+                                                   minute=working_time.minute, second=0, microsecond=0)
+
+        for busy_term in busy_terms:
+            busy_term_aware = busy_term.replace(tzinfo=user.tzinfo)
+            if not busy_term_aware.__eq__(today_working_time):
+                available_dates.append(today_working_time)
+
+    return available_dates
 
 
 def time_left_delta(datetime_to: datetime) -> timedelta:

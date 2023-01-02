@@ -195,6 +195,15 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+TIMEZONES = (
+    'Europe/London',
+    'Europe/Warsaw',
+    'America/New_York',
+    'America/Chicago',
+    'America/Denver',
+    'America/Los_Angeles',
+)
+
 DATETIME_FORMAT = '%Y-%m-%d %I:%M %p'
 
 

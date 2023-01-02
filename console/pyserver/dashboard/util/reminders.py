@@ -21,18 +21,14 @@ def send_reminders():
     appointments: list[Communication] = Communication.objects.filter(
         status=Communication.STATUS_OPEN).all()
 
-    print('enter appointments')
     for appointment in appointments:
         if not appointment.reminders:
-            print('not included')
             continue
 
         end_datetime: datetime = appointment.datetime
         caller: User = appointment.caller
 
-        print('is sent', appointment.one_day_reminder_sent)
         if one_day_left_delta(end_datetime) and not appointment.one_day_reminder_sent:
-            print('send..')
             send_one_day_appointment_reminder(
                 appointment.link_url,
                 appointment.datetime,

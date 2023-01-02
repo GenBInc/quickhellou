@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from datetime import (
     datetime,
     timedelta,
 )
 import re
 import hashlib
+import zoneinfo
 from io import BytesIO, TextIOWrapper
 from django.views.decorators.http import (
     require_POST,
@@ -16,7 +16,7 @@ from django.http import (
     HttpResponse,
     HttpResponseRedirect
 )
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, is_aware
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.mail import send_mail
@@ -36,6 +36,8 @@ from dashboard.util.time import (
     DATETIME_FORMAT,
     format_day_with_ordinal,
     collect_weekly_hours,
+    filter_upcoming_hours,
+    filter_available_hours,
 )
 from dashboard.forms import (
     AssignedWidgetsForm,
@@ -762,6 +764,15 @@ def client_user_edit_view(
     request: HttpRequest,
     user_id: int = None
 ) -> HttpResponse:
+    """User edit view.
+
+    Args:
+        request (HttpRequest): the HTTP request
+        user_id (int, optional): the user id. Defaults to None.
+
+    Returns:
+        HttpResponse: the HTTP response
+    """
     if user_id is not None:
         client_user: User = User.objects.get(id=user_id)
         board_widgets = Widget.objects.filter(
@@ -779,7 +790,7 @@ def client_user_edit_view(
         if user_form.is_valid() and profile_form.is_valid() and widgets_form.is_valid():
             client_user = user_form.save()
             client_user.is_admin = True
-            profile_form.save(
+            profile_form.save_all(
                 profile_form.cleaned_data['full_name'].strip(), client_user)
             # Assign widgets
             client_user.widget_user.clear()
@@ -793,14 +804,17 @@ def client_user_edit_view(
             messages.error(request, 'Please correct the errors below.')
     else:
         user_form = UserForm()
-        profile_form = ProfileForm()
+        profile_form = ProfileForm(instance=client_user.profile)
         profile_meta_form = ProfileMetaForm()
-    return render(request, 'dashboard/client_user_edit.html', {'client_user': client_user,
-                                                               'user_widgets': user_widgets,
-                                                               'board_widgets': board_widgets,
-                                                               'user_form': user_form,
-                                                               'profile_form': profile_form,
-                                                               'profile_meta_form': profile_meta_form, })
+    return render(request, 'dashboard/client_user_edit.html', {
+        'client_user': client_user,
+        'user_widgets': user_widgets,
+        'board_widgets': board_widgets,
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'profile_meta_form': profile_meta_form,
+        'timezones': settings.TIMEZONES
+    })
 
 
 @permission_required("is_default_admin")
@@ -1010,13 +1024,23 @@ def widget_calendar_view(
         days: list[dict] = []
         dates: list[datetime] = []
         for index, date in enumerate(date_list):
+            all_working_hours: list = working_hours.get(date.strftime('%w'))
+            # Collect only upcoming dates
+            daily_working_hours: list = filter_upcoming_hours(
+                user, date, all_working_hours)
+
+            # Collect only available dates (not yet scheduled)
+            available_working_hours: list = filter_available_hours(
+                user, date, daily_working_hours
+            )
+
             day: dict = {
                 'info': '',
                 'date': date.strftime('%Y-%m-%d'),
                 'datetime': date,
                 'day_name': date.strftime('%A'),
                 'month_date': date.strftime('%b %d'),
-                'time': working_hours.get(date.strftime('%w'))
+                'time': available_working_hours
             }
             dates.append(date.strptime(date.strftime('%B %Y'), '%B %Y'))
             days.append(day)

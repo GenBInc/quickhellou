@@ -161,11 +161,11 @@ def forgot_password_view(
     if request.method == 'POST':
         form: ForgotPasswordForm = ForgotPasswordForm(data=request.POST)
         if form.is_valid():
-            receiver = form.cleaned_data['email']
-            user = User.objects.get(email=receiver)
+            receiver_email: str = form.cleaned_data['email']
+            user: User = User.objects.filter(email=receiver_email).first()
             if user is not None:
                 subject = 'QuickHellou - Reset Your Password'
-                recipients = [receiver]
+                recipients = [receiver_email]
                 email_params = {
                     'username': user.first_name, 'user_id': user.id, 'console_app_url': settings.CONSOLE_APP_URL}
                 send_email_notification(subject, recipients, email_params,

@@ -71,7 +71,7 @@ class UserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('full_name', 'thumbnail')
+        fields = ('full_name', 'thumbnail', 'timezone')
 
     def is_valid(self):
         valid = super(ProfileForm, self).is_valid()
@@ -79,15 +79,16 @@ class ProfileForm(forms.ModelForm):
         if not valid:
             return valid
 
-        if len(self.cleaned_data['full_name'].split(" ")) < 2:
-            self._errors["invalid_full_name"] = 'Enter valid full name.'
+        if len(self.cleaned_data['full_name'].split(' ')) < 2:
+            self._errors['invalid_full_name'] = 'Enter valid full name.'
             return False
         return True
 
-    def save(self, full_name, user=None, commit=True):
+    def save_all(self, full_name, user=None, commit=True):
         profile = super(ProfileForm, self).save(commit=False)
         profile.full_name = full_name
         profile.user = user
+        profile.timezone = self.cleaned_data['timezone']
         if commit:
             profile.save()
         return profile
@@ -105,7 +106,7 @@ def get_first_name(fullname):
 def get_last_name(fullname):
     lastname = ''
     try:
-        return " ".join(fullname.split()[1:])
+        return ' '.join(fullname.split()[1:])
     except Exception as e:
         print(e)
     return lastname
@@ -510,7 +511,6 @@ class ContactInformationForm(forms.Form):
 
         # Encode communication short URL for videochat room id.
         appointment.encode_short_url()
-
 
         if message:
             # Create communication session
