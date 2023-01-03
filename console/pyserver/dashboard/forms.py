@@ -2,6 +2,7 @@ from re import (
     compile,
     Pattern,
 )
+from zoneinfo import ZoneInfo
 from django.conf import settings
 from django.utils.timezone import make_aware
 from django import forms
@@ -467,6 +468,7 @@ class ContactInformationForm(forms.Form):
     """Contact information form
     """
     datetime = forms.CharField(required=True)
+    timezone = forms.CharField(required=True)
     name = forms.CharField(required=True, initial='')
     email_address = forms.EmailField(required=True, initial='')
     phone_number = PhoneNumberField(required=False, max_length=15, initial='')
@@ -481,6 +483,7 @@ class ContactInformationForm(forms.Form):
         phone_number: str = self.cleaned_data['phone_number']
         message: str = self.cleaned_data['message']
         datetime_str: str = self.cleaned_data['datetime']
+        timezone_str: str = self.cleaned_data['timezone']
 
         # Get or create user
         client_user, created = User.objects.get_or_create(
@@ -499,6 +502,12 @@ class ContactInformationForm(forms.Form):
             }
         )
 
+        # Convert front user specific timezone for schedule date into UTC
+        schedule_datetime: datetime = datetime.datetime.strptime(
+            datetime_str, DATETIME_FORMAT).replace(tzinfo=ZoneInfo(timezone_str))
+        schedule_datetime_utc: datetime = schedule_datetime.astimezone(
+            tz=TIMEZONE_UTC)
+
         # Get or create communication
         appointment: Communication = Communication.objects.create(
             caller=client_user,
@@ -506,10 +515,7 @@ class ContactInformationForm(forms.Form):
             client_board=widget.client_board,
             status=Communication.STATUS_PENDING,
             widget=widget,
-            datetime=make_aware(
-                datetime.datetime.strptime(datetime_str, DATETIME_FORMAT),
-                timezone=TIMEZONE_UTC
-            ),
+            datetime=schedule_datetime_utc,
         )
 
         # Encode communication short URL for videochat room id.

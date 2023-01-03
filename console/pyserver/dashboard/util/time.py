@@ -1,4 +1,4 @@
-import zoneinfo
+from zoneinfo import ZoneInfo
 from re import (
     search,
     compile,
@@ -16,9 +16,10 @@ from dashboard.models import (
 from accounts.models import (
     User,
 )
-from django.utils.timezone import make_aware, is_aware
+from django.utils.timezone import make_aware
+from django.utils import timezone
 
-TIMEZONE_UTC = zoneinfo.ZoneInfo('UTC')
+TIMEZONE_UTC = ZoneInfo('UTC')
 
 TIME_FORMAT: str = '%I:%M %p'
 DAY_TIME_FORMAT: str = '%d %I:%M %p'
@@ -285,6 +286,17 @@ def filter_available_hours(
             available_dates.append(today_working_time)
 
     return available_dates
+
+
+def set_timezone(timezone_key: str):
+    """Activates timezone by key.
+
+    Args:
+        timezone_key (str): the timezone key
+    """
+    if timezone_key:
+        zone_info: ZoneInfo = ZoneInfo(timezone_key)
+        timezone.activate(zone_info)
 
 
 def time_left_delta(datetime_to: datetime) -> timedelta:

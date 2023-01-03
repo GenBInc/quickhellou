@@ -5,6 +5,7 @@ from datetime import (
 import re
 import hashlib
 from io import BytesIO, TextIOWrapper
+from zoneinfo import ZoneInfo
 from django.views.decorators.http import (
     require_POST,
 )
@@ -12,6 +13,7 @@ from django.http import (
     HttpRequest,
     HttpResponse,
 )
+from django.utils import timezone
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.http import FileResponse, Http404
@@ -30,6 +32,7 @@ from dashboard.util.time import (
     collect_weekly_hours,
     filter_upcoming_hours,
     filter_available_hours,
+    set_timezone,
 )
 from dashboard.emails import send_email_notification
 from dashboard.forms import (
@@ -131,6 +134,7 @@ def widget_content_script_file(
 
 
 @csrf_exempt
+@require_POST
 def widget_calendar_view(
     request: HttpRequest,
     widget_id: int,
@@ -144,6 +148,10 @@ def widget_calendar_view(
     Returns:
         HttpResponse: the HTTP response
     """
+    # Activate front user timezone
+    user_timezone: str = request.POST.get('timezone')
+    set_timezone(user_timezone)
+    
     widget: Widget = Widget.objects.get(id=widget_id)
     if not widget:
         raise Http404
