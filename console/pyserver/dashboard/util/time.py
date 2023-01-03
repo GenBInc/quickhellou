@@ -241,6 +241,7 @@ def filter_upcoming_hours(
 def filter_available_hours(
     user: User,
     day: datetime,
+    appointments: list[Communication],
     upcoming_working_hours: list
 ) -> list:
     """Filters available hours.
@@ -248,29 +249,37 @@ def filter_available_hours(
     Args:
         user (User): the user
         day (datetime): the current day
+        appointments (list[Communication]): the appointments list
         upcoming_working_hours (list): working hours
 
     Returns:
         list: the hours list
     """
-    now: datetime = datetime.now(user.tzinfo)
 
-    appointments: list[Communication] = Communication.objects.filter(
-        client_board=user.client_board).all()
+    # Collect appointment from current date
+    appointments = list(filter(lambda appointment: (
+        appointment.datetime.date().__eq__(day)), appointments))
+
+    if not appointments.__len__():
+        return upcoming_working_hours
+
+    now: datetime = datetime.now(user.tzinfo)
 
     busy_terms: list = []
     for appointment in appointments:
-        busy_terms.append(appointment.datetime)
+        busy_terms.append(appointment.datetime.replace(tzinfo=user.tzinfo))
 
     available_dates: list = []
     for working_time in upcoming_working_hours:
         today_working_time: datetime = now.replace(year=day.year, month=day.month, day=day.day, hour=working_time.hour,
                                                    minute=working_time.minute, second=0, microsecond=0)
-
+        is_busy = False
         for busy_term in busy_terms:
-            busy_term_aware = busy_term.replace(tzinfo=user.tzinfo)
-            if not busy_term_aware.__eq__(today_working_time):
-                available_dates.append(today_working_time)
+            if busy_term.__eq__(today_working_time):
+                is_busy = True
+                break
+        if not is_busy:
+            available_dates.append(today_working_time)
 
     return available_dates
 

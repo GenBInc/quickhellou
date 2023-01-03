@@ -132,7 +132,7 @@ class Communication(models.Model):
     STATUS_CLOSED = 4
     # Client cancels appointment
     STATUS_CANCELLED = 5
-    
+
     STATUS_CHOICES = (
         (STATUS_PENDING, 'pending'),
         (STATUS_OPEN, 'open'),
@@ -177,14 +177,15 @@ class Communication(models.Model):
         self.short_url = encode_short_url(self.id)
         self.save()
 
-    def is_open(self):
-        return self.status in (self.STATUS_PENDING, self.STATUS_ENQUEUED)
-
     def is_closed(self):
-        return self.status in (self.STATUS_MISSED, self.STATUS_REJECTED, self.STATUS_COMPLETED)
+        return self.status in (self.STATUS_REJECTED)
 
     def status_verbose(self):
         return dict(Communication.STATUS_CHOICES)[self.status]
+
+    @property
+    def is_open(self):
+        return self.status.__eq__(Communication.STATUS_OPEN)
 
     @property
     def link_url(self) -> str:
@@ -203,8 +204,7 @@ class Communication(models.Model):
     def initial_session(self):
         return self.communicationsession_set.filter(
             communication__id=self.id, status=CommunicationSession.STATUS_CREATED).first()
-        
-    
+
     @property
     def current_session_id(self):
         sessions = self.communicationsession_set.filter(
