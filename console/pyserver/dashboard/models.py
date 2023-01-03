@@ -2,9 +2,12 @@
 from __future__ import unicode_literals
 import re
 import uuid
+from zoneinfo import ZoneInfo
+from datetime import datetime
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.timezone import make_aware
 from django.utils.translation import gettext_lazy as _
 from common.strings import encode_short_url
 from dashboard.managers import (
@@ -182,6 +185,15 @@ class Communication(models.Model):
 
     def status_verbose(self):
         return dict(Communication.STATUS_CHOICES)[self.status]
+
+    @property
+    def is_pastdate(self) -> bool:
+        """Checks if datetime is past date.
+
+        Returns:
+            bool: True if date is past
+        """
+        return self.datetime.__lt__(make_aware(datetime.utcnow()))
 
     @property
     def is_open(self):

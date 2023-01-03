@@ -2,6 +2,7 @@ import { DashboardView } from './DashboardView'
 import { WebSocketService } from '../base/services/WebSocketService'
 import { ApplicationSettings } from '../base/model/ApplicationSettings'
 import { QhUtils } from '../base/utils/QhUtils'
+import { MDCDialog } from '@material/dialog'
 
 /**
  * Pages dashboard view.
@@ -21,6 +22,19 @@ export class CallsView extends DashboardView {
     this.showPageLoader()
     this.loadCallViewList()
     this.hidePageLoader()
+
+    const rejectAppointmentDialogElement = document.querySelector('.mdc-dialog')
+    if (rejectAppointmentDialogElement) {
+      this.rejectAppointmentDialog = MDCDialog.attachTo(rejectAppointmentDialogElement)
+      this.rejectAppointmentDialog.listen('MDCDialog:closing', (event) => {
+        if (event.detail.action === 'cancel') {
+          this.rejectAppointment(this.rejectAppointmentDialog.id)
+        }
+        if (event.detail.action === 'confirm') {
+          this.rejectAppointmentAndFreeTimeSlot(this.rejectAppointmentDialog.id)
+        }
+      })
+    }
   }
 
   /**
@@ -228,7 +242,7 @@ export class CallsView extends DashboardView {
     rejectAppointmentButtonElements.forEach((button) => {
       button.addEventListener('click', (event) => {
         const id = button.dataset.id
-        this.rejectAppointment(id)
+        this.rejectAppointmentRequest(id)
       })
     })
   }
@@ -239,10 +253,20 @@ export class CallsView extends DashboardView {
     form.submit()
   }
 
-  async rejectAppointment(id) {
-    this.showPageLoader()
+  rejectAppointment(id) {
     const form = document.querySelector(`.form--reject-appointment[data-id='${id}']`)
     form.submit()
+  }
+  
+  rejectAppointmentAndFreeTimeSlot(id) {
+    const form = document.querySelector(`.form--reject-appointment[data-id='${id}']`)
+    form.submit()
+  }
+
+  async rejectAppointmentRequest(id) {
+    this.showPageLoader()
+    this.rejectAppointmentDialog.id = id
+    this.rejectAppointmentDialog.open()
   }
 
   /**

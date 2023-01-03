@@ -445,6 +445,7 @@ a.widgets__list-link {
   max-width: 30px;
   height: 30px;
   cursor: pointer;
+  user-select: none;
 }
 
 div.com__list-link:last-child,

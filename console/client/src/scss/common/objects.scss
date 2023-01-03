@@ -322,8 +322,36 @@ ul.messages {
   color:white;
   border-width: 2px;
   border-style: solid;
-  /*margin-bottom:40px;*/
   transition: background-color .2s ease, color .2s ease;
+}
+
+.dialog__button {
+  cursor: pointer;
+  font-family:'Raleway';
+  font-weight:600;
+  font-size:1rem;
+  color:white;
+  border-width: 2px;
+  border-style: solid;
+  transition: background-color .2s ease, color .2s ease;
+  padding: 8px 26px;
+  border-radius: 50px;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.dialog__button:hover {
+  background-color:$color--white;
+  border-color:#001588;
+  color:#001588;
+}
+
+.dialog__button--confirm {
+  background-color: $color--kelly-green;
+}
+
+.dialog__button--reject {
+  background-color: $color--red-orange;
 }
 
 .form__button {

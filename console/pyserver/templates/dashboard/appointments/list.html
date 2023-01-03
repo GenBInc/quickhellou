@@ -2,10 +2,9 @@
 {% for appointment in appointments %}
   {% now "m/d/Y H:i" as todays_date %}
 
-  <div class="flc view-list__entry call-list__entry call-list__entry--{{ appointment.status_verbose }} 
-  {% if todays_date > appointment.datetime|date:'m/d/Y H:i' %}call-list__entry--past{% endif %}"
+  <div 
+    class="flc view-list__entry call-list__entry call-list__entry--{{ appointment.status_verbose }}{% if appointment.is_pastdate %} call-list__entry--past{% endif %}"
   >
-    
     <div class="frow flc widget-list__row">
 
       <div class="widget-list__field widget-list__field--id">      

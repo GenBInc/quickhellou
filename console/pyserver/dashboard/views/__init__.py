@@ -649,6 +649,7 @@ class AppointmentPayload:
     status: int
     link_url: str
     datetime: datetime
+    is_pastdate: bool
 
     def __init__(
         self,
@@ -668,6 +669,7 @@ class AppointmentPayload:
         self.status = appointment.status
         self.link_url = appointment.link_url
         self.datetime = appointment.datetime.astimezone(tzinfo)
+        self.is_pastdate = appointment.is_pastdate
 
 
 @login_required
@@ -703,7 +705,7 @@ def appointments_list_view(
         HttpResponse: the HTTP response
     """
     appointments: list[Communication] = Communication.objects.filter(
-        client_board=request.user.client_board).filter(active=True).order_by('-datetime')
+        client_board=request.user.client_board, active=True).order_by('-datetime')
 
     # Create payload
     appointments_payload: list[AppointmentPayload] = list(map(
