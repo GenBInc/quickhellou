@@ -2,6 +2,7 @@ from datetime import (
     datetime,
 )
 from io import TextIOWrapper
+from zoneinfo import ZoneInfo
 from django.views.decorators.http import (
     require_POST,
 )
@@ -13,19 +14,19 @@ from django.http import (
 from django.utils.timezone import make_aware, is_aware
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.mail import send_mail
 from django.http import Http404
 from django.shortcuts import redirect, render, get_object_or_404
-from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from accounts.models import (
     Profile,
     User,
 )
+from dashboard.emails import send_email_notification
 from dashboard.util.time import (
     HOURS,
     MINUTES,
+    TIMEZONE_UTC,
 )
 from dashboard.forms import (
     AssignedWidgetsForm,
@@ -637,6 +638,38 @@ def widget_unpause(
     return redirect('dashboard:widgets')
 
 
+class AppointmentPayload:
+    """Appointment payload model.
+    """
+
+    id: str
+    status_verbose: str
+    full_name: str
+    email_or_phone: str
+    status: int
+    link_url: str
+    datetime: datetime
+
+    def __init__(
+        self,
+        tzinfo: ZoneInfo,
+        appointment: Communication,
+    ) -> None:
+        """Constructor
+
+        Args:
+            tzinfo (ZoneInfo): the timezone info
+            appointment (Communication): the appointment
+        """
+        self.id = appointment.id
+        self.status_verbose = appointment.status_verbose
+        self.full_name = appointment.caller.profile.full_name
+        self.email_or_phone = appointment.caller.profile.email_or_phone
+        self.status = appointment.status
+        self.link_url = appointment.link_url
+        self.datetime = appointment.datetime.astimezone(tzinfo)
+
+
 @login_required
 def appointments_view(
     request: HttpRequest
@@ -649,11 +682,11 @@ def appointments_view(
     Returns:
         HttpResponse: the HTTP response
     """
-    communications: list[Communication] = Communication.objects.filter(
-        client_board=request.user.client_board).filter(active=True)
+    appointments_len: int = Communication.objects.filter(
+        client_board=request.user.client_board, active=True).__len__()
     return render(request, 'dashboard/appointments/home.html', {
-        'communications': communications,
         'user': request.user,
+        'appointments_len': appointments_len,
     })
 
 
@@ -669,12 +702,16 @@ def appointments_list_view(
     Returns:
         HttpResponse: the HTTP response
     """
-    communications: list[Communication] = Communication.objects.filter(
+    appointments: list[Communication] = Communication.objects.filter(
         client_board=request.user.client_board).filter(active=True).order_by('-datetime')
+
+    # Create payload
+    appointments_payload: list[AppointmentPayload] = list(map(
+        lambda appointment: AppointmentPayload(request.user.tzinfo, appointment), appointments))
 
     return render(request, 'dashboard/appointments/list.html', {
         'user': request.user,
-        'communications': communications,
+        'appointments': appointments_payload,
     })
 
 
@@ -914,24 +951,6 @@ def create_widget_embed_script(
             )
             code += line
     return code
-
-
-def send_email_notification(
-    subject: str,
-    recipients: list[str],
-    email_params: dict,
-    text_template_url: str,
-    html_template_url: str
-) -> int:
-    message_plain: str = render_to_string(text_template_url, email_params)
-    message_html: str = render_to_string(html_template_url, email_params)
-    return send_mail(
-        subject,
-        message_plain,
-        settings.ADMIN_EMAIL,
-        recipients,
-        html_message=message_html
-    )
 
 
 def app_params() -> dict[str]:

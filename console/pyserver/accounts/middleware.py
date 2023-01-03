@@ -36,14 +36,22 @@ class UserLanguageMiddleware(MiddlewareMixin):
                 translation.activate(language)
 
 
-class TimezoneMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
+class TimezoneMiddleware(MiddlewareMixin):
+    """Timezone middleware
 
-    def __call__(self, request):
-        tzname = request.session.get('django_timezone')
-        if tzname:
-            timezone.activate(zoneinfo.ZoneInfo(tzname))
-        else:
+    Args:
+        MiddlewareMixin (MiddlewareMixin): the middleware mixin
+    """
+
+    def process_view(self, request: HttpRequest, callback, callback_args, callback_kwargs):
+        if hasattr(request, 'user'):
+            is_anonymous: bool = isinstance(request.user, AnonymousUser)
+            if is_anonymous:
+                timezone.deactivate()
+            if not is_anonymous:
+                if not request.user.is_authenticated:
+                    return
+                timezone.activate(request.user.tzinfo)
+
+        if not hasattr(request, 'user'):
             timezone.deactivate()
-        return self.get_response(request)

@@ -260,25 +260,28 @@ def filter_available_hours(
     appointments = list(filter(lambda appointment: (
         appointment.datetime.date().__eq__(day)), appointments))
 
+    # If there are no busy appointments for current date, return the upcoming dates list
     if not appointments.__len__():
         return upcoming_working_hours
 
     now: datetime = datetime.now(user.tzinfo)
 
+    # Create busy, user timezone aware dates list
     busy_terms: list = []
     for appointment in appointments:
         busy_terms.append(appointment.datetime.replace(tzinfo=user.tzinfo))
 
     available_dates: list = []
     for working_time in upcoming_working_hours:
+        # Create the today's date out of hour an minute taken from working time and current date
         today_working_time: datetime = now.replace(year=day.year, month=day.month, day=day.day, hour=working_time.hour,
                                                    minute=working_time.minute, second=0, microsecond=0)
-        is_busy = False
-        for busy_term in busy_terms:
-            if busy_term.__eq__(today_working_time):
-                is_busy = True
-                break
-        if not is_busy:
+        # Check if working hour is busy
+        is_available = list(filter(lambda busy_term: (
+            busy_term.__eq__(today_working_time)), busy_terms)).__len__()
+
+        # If hour is available, add it to the list
+        if not is_available:
             available_dates.append(today_working_time)
 
     return available_dates

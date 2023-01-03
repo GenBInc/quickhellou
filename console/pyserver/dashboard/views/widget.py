@@ -31,6 +31,7 @@ from dashboard.util.time import (
     filter_upcoming_hours,
     filter_available_hours,
 )
+from dashboard.emails import send_email_notification
 from dashboard.forms import (
     WidgetScheduleForm,
     WidgetActiveUserForm,
@@ -166,7 +167,6 @@ def widget_calendar_view(
             daily_working_hours: list = filter_upcoming_hours(
                 user, date, all_working_hours)
 
-            
             # Collect only available dates (not yet scheduled)
             available_working_hours: list = filter_available_hours(
                 user, date, appointments, daily_working_hours
@@ -576,24 +576,6 @@ def widget_schedule_view(
         'form': form,
         'user_id': user_id,
         'hostname': hostname})
-
-
-def send_email_notification(
-    subject: str,
-    recipients: list[str],
-    email_params: dict,
-    text_template_url: str,
-    html_template_url: str
-) -> int:
-    message_plain: str = render_to_string(text_template_url, email_params)
-    message_html: str = render_to_string(html_template_url, email_params)
-    return send_mail(
-        subject,
-        message_plain,
-        settings.ADMIN_EMAIL,
-        recipients,
-        html_message=message_html
-    )
 
 
 def app_params() -> dict[str]:

@@ -10,6 +10,7 @@ from django.core.validators import validate_email
 from accounts.models import User, Profile
 from dashboard.util.time import (
     DAYS,
+    TIMEZONE_UTC,
     time_left_verbose,
 )
 from dashboard.models import (
@@ -505,8 +506,10 @@ class ContactInformationForm(forms.Form):
             client_board=widget.client_board,
             status=Communication.STATUS_PENDING,
             widget=widget,
-            datetime=make_aware(datetime.datetime.strptime(
-                datetime_str, DATETIME_FORMAT))
+            datetime=make_aware(
+                datetime.datetime.strptime(datetime_str, DATETIME_FORMAT),
+                timezone=TIMEZONE_UTC
+            ),
         )
 
         # Encode communication short URL for videochat room id.
