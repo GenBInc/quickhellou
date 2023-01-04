@@ -1,1 +1,0 @@
-*/30 * * * * /usr/local/bin/python /pyserver/manage.py reminders >> /var/log/cron.log 2>&1

@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.conf import settings
 from accounts.models import User
+from apscheduler.schedulers.background import BackgroundScheduler
 from dashboard.util.time import (
     time_left_verbose,
     one_day_left_delta,
@@ -13,6 +14,14 @@ from dashboard.emails import (
     send_one_day_appointment_reminder,
     send_one_hour_appointment_reminder,
 )
+
+
+def setup_reminders_job():
+    """Setups reminders job.
+    """
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(send_reminders, 'interval', hours=1)
+    scheduler.start()
 
 
 def send_reminders():

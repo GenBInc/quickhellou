@@ -5,7 +5,6 @@ from datetime import (
 import re
 import hashlib
 from io import BytesIO, TextIOWrapper
-from zoneinfo import ZoneInfo
 from django.views.decorators.http import (
     require_POST,
 )
@@ -151,7 +150,7 @@ def widget_calendar_view(
     # Activate front user timezone
     user_timezone: str = request.POST.get('timezone')
     set_timezone(user_timezone)
-    
+
     widget: Widget = Widget.objects.get(id=widget_id)
     if not widget:
         raise Http404
@@ -161,7 +160,7 @@ def widget_calendar_view(
     working_hours: dict[str, list[str]] = collect_weekly_hours(user)
 
     appointments: list[Communication] = Communication.objects.filter(
-        client_board=user.client_board, status=Communication.STATUS_OPEN).all()
+        client_board=user.client_board).all()
 
     pages: list[dict] = []
     for week in range(0, 4):

@@ -320,10 +320,6 @@ def appointment_message_view(
     if not appointment:
         raise Http404
 
-    appointment.status = Communication.STATUS_CANCELLED
-    appointment.save()
-
-    print(1, appointment.caller.profile.__dict__)
     return render(request, 'dashboard/appointments/front/message.html', {
         'username': appointment.caller.profile.full_name,
         'appointment': appointment,
