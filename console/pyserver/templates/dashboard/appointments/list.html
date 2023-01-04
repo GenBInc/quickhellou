@@ -1,7 +1,5 @@
 {% load static %} {% load svg %}
 {% for appointment in appointments %}
-  {% now "m/d/Y H:i" as todays_date %}
-
   <div 
     class="flc view-list__entry call-list__entry call-list__entry--{{ appointment.status_verbose }}{% if appointment.is_pastdate %} call-list__entry--past{% endif %}"
   >
@@ -39,7 +37,7 @@
     
     <div class="f1"></div>
     <div class="flc widget-list__field widget-list__field--mod-bar">
-      {% if appointment.status == 1 and todays_date < appointment.datetime|date:'m/d/Y H:i' %}
+      {% if appointment.is_pending and not appointment.is_pastdate %}
         <form class="form--accept-appointment" data-id="{{ appointment.id }}" action="{% url 'dashboard:accept_appointment' appointment_id=appointment.id %}" method="post">{% csrf_token %}
           <div class="fc df-f1 com__list-link list-link--accept" data-id="{{ appointment.id }}" >Accept</div>
         </form>
@@ -50,7 +48,7 @@
 
       {% else %}
 
-      {% if appointment.status == 2 and todays_date < appointment.datetime|date:'m/d/Y H:i' %}
+      {% if appointment.is_open and not appointment.is_pastdate %}
         <a class="fc df-f1 appointment-list_open_chat_button widgets__list-link" href="{{ appointment.link_url }}" target="_blank" >Open Chat</a>
       {% endif %}
   

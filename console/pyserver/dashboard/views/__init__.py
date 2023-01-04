@@ -650,6 +650,8 @@ class AppointmentPayload:
     link_url: str
     datetime: datetime
     is_pastdate: bool
+    is_pending: bool
+    is_open: bool
 
     def __init__(
         self,
@@ -670,6 +672,8 @@ class AppointmentPayload:
         self.link_url = appointment.link_url
         self.datetime = appointment.datetime.astimezone(tzinfo)
         self.is_pastdate = appointment.is_pastdate
+        self.is_pending = appointment.is_pending
+        self.is_open = appointment.is_open
 
 
 @login_required

@@ -196,7 +196,21 @@ class Communication(models.Model):
         return self.datetime.__lt__(make_aware(datetime.utcnow()))
 
     @property
-    def is_open(self):
+    def is_pending(self) -> bool:
+        """Checks if appointment is pending.
+
+        Returns:
+            bool: True if appointment is pending
+        """
+        return self.status.__eq__(Communication.STATUS_PENDING)
+
+    @property
+    def is_open(self) -> bool:
+        """Checks if appointment is open.
+
+        Returns:
+            bool: True if appointment is open
+        """
         return self.status.__eq__(Communication.STATUS_OPEN)
 
     @property
