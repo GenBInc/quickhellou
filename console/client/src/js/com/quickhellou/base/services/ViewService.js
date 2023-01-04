@@ -1,5 +1,4 @@
 import { FormService } from '../../../genb/base/service/FormService'
-import { ComSessionStatus } from '../model/ComSessionStatus'
 
 /**
  * Service for URL based views interaction.

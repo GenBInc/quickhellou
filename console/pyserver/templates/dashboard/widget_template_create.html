@@ -1,5 +1,5 @@
 {% extends 'dashboard/base.html' %}
-{% load static %}
+{% load static svg %}
 
 {% block title %}Create Widget Template{% endblock %}
 {% block page_title %}Create Widget Template{% endblock %}
@@ -88,11 +88,11 @@
                       <div class="frc content-box__controls">
 
                           <a class="link-button console-button console-button_clear-icon js-hidden" href="#" onclick="javascript:clearWidgetIcon()" target="_self">
-                            <img class="console-button--icon" src="{% static '/images/delete-white.svg' %}">Clear Icon
+                            {% svg "delete-white" %}Clear Icon
                           </a>
 
                           <a class="link-button console-button console-button_browse-icon" href="#" onclick="javascript:document.getElementById('icon-input').click();" target="_self">
-                            <img class="console-button--icon" src="{% static '/images/photo-add-white.svg' %}">Browse Icon
+                            {% svg "photo-add-white" %}Browse Icon
                           </a>
 
                       </div>

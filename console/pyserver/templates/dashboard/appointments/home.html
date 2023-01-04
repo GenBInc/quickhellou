@@ -35,8 +35,7 @@
           </div>
 </div>
 
-
-<div class="mdc-dialog">
+<div class="mdc-dialog mdc-dialog--reject">
   <div class="mdc-dialog__container">
     <div class="mdc-dialog__surface"
       role="alertdialog"
@@ -47,11 +46,15 @@
         Do you also want to free the time slot?
       </div>
       <div class="mdc-dialog__actions">
-        <button type="button" class="mdc-button mdc-dialog__button dialog__button dialog__button--reject" data-mdc-dialog-action="cancel">
+        <button type="button" class="mdc-button mdc-dialog__button dialog__button dialog__button--cancel" data-mdc-dialog-action="cancel">
+          <div class="mdc-button__ripple"></div>
+          <span class="mdc-button__label">Cancel</span>
+        </button>
+        <button type="button" class="mdc-button mdc-dialog__button dialog__button dialog__button--reject" data-mdc-dialog-action="reject">
           <div class="mdc-button__ripple"></div>
           <span class="mdc-button__label">Reject</span>
         </button>
-        <button type="button" class="mdc-button mdc-dialog__button dialog__button dialog__button--confirm" data-mdc-dialog-action="confirm">
+        <button type="button" class="mdc-button mdc-dialog__button dialog__button dialog__button--confirm" data-mdc-dialog-action="reject-and-free">
           <div class="mdc-button__ripple"></div>
           <span class="mdc-button__label">Reject and free</span>
         </button>
@@ -61,4 +64,28 @@
   <div class="mdc-dialog__scrim"></div>
 </div>
 
+<div class="mdc-dialog mdc-dialog--delete">
+  <div class="mdc-dialog__container">
+    <div class="mdc-dialog__surface"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="my-dialog-title"
+      aria-describedby="my-dialog-content2">
+      <div class="mdc-dialog__content" id="my-dialog-content2">
+        Do you want to delete the appointment?
+      </div>
+      <div class="mdc-dialog__actions">
+        <button type="button" class="mdc-button mdc-dialog__button dialog__button dialog__button--cancel" data-mdc-dialog-action="cancel">
+          <div class="mdc-button__ripple"></div>
+          <span class="mdc-button__label">Cancel</span>
+        </button>
+        <button type="button" class="mdc-button mdc-dialog__button dialog__button dialog__button--reject" data-mdc-dialog-action="delete">
+          <div class="mdc-button__ripple"></div>
+          <span class="mdc-button__label">Remove</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="mdc-dialog__scrim"></div>
+</div>
 {% endblock %}

@@ -328,30 +328,41 @@ ul.messages {
 .dialog__button {
   cursor: pointer;
   font-family:'Raleway';
-  font-weight:600;
-  font-size:1rem;
+  font-weight:500;
+  font-size:.875rem;
   color:white;
   border-width: 2px;
   border-style: solid;
   transition: background-color .2s ease, color .2s ease;
-  padding: 8px 26px;
-  border-radius: 50px;
+  padding: 6px 20px;
+  border-radius: 40px;
   border-width: 2px;
   border-style: solid;
 }
 
 .dialog__button:hover {
   background-color:$color--white;
-  border-color:#001588;
-  color:#001588;
+  border-color:$color--dark-blue;
+  color:$color--dark-blue;
+}
+
+.dialog__button--cancel {
+  color: $color--dark-blue;
+}
+
+.dialog__button--cancel:hover {
+  color: white;
+  background-color: $color--dark-blue;
 }
 
 .dialog__button--confirm {
   background-color: $color--kelly-green;
+  border-color: $color--kelly-green;
 }
 
 .dialog__button--reject {
   background-color: $color--red-orange;
+  border-color: $color--red-orange;
 }
 
 .form__button {

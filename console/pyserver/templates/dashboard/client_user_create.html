@@ -1,5 +1,5 @@
 {% extends 'dashboard/base.html' %}
-{% load static %}
+{% load static svg %}
 
 {% block title %} New User Profile {% endblock %}
 {% block page_title %} New User Profile {% endblock %}
@@ -134,7 +134,7 @@
               {% endif %}
             </p>
             <div class="frc content-box__controls">
-              <a class="link-button console-button" href="#" onclick="javasctipt:document.getElementById('thumbnail-input').click();" target="_self"><img class="console-button--icon" src="{% static '/images/photo-add-white.svg' %}">Browse Thumbnail</a>
+              <a class="link-button console-button" href="#" onclick="javasctipt:document.getElementById('thumbnail-input').click();" target="_self">{% svg "photo-add-white" %}Browse Thumbnail</a>
             </div>
 
             <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__thumbnail">

@@ -60,11 +60,12 @@
           data-microtip-position="bottom"
           data-role="tooltip"
       >{% svg "edit" %}</a>      
-      <a class="fc df-f1 widgets__list-link list-link--delete" href="{% url 'dashboard:appointment_delete' appointment_id=appointment.id  %}" target="_self"
+      <div class="fc df-f1 widgets__list-link list-link--delete"
         aria-label="Delete"
         data-microtip-position="bottom"
-        data-role="tooltip"                   
-      >{% svg "delete" %}</a>
+        data-role="tooltip"
+        data-id="{{ appointment.id }}"             
+      >{% svg "delete" %}</div>
 
       {% endif %}
     </div>

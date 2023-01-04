@@ -1,5 +1,5 @@
 {% extends 'dashboard/base.html' %}
-{% load static %}
+{% load static svg %}
 
 {% block title %}Templates{% endblock %}
 {% block page_title %}Templates{% endblock %}
@@ -35,7 +35,11 @@
           <div class="f1"></div>
 
           <div class="frc content-box__controls">
-            <a class="link-button console-button" href="{% url 'dashboard:widget_template_create' %}" target="_self"><img class="console-button--icon" src="{% static '/images/template-add.svg' %}">Add Template</a>
+            <a
+              class="link-button console-button"
+              href="{% url 'dashboard:widget_template_create' %}"
+              target="_self"
+            >{% svg "template-add" %}Add Template</a>
           </div>
         </div>
         <div class="content-box__content">

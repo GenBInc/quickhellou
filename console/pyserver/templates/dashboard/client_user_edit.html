@@ -1,5 +1,5 @@
 {% extends 'dashboard/base.html' %}
-{% load static %}
+{% load static svg %}
 
 {% block title %} {{client_user.get_full_name}} Profile {% endblock %}
 {% block page_title %} {{client_user.get_full_name}} Profile {% endblock %}
@@ -128,7 +128,7 @@
             <p class="form__thumbnail-label"><span class="form__header">Thumbnail</span><br/>
             <a href="/media/{{ client_user.profile.thumbnail }}" target="_blank">{{client_user.profile.thumbnail}}</a></p>
             <div class="frc content-box__controls">
-              <a class="link-button console-button" href="#" onclick="javasctipt:document.getElementById('thumbnail-input').click();" target="_self"><img class="console-button--icon" src="{% static '/images/photo-add-white.svg' %}">Browse Thumbnail</a>
+              <a class="link-button console-button" href="#" onclick="javasctipt:document.getElementById('thumbnail-input').click();" target="_self">{% svg "photo-add-white" %}Browse Thumbnail</a>
             </div>
   
             <div class="mdc-text-field mdc-text-field--outlined form__field form__field--upper signup__thumbnail">

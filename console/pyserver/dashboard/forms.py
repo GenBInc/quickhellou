@@ -316,7 +316,6 @@ class AssignedWidgetsForm(forms.Form):
 
 
 def generate_template_code(widget_template):
-    # .format(widget_template.header,widget_template.content)
     code = "<div><div>{}</div><div>{}</div></div>"
     return code
 
