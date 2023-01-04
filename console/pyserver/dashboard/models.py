@@ -169,6 +169,9 @@ class Communication(models.Model):
     # Is one day reminder sent
     one_day_reminder_sent = models.BooleanField(default=False)
 
+    # Google calendar attachment
+    calendar_attachment = models.FileField(blank=True, upload_to='calendars/')
+
     objects = CommunicationManager()
 
     class Meta:

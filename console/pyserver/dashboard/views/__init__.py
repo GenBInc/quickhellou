@@ -26,7 +26,6 @@ from dashboard.emails import send_email_notification
 from dashboard.util.time import (
     HOURS,
     MINUTES,
-    TIMEZONE_UTC,
 )
 from dashboard.forms import (
     AssignedWidgetsForm,
@@ -112,7 +111,7 @@ def appointment_edit_view(
     else:
         return redirect('dashboard:appointments')
     if request.method == 'POST':
-        form = CommunicationForm(request.POST, instance=appointment)
+        form = CommunicationForm(request.POST, request.FILES, instance=appointment)
         if form.is_valid():
             form.save_all()
             messages.success(

@@ -9,7 +9,6 @@ from django.conf import settings
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib.auth.forms import AuthenticationForm
 from django.core.mail import send_mail
 from django.db import transaction
 from django.shortcuts import redirect, render
@@ -17,8 +16,16 @@ from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 
 from accounts.models import User, Profile
-from accounts.forms import ForgotPasswordForm, ProfileForm, ProfileMetaForm, \
-    ResetPasswordForm, UserForm, WidgetForm, ProfileThumbnailForm
+from accounts.forms import (
+    ForgotPasswordForm,
+    ProfileForm,
+    ProfileMetaForm,
+    ResetPasswordForm,
+    UserForm,
+    WidgetForm,
+    ProfileThumbnailForm,
+    UserAuthorizationForm,
+)
 from dashboard.models import (
     ClientBoard,
 )
@@ -104,16 +111,16 @@ def login_view(
         HttpResponse: the HTTP response
     """
     if request.method == 'POST':
-        form: AuthenticationForm = AuthenticationForm(data=request.POST)
+        form: UserAuthorizationForm = UserAuthorizationForm(data=request.POST)
         if form.is_valid():
-            user: User = form.get_user()
-            login(request, user)
-            if 'next' in request.POST:
+            is_authenticated: bool = form.login(request)
+            if is_authenticated and 'next' in request.POST:
                 return redirect(request.POST.get('next'))
-            else:
+            elif is_authenticated:
                 return redirect('dashboard:home')
+            
     else:
-        form: AuthenticationForm = AuthenticationForm()
+        form: UserAuthorizationForm = UserAuthorizationForm()
     return render(request, 'accounts/login.html', {'form': form})
 
 

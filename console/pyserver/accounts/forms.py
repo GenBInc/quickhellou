@@ -1,8 +1,60 @@
 from django import forms
 from django.core.validators import validate_email
-
-from accounts.models import User, Profile
+from django.core.exceptions import ValidationError
+from django.shortcuts import redirect
+from django.contrib.auth import (
+    login,
+    authenticate
+)
 from dashboard.models import Widget
+from accounts.models import User, Profile
+
+
+class UserAuthorizationForm(forms.Form):
+    """ User authorization form. """
+    username = forms.CharField(required=False)
+    password = forms.CharField(required=False)
+
+    def clean(self):
+        """Cleans the form."""
+        cleaned_data = super().clean()
+        username = cleaned_data.get('username')
+        if not username:
+            self.add_error('username', 'E-mail is required.')
+
+        password = cleaned_data.get('password')
+        if not password:
+            self.add_error('password', 'Password is required.')
+
+        if not password or not username:
+            return
+
+        try:
+            validate_email(username)
+            user: User = User.objects.filter(email__iexact=username).first()
+            if user and not user.is_active:
+                self.add_error('username', 'Account is inactive.')
+        except ValidationError:
+            self.add_error('username', 'Username or password is invalid.')
+
+    def login(self, request):
+        user = self.get_user()
+
+        password: str = self.cleaned_data.get('password')
+        user = authenticate(request, username=user.email,
+                               password=password)
+        if user:
+            login(request, user)
+            return user.is_authenticated
+        if not user:
+            self.add_error('username', 
+                'Username or password is invalid.')
+        return False
+
+    def get_user(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get('username')
+        return User.objects.filter(email=email).first()
 
 
 class ProfileMetaForm(forms.Form):

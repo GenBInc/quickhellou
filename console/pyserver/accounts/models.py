@@ -227,8 +227,7 @@ class Profile(models.Model):
     # User timezone
     TIMEZONE_CHOICES = ((x, x) for x in sorted(
         zoneinfo.available_timezones(), key=str.lower))
-    timezone = models.CharField(
-        choices=TIMEZONE_CHOICES, max_length=64, default='Etc/GMT+0')
+    timezone = models.CharField(max_length=64, default='Etc/GMT+0')
 
     objects = ProfileManager()
 

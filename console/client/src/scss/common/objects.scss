@@ -239,16 +239,18 @@ ul.messages {
 }
 
 .errorlist li {
-  background-color:#c90000;
+  background-color:$color--dark-red;
   color: white;
+  font-size:.75rem;
   padding:4px 16px;
   font-weight: 500;
   border-radius: 16px;
+  margin-bottom:6px;
 }
 
 .messages li.error .message-bubble::before,
 .messages li.error .message-bubble {
-  background-color:#c90000;
+  background-color:$color--dark-red;
 }
 
 .messages li.success .message-bubble::before,

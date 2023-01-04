@@ -430,13 +430,19 @@ class CommunicationForm(forms.ModelForm):
 
     class Meta:
         model = Communication
-        fields = ('caller_name', 'status', 'reminders')
+        fields = ('caller_name', 'status', 'reminders', 'calendar_attachment')
 
     def __init__(self, *args, **kwargs):
         """Constructor.
         """
         super(CommunicationForm, self).__init__(*args, **kwargs)
-        self.initial['client_username'] = self.instance.caller.profile.full_name
+        if self.instance.caller:
+            self.initial['client_username'] = self.instance.caller.profile.full_name
+
+    def clean(self):
+        cleaned_data = super().clean()
+        calendar_attachment = cleaned_data.get('calendar_attachment')
+        print('calendar_attachment', calendar_attachment)
 
     def save_all(self):
         """Saves appointment and related data.

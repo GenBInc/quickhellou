@@ -31,6 +31,7 @@
             <input type="hidden" name="next" value="{{request.GET.next}}">
           {% endif %}
           {% include "messages.html" %}
+          {{ form.username.errors }}
           <div class="mdc-text-field mdc-text-field--outlined login__email">
             <input type="text" id="login-input" name="username" class="mdc-text-field__input form__text form--login__text form__input form--login__input "
               required>
@@ -42,6 +43,7 @@
               <div class="mdc-notched-outline__trailing"></div>
             </div>
           </div>
+          {{ form.password.errors }}
           <div class="mdc-text-field mdc-text-field--outlined login__password">
             <input type="password" id="password-input" name="password" class="mdc-text-field__input form__text form--login__text form__input form--login__input "
               required>
