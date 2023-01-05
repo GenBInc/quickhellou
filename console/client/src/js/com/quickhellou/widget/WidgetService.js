@@ -315,9 +315,9 @@ export class WidgetService extends EventEmitter {
    *
    * @returns the scheduler calendar
    */
-  async getSchedulerCalendar() {
+  async getSchedulerCalendar(fieldSet) {
     const url = `${this.consoleAppUrl}/dashboard/widget_calendar_view/${this.widgetId}`
-    return await this.apiService.getAsXMLHttpRequest(url)
+    return await this.apiService.postAsXMLHttpRequest(fieldSet, url)
   }
 
   /**

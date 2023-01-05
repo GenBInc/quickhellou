@@ -89,6 +89,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'accounts.middleware.UserLanguageMiddleware',
+    'accounts.middleware.TimezoneMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -194,6 +195,15 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
+TIMEZONES = (
+    'Europe/London',
+    'Europe/Warsaw',
+    'America/New_York',
+    'America/Chicago',
+    'America/Denver',
+    'America/Los_Angeles',
+)
 
 DATETIME_FORMAT = '%Y-%m-%d %I:%M %p'
 

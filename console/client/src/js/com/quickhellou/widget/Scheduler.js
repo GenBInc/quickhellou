@@ -111,7 +111,10 @@ export class Scheduler extends UIView {
    */
   async loadCalendar() {
     return new Promise((resolve, reject) => {
-      this.service.getSchedulerCalendar().then((html) => {
+      const fieldSet = {
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }
+      this.service.getSchedulerCalendar(fieldSet).then((html) => {
         document.querySelector('.widget--schedule__datetime-controls').innerHTML = html
         resolve()
       }).catch(reason => {

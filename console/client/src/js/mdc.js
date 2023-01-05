@@ -4,6 +4,7 @@ import { MDCTextField } from '@material/textfield'
 import { MDCSelect } from '@material/select'
 import { MDCFloatingLabel } from '@material/floating-label'
 import { MDCRipple } from '@material/ripple'
+import {MDCDialog} from '@material/dialog'
 
 console.log(
   MDCTextField,
@@ -11,5 +12,6 @@ console.log(
   MDCFloatingLabel,
   MDCRipple,
   MDCTopAppBar,
-  MDCList
+  MDCList,
+  MDCDialog,
 )

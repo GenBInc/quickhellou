@@ -109,7 +109,6 @@ export class WebSocketService extends FormService {
    * @memberof WebSocketService
    */
   handleNamedResponse(response) {
-    console.log('response', response)
     if (response === '') {
       return
     }

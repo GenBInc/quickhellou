@@ -1,5 +1,5 @@
 {% extends 'dashboard/base.html' %}
-{% load static %}
+{% load static svg %}
 
 {% block title %}Create Widget{% endblock %}
 {% block page_title %}Create Widget{% endblock %}
@@ -40,7 +40,7 @@
               <div class="mdc-notched-outline">
                 <div class="mdc-notched-outline__leading"></div>
                 <div class="mdc-notched-outline__notch">
-                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Name</label>
+                  <label for="name-input" class="mdc-floating-label form__text form--signup__text  form__label form--signup__label">Widget Name</label>
                 </div>
                 <div class="mdc-notched-outline__trailing"></div>
               </div>
@@ -98,9 +98,6 @@
             
               <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
                 <ul class="mdc-list">
-                  <li class="mdc-list-item" aria-selected="false" aria-disabled="true" data-value="">
-                    <span class="mdc-list-item__ripple"></span>
-                  </li>            
                   {% for value, label in languages %}
                     <li class="mdc-list-item" data-value="{{ value }}" aria-disabled="false">
                       <span class="mdc-list-item__ripple"></span>
@@ -148,9 +145,6 @@
             
               <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
                 <ul class="mdc-list">
-                  <li class="mdc-list-item" aria-selected="false" aria-disabled="true" data-value="">
-                    <span class="mdc-list-item__ripple"></span>
-                  </li>            
                   {% for widget_template in widget_templates %}
                     <li class="mdc-list-item" data-value="{{ widget_template.id }}" aria-disabled="false">
                       <span class="mdc-list-item__ripple"></span>
@@ -162,7 +156,7 @@
             </div>
 
             <div class="frc">
-              <a class="link-button console-button" href="{% url 'dashboard:widget_template_create' %}" target="_self"><img class="console-button--icon" src="{% static '/images/template-add.svg' %}">Add Template</a>              
+              <a class="link-button console-button" href="{% url 'dashboard:widget_template_create' %}" target="_self">{% svg "template-add" %}Add Template</a>              
             </div>
             {% if user.is_default_rw and users.count > 0 %}
             <div class="errornote">

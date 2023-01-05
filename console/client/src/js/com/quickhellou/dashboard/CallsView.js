@@ -2,6 +2,7 @@ import { DashboardView } from './DashboardView'
 import { WebSocketService } from '../base/services/WebSocketService'
 import { ApplicationSettings } from '../base/model/ApplicationSettings'
 import { QhUtils } from '../base/utils/QhUtils'
+import { MDCDialog } from '@material/dialog'
 
 /**
  * Pages dashboard view.
@@ -21,6 +22,35 @@ export class CallsView extends DashboardView {
     this.showPageLoader()
     this.loadCallViewList()
     this.hidePageLoader()
+
+    const rejectAppointmentDialogElement = document.querySelector('.mdc-dialog--reject')
+    if (rejectAppointmentDialogElement) {
+      this.rejectAppointmentDialog = MDCDialog.attachTo(rejectAppointmentDialogElement)
+      this.rejectAppointmentDialog.listen('MDCDialog:closing', (event) => {
+        if (event.detail.action === 'cancel') {
+          this.rejectAppointmentDialog.close()
+        }
+        if (event.detail.action === 'reject') {
+          this.rejectAppointment(this.rejectAppointmentDialog.id)
+        }
+        if (event.detail.action === 'reject-and-free') {
+          this.deleteAppointment(this.rejectAppointmentDialog.id)
+        }
+      })
+    }
+
+    const deleteAppointmentDialogElement = document.querySelector('.mdc-dialog--delete')
+    if (deleteAppointmentDialogElement) {
+      this.deleteAppointmentDialog = MDCDialog.attachTo(deleteAppointmentDialogElement)
+      this.deleteAppointmentDialog.listen('MDCDialog:closing', (event) => {
+        if (event.detail.action === 'cancel') {
+          this.deleteAppointmentDialog.close()
+        }
+        if (event.detail.action === 'delete') {
+          this.deleteAppointment(this.deleteAppointmentDialog.id)
+        }
+      })
+    }
   }
 
   /**
@@ -223,12 +253,20 @@ export class CallsView extends DashboardView {
         this.acceptAppointment(id)
       })
     })
-
+    
     const rejectAppointmentButtonElements = this.uiArray('.list-link--reject')
     rejectAppointmentButtonElements.forEach((button) => {
       button.addEventListener('click', (event) => {
         const id = button.dataset.id
-        this.rejectAppointment(id)
+        this.rejectAppointmentRequest(id)
+      })
+    })
+
+    const deleteAppointmentButtonElements = this.uiArray('.list-link--delete')
+    deleteAppointmentButtonElements.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        const id = button.dataset.id
+        this.deleteAppointmentRequest(id)
       })
     })
   }
@@ -239,10 +277,49 @@ export class CallsView extends DashboardView {
     form.submit()
   }
 
-  async rejectAppointment(id) {
-    this.showPageLoader()
-    const form = document.querySelector(`.form--reject-appointment[data-id='${id}']`)
+  /**
+   * Rejects appointment.
+   *
+   * @param {number} id
+   * @memberof CallsView
+   */
+  rejectAppointment(id) {
+    const form = document.querySelector(`.form--reject-appointment[data-id='${id}']`)  
     form.submit()
+  }
+  
+  /**
+   * Deletes appointment.
+   *
+   * @param {number} id
+   * @memberof CallsView
+   */
+  deleteAppointment(id) {
+    this.apiService.sendAsForm({}, `/dashboard/appointment/delete/${id}`)
+  }
+
+  /**
+   * Requests reject appointment. 
+   *
+   * @param {number} id
+   * @memberof CallsView
+   */
+  async rejectAppointmentRequest(id) {
+    this.showPageLoader()
+    this.rejectAppointmentDialog.id = id
+    this.rejectAppointmentDialog.open()
+  }
+
+  /**
+   * Requests delete appointment.
+   *
+   * @param {number} id
+   * @memberof CallsView
+   */
+  async deleteAppointmentRequest(id) {
+    this.showPageLoader()
+    this.deleteAppointmentDialog.id = id
+    this.deleteAppointmentDialog.open()
   }
 
   /**

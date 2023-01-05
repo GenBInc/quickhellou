@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.conf import settings
 from accounts.models import User
+from apscheduler.schedulers.background import BackgroundScheduler
 from dashboard.util.time import (
     time_left_verbose,
     one_day_left_delta,
@@ -15,24 +16,28 @@ from dashboard.emails import (
 )
 
 
+def setup_reminders_job():
+    """Setups reminders job.
+    """
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(send_reminders, 'interval', hours=1)
+    scheduler.start()
+
+
 def send_reminders():
     """Sends appointments reminders.
     """
     appointments: list[Communication] = Communication.objects.filter(
         status=Communication.STATUS_OPEN).all()
 
-    print('enter appointments')
     for appointment in appointments:
         if not appointment.reminders:
-            print('not included')
             continue
 
         end_datetime: datetime = appointment.datetime
         caller: User = appointment.caller
 
-        print('is sent', appointment.one_day_reminder_sent)
         if one_day_left_delta(end_datetime) and not appointment.one_day_reminder_sent:
-            print('send..')
             send_one_day_appointment_reminder(
                 appointment.link_url,
                 appointment.datetime,

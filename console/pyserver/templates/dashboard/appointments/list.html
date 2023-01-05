@@ -1,25 +1,21 @@
 {% load static %} {% load svg %}
-{% for communication in communications %}
-
-  {% now "m/d/Y H:i" as todays_date %}
-
-  <div class="flc view-list__entry call-list__entry call-list__entry--{{ communication.status_verbose }} 
-  {% if todays_date > communication.datetime|date:'m/d/Y H:i' %}call-list__entry--past{% endif %}"
+{% for appointment in appointments %}
+  <div 
+    class="flc view-list__entry call-list__entry call-list__entry--{{ appointment.status_verbose }}{% if appointment.is_pastdate %} call-list__entry--past{% endif %}"
   >
-    
     <div class="frow flc widget-list__row">
 
       <div class="widget-list__field widget-list__field--id">      
-        {{ communication.id }}
+        {{ appointment.id }}
       </div>
   
       <div class="widget-list__field widget-list__field--status-icon"
-        aria-label="{{ communication.status_verbose|title }}"
+        aria-label="{{ appointment.status_verbose|title }}"
         data-microtip-position="bottom"
         data-role="tooltip"      
       >
       
-      {% with "status-"|add:communication.status_verbose as svg_name %}
+      {% with "status-"|add:appointment.status_verbose as svg_name %}
         {% svg svg_name %}
       {% endwith %}  
       </div>
@@ -27,46 +23,47 @@
     </div>
     
     <div class="df flc widget-list__field widget-list__field--date-time">
-      {{ communication.datetime|date:"m/d/Y H:i" }}
+      {{ appointment.datetime|date:"m/d/Y H:i" }}
     </div>
 
     <div class="flc widget-list__field widget-list__field--name">
       <div class="fcol">
-        <div class="widget-list__url-label">{{ communication.caller.profile.full_name|truncatechars:32 }}</div>
+        <div class="widget-list__url-label">{{ appointment.full_name|truncatechars:32 }}</div>
       </div>
     </div>
     <div class="flc widget-list__field widget-list__field--contact">
-        {{ communication.caller.profile.email_or_phone|truncatechars:32 }}
+        {{ appointment.email_or_phone|truncatechars:32 }}
     </div>
     
     <div class="f1"></div>
     <div class="flc widget-list__field widget-list__field--mod-bar">
-      {% if communication.status == 1 and todays_date < communication.datetime|date:'m/d/Y H:i' %}
-        <form class="form--accept-appointment" data-id="{{ communication.id }}" action="{% url 'dashboard:accept_appointment' appointment_id=communication.id %}" method="post">{% csrf_token %}
-          <div class="fc df-f1 com__list-link list-link--accept" data-id="{{ communication.id }}" >Accept</div>
+      {% if appointment.is_pending and not appointment.is_pastdate %}
+        <form class="form--accept-appointment" data-id="{{ appointment.id }}" action="{% url 'dashboard:accept_appointment' appointment_id=appointment.id %}" method="post">{% csrf_token %}
+          <div class="fc df-f1 com__list-link list-link--accept" data-id="{{ appointment.id }}" >Accept</div>
         </form>
 
-        <form class="form--reject-appointment" data-id="{{ communication.id }}" action="{% url 'dashboard:reject_appointment' appointment_id=communication.id %}" method="post">{% csrf_token %}
-          <div class="fc df-f1 com__list-link list-link--reject" value="Reject" data-id="{{ communication.id }}">Reject</div>
+        <form class="form--reject-appointment" data-id="{{ appointment.id }}" action="{% url 'dashboard:reject_appointment' appointment_id=appointment.id %}" method="post">{% csrf_token %}
+          <div class="fc df-f1 com__list-link list-link--reject" value="Reject" data-id="{{ appointment.id }}">Reject</div>
         </form>
 
       {% else %}
 
-      {% if communication.status == 2 and todays_date < communication.datetime|date:'m/d/Y H:i' %}
-        <a class="fc df-f1 appointment-list_open_chat_button widgets__list-link" href="{{ communication.link_url }}" target="_blank" >Open Chat</a>
+      {% if appointment.is_open and not appointment.is_pastdate %}
+        <a class="fc df-f1 appointment-list_open_chat_button widgets__list-link" href="{{ appointment.link_url }}" target="_blank" >Open Chat</a>
       {% endif %}
   
-      <a class="fc df-f1 widgets__list-link list-link--edit" href="{% url 'dashboard:appointment_edit' appointment_id=communication.id  %}"
+      <a class="fc df-f1 widgets__list-link list-link--edit" href="{% url 'dashboard:appointment_edit' appointment_id=appointment.id  %}"
           target="_self"
           aria-label="Edit"
           data-microtip-position="bottom"
           data-role="tooltip"
       >{% svg "edit" %}</a>      
-      <a class="fc df-f1 widgets__list-link list-link--delete" href="{% url 'dashboard:appointment_delete' appointment_id=communication.id  %}" target="_self"
+      <div class="fc df-f1 widgets__list-link list-link--delete"
         aria-label="Delete"
         data-microtip-position="bottom"
-        data-role="tooltip"                   
-      >{% svg "delete" %}</a>
+        data-role="tooltip"
+        data-id="{{ appointment.id }}"             
+      >{% svg "delete" %}</div>
 
       {% endif %}
     </div>

@@ -1,5 +1,5 @@
 {% extends 'dashboard/base.html' %}
-{% load static %}
+{% load static svg %}
 
 {% block title %}Edit Widget Template{% endblock %}
 {% block page_title %}Edit Widget Template{% endblock %}
@@ -91,11 +91,11 @@
                           
                         
                           <a class="link-button console-button console-button_clear-icon {% if widget_template.icon == '/images/logo.svg' %}js-hidden{% endif %}" href="#" onclick="javascript:document.getElementById('delIconForm').submit();" target="_self">
-                            <img class="console-button--icon" src="{% static '/images/delete-white.svg' %}">Clear Icon
+                            {% svg "delete-white" %}Clear Icon
                           </a>
                      
                           <a class="link-button console-button console-button_browse-icon {% if widget_template.icon != '/images/logo.svg' %}js-hidden{% endif %}" href="#" onclick="javascript:document.getElementById('icon-input').click();" target="_self">
-                            <img class="console-button--icon" src="{% static '/images/photo-add-white.svg' %}">Browse Icon
+                            {% svg "photo-add-white" %}Browse Icon
                           </a>
 
 

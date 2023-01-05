@@ -2,6 +2,7 @@ from re import (
     compile,
     Pattern,
 )
+from zoneinfo import ZoneInfo
 from django.conf import settings
 from django.utils.timezone import make_aware
 from django import forms
@@ -10,6 +11,7 @@ from django.core.validators import validate_email
 from accounts.models import User, Profile
 from dashboard.util.time import (
     DAYS,
+    TIMEZONE_UTC,
     time_left_verbose,
 )
 from dashboard.models import (
@@ -71,7 +73,7 @@ class UserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('full_name', 'thumbnail')
+        fields = ('full_name', 'thumbnail', 'timezone')
 
     def is_valid(self):
         valid = super(ProfileForm, self).is_valid()
@@ -79,15 +81,16 @@ class ProfileForm(forms.ModelForm):
         if not valid:
             return valid
 
-        if len(self.cleaned_data['full_name'].split(" ")) < 2:
-            self._errors["invalid_full_name"] = 'Enter valid full name.'
+        if len(self.cleaned_data['full_name'].split(' ')) < 2:
+            self._errors['invalid_full_name'] = 'Enter valid full name.'
             return False
         return True
 
-    def save(self, full_name, user=None, commit=True):
+    def save_all(self, full_name, user=None, commit=True):
         profile = super(ProfileForm, self).save(commit=False)
         profile.full_name = full_name
         profile.user = user
+        profile.timezone = self.cleaned_data['timezone']
         if commit:
             profile.save()
         return profile
@@ -105,7 +108,7 @@ def get_first_name(fullname):
 def get_last_name(fullname):
     lastname = ''
     try:
-        return " ".join(fullname.split()[1:])
+        return ' '.join(fullname.split()[1:])
     except Exception as e:
         print(e)
     return lastname
@@ -313,7 +316,6 @@ class AssignedWidgetsForm(forms.Form):
 
 
 def generate_template_code(widget_template):
-    # .format(widget_template.header,widget_template.content)
     code = "<div><div>{}</div><div>{}</div></div>"
     return code
 
@@ -428,13 +430,19 @@ class CommunicationForm(forms.ModelForm):
 
     class Meta:
         model = Communication
-        fields = ('caller_name', 'status', 'reminders')
+        fields = ('caller_name', 'status', 'reminders', 'calendar_attachment')
 
     def __init__(self, *args, **kwargs):
         """Constructor.
         """
         super(CommunicationForm, self).__init__(*args, **kwargs)
-        self.initial['client_username'] = self.instance.caller.profile.full_name
+        if self.instance.caller:
+            self.initial['client_username'] = self.instance.caller.profile.full_name
+
+    def clean(self):
+        cleaned_data = super().clean()
+        calendar_attachment = cleaned_data.get('calendar_attachment')
+        print('calendar_attachment', calendar_attachment)
 
     def save_all(self):
         """Saves appointment and related data.
@@ -465,6 +473,7 @@ class ContactInformationForm(forms.Form):
     """Contact information form
     """
     datetime = forms.CharField(required=True)
+    timezone = forms.CharField(required=True)
     name = forms.CharField(required=True, initial='')
     email_address = forms.EmailField(required=True, initial='')
     phone_number = PhoneNumberField(required=False, max_length=15, initial='')
@@ -479,6 +488,7 @@ class ContactInformationForm(forms.Form):
         phone_number: str = self.cleaned_data['phone_number']
         message: str = self.cleaned_data['message']
         datetime_str: str = self.cleaned_data['datetime']
+        timezone_str: str = self.cleaned_data['timezone']
 
         # Get or create user
         client_user, created = User.objects.get_or_create(
@@ -497,6 +507,12 @@ class ContactInformationForm(forms.Form):
             }
         )
 
+        # Convert front user specific timezone for schedule date into UTC
+        schedule_datetime: datetime = datetime.datetime.strptime(
+            datetime_str, DATETIME_FORMAT).replace(tzinfo=ZoneInfo(timezone_str))
+        schedule_datetime_utc: datetime = schedule_datetime.astimezone(
+            tz=TIMEZONE_UTC)
+
         # Get or create communication
         appointment: Communication = Communication.objects.create(
             caller=client_user,
@@ -504,13 +520,11 @@ class ContactInformationForm(forms.Form):
             client_board=widget.client_board,
             status=Communication.STATUS_PENDING,
             widget=widget,
-            datetime=make_aware(datetime.datetime.strptime(
-                datetime_str, DATETIME_FORMAT))
+            datetime=schedule_datetime_utc,
         )
 
         # Encode communication short URL for videochat room id.
         appointment.encode_short_url()
-
 
         if message:
             # Create communication session

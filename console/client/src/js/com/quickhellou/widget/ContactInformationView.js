@@ -101,11 +101,12 @@ export class ContactInformationView extends UIView {
    * @returns
    */
     async sendContactForm() {
-      this.showPageLoader();
+      this.showPageLoader()
       const formElement = document.querySelector('.contact-information__form')
       return new Promise((resolve, reject) => {
         const fieldSet = {
           datetime: formElement.querySelector('input[name=datetime]').value,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           name: formElement.querySelector('input[name=name]').value,
           email_address: formElement.querySelector('input[name=email_address]').value,
           phone_number: formElement.querySelector('input[name=phone_number]').value,

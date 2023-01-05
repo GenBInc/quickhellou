@@ -433,7 +433,7 @@ a.aside__navi-item--activated {
 div.com__list-link,
 a.appointment-list_open_chat_button,
 a.team__list-link,
-a.widgets__list-link {
+.widgets__list-link {
   padding: 5px;
   margin-right: 5px;
   border-radius: 50%;
@@ -445,11 +445,12 @@ a.widgets__list-link {
   max-width: 30px;
   height: 30px;
   cursor: pointer;
+  user-select: none;
 }
 
 div.com__list-link:last-child,
 a.team__list-link:last-child,
-a.widgets__list-link:last-child {
+.widgets__list-link:last-child {
   margin-right: 0px;
 }
 
@@ -931,6 +932,7 @@ aside.mdc-drawer {
   width: 90%;
 }
 
+.console-button svg,
 .widgets__button--add-widget svg,
 .console-button--icon {
   height: 20px;

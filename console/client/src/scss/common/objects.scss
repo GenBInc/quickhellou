@@ -239,16 +239,18 @@ ul.messages {
 }
 
 .errorlist li {
-  background-color:#c90000;
+  background-color:$color--dark-red;
   color: white;
+  font-size:.75rem;
   padding:4px 16px;
   font-weight: 500;
   border-radius: 16px;
+  margin-bottom:6px;
 }
 
 .messages li.error .message-bubble::before,
 .messages li.error .message-bubble {
-  background-color:#c90000;
+  background-color:$color--dark-red;
 }
 
 .messages li.success .message-bubble::before,
@@ -322,8 +324,47 @@ ul.messages {
   color:white;
   border-width: 2px;
   border-style: solid;
-  /*margin-bottom:40px;*/
   transition: background-color .2s ease, color .2s ease;
+}
+
+.dialog__button {
+  cursor: pointer;
+  font-family:'Raleway';
+  font-weight:500;
+  font-size:.875rem;
+  color:white;
+  border-width: 2px;
+  border-style: solid;
+  transition: background-color .2s ease, color .2s ease;
+  padding: 6px 20px;
+  border-radius: 40px;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.dialog__button:hover {
+  background-color:$color--white;
+  border-color:$color--dark-blue;
+  color:$color--dark-blue;
+}
+
+.dialog__button--cancel {
+  color: $color--dark-blue;
+}
+
+.dialog__button--cancel:hover {
+  color: white;
+  background-color: $color--dark-blue;
+}
+
+.dialog__button--confirm {
+  background-color: $color--kelly-green;
+  border-color: $color--kelly-green;
+}
+
+.dialog__button--reject {
+  background-color: $color--red-orange;
+  border-color: $color--red-orange;
 }
 
 .form__button {

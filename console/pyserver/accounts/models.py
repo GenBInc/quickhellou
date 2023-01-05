@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import zoneinfo
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -129,6 +130,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         self.profile.full_name = full_name
 
     @property
+    def tzinfo(self):
+        return zoneinfo.ZoneInfo(self.profile.timezone)
+    
+    @property
     def is_staff(self):
         "Is the user a member of staff?"
         return self.is_admin and self.is_superuser
@@ -218,6 +223,12 @@ class Profile(models.Model):
     available = models.BooleanField(default=True)
     thumbnail = models.FileField(
         default='images/user.svg', blank=True, upload_to='users/images')
+
+    # User timezone
+    TIMEZONE_CHOICES = ((x, x) for x in sorted(
+        zoneinfo.available_timezones(), key=str.lower))
+    timezone = models.CharField(max_length=64, default='Etc/GMT+0')
+
     objects = ProfileManager()
 
     @property
