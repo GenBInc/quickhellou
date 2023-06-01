@@ -55,6 +55,8 @@ services:
       - "${REDIS_PORT}"
     volumes:
       - "./videochat/redis:/redis"
+    sysctls:
+      net.core.somaxconn: '4096'
     networks:
       videochat_network:
         ipv4_address: 192.170.0.12
