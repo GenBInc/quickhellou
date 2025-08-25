@@ -1,11 +1,3 @@
-/*!
- * JavaScript Cookie v2.2.1
- * https://github.com/js-cookie/js-cookie
- *
- * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
- * Released under the MIT license
- */
-
 /*! ../../../genb/base/service/FormService */
 
 /*! ../../../genb/base/utils/BaseUtils */
@@ -70,6 +62,8 @@
 
 /*! js-cookie */
 
+/*! js-cookie v3.0.5 | MIT */
+
 /*!**********************!*\
   !*** ./js/widget.js ***!
   \**********************/
@@ -123,12 +117,12 @@
   \****************************************************/
 
 /*!*****************************************************!*\
-  !*** ../../node_modules/js-cookie/src/js.cookie.js ***!
-  \*****************************************************/
-
-/*!*****************************************************!*\
   !*** ./js/com/genb/base/components/ToggleButton.js ***!
   \*****************************************************/
+
+/*!*******************************************************!*\
+  !*** ../../node_modules/js-cookie/dist/js.cookie.mjs ***!
+  \*******************************************************/
 
 /*!********************************************************!*\
   !*** ./js/com/quickhellou/base/services/ApiService.js ***!

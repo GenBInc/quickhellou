@@ -100,6 +100,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'qhv2.wsgi.application'
 
+# Recaptcha
+RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY')
+RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

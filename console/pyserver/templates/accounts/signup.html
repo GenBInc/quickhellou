@@ -6,7 +6,7 @@
 {% block js %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/14.0.7/js/intlTelInput.min.js" 
 integrity="sha256-XmM1EuBzR5AW0DW53pHaN2cSJrSeCd0uh0pzjf0zRng=" crossorigin="anonymous"></script>
-<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_key }}"></script>
 <script src="{% static '/js/accounts.js' %}"></script>
 {% endblock %}
 
@@ -31,7 +31,7 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
     <div class="">
       <div class="m-form form__container form--login__container">
         <p class="form__header">Please enter your profile details</p>
-        <form class="fcol site-form" action="{% url 'accounts:signup' %}" method="post">
+        <form class="g-form fcol site-form" action="{% url 'accounts:signup' %}" method="post">
           {% csrf_token %}
           {% if request.GET.next %}
           <input type="hidden" name="next" value="{{request.GET.next}}">
@@ -110,7 +110,11 @@ integrity="sha256-VTHxKZk78lMIf5D4wjdctAI1T9TxB/eksnmrRd0RWWE=" crossorigin="ano
 
           <div class="m-form__space"></div>
 
-          <input class="m-form__button--login form__submit signup__submit" onclick="createAccount()" value="Create a FREE account">
+          {{ recaptcha_form.recaptcha_token.errors }}
+          <input type="hidden" name="recaptcha_token">
+          
+          <button type="button" class="g-recaptcha m-form__button--login form__submit signup__submit" data-sitekey="{{ recaptcha_key }}" 
+                      data-action='submit'>Create a FREE account</button>
           
           <div class="fc m-form__forgot-password">
             <a class="m-form__link--forgot-password login__forgot-password" href="{% url 'accounts:login' %}">Have an account? Sign In</a>

@@ -1,6 +1,6 @@
 /temp
 /console/pyserver/media
-/console/client/node_modules
 local.env
 debug.log
 *.pyc
+node_modules

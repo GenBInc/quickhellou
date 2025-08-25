@@ -9,6 +9,7 @@
 
 {% block js %}
 <script src="{% static '/js/accounts.js' %}"></script>
+<script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_key }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -25,7 +26,7 @@
     </div>
     <div class="">
       <div class="m-form form__container form--login__container">
-        <form class="fcol site-form" action="{% url 'accounts:login' %}" method="post" novalidate>
+        <form class="g-form fcol site-form" action="{% url 'accounts:login' %}" method="post" novalidate>
           {% csrf_token %}
           {% if request.GET.next %}
             <input type="hidden" name="next" value="{{request.GET.next}}">
@@ -57,7 +58,10 @@
           </div>
 
           <div class="m-form__space"></div>
-          <input type="submit" class="m-form__button--login form__submit login__submit" value="Log In">
+          {{ recaptcha_form.recaptcha_token.errors }}
+          <input type="hidden" name="recaptcha_token">
+          <button type="button" class="g-recaptcha m-form__button--login form__submit login__submit" data-sitekey="{{ recaptcha_key }}" 
+                      data-action='submit'>Log In</button>
           <div class="flc m-form__forgot-password">
             <a class="m-form__link--forgot-password login__forgot-password" href="{% url 'accounts:signup' %}">Sign Up</a>
             <div class="f1"></div>

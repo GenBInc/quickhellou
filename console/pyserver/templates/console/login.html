@@ -6,6 +6,7 @@
     <title>{% block title %}QuickHellou | Login{% endblock title %}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="stylesheet" type="text/css" href="{% static '/app/css/quickhellou.css' %}" />
+    <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_key }}"></script>
     <script src="{% static '/app/js/quickhellou.js' %}"></script>
 </head>
 
@@ -22,7 +23,7 @@
             </div>
             <div class="frc">
                 <div class="m-form login__container">
-                    <form action="{{ app_path }}" method="post" class="fcol" validate>{% csrf_token %}
+                    <form action="{{ app_path }}" method="post" class="g-form fcol" validate>{% csrf_token %}
                         <div class="mdc-text-field mdc-text-field--outlined login__email">
                             <input type="text" id="login-input" name="username" class="mdc-text-field__input login__text login__input" required>
                             <label for="login-input" class="mdc-floating-label login__text login__label">Work e-mail</label>
@@ -48,7 +49,10 @@
 
 
                         <div class="m-form__space"></div>
-                        <button type="submit" class="m-form__button--login login__submit">Log In</button>
+                        {{ recaptcha_form.recaptcha_token.errors }}
+                        <input type="hidden" name="recaptcha_token">
+                        <button type="button" class="g-recaptcha m-form__button--login login__submit" data-sitekey="{{ recaptcha_key }}" 
+                      data-action='submit'>Log In</button>
                         <div class="fc m-form__forgot-password">
                             <a class="m-form__link--forgot-password login__forgot-password" target="/forgot-password.html">Forgot
                                 Password?</a>

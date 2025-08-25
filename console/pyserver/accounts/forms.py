@@ -1,7 +1,9 @@
+from requests import get, post
 from django import forms
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
+from django.conf import settings
 from django.contrib.auth import (
     login,
     authenticate
@@ -9,6 +11,31 @@ from django.contrib.auth import (
 from dashboard.models import Widget
 from accounts.models import User, Profile
 
+class ReCaptchaForm(forms.Form):
+    recaptcha_token = forms.CharField(required=False)
+
+    def clean(self):
+        """Cleans the form."""
+        cleaned_data = super().clean()
+        # reCAPTCHA verification
+        recaptcha_token: str = cleaned_data.get('recaptcha_token')
+
+        if recaptcha_token.__eq__(''):
+            return
+
+        captcha_verification_payload = post(
+            'https://www.google.com/recaptcha/api/siteverify',
+            data={
+                'response': recaptcha_token,
+                'secret': settings.RECAPTCHA_SECRET_KEY,
+            },
+        )
+        captcha_verification_json: dict = captcha_verification_payload.json()
+
+        if not captcha_verification_json.get('success'):
+            self.add_error('recaptcha_token', _('reCAPTCHA verification did not pass.'))
+
+        return cleaned_data
 
 class UserAuthorizationForm(forms.Form):
     """ User authorization form. """

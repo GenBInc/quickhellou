@@ -1,6 +1,7 @@
 import { MDCFloatingLabel } from '@material/floating-label'
 import { MDCTextField } from '@material/textfield'
 import { MDCRipple } from '@material/ripple'
+import { HTMLUtils } from './com/genb/base/utils/HTMLUtils';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -23,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     MDCRipple.attachTo(submitButton)
   }
 
+  HTMLUtils.bindReCaptchaFormSubmit()
+
   /*
   const phoneInput = document.querySelector("input.form--signup__input--phone")
   window.intlTelInput(phoneInput, {
@@ -43,27 +46,10 @@ const updatePhoneNumber = () => {
 	}
 }
 
-document.createAccount = () => {
+/*document.createAccount = () => {
   updatePhoneNumber()
   document.querySelector('form.site-form').submit()
-}
-/**
- * Handles captcha.
- */
-/*
-// eslint-disable-next-line func-names
-window.onloadCallback = function () {
-  // eslint-disable-next-line no-undef
-  grecaptcha.render('recaptcha', {
-    sitekey: '<key>',
-    // eslint-disable-next-line func-names
-    callback: function () {
-      const captchaContainer = document.querySelector("input[name='recaptcha']")
-      captchaContainer.value = '1'
-    },
-  })
-}
-*/
+}*/
 
 const initMessages = () => {
   const ulMessages = document.querySelector('ul.messages')

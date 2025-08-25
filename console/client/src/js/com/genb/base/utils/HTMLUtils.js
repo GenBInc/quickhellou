@@ -278,4 +278,61 @@ export class HTMLUtils {
   static deleteCookie(name, path) {
     this.setCookie(name, '', -1, path)
   }
+
+    /**
+   * Binds reCAPTCHA protected form submit action.
+   *
+   * @static
+   * @memberof HtmlUtils
+   */
+  static bindReCaptchaFormSubmit() {
+    const form = document.querySelector('form.g-form')
+    const submitButton = form.querySelector('button[data-action=submit]')
+
+    const handleSubmit = () => {
+      HTMLUtils.acquireReCaptchaToken(submitButton.dataset.sitekey)
+        .then(() => {
+          form.submit()
+        })
+        .catch(() => alert('Recaptcha key is invalid.'))
+    }
+
+    submitButton.addEventListener('click', (e) => {
+      e.preventDefault()
+      handleSubmit()
+    })
+
+    form.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault()
+        handleSubmit()
+      }
+    })
+  }
+
+  /**
+   * Acquires and sets recaptcha token.
+   *
+   * @param {string} siteKey the reCAPTCHA site key
+   * @return {Promise} the promise
+   *
+   * @static
+   * @memberof HtmlUtils
+   */
+  static acquireReCaptchaToken(siteKey) {
+    const recaptchaTokenInput = document.querySelector(
+      'input[name=recaptcha_token]'
+    )
+    return new Promise((resolve, reject) => {
+      grecaptcha.execute(siteKey, { action: 'submit' }).then(
+        (token) => {
+          recaptchaTokenInput.value = token
+          resolve()
+        },
+        (reason) => {
+          reject(reason)
+        }
+      )
+    })
+  }
 }
