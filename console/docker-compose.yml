@@ -2,6 +2,21 @@ version: "3"
    
 services:
 
+  console_db:
+    container_name: console_db
+    image: postgres:14-alpine
+    volumes: 
+      - ./temp/db:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    environment:
+      - POSTGRES_NAME=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}      
+    networks:
+      console_network:
+        ipv4_address: 192.180.0.21     
+
   console_pyserver:
     container_name: console_pyserver
     build:
@@ -52,21 +67,6 @@ services:
     depends_on:
       - console_db
       - goserver
-
-  console_db:
-    container_name: console_db
-    image: postgres:alpine
-    volumes: 
-      - ./temp/db:/var/lib/postgresql/data
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
-    environment:
-      - POSTGRES_NAME=${POSTGRES_NAME}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}      
-    networks:
-      console_network:
-        ipv4_address: 192.180.0.21     
 
   pgadmin:
     container_name: pgadmin4_qh
