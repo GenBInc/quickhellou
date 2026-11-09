@@ -45,7 +45,9 @@ show() {
     bold "$c"; echo "(container not found)"; return
   fi
   bold "$c  [$(docker inspect -f '{{.State.Status}} since {{.State.StartedAt}}' "$c")]"
-  if [ "$c" = "redis" ]; then
+  if [ "$(docker inspect -f '{{.HostConfig.LogConfig.Type}}' "$c")" = "none" ]; then
+    echo "(logging disabled for this container: 'logging: driver: none' in compose)"
+  elif [ "$c" = "redis" ]; then
     # redis.conf sets 'logfile', so Redis writes to a file, not to docker logs
     docker exec redis tail -n "$LINES" /var/log/redis.log 2>/dev/null \
       || docker logs --tail "$LINES" redis 2>&1
@@ -64,6 +66,7 @@ status() {
 errors() {
   for c in $ALL; do
     exists "$c" || continue
+    [ "$(docker inspect -f '{{.HostConfig.LogConfig.Type}}' "$c")" = "none" ] && continue
     bold "$c (errors)"
     if [ "$c" = "redis" ]; then
       docker exec redis cat /var/log/redis.log 2>/dev/null
@@ -121,6 +124,7 @@ if [ -n "$FOLLOW" ]; then
   pids=""
   for c in $NAMES; do
     exists "$c" || { echo "skip $c (not found)"; continue; }
+    [ "$(docker inspect -f '{{.HostConfig.LogConfig.Type}}' "$c")" = "none" ] && { echo "skip $c (logging disabled)"; continue; }
     if [ "$c" = "redis" ]; then
       docker exec redis tail -n "$LINES" -F /var/log/redis.log 2>&1 | sed "s/^/[redis] /" &
     else

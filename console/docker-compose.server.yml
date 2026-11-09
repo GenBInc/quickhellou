@@ -4,11 +4,11 @@ services:
 
   console_db:
     container_name: console_db
-    image: postgres:alpine
+    image: postgres:14-alpine  # pinned: data in temp/db is PostgreSQL 14
     volumes: 
       - ./temp/db:/var/lib/postgresql/data
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      - "127.0.0.1:${POSTGRES_PORT}:${POSTGRES_PORT}"
     environment:
       - POSTGRES_NAME=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -26,7 +26,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
-      - "5050:80"
+      - "127.0.0.1:5050:80"
     depends_on:
       - console_db
     networks:
@@ -41,7 +41,7 @@ services:
       args:
         DJANGO_ALLOWED_HOSTS: '*'
         DJANGO_SECRET_KEY: '*'
-    command: bash -c "while !</dev/tcp/${POSTGRES_HOST}/${POSTGRES_PORT}; do sleep 1; done; python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload console.wsgi --bind 0.0.0.0:${HELPDESK_APP_PORT}"
+    command: bash -c "while !</dev/tcp/${POSTGRES_HOST}/${POSTGRES_PORT}; do sleep 1; done; until python manage.py migrate; do echo 'waiting for database...'; sleep 3; done; gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload console.wsgi --bind 0.0.0.0:${HELPDESK_APP_PORT}"
     ports:
       - "${HELPDESK_APP_PORT}:${HELPDESK_APP_PORT}"
     volumes:
