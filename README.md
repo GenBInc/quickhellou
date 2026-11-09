@@ -78,7 +78,7 @@ helpdesk
 In order to install the execution environment it's required to install the [Docker](https://www.docker.com) service. 
 
 !!! Please read also for configurion guides!!!
-[Read /videochat/README.md](https://github.com/GenBInc/quickhellou/blob/main/videochat/README.md)
+[Read docs/videochat.md](docs/videochat.md)
 
 
 ### Websocket server
@@ -94,7 +94,7 @@ The TURN server guidelines for relaying the traffic between peers.
 ```
 turn
 ```
-[Read /turn/README.md](https://github.com/GenBInc/quickhellou/blob/main/turn/README.md) for installation guidelines.
+[Read docs/turn.md](docs/turn.md) for installation guidelines.
 
 
 ## Quick Hellou Install and Run

@@ -13,6 +13,7 @@ from rest_framework.renderers import JSONRenderer, StaticHTMLRenderer
 from rest_framework.decorators import (action, api_view, permission_classes)
 
 from django.conf import settings
+from qhv2.turn import get_ice_servers
 
 # Create your views here.
 
@@ -122,7 +123,7 @@ def get_room_parameters(request, room_id, client_id, sessions):
 
     # If defined it will override the ICE server provider and use the specified
     # turn servers directly.
-    ice_server_override = settings.ICE_SERVER_OVERRIDE
+    ice_server_override = get_ice_servers()
 
     pc_config = make_pc_config(ice_transports, ice_server_override)
     pc_constraints = make_pc_constraints(dtls, dscp, ipv6)
