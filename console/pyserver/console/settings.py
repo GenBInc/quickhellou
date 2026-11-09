@@ -110,7 +110,6 @@ production_loaders = [
     ("django.template.loaders.cached.Loader", [
         "django.template.loaders.filesystem.Loader",
         "django.template.loaders.app_directories.Loader",
-        "path.to.custom.Loader",
     ])
 ]
 
@@ -216,7 +215,7 @@ DATETIME_FORMAT = '%Y-%m-%d %I:%M %p'
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-STATIC_ROOT = BASE_DIR / 'console/static'
+STATIC_ROOT = BASE_DIR / 'console/static'
 # Serve app static files (admin, DRF) through WhiteNoise also when DEBUG is off.
 WHITENOISE_USE_FINDERS = True
 STATICFILES_DIRS = []
