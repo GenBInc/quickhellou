@@ -3,14 +3,12 @@ import json
 import logging
 import os
 import random
-import threading
 import uuid
 import smtplib
 import ssl
 from ssl import SSLError
 from distutils.util import strtobool
 
-import threading, queue
 import requests
 
 from email.mime.text import MIMEText
@@ -21,7 +19,6 @@ from email.encoders import encode_base64
 
 import pickle
 import redis
-from redis import WatchError
 
 from django.shortcuts import render, redirect
 from django.conf import settings
@@ -61,6 +58,13 @@ def room_lock(key):
   """Per-room lock so concurrent workers don't overwrite each other's room updates."""
   return redis_client.lock('lock:' + key, timeout=10, blocking_timeout=10)
 
+def load_room(key):
+  """Return the Room stored under key, or None. Call inside room_lock(key) when modifying it."""
+  room_bytes = redis_client.get(key)
+  if room_bytes is None:
+    return None
+  return pickle.loads(room_bytes)  # may also be None for legacy keys
+
 def save_room(key, room):
   """Store a room with a TTL, or delete the key when the room is gone."""
   if room is None:
@@ -89,87 +93,47 @@ class JoinPage(View):
       params = get_room_parameters(
       self.request, room_id, client_id, sessions)
       return self.write_response('SUCCESS', params, messages)
-  def async_add_client_to_room(self, lock, q, request, room_id, client_id, is_loopback):
-      lock.acquire()
-      result = self.add_client_to_room(q, request, room_id, client_id, is_loopback)
-      lock.release()
-  def add_client_to_room(self, q, request, room_id, client_id, is_loopback):
-      host_url = request.META['HTTP_HOST']
-      key = get_redis_key_for_room(host_url, room_id)
-      error = None
-      retries = 0
-      room = None
-      # Compare and set retry loop.
-      with room_lock(key), redis_client.pipeline() as pipe:
-        while True:
-          try:
-            pipe.watch(key)
-            messages = []
-            room_state = ''
-            room_bytes = redis_client.get(key)
-            if room_bytes is None:
-              # 'set' and another 'gets' are needed for CAS to work.
-              room = Room()
-              #if not redis_client.set(key, pickle.dumps(Room())):
-              #  logging.warning('JoinPage: redis.Client.set failed for key ' + key)
-              #  error = settings.RESPONSE_ERROR
-            else:
-              room = pickle.loads(room_bytes)
-              if room is None:
-                room = Room()
-            sessions_count = room.get_sessions_count()
-            pending_sessions_count = room.get_pending_sessions_count()
+  def add_client_to_room(self, request, room_id, client_id):
+      key = get_redis_key_for_room(request.META['HTTP_HOST'], room_id)
+      with room_lock(key):
+        room = load_room(key) or Room()
 
-            if room.has_client(client_id):
-              error = settings.RESPONSE_DUPLICATE_CLIENT
-              break
+        if room.has_client(client_id):
+          return {'error': settings.RESPONSE_DUPLICATE_CLIENT, 'sessions': [],
+            'messages': [], 'room_state': str(room)}
 
-            other_clients = []
-            sessions = []
-            return_value = {}
-            # If no pending session are available
-            # set client as initiator.
-            if pending_sessions_count == 0:
-              # check for other clients
-              active_clients_len = len(room.get_clients()) 
-              print("active_clients_len", active_clients_len)
-              # add session and initiator client
-              if (active_clients_len == 0):
-                print('JoinPage: no active sessions, adding initiator')
-                sessions.append(str(room.add_initiator(client_id, '')))
-              else:
-                print('JoinPage: active sessions exists, adding initiators and receivers')
-                for other_client_id in room.get_distinct_clients():
-                    serializedSession = room.add_initiator(client_id, other_client_id)
-                    print('JoinPage: append two-way session %s: client %s with other %s' % (serializedSession.id, client_id, other_client_id))
-                    sessions.append(str(serializedSession))
-                    sessions.append(str(room.add_receiver(serializedSession.id, other_client_id, client_id, {}, True)))
-            else:
-              print("session exists")
-              for session in room.serialize_pending_sessions():
-                initiator_client = session.get_initiator()
-                messages = list(initiator_client.messages)
-                print('JoinPage: add receiver %s with %s messages (%d)' % (client_id, initiator_client.get_id(), len(messages)))
-                sessions.append(str(room.add_receiver(session.id, client_id, initiator_client.get_id(), messages, False)))
-                initiator_client.clear_messages()
-            check_clients_availability('JoinPage',room.get_clients())
-            return_value = {'error': error, 'sessions':sessions,
-              'messages': messages, 'room_state': str(room)}
-            print('return set', return_value)
-            q.put(return_value)
-            pipe.multi()
-            save_room(key, room)
-            pipe.execute()
-          except WatchError:
-            retries = retries + 1
-            continue
-          finally:
-            print('JoinPage: Added client %s in room %s, retries = %d'
-                % (client_id, room_id, retries))
-            print('JoinPage: Room %s has state %s' % (room_id, str(room)))
-            pipe.reset()
-            print("----> return_value", return_value)
-            return return_value
+        messages = []
+        sessions = []
+        # If no pending session are available
+        # set client as initiator.
+        if room.get_pending_sessions_count() == 0:
+          # check for other clients
+          active_clients_len = len(room.get_clients())
+          print("active_clients_len", active_clients_len)
+          # add session and initiator client
+          if (active_clients_len == 0):
+            print('JoinPage: no active sessions, adding initiator')
+            sessions.append(str(room.add_initiator(client_id, '')))
+          else:
+            print('JoinPage: active sessions exists, adding initiators and receivers')
+            for other_client_id in room.get_distinct_clients():
+                serializedSession = room.add_initiator(client_id, other_client_id)
+                print('JoinPage: append two-way session %s: client %s with other %s' % (serializedSession.id, client_id, other_client_id))
+                sessions.append(str(serializedSession))
+                sessions.append(str(room.add_receiver(serializedSession.id, other_client_id, client_id, {}, True)))
+        else:
+          print("session exists")
+          for session in room.serialize_pending_sessions():
+            initiator_client = session.get_initiator()
+            messages = list(initiator_client.messages)
+            print('JoinPage: add receiver %s with %s messages (%d)' % (client_id, initiator_client.get_id(), len(messages)))
+            sessions.append(str(room.add_receiver(session.id, client_id, initiator_client.get_id(), messages, False)))
+            initiator_client.clear_messages()
+        check_clients_availability('JoinPage',room.get_clients())
+        save_room(key, room)
+        print('JoinPage: Added client %s in room %s' % (client_id, room_id))
+        return {'error': None, 'sessions': sessions,
+          'messages': messages, 'room_state': str(room)}
 
   def get(self, request, *args, **kwargs):
     return HttpResponse("GET is not allowed.")
@@ -177,15 +141,8 @@ class JoinPage(View):
     room_id = kwargs['room_id']
     if room_id is None:
       return redirect('videochat:main')
-    request_post = request.POST
     client_id = self.generate_uuid()
-    is_loopback = request_post.get('debug') == 'loopback'
-    lock = threading.Lock()
-    q = queue.Queue()
-    add_thread = threading.Thread(target=self.async_add_client_to_room, args=(lock, q, request, room_id, client_id, is_loopback))
-    add_thread.start()
-    add_thread.join()
-    result = q.get()
+    result = self.add_client_to_room(request, room_id, client_id)
 
     print('JoinPage: User ' + client_id + ' joined room ' + room_id)
     print('JoinPage: Room ' + room_id + ' has state ' + result['room_state'])
@@ -201,33 +158,16 @@ class SessionsGetterPage(View):
     room_id = kwargs['room_id']
     host_url = request.META['HTTP_HOST']
     key = get_redis_key_for_room(host_url, room_id)
-    retries = 0
-    with room_lock(key), redis_client.pipeline() as pipe:
-      while True:
-        try:
-          pipe.watch(key)
-          room_bytes = redis_client.get(key)         
-          if room_bytes is None:
-            logging.warn("There is no room in RMS with a key %s" % key)
-            break
-          room = pickle.loads(room_bytes)
-          room.clear_duplicate_sessions()
-          if retries > 10:
-            break
-          pipe.multi()
-          save_room(key, room)
-          pipe.execute()
-          break
-        except WatchError:
-          retries = retries + 1
-          if retries > 10:
-            break
-          else:
-            continue
-        finally:
-          pipe.reset()
-          result = self.send_session_update(room, room_id)
-          return self.write_response(str(result))
+    with room_lock(key):
+      room = load_room(key)
+      if room is None:
+        logging.warning("There is no room in RMS with a key %s" % key)
+      else:
+        room.clear_duplicate_sessions()
+        save_room(key, room)
+    # Notify the collider outside the lock.
+    result = self.send_session_update(room, room_id)
+    return self.write_response(str(result))
   def write_response(self, result):
     content = json.dumps({'sessions': result})
     return HttpResponse(content)
@@ -260,71 +200,40 @@ class LeavePage(View):
     room_id = kwargs['room_id']
     client_id = kwargs['client_id']
     print('LeavePage: client %s' % (client_id))
-    lock = threading.Lock()
-    host_url = request.META['HTTP_HOST']
-    remove_thread = threading.Thread(target=self.async_remove_client_from_room, args=(lock, host_url, room_id, client_id))
-    remove_thread.start()
-    remove_thread.join()
-
+    self.remove_client_from_room(request.META['HTTP_HOST'], room_id, client_id)
+    # Notify the collider outside the lock.
     self.send_session_update(room_id)
     return HttpResponse('ok')
-  def write_response(self, result):
-    content = json.dumps({'result': result})
-    return HttpResponse(content)
-  def async_remove_client_from_room(self, lock, host, room_id, client_id):
-    lock.acquire()
-    self.remove_client_from_room(host, room_id, client_id)
-    lock.release()
   def remove_client_from_room(self, host, room_id, client_id):
     key = get_redis_key_for_room(host, room_id)
-    retries = 0
-    # Compare and set retry loop.
-    with room_lock(key), redis_client.pipeline() as pipe:
-      while True:
-        try:
-          pipe.watch(key)
-          room = None
-          room_bytes = redis_client.get(key)
-          if room_bytes is not None:
-            room = pickle.loads(room_bytes)
-          if room is None:
-            logging.warning('LeavePage: Unknown room ' + room_id)
-            return {'error': settings.RESPONSE_UNKNOWN_ROOM, 'room_state': None}
-          if not room.has_client(client_id):
-            logging.warning('LeavePage: Unknown client ' + client_id +
-                ' for room ' + room_id)
-            return {'error': settings.RESPONSE_UNKNOWN_CLIENT, 'room_state': None}
-          sessions = room.get_sessions_by_client_id(client_id)
-          for session in sessions:
-            room.remove_session_client(session.id, client_id)
-            if session is not None:
-              other_client = session.get_any_client()
-              if other_client is not None:
-                print('LeavePage: User %s from session %s became initiator' % (other_client.get_id(), session.id))
-                other_client.set_initiator(True)
-            
-          pending_sessions_count = room.get_pending_sessions_count()
-          sessions_count = room.get_sessions_count()
-          print('LeavePage: total sessions %d', sessions_count)
+    with room_lock(key):
+      room = load_room(key)
+      if room is None:
+        logging.warning('LeavePage: Unknown room ' + room_id)
+        return
+      if not room.has_client(client_id):
+        logging.warning('LeavePage: Unknown client ' + client_id +
+            ' for room ' + room_id)
+        return
+      for session in room.get_sessions_by_client_id(client_id):
+        room.remove_session_client(session.id, client_id)
+        other_client = session.get_any_client()
+        if other_client is not None:
+          print('LeavePage: User %s from session %s became initiator' % (other_client.get_id(), session.id))
+          other_client.set_initiator(True)
 
-          room.clear_duplicate_sessions()
+      sessions_count = room.get_sessions_count()
+      print('LeavePage: total sessions %d' % sessions_count)
 
-          check_clients_availability('LeavePage', room.get_clients())
-          if sessions_count == 0:
-            print('LeavePage: removing room')
-            room = None
-          pipe.multi()
-          save_room(key, room)
-          pipe.execute()
-        except WatchError:
-          retries = retries + 1
-          continue
-        finally:
-          print('LeavePage: Removed client %s from room %s, retries=%d'
-                % (client_id, room_id, retries))
-          print('LeavePage: Room %s has state %s' % (room_id, str(room)))
-          pipe.reset()
-          return self.write_response('success')
+      room.clear_duplicate_sessions()
+
+      check_clients_availability('LeavePage', room.get_clients())
+      if sessions_count == 0:
+        print('LeavePage: removing room')
+        room = None
+      save_room(key, room)
+      print('LeavePage: Removed client %s from room %s, state %s'
+            % (client_id, room_id, str(room)))
   def send_session_update(self, room_id):
     host_url = self.request.META['HTTP_HOST']
     room = get_room(host_url, room_id)
@@ -377,26 +286,16 @@ class ConsumePage(View):
     client_id = kwargs['client_id']
     host_url = request.META['HTTP_HOST']
     key = get_redis_key_for_room(host_url, room_id)
-    retries = 0
-    with room_lock(key), redis_client.pipeline() as pipe:
-      while True:
-        try:
-          pipe.watch(key)
-          room_bytes = redis_client.get(key)            
-          if room_bytes is None:
-            return
-          room = pickle.loads(room_bytes)
-          result = self.consume(room, session_id, client_id)
-          pipe.multi()
-          save_room(key, room)
-          pipe.execute()
-        except WatchError:
-          retries = retries + 1
-          continue
-        finally:
-          pipe.reset()
-          return self.write_response(result)
-          
+    with room_lock(key):
+      room = load_room(key)
+      if room is None:
+        return self.write_response([])
+      result = self.consume(room, session_id, client_id)
+      if result:
+        save_room(key, room)
+    # Always return a list so the client can iterate it safely.
+    return self.write_response(result or [])
+
   def write_response(self, result):
     content = json.dumps({'messages': result})
     return HttpResponse(content)
@@ -471,46 +370,29 @@ class SessionMessagePage(View):
     else:
       return self.write_response(settings.RESPONSE_SUCCESS)
   def save_message_from_session_client(self, host, room_id, session_id, client_id, message_bytes):
-    text = None
-    message = json.loads(message_bytes)
+    try:
+      message = json.loads(message_bytes)
+    except ValueError:
+      return {'error': settings.RESPONSE_INVALID_REQUEST, 'saved': False}
     key = get_redis_key_for_room(host, room_id)
-    retries = 0
-    # Compare and set retry loop.
-    with room_lock(key), redis_client.pipeline() as pipe:
-      while True:
-        try:
-          pipe.watch(key)   
-          room_bytes = redis_client.get(key)            
-          if room_bytes is None:
-            logging.warning('Unknown room: ' + room_id)
-            return {'error': settings.RESPONSE_UNKNOWN_ROOM, 'saved': False}
-          room = pickle.loads(room_bytes)
-          if not room.has_client(client_id):
-            logging.warning('Unknown client: ' + client_id)
-            return {'error': settings.RESPONSE_UNKNOWN_CLIENT, 'saved': False}
-              
-          session = room.get_session(session_id)
-
-          if session is None:
-            return {'error': None, 'saved': False}
-
-          if session.is_full() > 1:
-            return {'error': None, 'saved': False}
-
-          client = room.get_session_client(session.id, client_id)
-          print('SessionMessagePage: save_message_from_session_client client: %s %s' % (client.get_id(), str(client)))
-          client.add_message(message)
-          pipe.multi()
-          print('room:', room)
-          print('client:', client)
-          save_room(key, room)
-          pipe.execute()
-        except WatchError:
-          retries = retries + 1
-          continue
-        finally:
-          pipe.reset()
-          return {'error': None, 'saved': True}
+    with room_lock(key):
+      room = load_room(key)
+      if room is None:
+        logging.warning('Unknown room: ' + room_id)
+        return {'error': settings.RESPONSE_UNKNOWN_ROOM, 'saved': False}
+      if not room.has_client(client_id):
+        logging.warning('Unknown client: ' + client_id)
+        return {'error': settings.RESPONSE_UNKNOWN_CLIENT, 'saved': False}
+      session = room.get_session(session_id)
+      client = session.get_client(client_id) if session is not None else None
+      if client is None:
+        logging.warning('No session %s for client %s' % (session_id, client_id))
+        return {'error': settings.RESPONSE_UNKNOWN_CLIENT, 'saved': False}
+      # Messages are always queued; the other side picks them up via /consume.
+      client.add_message(message)
+      save_room(key, room)
+      print('SessionMessagePage: saved message for client %s %s' % (client.get_id(), str(client)))
+      return {'error': None, 'saved': True}
 
 class ParamsPage(View):
   def get(self, request, *args, **kwargs):
@@ -594,32 +476,11 @@ class RemoveRoomPage(View):
     return HttpResponse(json.dumps(result))
   def remove_room(self, host, room_id):
     key = get_redis_key_for_room(host, room_id)
-    retries = 0
-    with room_lock(key), redis_client.pipeline() as pipe:
-      while True:
-        try:
-          pipe.watch(key)   
-          room_bytes = redis_client.get(key)  
-          if room_bytes is None:
-            logging.warning('RemoveRoomPage: remove_room: Unknown room ' + room_id)
-            return {'error': settings.RESPONSE_UNKNOWN_ROOM, 'room_state': None}
-            break
-          room = pickle.loads(room_bytes)
-          print("room", room)
-          if room is not None:
-            room.clear_sessions()
-            del room
-          pipe.multi()
-          redis_client.delete(key)
-          pipe.execute()
-        except WatchError:
-          retries = retries + 1
-          if retries > 10:
-            break
-          else:
-            continue
-        finally:
-          pipe.reset()
+    with room_lock(key):
+      if redis_client.get(key) is None:
+        logging.warning('RemoveRoomPage: remove_room: Unknown room ' + room_id)
+        return {'error': settings.RESPONSE_UNKNOWN_ROOM, 'room_state': None}
+      redis_client.delete(key)
     return {'error': None}
 
 class RoomPage(View):
