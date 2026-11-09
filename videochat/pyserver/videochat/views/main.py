@@ -417,29 +417,24 @@ class ConsumePage(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class MessagePage(View):
-  def write_response(self, result):
-    content = json.dumps({'result': result})
-    return HttpResponse(content)
-
+  """POST /message/<room_id>/<client_id>: signalling message sent before the
+  client knows its session id. Resolves the client's session and handles it
+  exactly like /sessionmessage/<room_id>/<session_id>/<client_id>."""
   def get(self, request, *args, **kwargs):
+    return HttpResponse("GET is not allowed.")
+  def post(self, request, *args, **kwargs):
     room_id = kwargs['room_id']
     client_id = kwargs['client_id']
-    print('MessagePage::get', room_id, client_id)
-    
-    message_json = self.request.body
-    result = save_message_from_client(
-      request.META['HTTP_HOST'], room_id, client_id, message_json)
-    if result['error'] is not None:
-      return self.write_response(result['error'])
-    if not result['saved']:
-      # Other client joined, forward to collider. Do this outside the lock.
-      # Note: this may fail in local dev server due to not having the right
-      # certificate file locally for SSL validation.
-      # Note: loopback scenario follows this code path.
-      # TODO(tkchin): consider async fetch here.
-      self.send_message_to_collider(room_id, client_id, message_json)
-    else:
-      return self.write_response(settings.RESPONSE_SUCCESS)
+    room = get_room(request.META['HTTP_HOST'], room_id)
+    if room is None:
+      logging.warning('MessagePage: Unknown room: ' + room_id)
+      return HttpResponse(json.dumps({'result': settings.RESPONSE_UNKNOWN_ROOM}))
+    session = room.get_session_by_client_id(client_id)
+    if session is None:
+      logging.warning('MessagePage: No session for client %s in room %s' % (client_id, room_id))
+      return HttpResponse(json.dumps({'result': settings.RESPONSE_UNKNOWN_CLIENT}))
+    kwargs['session_id'] = session.id
+    return SessionMessagePage.as_view()(request, *args, **kwargs)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SessionMessagePage(View):
@@ -1043,46 +1038,3 @@ def send_message_to_collider(request, room_id, client_id, message):
          ' client ', client_id, 'with url', url )
   return _post_to_collider(url, message)
 
-def save_message_from_client(host, room_id, client_id, message):
-  text = None
-  try:
-    text = message.encode(encoding='utf-8', errors='strict')
-  except Exception as e:
-    return {'error': settings.RESPONSE_ERROR, 'saved': False}
-
-  key = get_memcache_key_for_room(host, room_id)
-  memcache_client = memcache.Client()
-  retries = 0
-  # Compare and set retry loop.
-  with room_lock(key), redis_client.pipeline() as pipe:
-    while True:
-      try:
-        pipe.watch(key)
-        room_bytes = redis_client.get(key)
-        if room_bytes is None:
-          logging.warning('Unknown room: ' + room_id)
-          return {'error': constants.RESPONSE_UNKNOWN_ROOM, 'saved': False}
-        room = pickle.loads(room_bytes)
-        if not room.has_client(client_id):
-          logging.warning('Unknown client: ' + client_id)
-          return {'error': constants.RESPONSE_UNKNOWN_CLIENT, 'saved': False}
-        
-        session = room.get_session_by_client_id(client_id)
-
-        if session.is_full() > 1:
-          return {'error': None, 'saved': False}
-
-        client = room.get_session_client(session.id, client_id)
-        print('session client: %s:%s' % (client_id, str(client)))
-        client.add_message(text)
-        pipe.multi()
-        save_room(key, room)
-        pipe.execute()
-      except WatchError:
-        retries = retries + 1
-        continue
-      finally:
-        pipe.reset()
-        print('Saved message for client %s:%s in room %s, retries=%d %s'
-              % (client_id, str(client), room_id, retries, text))
-        return {'error': None, 'saved': True}
