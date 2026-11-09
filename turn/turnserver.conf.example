@@ -1,6 +1,9 @@
 # coturn configuration for Quick Hellou
-# Copy to /etc/turnserver.conf, replace every <...> value, then:
+# New installation: copy to /etc/turnserver.conf, replace every <...> value, then:
 #   systemctl restart coturn && systemctl status coturn
+# Existing, working installation: do NOT replace your file - add these settings
+# in two steps as described in docs/turn.md (relay protection first, then
+# short-lived credentials once the app has TURN_SECRET).
 #
 # Security goals:
 #   * only our app can hand out credentials (short-lived, HMAC signed)

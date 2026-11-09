@@ -12,26 +12,52 @@ mkdir -p /var/log/turnserver && chown turnserver: /var/log/turnserver
 
 ## Configuration
 
-1. Copy [turn/turnserver.conf.example](../turn/turnserver.conf.example) to `/etc/turnserver.conf`
-   and fill in the `<...>` values.
-2. Generate a shared secret and put the **same value** in both places:
+**New installation:** copy [turn/turnserver.conf.example](../turn/turnserver.conf.example)
+to `/etc/turnserver.conf`, fill in the `<...>` values, then follow step 2 below.
+
+**Existing, working installation:** do not replace the file. Change it in two
+steps and test a call after each one, so a problem is easy to trace back:
+
+```bash
+cp -a /etc/turnserver.conf /etc/turnserver.conf.bak.$(date +%F)   # rollback point
+```
+
+### Step 1: relay protection (safe, no auth or network changes)
+
+Append the `--- forbidden relay destinations ---` block and the lines
+`no-tcp-relay`, `no-multicast-peers`, `no-cli` from the example to the existing
+file, then `systemctl restart coturn` and test a call. These only stop the relay
+from reaching private addresses (`127.0.0.1`, Docker networks) and from acting
+as a TCP proxy; they do not change who can log in or which addresses coturn uses.
+
+### Step 2: short-lived credentials
+
+1. Generate a shared secret: `openssl rand -hex 32`.
+2. Put it in `prod.env` as `TURN_SECRET=<secret>` and recreate the app:
 
    ```bash
-   openssl rand -hex 32
-   ```
-
-   * `/etc/turnserver.conf`: `static-auth-secret=<secret>`
-   * `prod.env`: `TURN_SECRET=<secret>`
-
-3. Restart both:
-
-   ```bash
-   systemctl restart coturn
    docker-compose ... --env-file ./prod.env up -d --force-recreate videochat_pyserver
    ```
 
-4. Open the firewall: `3478/udp`, `3478/tcp` and the relay range `49152-50151/udp`
-   (see [server-hardening.md](server-hardening.md)).
+3. Verify the app now hands out signed logins (`<digits>:qh...`, not the static username):
+
+   ```bash
+   docker exec videochat_pyserver sh -c 'test -n "$TURN_SECRET" && echo ok'
+   curl -sk -X POST https://<videochat-host>/api/video-settings/test | grep -o '"username": *"[^"]*"'
+   ```
+
+4. Only then switch coturn: remove `lt-cred-mech` and `user=` lines, add
+   `use-auth-secret` and `static-auth-secret=<same secret>`,
+   `systemctl restart coturn`, and test a call immediately. If calls fail,
+   restore the backup and check `/var/log/turnserver/turnserver.log` for `401`.
+
+Keep your existing `listening-ip` / `external-ip` / `relay-ip` values; they
+depend on the server's network setup (public IP on the interface vs. NAT).
+
+### Firewall
+
+Open `3478/udp`, `3478/tcp` and the relay port range (`min-port`-`max-port`)
+(see [server-hardening.md](server-hardening.md)).
 
 ## How credentials work
 
