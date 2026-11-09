@@ -227,6 +227,17 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+# Cache backend (used by django-ratelimit)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'ratelimit-cache',
+    }
+}
+
+# Rate limiting
+RATELIMIT_VIEW = 'dashboard.ratelimit.ratelimited_response'
+
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 SVG_DIRS = [

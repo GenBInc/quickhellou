@@ -14,6 +14,7 @@ from django.db import transaction
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
+from django_ratelimit.decorators import ratelimit
 
 from accounts.models import User, Profile
 from accounts.forms import (
@@ -38,6 +39,7 @@ def home_view(
 
 
 @transaction.atomic
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
 def signup_view(
     request: HttpRequest
 ) -> HttpResponse:
@@ -99,6 +101,7 @@ def signup_view(
 
 
 @csrf_exempt
+@ratelimit(key='ip', rate='10/5m', method='POST', block=True)
 def login_view(
     request: HttpRequest
 ) -> HttpResponse:
@@ -154,6 +157,7 @@ def privacy_policy_view(request) -> HttpResponse:
     return render(request, 'accounts/privacy-policy.html')
 
 
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
 def forgot_password_view(
     request: HttpRequest
 ) -> HttpResponse:

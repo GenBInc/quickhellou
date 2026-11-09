@@ -20,6 +20,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from django_ratelimit.decorators import ratelimit
 from accounts.models import (
     Profile,
     User,
@@ -269,6 +270,7 @@ def add_widget_contact_form_view(
 
 @csrf_exempt
 @require_POST
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
 def edit_widget_contact_form_view(
     request: HttpRequest,
     widget_id: int,
@@ -411,6 +413,7 @@ def widget_embed_view(
 
 
 @csrf_exempt
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
 def widget_active_operator(
     request: HttpRequest,
     widget_id: int,
@@ -485,6 +488,7 @@ def widget_active_operator(
 
 
 @csrf_exempt
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
 def widget_schedule_view(
     request: HttpRequest,
     widget_id: int,
