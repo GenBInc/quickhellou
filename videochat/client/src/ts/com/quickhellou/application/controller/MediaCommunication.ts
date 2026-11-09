@@ -154,7 +154,15 @@ export class MediaCommunication extends EventDispatcherService {
           )
         })
 
-        this.colliderService.register(this.room.id, roomPyParams.client_id)
+        this.colliderService
+          .register(this.room.id, roomPyParams.client_id)
+          .then((): void => {
+            this.dispatchEvent(
+              CallEvent.JOINED_ROOM,
+              this.clientIdsPresentAtJoin.size + 1
+            )
+          })
+          .catch((): void => undefined)
 
         // We only start signaling after we have registered the signaling channel
         // and have media and TURN. Since we send candidates as soon as the peer

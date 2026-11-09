@@ -1,5 +1,8 @@
+type NoticeKind = 'joined' | 'left'
+
 /**
- * Shows short, non-blocking notices when participants join or leave a call.
+ * Shows short, non-blocking notices when participants (including this user)
+ * join or leave a call.
  *
  * Notices are rendered into a polite ARIA live region attached to <body>, so
  * they are visible in (body) fullscreen and announced by screen readers.
@@ -14,24 +17,33 @@ export class ParticipantNotifier {
 
   private container: HTMLElement
 
-  /**
-   * Notifies that a participant joined.
-   *
-   * @param {number} participantCount everyone in the call, including this user
-   * @memberof ParticipantNotifier
-   */
+  /** Another participant joined. */
   public participantJoined(participantCount: number): void {
-    this.show('A participant joined', participantCount, 'joined')
+    this.show('joined', 'A participant joined', this.describeCount(participantCount))
   }
 
-  /**
-   * Notifies that a participant left.
-   *
-   * @param {number} participantCount everyone in the call, including this user
-   * @memberof ParticipantNotifier
-   */
+  /** Another participant left. */
   public participantLeft(participantCount: number): void {
-    this.show('A participant left', participantCount, 'left')
+    this.show('left', 'A participant left', this.describeCount(participantCount))
+  }
+
+  /** This user joined the call. */
+  public youJoined(participantCount: number): void {
+    const detail: string =
+      participantCount <= 1
+        ? 'Waiting for others to join'
+        : this.describeCount(participantCount)
+    this.show('joined', 'You joined the call', detail)
+  }
+
+  /** This user hung up. */
+  public youLeft(): void {
+    this.show('left', 'You left the call')
+  }
+
+  /** This user's connection to the call was lost. */
+  public youWereDisconnected(): void {
+    this.show('left', 'You were disconnected')
   }
 
   /**
@@ -46,7 +58,7 @@ export class ParticipantNotifier {
     }
   }
 
-  private show(text: string, participantCount: number, kind: string): void {
+  private show(kind: NoticeKind, text: string, detail?: string): void {
     const container: HTMLElement = this.getContainer()
 
     const notice: HTMLElement = document.createElement('div')
@@ -57,10 +69,12 @@ export class ParticipantNotifier {
     title.textContent = text
     notice.appendChild(title)
 
-    const count: HTMLElement = document.createElement('span')
-    count.className = 'participant-notice__count'
-    count.textContent = this.describeCount(participantCount)
-    notice.appendChild(count)
+    if (detail) {
+      const count: HTMLElement = document.createElement('span')
+      count.className = 'participant-notice__detail'
+      count.textContent = `· ${detail}`
+      notice.appendChild(count)
+    }
 
     container.appendChild(notice)
 

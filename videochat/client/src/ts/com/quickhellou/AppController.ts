@@ -562,7 +562,18 @@ export class AppController extends EventDispatcherService {
   private createCall(): void {
     this.mediaCommunication.addEventListener(
       CallEvent.WEBSOCKET_CLOSED,
-      this.hangup,
+      (): void => {
+        this.hangup(false)
+      },
+      this
+    )
+    this.mediaCommunication.addEventListener(
+      CallEvent.JOINED_ROOM,
+      (participantCount: number): void => {
+        if (!this.isHungUp) {
+          this.participantNotifier.youJoined(participantCount)
+        }
+      },
       this
     )
 
@@ -793,12 +804,17 @@ export class AppController extends EventDispatcherService {
    * @private
    * @memberof AppController
    */
-  private hangup(): void {
+  private hangup(byUser: boolean = true): void {
     if (this.isDestroyed || this.isHungUp) {
       Log.log('AppController::hangup already hung up')
       return
     }
     this.isHungUp = true
+    if (byUser) {
+      this.participantNotifier.youLeft()
+    } else {
+      this.participantNotifier.youWereDisconnected()
+    }
     Log.log('AppController::hangup (true, from WS)')
     this.hide(this.icons)
     this.transitionToDone()
