@@ -23,6 +23,7 @@ services:
       - VIDEOCHAT_APP_HOST=${VIDEOCHAT_APP_HOST}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
       - TURN_SERVER_BASE_URL=${TURN_SERVER_BASE_URL}
       - TURN_SERVER_USERNAME=${TURN_SERVER_USERNAME}
       - COLLIDER_SERVER_PORT=${COLLIDER_SERVER_PORT}      
@@ -48,8 +49,9 @@ services:
     container_name: redis
     build:
       context: ./videochat/redis
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--port", "${REDIS_PORT}", "--requirepass", "${REDIS_PASSWORD:?REDIS_PASSWORD must be set}"]
     ports:
-      - "${REDIS_PORT}:${REDIS_PORT}"
+      - "127.0.0.1:${REDIS_PORT}:${REDIS_PORT}"
     expose:
       - "${REDIS_PORT}"
     volumes:
