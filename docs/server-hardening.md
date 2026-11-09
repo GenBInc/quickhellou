@@ -33,7 +33,7 @@ last -n 30; journalctl -u ssh --since "-14 days" | grep -i accepted
   binaries): reinstall the server, redeploy from git and restore the database
   from a known-good `pg_dump`.
 * In both cases rotate: `REDIS_PASSWORD`, `POSTGRES_PASSWORD`, `SECRET_KEY`,
-  `EMAIL_HOST_PASSWORD`, `TURN_SECRET`, SSH keys, pgAdmin password.
+  `EMAIL_HOST_PASSWORD`, `TURN_SERVER_USERNAME` (TURN login), SSH keys, pgAdmin password.
 
 ---
 
@@ -46,7 +46,6 @@ last -n 30; journalctl -u ssh --since "-14 days" | grep -i accepted
 | `SECRET_KEY` | ≥ 50 random chars: `python3 -c "import secrets;print(secrets.token_urlsafe(50))"` |
 | `REDIS_PASSWORD` | `openssl rand -hex 32` |
 | `POSTGRES_PASSWORD` | `openssl rand -hex 24` (changing it needs `ALTER USER` in Postgres, the env var only applies on first init) |
-| `TURN_SECRET` | `openssl rand -hex 32`, same value as `static-auth-secret` in `/etc/turnserver.conf` |
 | `VIDEOCHAT_ALLOWED_HOSTS` / `HELPDESK_ALLOWED_HOSTS` | your real hostnames, comma separated |
 | `DJANGO_DEBUG` | not set (defaults to off) |
 
@@ -160,7 +159,7 @@ things (`postgres:14-alpine`, `gunicorn==23.0.0`). Rebuild monthly with
 
 See [turn.md](turn.md) and
 [turn/turnserver.conf.example](../turn/turnserver.conf.example). Required:
-`use-auth-secret`, `no-tcp-relay`, `no-multicast-peers`, the `denied-peer-ip`
+`no-tcp-relay`, `no-multicast-peers`, the `denied-peer-ip`
 list (blocks relaying to `127.0.0.1` and the Docker networks).
 
 ---

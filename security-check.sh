@@ -96,7 +96,6 @@ fi
 # ---------------------------------------------------------------------------
 section "coturn ($TURN_CONF)"
 if [ -f "$TURN_CONF" ]; then
-  grep -qE '^\s*use-auth-secret' "$TURN_CONF" && pass "use-auth-secret (short-lived credentials)" || warn "static TURN credentials (no use-auth-secret)"
   grep -qE '^\s*no-tcp-relay' "$TURN_CONF" && pass "no-tcp-relay" || fail "TCP relay enabled (TURN usable as TCP proxy)"
   grep -qE '^\s*denied-peer-ip=127\.0\.0\.0' "$TURN_CONF" && pass "loopback peers denied" || fail "TURN can relay to 127.0.0.1 (Redis/Postgres/pgAdmin)"
   grep -qE '^\s*denied-peer-ip=192\.170\.0\.0' "$TURN_CONF" && pass "Docker networks denied" || fail "TURN can relay into Docker networks 192.170/192.180"
@@ -121,7 +120,6 @@ if [ -f "$ENV_FILE" ]; then
   gitq ls-files --error-unmatch "$ENV_FILE" >/dev/null 2>&1 && fail "$ENV_FILE is tracked by git!"
   v=$(envval SECRET_KEY);      [ ${#v} -ge 40 ] && pass "SECRET_KEY length ${#v}" || fail "SECRET_KEY too short (${#v} chars)"
   v=$(envval REDIS_PASSWORD);  [ ${#v} -ge 20 ] && pass "REDIS_PASSWORD set" || fail "REDIS_PASSWORD missing/short"
-  v=$(envval TURN_SECRET);     [ ${#v} -ge 20 ] && pass "TURN_SECRET set" || warn "TURN_SECRET not set (static TURN login in use)"
   v=$(envval DJANGO_DEBUG | tr 'A-Z' 'a-z'); [ "$v" = "true" ] || [ "$v" = "1" ] && fail "DJANGO_DEBUG is on" || pass "DJANGO_DEBUG off"
   v=$(envval VIDEOCHAT_ALLOWED_HOSTS); [ -n "$v" ] && [ "$v" != "*" ] && pass "VIDEOCHAT_ALLOWED_HOSTS=$v" || warn "VIDEOCHAT_ALLOWED_HOSTS not set (accepts any Host header)"
   v=$(envval HELPDESK_ALLOWED_HOSTS);  [ -n "$v" ] && [ "$v" != "*" ] && pass "HELPDESK_ALLOWED_HOSTS=$v" || warn "HELPDESK_ALLOWED_HOSTS not set (accepts any Host header)"

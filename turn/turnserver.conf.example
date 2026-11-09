@@ -1,12 +1,10 @@
 # coturn configuration for Quick Hellou
 # New installation: copy to /etc/turnserver.conf, replace every <...> value, then:
 #   systemctl restart coturn && systemctl status coturn
-# Existing, working installation: do NOT replace your file - add these settings
-# in two steps as described in docs/turn.md (relay protection first, then
-# short-lived credentials once the app has TURN_SECRET).
+# Existing, working installation: do NOT replace your file - only add the relay
+# protection settings, as described in docs/turn.md.
 #
 # Security goals:
-#   * only our app can hand out credentials (short-lived, HMAC signed)
 #   * the relay can never be used to reach this server's own private services
 #     (Redis 127.0.0.1:6380, Postgres :5435, pgAdmin :5050, Docker networks)
 #   * the relay cannot be used as a TCP proxy to scan/attack other hosts
@@ -24,18 +22,18 @@ relay-ip=<SERVER_PUBLIC_IP>
 min-port=49152
 max-port=50151
 
-# --- authentication (TURN REST API, short-lived credentials) ---------------
-# Must be the same value as TURN_SECRET in prod.env (the app signs credentials
-# with it). Generate with:  openssl rand -hex 32
-use-auth-secret
-static-auth-secret=<TURN_SECRET>
+# --- authentication ------------------------------------------------------
+# Static login handed to browsers by the app: TURN_SERVER_USERNAME is used as
+# both username and password (ICE_SERVER_OVERRIDE in qhv2/settings.py).
+lt-cred-mech
+user=<TURN_SERVER_USERNAME>:<TURN_SERVER_USERNAME>
 realm=<your-domain e.g. qhellou.com>
 fingerprint
 stale-nonce=600
 
 # --- abuse limits ----------------------------------------------------------
-# Max simultaneous allocations per user / in total
-user-quota=12
+# Max simultaneous allocations in total. No user-quota: all visitors share the
+# one static login, so a per-user quota would cap everyone together.
 total-quota=1200
 # Max bytes per second per session (0 = unlimited). ~4 Mbit/s is plenty for 720p.
 max-bps=500000
