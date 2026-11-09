@@ -23,6 +23,7 @@ import { RoomSelection } from './RoomSelection'
 import { UIConstants } from './UIConstants'
 import { FormService } from '../../com/genb/base/services/FormService'
 import { ColliderServiceEvent } from './application/model/ColliderServiceEvent'
+import { ParticipantNotifier } from './application/ParticipantNotifier'
 
 /**
  * Quick Hellou controller.
@@ -62,6 +63,7 @@ export class AppController extends EventDispatcherService {
 
   private mediaCommunication: MediaCommunication
   private remoteVideos: RemoteVideos
+  private participantNotifier: ParticipantNotifier = new ParticipantNotifier()
   private shareScreenButton: ScreenShareButtonComponent
 
   // to revise
@@ -121,6 +123,7 @@ export class AppController extends EventDispatcherService {
       return
     }
     this.isDestroyed = true
+    this.participantNotifier.destroy()
     // Tear the current call down before a new controller is created on the same
     // page: otherwise its camera, signaling socket and peer connections keep
     // running and push streams into the shared RemoteVideos (duplicate users).
@@ -1100,7 +1103,27 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onRemoteClientRegistered(registerOptions: RegisterOptions): void {
+    const clientId: string = registerOptions.clientId
+    // A client that already has a tile is only renegotiating; one that was in
+    // the room before us did not "join" from our point of view.
+    const isNewArrival: boolean =
+      !this.remoteVideos.hasClient(clientId) &&
+      !this.mediaCommunication.wasPresentAtJoin(clientId)
     this.remoteVideos.addRemoteVideo(registerOptions)
+    if (isNewArrival && !this.isHungUp) {
+      this.participantNotifier.participantJoined(this.getParticipantCount())
+    }
+  }
+
+  /**
+   * Counts everyone in the call, including this user.
+   *
+   * @private
+   * @returns {number}
+   * @memberof AppController
+   */
+  private getParticipantCount(): number {
+    return this.remoteVideos.getClientCount() + 1
   }
 
   private onRemoteTextChatMessage(message: string): void {
@@ -1412,7 +1435,18 @@ export class AppController extends EventDispatcherService {
    */
   private onRemoteHangup(sessionId: string): void {
     Log.log('The remote side hung up. ', sessionId)
+    const remoteVideo = this.remoteVideos.get(sessionId)
+    const clientId: string = remoteVideo ? remoteVideo.clientId : null
     this.remoteVideos.removeRemoteVideo(sessionId)
+    // BYE and unreachable_client can both arrive for the same user; only the
+    // removal of their last tile counts as leaving.
+    if (
+      clientId &&
+      !this.isHungUp &&
+      !this.remoteVideos.hasClient(clientId)
+    ) {
+      this.participantNotifier.participantLeft(this.getParticipantCount())
+    }
     if (this.remoteVideos.isEmpty()) {
       this.mediaCommunication.stopSendingDisplayMedia()
       // this.shareScreenButton.disableSharingState();

@@ -112,6 +112,31 @@ export class RemoteVideos extends EventDispatcherService {
   }
 
   /**
+   * Checks if a remote client has at least one tile.
+   *
+   * @param {string} clientId
+   * @returns {boolean}
+   * @memberof RemoteVideos
+   */
+  public hasClient(clientId: string): boolean {
+    return Array.from(this.videos.values()).some(
+      (video: RemoteVideo) => video.clientId === clientId
+    )
+  }
+
+  /**
+   * Counts distinct remote clients that have a tile.
+   *
+   * @returns {number}
+   * @memberof RemoteVideos
+   */
+  public getClientCount(): number {
+    const clientIds: Set<string> = new Set<string>()
+    this.videos.forEach((video: RemoteVideo) => clientIds.add(video.clientId))
+    return clientIds.size
+  }
+
+  /**
    * Gets remote video video element.
    *
    * @param {string} videoId

@@ -36,6 +36,8 @@ export class MediaCommunication extends EventDispatcherService {
   /** Resolves when the last hangup (leave, bye, channel close) has finished. */
   private hangupPromise: Promise<any> = Promise.resolve()
   private isRestarting: boolean = false
+  /** Remote clients that were already in the room when this client joined. */
+  private clientIdsPresentAtJoin: Set<string> = new Set<string>()
 
   /**
    * Creates an instance of MediaCommunication.
@@ -111,6 +113,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public connect(): void {
+    this.clientIdsPresentAtJoin.clear()
     // Asynchronously open a WebSocket connection to the Collider service.
     const connectColliderPromise: Promise<any> = this.colliderService
       .open()
@@ -137,6 +140,9 @@ export class MediaCommunication extends EventDispatcherService {
         const sessionInit: SessionInit = new SessionInit()
         sessions.forEach((sessionObj: any) => {
           const sessionJson: any = JSON.parse(sessionObj)
+          if (!StringUtils.isEmpty(sessionJson.other_client_id)) {
+            this.clientIdsPresentAtJoin.add(sessionJson.other_client_id)
+          }
           sessionInit.addSession(
             new RtcSession(
               sessionJson.id,
@@ -165,6 +171,18 @@ export class MediaCommunication extends EventDispatcherService {
       .catch((reason: any): void => {
         this.onError(`WebSocket register error: ${reason.message}`)
       })
+  }
+
+  /**
+   * Checks if a remote client was already in the room when this client
+   * joined (as opposed to having joined later).
+   *
+   * @param {string} clientId
+   * @returns {boolean}
+   * @memberof MediaCommunication
+   */
+  public wasPresentAtJoin(clientId: string): boolean {
+    return this.clientIdsPresentAtJoin.has(clientId)
   }
 
   /**
