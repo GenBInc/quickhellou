@@ -28,9 +28,11 @@ SECRET_KEY = str(os.environ.get('SECRET_KEY'))
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Set DJANGO_DEBUG=True only for local development.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').strip().lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = ['*']
+# Comma separated list, e.g. DJANGO_ALLOWED_HOSTS=qhellou.com,www.qhellou.com
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',') if h.strip()]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -43,7 +45,7 @@ LOGIN_URL = '/login'
 
 # Session timeout - 60min
 
-SESSION_COOKIE_AGE = 60 * 60
+SESSION_COOKIE_AGE = 60*60
 
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
@@ -105,14 +107,10 @@ develop_loaders = [
     "django.template.loaders.app_directories.Loader",
 ]
 production_loaders = [
-    (
-        "django.template.loaders.cached.Loader",
-        [
-            "django.template.loaders.filesystem.Loader",
-            "django.template.loaders.app_directories.Loader",
-            "path.to.custom.Loader",
-        ],
-    )
+    ("django.template.loaders.cached.Loader", [
+        "django.template.loaders.filesystem.Loader",
+        "django.template.loaders.app_directories.Loader",
+    ])
 ]
 
 TEMPLATES = [
@@ -136,9 +134,8 @@ WSGI_APPLICATION = 'console.wsgi.application'
 
 VIDEOCHAT_APP_URL = 'https://{}'.format(os.environ.get('VIDEOCHAT_APP_HOST'))
 CONSOLE_APP_URL = 'https://{}'.format(os.environ.get('HELPDESK_APP_HOST'))
-WEB_SERVICE_URL = '{}://{}/ws'.format(
-    os.environ.get('WEB_SERVICE_PROTOCOL'), os.environ.get('WEB_SERVICE_URL')
-)
+WEB_SERVICE_URL = '{}://{}/ws'.format(os.environ.get(
+    'WEB_SERVICE_PROTOCOL'), os.environ.get('WEB_SERVICE_URL'))
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -154,9 +151,6 @@ DATABASES = {
     }
 }
 
-# Recaptcha
-RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY')
-RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY')
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -180,7 +174,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
     ),
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    )
 }
 
 # Internationalization
@@ -191,7 +187,9 @@ LANGUAGES = (
     ('pl', _('Polish')),
 )
 
-LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'locale'),
+)
 
 TIME_ZONE = 'UTC'
 
@@ -218,19 +216,34 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 STATIC_ROOT = BASE_DIR / 'console/static'
+# Serve app static files (admin, DRF) through WhiteNoise also when DEBUG is off.
+WHITENOISE_USE_FINDERS = True
 STATICFILES_DIRS = []
 
 AUTH_USER_MODEL = 'accounts.User'
 
-AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+# Cache backend (used by django-ratelimit)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'ratelimit-cache',
+    }
+}
+
+# Rate limiting
+RATELIMIT_VIEW = 'dashboard.ratelimit.ratelimited_response'
+
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 SVG_DIRS = [
     os.path.join(BASE_DIR, 'static/images'),
-    os.path.join(BASE_DIR, 'console/static/images'),
+    os.path.join(BASE_DIR, 'console/static/images')
 ]

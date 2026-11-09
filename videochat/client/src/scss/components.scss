@@ -3,8 +3,13 @@ footer {
   z-index:203;
   background-color: $color--dark-blue;
   padding: 10px;
+  // keep above the system gesture bar on phones that report a safe area
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  // never let the video area squeeze the bottom bar out of the screen
+  flex-shrink: 0;
   @media (min-width: $s-md) {
     padding: 15px 20px;
+    padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
   }
 }
 

@@ -27,7 +27,11 @@ export class ComProxy extends EventDispatcherService {
    */
   retry() {
     setTimeout(() => {
-      if (!!ColliderService.getInstance()) {
+      // Bind once per ColliderService instance. The app creates a new instance
+      // for every call, so keep watching, but never add the same listeners to
+      // the same instance twice (that multiplied every BYE / CLOSE event).
+      const instance: ColliderService = ColliderService.getInstance()
+      if (!!instance && instance !== this.colliderService) {
         this.init()
       }
       this.retry()

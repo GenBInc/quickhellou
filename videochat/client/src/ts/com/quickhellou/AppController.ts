@@ -23,6 +23,7 @@ import { RoomSelection } from './RoomSelection'
 import { UIConstants } from './UIConstants'
 import { FormService } from '../../com/genb/base/services/FormService'
 import { ColliderServiceEvent } from './application/model/ColliderServiceEvent'
+import { ParticipantNotifier } from './application/ParticipantNotifier'
 
 /**
  * Quick Hellou controller.
@@ -42,6 +43,10 @@ export class AppController extends EventDispatcherService {
   private rejoinDiv: HTMLElement
   private textChatButton: HTMLElement
   private rejoinButton: HTMLElement
+  /** True between a hangup and the next rejoin; prevents a second teardown. */
+  private isHungUp: boolean = false
+  /** Set once destroy() ran; this controller's leftover DOM handlers become no-ops. */
+  private isDestroyed: boolean = false
   private newRoomButton: HTMLElement
   private fullscreenIcon: HTMLElement
   private hellouLogoFooterDiv: HTMLElement
@@ -58,6 +63,7 @@ export class AppController extends EventDispatcherService {
 
   private mediaCommunication: MediaCommunication
   private remoteVideos: RemoteVideos
+  private participantNotifier: ParticipantNotifier = new ParticipantNotifier()
   private shareScreenButton: ScreenShareButtonComponent
 
   // to revise
@@ -113,7 +119,27 @@ export class AppController extends EventDispatcherService {
    * Destroy application transmitter.
    */
   public destroy(): void {
-    this.dispatchEvent(AppControllerEvent.DESTROY)
+    if (this.isDestroyed) {
+      return
+    }
+    this.isDestroyed = true
+    this.participantNotifier.destroy()
+    // Tear the current call down before a new controller is created on the same
+    // page: otherwise its camera, signaling socket and peer connections keep
+    // running and push streams into the shared RemoteVideos (duplicate users).
+    if (!this.isHungUp && BaseUtils.isObjectDefined(this.mediaCommunication)) {
+      this.isHungUp = true
+      this.mediaCommunication.hangupCall(true)
+    }
+    if (BaseUtils.isObjectDefined(this.remoteVideos)) {
+      this.remoteVideos.removeAllRemoteVideo()
+    }
+    const done: Promise<any> = BaseUtils.isObjectDefined(this.mediaCommunication)
+      ? this.mediaCommunication.whenHungUp()
+      : Promise.resolve()
+    done.then((): void => {
+      this.dispatchEvent(AppControllerEvent.DESTROY)
+    })
   }
 
   public onParamsLoaded(): void {
@@ -536,7 +562,18 @@ export class AppController extends EventDispatcherService {
   private createCall(): void {
     this.mediaCommunication.addEventListener(
       CallEvent.WEBSOCKET_CLOSED,
-      this.hangup,
+      (): void => {
+        this.hangup(false)
+      },
+      this
+    )
+    this.mediaCommunication.addEventListener(
+      CallEvent.JOINED_ROOM,
+      (participantCount: number): void => {
+        if (!this.isHungUp) {
+          this.participantNotifier.youJoined(participantCount)
+        }
+      },
       this
     )
 
@@ -767,7 +804,17 @@ export class AppController extends EventDispatcherService {
    * @private
    * @memberof AppController
    */
-  private hangup(): void {
+  private hangup(byUser: boolean = true): void {
+    if (this.isDestroyed || this.isHungUp) {
+      Log.log('AppController::hangup already hung up')
+      return
+    }
+    this.isHungUp = true
+    if (byUser) {
+      this.participantNotifier.youLeft()
+    } else {
+      this.participantNotifier.youWereDisconnected()
+    }
     Log.log('AppController::hangup (true, from WS)')
     this.hide(this.icons)
     this.transitionToDone()
@@ -808,8 +855,12 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onRejoinClick(): void {
+    if (this.isDestroyed) {
+      return // handler of a replaced controller
+    }
     this.deactivate(this.rejoinDiv)
     this.hide(this.rejoinDiv)
+    this.isHungUp = false
     this.mediaCommunication.restartCall()
   }
 
@@ -1068,7 +1119,27 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onRemoteClientRegistered(registerOptions: RegisterOptions): void {
+    const clientId: string = registerOptions.clientId
+    // A client that already has a tile is only renegotiating; one that was in
+    // the room before us did not "join" from our point of view.
+    const isNewArrival: boolean =
+      !this.remoteVideos.hasClient(clientId) &&
+      !this.mediaCommunication.wasPresentAtJoin(clientId)
     this.remoteVideos.addRemoteVideo(registerOptions)
+    if (isNewArrival && !this.isHungUp) {
+      this.participantNotifier.participantJoined(this.getParticipantCount())
+    }
+  }
+
+  /**
+   * Counts everyone in the call, including this user.
+   *
+   * @private
+   * @returns {number}
+   * @memberof AppController
+   */
+  private getParticipantCount(): number {
+    return this.remoteVideos.getClientCount() + 1
   }
 
   private onRemoteTextChatMessage(message: string): void {
@@ -1102,7 +1173,20 @@ export class AppController extends EventDispatcherService {
     this.remoteVideos.removeCanPlayHandlers()
     this.deactivate(this.localVideo)
     this.remoteVideos.deactivateAll()
+    // Remove the tiles of this call; a rejoin creates new ones. Leaving them
+    // would show each remote user twice after rejoining.
+    this.remoteVideos.removeAllRemoteVideo()
     this.deactivate(this.miniVideo)
+    // Reset the "connected" layout so a rejoin starts like a first join.
+    try {
+      this.miniVideo.srcObject = null
+    } catch (e) {
+      Log.warn('Unable to detach mini video.', e)
+    }
+    this.deactivate(this.videosDiv)
+    if (HTMLUtils.exists('.videos-wrap')) {
+      HTMLUtils.get('.videos-wrap').classList.remove('active')
+    }
     this.hide(this.hangupSvg)
     this.hide(this.textChatButton)
     this.hide(this.textChatWindow)
@@ -1367,7 +1451,18 @@ export class AppController extends EventDispatcherService {
    */
   private onRemoteHangup(sessionId: string): void {
     Log.log('The remote side hung up. ', sessionId)
+    const remoteVideo = this.remoteVideos.get(sessionId)
+    const clientId: string = remoteVideo ? remoteVideo.clientId : null
     this.remoteVideos.removeRemoteVideo(sessionId)
+    // BYE and unreachable_client can both arrive for the same user; only the
+    // removal of their last tile counts as leaving.
+    if (
+      clientId &&
+      !this.isHungUp &&
+      !this.remoteVideos.hasClient(clientId)
+    ) {
+      this.participantNotifier.participantLeft(this.getParticipantCount())
+    }
     if (this.remoteVideos.isEmpty()) {
       this.mediaCommunication.stopSendingDisplayMedia()
       // this.shareScreenButton.disableSharingState();

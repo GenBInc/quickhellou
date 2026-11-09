@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseRedirect
+)
 from django.conf import settings
 from django.shortcuts import render
 from django.contrib import messages
@@ -10,6 +14,7 @@ from django.db import transaction
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
+from django_ratelimit.decorators import ratelimit
 
 from accounts.models import User, Profile
 from accounts.forms import (
@@ -21,19 +26,23 @@ from accounts.forms import (
     WidgetForm,
     ProfileThumbnailForm,
     UserAuthorizationForm,
-    ReCaptchaForm,
 )
 from dashboard.models import (
     ClientBoard,
 )
 
 
-def home_view(request: HttpRequest) -> HttpResponseRedirect:
+def home_view(
+    request: HttpRequest
+) -> HttpResponseRedirect:
     return redirect('/login')
 
 
 @transaction.atomic
-def signup_view(request: HttpRequest) -> HttpResponse:
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
+def signup_view(
+    request: HttpRequest
+) -> HttpResponse:
     """Signup view.
 
     Args:
@@ -43,16 +52,11 @@ def signup_view(request: HttpRequest) -> HttpResponse:
         HttpResponse: the HTTP response
     """
     if request.method == 'POST':
-        recaptcha_form: ReCaptchaForm = ReCaptchaForm(request.POST)
         user_form: UserForm = UserForm(request.POST)
         profile_form: ProfileForm = ProfileForm(request.POST)
         widget_form: WidgetForm = WidgetForm(request.POST)
         profile_meta_form: ProfileMetaForm = ProfileMetaForm(request.POST)
-        if (
-            user_form.is_valid()
-            and profile_meta_form.is_valid()
-            and profile_form.is_valid()
-        ):
+        if user_form.is_valid() and profile_meta_form.is_valid() and profile_form.is_valid():
             # Create client board
             client_board: ClientBoard = ClientBoard.objects.create()
             # Create new user and grant owner permissions
@@ -62,65 +66,45 @@ def signup_view(request: HttpRequest) -> HttpResponse:
             user.set_as_default_admin()
             user.save()
             # Save profile form
-            profile_form.save(profile_form.cleaned_data['full_name'].strip(), user)
+            profile_form.save(
+                profile_form.cleaned_data['full_name'].strip(), user)
 
             # email notification
             subject: str = 'QuickHellou - New User'
             recipients: list[str] = [settings.ADMIN_EMAIL]
-            email_params: dict = {
-                'username': user.first_name,
-                'email': user.email,
-                'full_name': user.get_full_name,
-                'phone': user.profile.phone,
-                'console_app_url': settings.CONSOLE_APP_URL,
-            }
-            send_email_notification(
-                subject,
-                recipients,
-                email_params,
-                'accounts/email/signup-admin.txt',
-                'accounts/email/signup-admin.html',
-            )
+            email_params: dict = {'username': user.first_name, 'email': user.email, 'full_name': user.get_full_name,
+                                  'phone': user.profile.phone, 'console_app_url': settings.CONSOLE_APP_URL}
+            send_email_notification(subject, recipients, email_params,
+                                    'accounts/email/signup-admin.txt', 'accounts/email/signup-admin.html')
             # send email to client user
             recipients: list[str] = [user.email]
-            send_email_notification(
-                subject,
-                recipients,
-                email_params,
-                'accounts/email/signup-client.txt',
-                'accounts/email/signup-client.html',
-            )
+            send_email_notification(subject, recipients, email_params,
+                                    'accounts/email/signup-client.txt', 'accounts/email/signup-client.html')
 
             # handle success action
-            messages.success(request, 'Your profile is created. You can log in now.')
+            messages.success(
+                request, 'Your profile is created. You can log in now.')
             return redirect('accounts:login')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
-        recaptcha_form = ReCaptchaForm()
         user_form = UserForm()
         profile_form = ProfileForm()
         widget_form = WidgetForm()
         profile_meta_form = ProfileMetaForm()
 
-    recaptcha_key = settings.RECAPTCHA_SITE_KEY
-
-    return render(
-        request,
-        'accounts/signup.html',
-        {
-            'recaptcha_key': recaptcha_key,
-            'recaptcha_form': recaptcha_form,
-            'user_form': user_form,
-            'profile_form': profile_form,
-            'widget_form': widget_form,
-            'profile_meta_form': profile_meta_form,
-        },
-    )
+    return render(request, 'accounts/signup.html', {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'widget_form': widget_form,
+        'profile_meta_form': profile_meta_form})
 
 
 @csrf_exempt
-def login_view(request: HttpRequest) -> HttpResponse:
+@ratelimit(key='ip', rate='10/5m', method='POST', block=True)
+def login_view(
+    request: HttpRequest
+) -> HttpResponse:
     """Login view.
 
     Args:
@@ -130,7 +114,6 @@ def login_view(request: HttpRequest) -> HttpResponse:
         HttpResponse: the HTTP response
     """
     if request.method == 'POST':
-        recaptcha_form: ReCaptchaForm = ReCaptchaForm(request.POST)
         form: UserAuthorizationForm = UserAuthorizationForm(data=request.POST)
         if form.is_valid():
             is_authenticated: bool = form.login(request)
@@ -138,22 +121,10 @@ def login_view(request: HttpRequest) -> HttpResponse:
                 return redirect(request.POST.get('next'))
             elif is_authenticated:
                 return redirect('dashboard:home')
-
+            
     else:
-        recaptcha_form: ReCaptchaForm = ReCaptchaForm()
         form: UserAuthorizationForm = UserAuthorizationForm()
-
-    recaptcha_key = settings.RECAPTCHA_SITE_KEY
-
-    return render(
-        request,
-        'accounts/login.html',
-        {
-            'form': form,
-            'recaptcha_key': recaptcha_key,
-            'recaptcha_form': recaptcha_form,
-        },
-    )
+    return render(request, 'accounts/login.html', {'form': form})
 
 
 def logout_view(request) -> HttpResponseRedirect:
@@ -186,7 +157,10 @@ def privacy_policy_view(request) -> HttpResponse:
     return render(request, 'accounts/privacy-policy.html')
 
 
-def forgot_password_view(request: HttpRequest) -> HttpResponse:
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
+def forgot_password_view(
+    request: HttpRequest
+) -> HttpResponse:
     """Forget password view.
 
     Args:
@@ -196,7 +170,6 @@ def forgot_password_view(request: HttpRequest) -> HttpResponse:
         HttpResponse: the HTTP response
     """
     if request.method == 'POST':
-        recaptcha_form: ReCaptchaForm = ReCaptchaForm(request.POST)
         form: ForgotPasswordForm = ForgotPasswordForm(data=request.POST)
         if form.is_valid():
             receiver_email: str = form.cleaned_data['email']
@@ -205,43 +178,23 @@ def forgot_password_view(request: HttpRequest) -> HttpResponse:
                 subject = 'QuickHellou - Reset Your Password'
                 recipients = [receiver_email]
                 email_params = {
-                    'username': user.first_name,
-                    'user_id': user.id,
-                    'console_app_url': settings.CONSOLE_APP_URL,
-                }
-                send_email_notification(
-                    subject,
-                    recipients,
-                    email_params,
-                    'accounts/email/forgot-password.txt',
-                    'accounts/email/forgot-password.html',
-                )
+                    'username': user.first_name, 'user_id': user.id, 'console_app_url': settings.CONSOLE_APP_URL}
+                send_email_notification(subject, recipients, email_params,
+                                        'accounts/email/forgot-password.txt', 'accounts/email/forgot-password.html')
                 messages.success(
-                    request,
-                    'We\'ve sent you instructions how to reset your password. Please check your email account.',
-                )
+                    request, 'We\'ve sent you instructions how to reset your password. Please check your email account.')
             else:
                 messages.error(
-                    request, 'Account with given email address doesn\'t exist.'
-                )
+                    request, 'Account with given email address doesn\'t exist.')
     else:
-        recaptcha_form: ReCaptchaForm = ReCaptchaForm()
         form = ForgotPasswordForm()
-
-    recaptcha_key = settings.RECAPTCHA_SITE_KEY
-
-    return render(
-        request,
-        'accounts/forgot-password.html',
-        {
-            'form': form,
-            'recaptcha_key': recaptcha_key,
-            'recaptcha_form': recaptcha_form,
-        },
-    )
+    return render(request, 'accounts/forgot-password.html', {'form': form})
 
 
-def reset_password_view(request: HttpRequest, user_id: int) -> HttpResponse:
+def reset_password_view(
+    request: HttpRequest,
+    user_id: int
+) -> HttpResponse:
     """Reset password view.
 
     Args:
@@ -258,22 +211,19 @@ def reset_password_view(request: HttpRequest, user_id: int) -> HttpResponse:
             user.set_password(form.cleaned_data['new_password'])
             user.save()
             messages.success(
-                request,
-                'Your password is now set. You may log in with your new password.',
-            )
+                request, 'Your password is now set. You may log in with your new password.')
             return redirect('accounts:login')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = ResetPasswordForm()
-    return render(
-        request,
-        'accounts/reset-password.html',
-        context={'user_id': user_id, 'form': form},
-    )
+    return render(request, 'accounts/reset-password.html', context={'user_id': user_id, 'form': form})
 
 
-def upload_thumbnail(request: HttpRequest, profile_id: int) -> HttpResponseRedirect:
+def upload_thumbnail(
+    request: HttpRequest,
+    profile_id: int
+) -> HttpResponseRedirect:
     if request.method == 'POST':
         form = ProfileThumbnailForm(request.POST, request.FILES)
         if form.is_valid():
@@ -288,7 +238,10 @@ def upload_thumbnail(request: HttpRequest, profile_id: int) -> HttpResponseRedir
     return redirect('dashboard:home')
 
 
-def delete_thumbnail(request: HttpRequest, profile_id: int) -> HttpResponseRedirect:
+def delete_thumbnail(
+    request: HttpRequest,
+    profile_id: int
+) -> HttpResponseRedirect:
     if request.method == 'POST':
         form = ProfileThumbnailForm(request.POST, request.FILES)
         if form.is_valid():
@@ -303,7 +256,10 @@ def delete_thumbnail(request: HttpRequest, profile_id: int) -> HttpResponseRedir
     return redirect('dashboard:home')
 
 
-def activate_user_view(request: HttpRequest, user_id: int) -> HttpResponse:
+def activate_user_view(
+    request: HttpRequest,
+    user_id: int
+) -> HttpResponse:
     user = User.objects.get(id=user_id)
     if user.is_password_set:
         return redirect('accounts:login')
@@ -314,19 +270,14 @@ def activate_user_view(request: HttpRequest, user_id: int) -> HttpResponse:
             user.is_password_set = True
             user.save()
             messages.success(
-                request, 'Your account has been activated. You may log in now.'
-            )
+                request, 'Your account has been activated. You may log in now.')
             return redirect('accounts:login')
     else:
         form = ResetPasswordForm()
-    return render(
-        request,
-        'accounts/activate-user.html',
-        context={
-            'user': user,
-            'form': form,
-        },
-    )
+    return render(request, 'accounts/activate-user.html', context={
+        'user': user,
+        'form': form,
+    })
 
 
 def send_email_notification(
@@ -334,7 +285,7 @@ def send_email_notification(
     recipients: list[str],
     email_params: dict,
     text_template_url: str,
-    html_template_url: str,
+    html_template_url: str
 ) -> int:
     message_plain: str = render_to_string(text_template_url, email_params)
     message_html: str = render_to_string(html_template_url, email_params)
@@ -343,5 +294,5 @@ def send_email_notification(
         message_plain,
         settings.ADMIN_EMAIL,
         recipients,
-        html_message=message_html,
+        html_message=message_html
     )

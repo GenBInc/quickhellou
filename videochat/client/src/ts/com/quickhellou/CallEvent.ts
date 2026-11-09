@@ -17,5 +17,7 @@ export class CallEvent {
   public static CALLER_STARTED: string = 'caller_started'
   public static REMOTE_TEXT_CHAT_MESSAGE: string = 'remote_text_chat_message'
   public static REMOTE_CLIENT_REGISTERED: string = 'remote_client_registered'
+  /** This client joined the room; data: participant count including itself. */
+  public static JOINED_ROOM: string = 'joined_room'
   public static LOCAL_VIDEO_MEDIA_CHANGE: string = 'local_video_media_change'
 }

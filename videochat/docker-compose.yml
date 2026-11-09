@@ -9,7 +9,7 @@ services:
       args:
         DJANGO_ALLOWED_HOSTS: '*'
         DJANGO_SECRET_KEY: '*'
-    command: bash -c "python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload qhv2.wsgi --bind 0.0.0.0:${VIDEOCHAT_APP_PORT}"
+    command: bash -c "python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} ${GUNICORN_OPTS:---workers 4 --threads 4 --timeout 30} qhv2.wsgi --bind 0.0.0.0:${VIDEOCHAT_APP_PORT}"
     ports:
       - "${VIDEOCHAT_APP_PORT}:${VIDEOCHAT_APP_PORT}"
     volumes:
@@ -21,8 +21,11 @@ services:
     environment:
       - VIDEOCHAT_APP_PORT=${VIDEOCHAT_APP_PORT}
       - VIDEOCHAT_APP_HOST=${VIDEOCHAT_APP_HOST}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - DJANGO_ALLOWED_HOSTS=${VIDEOCHAT_ALLOWED_HOSTS:-*}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
       - TURN_SERVER_BASE_URL=${TURN_SERVER_BASE_URL}
       - TURN_SERVER_USERNAME=${TURN_SERVER_USERNAME}
       - COLLIDER_SERVER_PORT=${COLLIDER_SERVER_PORT}      
@@ -49,12 +52,15 @@ services:
     container_name: redis
     build:
       context: ./videochat/redis
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--port", "${REDIS_PORT}", "--requirepass", "${REDIS_PASSWORD:?REDIS_PASSWORD must be set}"]
     ports:
-      - "${REDIS_PORT}:${REDIS_PORT}"
+      - "127.0.0.1:${REDIS_PORT}:${REDIS_PORT}"
     expose:
       - "${REDIS_PORT}"
     volumes:
       - "./videochat/redis:/redis"
+    sysctls:
+      net.core.somaxconn: '4096'
     networks:
       videochat_network:
         ipv4_address: 192.170.0.12

@@ -33,6 +33,11 @@ export class MediaCommunication extends EventDispatcherService {
   private room: Room
   private getMediaPromise: Promise<any>
   private getIceServersPromise: Promise<any>
+  /** Resolves when the last hangup (leave, bye, channel close) has finished. */
+  private hangupPromise: Promise<any> = Promise.resolve()
+  private isRestarting: boolean = false
+  /** Remote clients that were already in the room when this client joined. */
+  private clientIdsPresentAtJoin: Set<string> = new Set<string>()
 
   /**
    * Creates an instance of MediaCommunication.
@@ -108,6 +113,7 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public connect(): void {
+    this.clientIdsPresentAtJoin.clear()
     // Asynchronously open a WebSocket connection to the Collider service.
     const connectColliderPromise: Promise<any> = this.colliderService
       .open()
@@ -134,6 +140,9 @@ export class MediaCommunication extends EventDispatcherService {
         const sessionInit: SessionInit = new SessionInit()
         sessions.forEach((sessionObj: any) => {
           const sessionJson: any = JSON.parse(sessionObj)
+          if (!StringUtils.isEmpty(sessionJson.other_client_id)) {
+            this.clientIdsPresentAtJoin.add(sessionJson.other_client_id)
+          }
           sessionInit.addSession(
             new RtcSession(
               sessionJson.id,
@@ -145,7 +154,15 @@ export class MediaCommunication extends EventDispatcherService {
           )
         })
 
-        this.colliderService.register(this.room.id, roomPyParams.client_id)
+        this.colliderService
+          .register(this.room.id, roomPyParams.client_id)
+          .then((): void => {
+            this.dispatchEvent(
+              CallEvent.JOINED_ROOM,
+              this.clientIdsPresentAtJoin.size + 1
+            )
+          })
+          .catch((): void => undefined)
 
         // We only start signaling after we have registered the signaling channel
         // and have media and TURN. Since we send candidates as soon as the peer
@@ -162,6 +179,18 @@ export class MediaCommunication extends EventDispatcherService {
       .catch((reason: any): void => {
         this.onError(`WebSocket register error: ${reason.message}`)
       })
+  }
+
+  /**
+   * Checks if a remote client was already in the room when this client
+   * joined (as opposed to having joined later).
+   *
+   * @param {string} clientId
+   * @returns {boolean}
+   * @memberof MediaCommunication
+   */
+  public wasPresentAtJoin(clientId: string): boolean {
+    return this.clientIdsPresentAtJoin.has(clientId)
   }
 
   /**
@@ -198,8 +227,38 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public restartCall() {
-    this.requestMediaAndIceServers()
-    this.connect()
+    if (this.isRestarting) {
+      Log.log('Rejoin already in progress.')
+      return
+    }
+    this.isRestarting = true
+    // Join again only after the previous call is fully torn down; otherwise the
+    // server and Collider may still see the old client while the new one joins.
+    this.hangupPromise
+      .catch((): void => undefined)
+      .then((): void => {
+        this.requestMediaAndIceServers()
+        this.connect()
+      })
+      .then(
+        (): void => {
+          this.isRestarting = false
+        },
+        (reason: any): void => {
+          this.isRestarting = false
+          this.onError(`Rejoin failed: ${reason}`)
+        }
+      )
+  }
+
+  /**
+   * Resolves when the last hangup has finished its cleanup.
+   *
+   * @returns {Promise<any>}
+   * @memberof MediaCommunication
+   */
+  public whenHungUp(): Promise<any> {
+    return this.hangupPromise
   }
 
   /**
@@ -209,7 +268,14 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public hangupCall(async: boolean) {
-    this.call.hangup(async)
+    if (!BaseUtils.isObjectDefined(this.call)) {
+      return
+    }
+    this.hangupPromise = Promise.resolve(this.call.hangup(async)).catch(
+      (reason: any): void => {
+        Log.warn('Hangup cleanup failed', reason)
+      }
+    )
   }
 
   /**
@@ -589,8 +655,11 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onUnreachableClient(clientId: string): void {
-    const sessionId: string = this.call.onRemoteHangupByClientId(clientId)
-    this.dispatchEvent(CallEvent.REMOTE_HANGUP, sessionId)
+    // A client can share several sessions with us; remove every tile.
+    const sessionIds: string[] = this.call.onRemoteHangupByClientId(clientId)
+    sessionIds.forEach((sessionId: string) => {
+      this.dispatchEvent(CallEvent.REMOTE_HANGUP, sessionId)
+    })
   }
 
   /**

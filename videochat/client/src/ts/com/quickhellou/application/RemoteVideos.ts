@@ -31,6 +31,10 @@ export class RemoteVideos extends EventDispatcherService {
   private static instance: RemoteVideos
   private isFullScreen: boolean = false
   private videos: Map<string, RemoteVideo>
+  /** Newest remote stream per session; older streams' retries are dropped. */
+  private latestStreams: Map<string, MediaStream> = new Map<string, MediaStream>()
+  private static MAX_ADD_STREAM_ATTEMPTS: number = 30
+  private static ADD_STREAM_RETRY_MS: number = 2000
 
   /**
    * Creates an instance of RemoteVideos.
@@ -105,6 +109,31 @@ export class RemoteVideos extends EventDispatcherService {
    */
   public isEmpty(): boolean {
     return Array.from(this.videos).length === 0
+  }
+
+  /**
+   * Checks if a remote client has at least one tile.
+   *
+   * @param {string} clientId
+   * @returns {boolean}
+   * @memberof RemoteVideos
+   */
+  public hasClient(clientId: string): boolean {
+    return Array.from(this.videos.values()).some(
+      (video: RemoteVideo) => video.clientId === clientId
+    )
+  }
+
+  /**
+   * Counts distinct remote clients that have a tile.
+   *
+   * @returns {number}
+   * @memberof RemoteVideos
+   */
+  public getClientCount(): number {
+    const clientIds: Set<string> = new Set<string>()
+    this.videos.forEach((video: RemoteVideo) => clientIds.add(video.clientId))
+    return clientIds.size
   }
 
   /**
@@ -189,6 +218,19 @@ export class RemoteVideos extends EventDispatcherService {
    */
   public addRemoteVideo(registerOptions: RegisterOptions) {
     Log.log('RemoteVideos::addRemoteVideo', registerOptions.clientId, registerOptions.sessionId)
+    // One tile per remote client: a tile left over from an older session of
+    // the same client (renegotiation, missed BYE) would show the user twice.
+    Array.from(this.videos.entries()).forEach((entry: [string, RemoteVideo]) => {
+      const sessionId: string = entry[0]
+      const video: RemoteVideo = entry[1]
+      if (
+        sessionId !== registerOptions.sessionId &&
+        video.clientId === registerOptions.clientId
+      ) {
+        Log.log('RemoteVideos::addRemoteVideo replacing stale tile', sessionId)
+        this.removeRemoteVideo(sessionId)
+      }
+    })
     this.add(registerOptions.clientId, registerOptions.sessionId)
 
     this.updateVideoElementsLayout()
@@ -203,12 +245,35 @@ export class RemoteVideos extends EventDispatcherService {
    * @param {MediaStream} stream
    * @memberof RemoteVideos
    */
-  public addStream(sessionId: string, stream: MediaStream) {
+  public addStream(
+    sessionId: string,
+    stream: MediaStream,
+    attempt: number = 0
+  ): void {
+    // Only the newest stream of a session may be attached; retries of an older
+    // (e.g. pre-rejoin) stream stop as soon as a newer one arrives.
+    if (attempt === 0) {
+      if (this.latestStreams.get(sessionId) === stream) {
+        return // same stream (audio + video both fire ontrack); already handled
+      }
+      this.latestStreams.set(sessionId, stream)
+    } else if (this.latestStreams.get(sessionId) !== stream) {
+      return
+    }
+    if (attempt > RemoteVideos.MAX_ADD_STREAM_ATTEMPTS || stream.active === false) {
+      Log.warn('RemoteVideos::addStream giving up', sessionId)
+      return
+    }
+
+    const retry = (): void => {
+      setTimeout(() => {
+        this.addStream(sessionId, stream, attempt + 1)
+      }, RemoteVideos.ADD_STREAM_RETRY_MS)
+    }
+
     const remoteVideo: RemoteVideo = this.get(sessionId)
     if (!BaseUtils.isObjectDefined(remoteVideo)) {
-      setTimeout(() => {
-        this.addStream(sessionId, stream)
-      }, 2000)
+      retry()
       return
     }
 
@@ -219,7 +284,9 @@ export class RemoteVideos extends EventDispatcherService {
       return
     }
 
-    if (!BaseUtils.isObjectDefined(remoteVideoElement.srcObject)) {
+    // Replace whatever is attached (a dead stream from a previous connection
+    // of this session would otherwise block the new one forever).
+    if (remoteVideoElement.srcObject !== stream) {
       remoteVideoElement.srcObject = stream
     }
     if (remoteVideoElement.readyState >= 2) {
@@ -230,9 +297,7 @@ export class RemoteVideos extends EventDispatcherService {
       return
     }
 
-    setTimeout(() => {
-      this.addStream(sessionId, stream)
-    }, 2000)
+    retry()
   }
 
   /**
@@ -313,11 +378,16 @@ export class RemoteVideos extends EventDispatcherService {
   private add(remoteClientId: string, sessionId: string): RemoteVideo {
     const videoElementClassName = this.getRemoteVideoClassName(sessionId)
 
-    if (HTMLUtils.exists(videoElementClassName)) {
+    // Selector needs the leading dot (it is a class name). Without it the
+    // check never matched and a second registration added a duplicate tile.
+    const wrapSelector: string = `.${videoElementClassName}--wrap`
+    if (this.videos.has(sessionId) || HTMLUtils.exists(wrapSelector)) {
       this.removeRemoteVideo(sessionId)
+      // removeRemoteVideo only removes a tile it knows; drop orphans too.
+      document.querySelectorAll(wrapSelector).forEach((e: Element) => e.remove())
     }
 
-    if (!HTMLUtils.exists(videoElementClassName)) {
+    if (!HTMLUtils.exists(wrapSelector)) {
       const videoElementHtml: string = `<div class="remote-video-wrap ${videoElementClassName}--wrap">
         <div class="remote-video-fullscreen ${videoElementClassName}--fullscreen">
         </div><div class="video-loader js-active">
@@ -361,6 +431,13 @@ export class RemoteVideos extends EventDispatcherService {
     videoElement.oncanplay = (): void => {
       videoLoader.classList.remove('js-active')
       videoElement.oncanplay = undefined
+    }
+
+    // A re-created tile (re-registration of the same session) gets the stream
+    // that already arrived for it; ontrack does not fire a second time.
+    const knownStream: MediaStream = this.latestStreams.get(sessionId)
+    if (BaseUtils.isObjectDefined(knownStream) && knownStream.active !== false) {
+      videoElement.srcObject = knownStream
     }
 
     Log.info('RemoteVideos::add Remote video added ', sessionId)
@@ -421,9 +498,12 @@ export class RemoteVideos extends EventDispatcherService {
    * @private
    * @memberof RemoteVideos
    */
-  private removeAllRemoteVideo(): void {
-    this.videos.forEach((video: RemoteVideo, sessionId: string) => {
+  public removeAllRemoteVideo(): void {
+    // Copy the keys first: removeRemoteVideo deletes from the map.
+    Array.from(this.videos.keys()).forEach((sessionId: string) => {
       this.removeRemoteVideo(sessionId)
     })
+    // Local hangup: every stream of this call is gone; stop their retries.
+    this.latestStreams.clear()
   }
 }

@@ -15,6 +15,26 @@ Log.log(
   `Quick Hellou v. ${version} ${environment} build (webrtc-adapter v. 8.1.0)`
 )*/
 
+/**
+ * Real visible viewport height for browsers without CSS `dvh` support
+ * (older Samsung Internet / Chrome on Android): 100vh there includes the area
+ * behind the browser toolbars, which pushed the bottom bar off screen.
+ * CSS uses calc(var(--app-vh) * 100) as the fallback.
+ */
+const updateAppViewportHeight = (): void => {
+  const height: number =
+    (window as any).visualViewport && (window as any).visualViewport.height
+      ? (window as any).visualViewport.height
+      : window.innerHeight
+  document.documentElement.style.setProperty('--app-vh', `${height * 0.01}px`)
+}
+updateAppViewportHeight()
+window.addEventListener('resize', updateAppViewportHeight)
+window.addEventListener('orientationchange', updateAppViewportHeight)
+if ((window as any).visualViewport) {
+  ;(window as any).visualViewport.addEventListener('resize', updateAppViewportHeight)
+}
+
 window.addEventListener('load', (): void => {
   preinit()
 })

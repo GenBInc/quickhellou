@@ -97,44 +97,54 @@ export class ColliderService extends FormService {
    * @memberof ColliderService
    */
   public open(): Promise<any> {
-    if (BaseUtils.isObjectDefined(this.websocket)) {
-      Log.log('ERROR: ColliderService has been already opened.')
-      return
-    }
-
     if (this.wssUrl === undefined) {
       Log.error('The WebSocket address is either invalid or unset. Breaking.')
-      return
+      return Promise.reject(Error('WebSocket address is not set.'))
+    }
+
+    if (BaseUtils.isObjectDefined(this.websocket)) {
+      if (this.websocket.readyState === WebSocket.OPEN) {
+        Log.log('ColliderService: signaling channel already open.')
+        return Promise.resolve()
+      }
+      // A socket that is still connecting or closing belongs to a previous
+      // call; drop it so its late events cannot affect the new one.
+      this.detachAndClose(this.websocket)
     }
 
     Log.log(`Opening signaling channel: ${this.wssUrl}`)
     return new Promise((resolve: any, reject: any) => {
-      this.websocket = new WebSocket(this.wssUrl)
+      const ws: WebSocket = new WebSocket(this.wssUrl)
+      this.websocket = ws
 
-      this.websocket.onopen = (): void => {
+      ws.onopen = (): void => {
+        if (this.websocket !== ws) {
+          return // superseded by a newer socket
+        }
         Log.log('Signaling channel opened.')
 
-        this.websocket.onerror = (event: any): void => {
-          reject(`Signaling channel error. ${event}`)
+        ws.onerror = (event: any): void => {
+          Log.warn(`Signaling channel error. ${event}`)
         }
-        this.websocket.onclose = (event: CloseEvent): void => {
+        ws.onclose = (event: CloseEvent): void => {
           Log.log(`Collider channel closed with code:${event.code}`)
+          // Ignore late close events of an old socket (e.g. after hangup +
+          // rejoin): they must not clear or report on the current socket.
+          if (this.websocket !== ws) {
+            return
+          }
           this.websocket = null
           this.registered = false
           this.dispatchEvent(ColliderServiceEvent.CLOSE, event.code)
         }
 
-        if (
-          BaseUtils.isObjectDefined(this.clientID) &&
-          BaseUtils.isObjectDefined(this.roomId)
-        ) {
-          this.register(this.roomId, this.clientID)
-        }
-
         resolve()
       }
 
-      this.websocket.onmessage = (event: any) => {
+      ws.onmessage = (event: any) => {
+        if (this.websocket !== ws) {
+          return
+        }
         Log.log('Collider -> Client: ', JSON.parse(event.data))
 
         const message: any = Util.parseJSON(event.data)
@@ -149,10 +159,35 @@ export class ColliderService extends FormService {
         this.dispatchEvent(ColliderServiceEvent.MESSAGE, message.msg)
       }
 
-      this.websocket.onerror = (ev: Event): void => {
+      ws.onerror = (ev: Event): void => {
+        if (this.websocket === ws) {
+          this.websocket = null
+        }
         reject(Error(`WebSocket error. ${ev}`))
       }
     })
+  }
+
+  /**
+   * Detaches all handlers from a socket and closes it.
+   *
+   * @private
+   * @param {WebSocket} ws
+   * @memberof ColliderService
+   */
+  private detachAndClose(ws: WebSocket): void {
+    ws.onopen = null
+    ws.onmessage = null
+    ws.onerror = null
+    ws.onclose = null
+    try {
+      ws.close()
+    } catch (e) {
+      Log.warn('ColliderService: closing socket failed', e)
+    }
+    if (this.websocket === ws) {
+      this.websocket = null
+    }
   }
 
   /**
@@ -277,8 +312,11 @@ export class ColliderService extends FormService {
 
   public touch(roomId: string, clientID: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.roomId = roomId
-      this.clientID = clientID
+      // Only touch for the currently registered client. A stale caller (e.g. a
+      // retry job of a previous call) must not change the channel identity.
+      if (roomId !== this.roomId || clientID !== this.clientID) {
+        return reject({ code: 0, message: 'Stale touch ignored.' })
+      }
 
       if (!BaseUtils.isObjectDefined(this.roomId)) {
         Log.log('ERROR: Missing roomID. Stopping client registration.')
@@ -318,23 +356,28 @@ export class ColliderService extends FormService {
   public async close(async: boolean) {
     Log.log('Closing websocket.')
     if (!!this.websocket) {
-      this.websocket.close()
-      this.websocket = null
+      // Detach first: the close event of this socket arrives later and must
+      // not be reported as an unexpected disconnect of a following call.
+      this.detachAndClose(this.websocket)
     }
 
-    if (!this.clientID || !this.roomId) {
+    const hadIdentity: boolean = !!this.clientID && !!this.roomId
+    // Capture the URL, then reset the identity right away so a quick rejoin
+    // starts clean even while the DELETE request is still in flight.
+    const path: string = this.getWssPostUrl()
+    this.clientID = null
+    this.roomId = null
+    this.registered = false
+
+    if (!hadIdentity) {
       return
     }
     // Tell Collider that we're done.
-    const path: string = this.getWssPostUrl()
     try {
       await Util.sendUrlRequest('POST', path, async, 'DELETE')
     } catch (error) {
       Log.log('Error deleting web socket connection: ' + error.message)
     }
-    this.clientID = null
-    this.roomId = null
-    this.registered = false
   }
 
   /**

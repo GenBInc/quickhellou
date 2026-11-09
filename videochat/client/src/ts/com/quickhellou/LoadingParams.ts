@@ -78,8 +78,10 @@ export class LoadingParams {
   public audioRecvBitrate: string
   public audioRecvCodec: string
   public opusMaxPbr: string
-  public opusFec: string
-  public opusDtx: string
+  // On by default: Opus in-band FEC keeps speech intelligible under packet loss,
+  // DTX saves bandwidth during silence (applied by SDPUtils.maybeSetOpusOptions).
+  public opusFec: string = 'true'
+  public opusDtx: string = 'true'
   public opusStereo: string
   public videoSendBitrate: string
   public videoSendInitialBitrate: string
