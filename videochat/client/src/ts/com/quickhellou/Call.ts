@@ -364,20 +364,34 @@ export class Call extends FormService {
       this.localStream = null
     }
 
-    if (!BaseUtils.isObjectDefined(this.room)) {
+    this.cameraTrack = null
+    this.displayTrack = null
+    this.stopAllRetryConsumeManagers()
+
+    if (
+      !BaseUtils.isObjectDefined(this.room) ||
+      !BaseUtils.isObjectDefined(this.room.id)
+    ) {
       Log.log('No room defined.')
-      return
+      // Still close the signaling channel, otherwise a rejoin finds it open.
+      this.pcClients.forEach((pcClient: PeerConnectionClient) => pcClient.close())
+      this.pcClients.clear()
+      this.params.clientID = null
+      return Promise.resolve(this.colliderService.close(async))
     }
 
-    if (!BaseUtils.isObjectDefined(this.room.id)) {
-      Log.log('No room ID defined.')
-      return
-    }
-
-    // close WebRTC peer client
+    // Remember who to say BYE to, then close and forget all peer connections,
+    // so nothing from this call survives into a rejoin.
+    const byeTargets: any[] = []
     this.pcClients.forEach((pcClient: PeerConnectionClient) => {
+      byeTargets.push({
+        otherClientId: pcClient.getSession().otherClientId,
+        sessionId: pcClient.getSessionId(),
+      })
       pcClient.close()
     })
+    this.pcClients.clear()
+    const clientId: string = this.params.clientID
 
     // Send 'leave' to PyApp. This must complete before saying BYE to other client.
     // When the other client sees BYE it attempts to post offer and candidates to
@@ -406,14 +420,12 @@ export class Call extends FormService {
     steps.push({
       step: (): void => {
         // Send bye to the other clients.
-        Array.from(this.pcClients).forEach((pcClientPair: any) => {
-          const pcClient: PeerConnectionClient = pcClientPair[1]
-          this.sendToOther(pcClient.getSession().otherClientId, {
+        byeTargets.forEach((target: any) => {
+          this.sendToOther(target.otherClientId, {
             type: PeerConnectionResponseType.BYE,
-            clientId: this.params.clientID,
-            sessionId: pcClient.getSessionId(),
+            clientId: clientId,
+            sessionId: target.sessionId,
           })
-          this.pcClients.delete(pcClient.getId())
         })
         // request current sessons and sends session update for collider applicaion.
       },
@@ -444,9 +456,7 @@ export class Call extends FormService {
       let promise: Promise<any> = Promise.resolve()
       for (const step of steps) {
         promise = promise
-          .then((): void => {
-            step.step.call(this)
-          })
+          .then((): any => step.step.call(this))
           .catch((reason: string): void => {
             Log.log(reason, step.errorString)
             errorHandler(step.errorString)
@@ -501,6 +511,7 @@ export class Call extends FormService {
       return
     }
     // this.requestSessionUpdate();
+    this.stopRetryConsumeManager(sessionId)
     pcClient.close()
     this.pcClients.delete(sessionId)
     this.updatePeerCount()
@@ -524,16 +535,16 @@ export class Call extends FormService {
    * @returns {string}
    * @memberof Call
    */
-  public onRemoteHangupByClientId(clientId: string): string {
-    let sessionId: string = StringUtils.EMPTY
+  public onRemoteHangupByClientId(clientId: string): string[] {
+    const sessionIds: string[] = []
     Array.from(this.pcClients).forEach((pcClientPair: any) => {
       const pcClient: PeerConnectionClient = pcClientPair[1]
       if (pcClient.getSession().otherClientId === clientId) {
+        sessionIds.push(pcClient.getSession().id)
         this.onRemoteHangup(pcClient.getSession().id)
-        sessionId = pcClient.getSession().id
       }
     })
-    return sessionId
+    return sessionIds
   }
 
   /**
@@ -559,7 +570,12 @@ export class Call extends FormService {
         if (pcClient.requireDataConsume) {
           const retryConsumeManager: RetryConsumeManager =
             this.retryConsumeManagers.get(session.id)
-          retryConsumeManager.next()
+          if (BaseUtils.isObjectDefined(retryConsumeManager)) {
+            retryConsumeManager.next()
+          } else {
+            this.startRetryConsumeManager(pcClient)
+            this.retryConsumeManagers.get(session.id).next()
+          }
         }
       } else {
         Log.log('No client.')
@@ -578,7 +594,9 @@ export class Call extends FormService {
 
   public consumeRemoteMessages(pcClient: PeerConnectionClient): void {
     pcClient.requireDataConsume = false
-    this.colliderService.touch(this.params.roomID, this.params.clientID)
+    this.colliderService
+      .touch(this.params.roomID, this.params.clientID)
+      .catch(() => Log.log('touch skipped'))
     this.post(
       `/consume/${this.params.roomID}/${pcClient.getSessionId()}/${
         this.params.clientID
@@ -630,6 +648,33 @@ export class Call extends FormService {
     if (data.pcClient.requireDataConsume) {
       this.startRetryConsumeManager(data.pcClient)
     }
+  }
+
+  /**
+   * Stops and forgets the retry job of one session.
+   *
+   * @private
+   * @param {string} sessionId
+   * @memberof Call
+   */
+  private stopRetryConsumeManager(sessionId: string): void {
+    const manager: RetryConsumeManager = this.retryConsumeManagers.get(sessionId)
+    if (BaseUtils.isObjectDefined(manager)) {
+      manager.stop()
+      this.retryConsumeManagers.delete(sessionId)
+    }
+  }
+
+  /**
+   * Stops all retry jobs (on hangup), so they cannot keep polling with the
+   * client ID of a finished call.
+   *
+   * @private
+   * @memberof Call
+   */
+  private stopAllRetryConsumeManagers(): void {
+    this.retryConsumeManagers.forEach((manager: RetryConsumeManager) => manager.stop())
+    this.retryConsumeManagers.clear()
   }
 
   /**

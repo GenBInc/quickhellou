@@ -42,6 +42,10 @@ export class AppController extends EventDispatcherService {
   private rejoinDiv: HTMLElement
   private textChatButton: HTMLElement
   private rejoinButton: HTMLElement
+  /** True between a hangup and the next rejoin; prevents a second teardown. */
+  private isHungUp: boolean = false
+  /** Set once destroy() ran; this controller's leftover DOM handlers become no-ops. */
+  private isDestroyed: boolean = false
   private newRoomButton: HTMLElement
   private fullscreenIcon: HTMLElement
   private hellouLogoFooterDiv: HTMLElement
@@ -113,7 +117,26 @@ export class AppController extends EventDispatcherService {
    * Destroy application transmitter.
    */
   public destroy(): void {
-    this.dispatchEvent(AppControllerEvent.DESTROY)
+    if (this.isDestroyed) {
+      return
+    }
+    this.isDestroyed = true
+    // Tear the current call down before a new controller is created on the same
+    // page: otherwise its camera, signaling socket and peer connections keep
+    // running and push streams into the shared RemoteVideos (duplicate users).
+    if (!this.isHungUp && BaseUtils.isObjectDefined(this.mediaCommunication)) {
+      this.isHungUp = true
+      this.mediaCommunication.hangupCall(true)
+    }
+    if (BaseUtils.isObjectDefined(this.remoteVideos)) {
+      this.remoteVideos.removeAllRemoteVideo()
+    }
+    const done: Promise<any> = BaseUtils.isObjectDefined(this.mediaCommunication)
+      ? this.mediaCommunication.whenHungUp()
+      : Promise.resolve()
+    done.then((): void => {
+      this.dispatchEvent(AppControllerEvent.DESTROY)
+    })
   }
 
   public onParamsLoaded(): void {
@@ -768,6 +791,11 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private hangup(): void {
+    if (this.isDestroyed || this.isHungUp) {
+      Log.log('AppController::hangup already hung up')
+      return
+    }
+    this.isHungUp = true
     Log.log('AppController::hangup (true, from WS)')
     this.hide(this.icons)
     this.transitionToDone()
@@ -808,8 +836,12 @@ export class AppController extends EventDispatcherService {
    * @memberof AppController
    */
   private onRejoinClick(): void {
+    if (this.isDestroyed) {
+      return // handler of a replaced controller
+    }
     this.deactivate(this.rejoinDiv)
     this.hide(this.rejoinDiv)
+    this.isHungUp = false
     this.mediaCommunication.restartCall()
   }
 
@@ -1102,7 +1134,20 @@ export class AppController extends EventDispatcherService {
     this.remoteVideos.removeCanPlayHandlers()
     this.deactivate(this.localVideo)
     this.remoteVideos.deactivateAll()
+    // Remove the tiles of this call; a rejoin creates new ones. Leaving them
+    // would show each remote user twice after rejoining.
+    this.remoteVideos.removeAllRemoteVideo()
     this.deactivate(this.miniVideo)
+    // Reset the "connected" layout so a rejoin starts like a first join.
+    try {
+      this.miniVideo.srcObject = null
+    } catch (e) {
+      Log.warn('Unable to detach mini video.', e)
+    }
+    this.deactivate(this.videosDiv)
+    if (HTMLUtils.exists('.videos-wrap')) {
+      HTMLUtils.get('.videos-wrap').classList.remove('active')
+    }
     this.hide(this.hangupSvg)
     this.hide(this.textChatButton)
     this.hide(this.textChatWindow)

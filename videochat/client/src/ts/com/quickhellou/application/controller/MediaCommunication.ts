@@ -33,6 +33,9 @@ export class MediaCommunication extends EventDispatcherService {
   private room: Room
   private getMediaPromise: Promise<any>
   private getIceServersPromise: Promise<any>
+  /** Resolves when the last hangup (leave, bye, channel close) has finished. */
+  private hangupPromise: Promise<any> = Promise.resolve()
+  private isRestarting: boolean = false
 
   /**
    * Creates an instance of MediaCommunication.
@@ -198,8 +201,38 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public restartCall() {
-    this.requestMediaAndIceServers()
-    this.connect()
+    if (this.isRestarting) {
+      Log.log('Rejoin already in progress.')
+      return
+    }
+    this.isRestarting = true
+    // Join again only after the previous call is fully torn down; otherwise the
+    // server and Collider may still see the old client while the new one joins.
+    this.hangupPromise
+      .catch((): void => undefined)
+      .then((): void => {
+        this.requestMediaAndIceServers()
+        this.connect()
+      })
+      .then(
+        (): void => {
+          this.isRestarting = false
+        },
+        (reason: any): void => {
+          this.isRestarting = false
+          this.onError(`Rejoin failed: ${reason}`)
+        }
+      )
+  }
+
+  /**
+   * Resolves when the last hangup has finished its cleanup.
+   *
+   * @returns {Promise<any>}
+   * @memberof MediaCommunication
+   */
+  public whenHungUp(): Promise<any> {
+    return this.hangupPromise
   }
 
   /**
@@ -209,7 +242,14 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   public hangupCall(async: boolean) {
-    this.call.hangup(async)
+    if (!BaseUtils.isObjectDefined(this.call)) {
+      return
+    }
+    this.hangupPromise = Promise.resolve(this.call.hangup(async)).catch(
+      (reason: any): void => {
+        Log.warn('Hangup cleanup failed', reason)
+      }
+    )
   }
 
   /**
@@ -589,8 +629,11 @@ export class MediaCommunication extends EventDispatcherService {
    * @memberof MediaCommunication
    */
   private onUnreachableClient(clientId: string): void {
-    const sessionId: string = this.call.onRemoteHangupByClientId(clientId)
-    this.dispatchEvent(CallEvent.REMOTE_HANGUP, sessionId)
+    // A client can share several sessions with us; remove every tile.
+    const sessionIds: string[] = this.call.onRemoteHangupByClientId(clientId)
+    sessionIds.forEach((sessionId: string) => {
+      this.dispatchEvent(CallEvent.REMOTE_HANGUP, sessionId)
+    })
   }
 
   /**

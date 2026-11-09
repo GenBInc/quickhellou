@@ -13,6 +13,7 @@ export class RetryConsumeManager extends FormService {
   private hostUrl: string
 
   private status: string = '__init__'
+  private timer: number = null
 
   /**
    * Creates an instance of RetryConsumeManager.
@@ -52,7 +53,21 @@ export class RetryConsumeManager extends FormService {
    * @memberof RetryConsumeManager
    */
   public next() {
-    this.status = 'consume'
+    if (this.status !== 'stopped') {
+      this.status = 'consume'
+    }
+  }
+
+  /**
+   * Stops the job for good (hangup, peer removed). Pending timers are cleared
+   * and late responses are ignored.
+   */
+  public stop(): void {
+    this.status = 'stopped'
+    if (this.timer !== null) {
+      window.clearTimeout(this.timer)
+      this.timer = null
+    }
   }
 
   /**
@@ -64,7 +79,8 @@ export class RetryConsumeManager extends FormService {
   private doJob(): void {
     Log.log('**** status', this.status)
 
-    if (!this.pcClient.requireDataConsume) {
+    this.timer = null
+    if (this.status === 'stopped' || !this.pcClient.requireDataConsume) {
       return
     }
 
@@ -73,8 +89,8 @@ export class RetryConsumeManager extends FormService {
     } else if (this.status === 'consume') {
       this.consume()
     }
-    if (this.status !== 'complete') {
-      setTimeout(() => {
+    if (this.status !== 'complete' && this.status !== 'stopped') {
+      this.timer = window.setTimeout(() => {
         this.doJob()
       }, 3000)
     }
@@ -87,7 +103,9 @@ export class RetryConsumeManager extends FormService {
    * @memberof RetryConsumeManager
    */
   private touch(): void {
-    this.colliderService.touch(this.roomId, this.clientId)
+    this.colliderService.touch(this.roomId, this.clientId).catch(() => {
+      // stale or channel not open: nothing to do, consume retries anyway
+    })
   }
 
   /**
@@ -100,7 +118,7 @@ export class RetryConsumeManager extends FormService {
     this.post(
       `${this.hostUrl}/consume/${this.roomId}/${this.pcClient.getSessionId()}/${this.clientId}`
     ).then((result: any) => {
-      if (!result) {
+      if (!result || this.status === 'stopped') {
         return
       }
       const resultJson: any = JSON.parse(result)
