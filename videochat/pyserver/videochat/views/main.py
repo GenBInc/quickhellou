@@ -828,8 +828,11 @@ def make_media_stream_constraints(audio, video, firefox_fake_device):
     stream_constraints = (
         {'audio': make_media_track_constraints(audio),
          'video': {
-            'width': {'min': 640, 'ideal': 1280, 'max': 1920},
-            'height': {'min': 480, 'ideal': 720, 'max': 1080}
+            # No hard minimum (fails on weak cameras); 720p cap keeps CPU and
+            # bitrate in line with the encoder limits in MediaQuality.ts.
+            'width': {'ideal': 1280, 'max': 1280},
+            'height': {'ideal': 720, 'max': 720},
+            'frameRate': {'ideal': 24, 'max': 30}
             }
          })
            

@@ -11,8 +11,7 @@ import { Log } from '../genb/base/utils/Log'
 import { PeerConnectionIdentity } from './application/model/PeerConnectionIdentity'
 import { RtcSession } from './application/model/RtcSession'
 import { StatsMonitor } from './application/controller/StatsMonitor'
-import { BandwidthLevelUpdateEvent } from './application/events/BandwidthLevelUpdateEvent'
-import { BandwidthLevel } from './application/model/BandwidthLevel'
+import { MediaQuality } from './application/controller/MediaQuality'
 
 /**
  * Peer connection client (WebRTC).
@@ -44,6 +43,9 @@ export class PeerConnectionClient extends FormService {
   private statsMonitor: StatsMonitor
 
   private localIceCandidates: any[]
+
+  /** Number of peers this client currently sends to (mesh); sets the bitrate share. */
+  private peerCount: number = 1
 
   /**
    * Creates an instance of PeerConnectionClient.
@@ -125,23 +127,9 @@ export class PeerConnectionClient extends FormService {
       this.messageQueue = []
       this.started = false
 
+      // Stats are collected for diagnostics only. Bitrate/resolution adaptation is
+      // left to WebRTC's congestion control within the limits set by MediaQuality.
       this.statsMonitor = new StatsMonitor(this.peerConnection)
-      this.statsMonitor.addEventListener(
-        BandwidthLevelUpdateEvent.OUTBOUND_LEVEL_CHANGE,
-        (data: any) => {
-          this.updateOutboundStream(data.level)
-        },
-        this
-      )
-
-      this.statsMonitor.addEventListener(
-        BandwidthLevelUpdateEvent.INBOUND_LEVEL_CHANGE,
-        (data: any) => {
-          this.updateInboundStream(data.level)
-        },
-        this
-      )
-
       this.statsMonitor.run()
       resolve()
     })
@@ -194,16 +182,11 @@ export class PeerConnectionClient extends FormService {
     }
     Promise.all(
       this.peerConnection.getSenders().map((sender: RTCRtpSender) => {
-        if (sender.track.kind === 'video') {
-          try {
-            const parameters = sender.getParameters()
-            parameters.degradationPreference = 'maintain-resolution'
-            sender.setParameters(parameters).then(() => {
-              sender.replaceTrack(track)
-            })
-          } catch (e) {
-            Log.warn('Replace track failure.')
-          }
+        if (sender.track && sender.track.kind === 'video') {
+          return sender
+            .replaceTrack(track)
+            .then(() => this.applyQualitySettings())
+            .catch(() => Log.warn('Replace track failure.'))
         }
       })
     )
@@ -241,6 +224,9 @@ export class PeerConnectionClient extends FormService {
       return null
     }
     stream.getTracks().forEach((track: MediaStreamTrack) => {
+      if (track.kind === 'video' && !MediaQuality.isScreenTrack(track)) {
+        MediaQuality.setContentHint(track, false)
+      }
       this.peerConnection.addTrack(track, stream)
     })
   }
@@ -312,6 +298,7 @@ export class PeerConnectionClient extends FormService {
       PeerConnectionClient.DEFAULT_SDP_OFFER_OPTIONS,
       offerOptions
     )
+    MediaQuality.preferAudioRedundancy(this.peerConnection)
     this.peerConnection
       .createOffer(constraints)
       .then((sessionDescriptionInit: RTCSessionDescriptionInit): any => {
@@ -434,54 +421,32 @@ export class PeerConnectionClient extends FormService {
   }
 
   /**
-   * Changes connection bandwidth.
+   * Sets how many peers this client sends to and re-applies the bitrate share.
    *
-   * @param {string} bandwidth
+   * @param {number} count
    * @memberof PeerConnectionClient
    */
-  public changeBandwidth(bandwidth: string): void {
-    const sender: RTCRtpSender = this.peerConnection.getSenders()[0]
-    const parameters: RTCRtpSendParameters =
-      sender.getParameters() as RTCRtpSendParameters
-    if (!parameters.encodings) {
-      parameters.encodings = [{ rid: StringUtils.EMPTY }]
+  public setPeerCount(count: number): void {
+    const next: number = Math.max(1, count)
+    if (next === this.peerCount) {
+      return
     }
-    if (
-      bandwidth === 'unlimited' &&
-      parameters.encodings[0].maxBitrate !== undefined
-    ) {
-      delete parameters.encodings[0].maxBitrate
-    } else {
-      ;(parameters.encodings[0] as any).degradationPreference =
-        'maintain-resolution'
-      parameters.encodings[0].maxBitrate = Number(bandwidth) * 1000
-      parameters.encodings[0].scaleResolutionDownBy = 8
-    }
-    parameters.degradationPreference = 'maintain-resolution'
-    sender
-      .setParameters(parameters)
-      .catch((reason: any) => Log.error('error', reason))
+    this.peerCount = next
+    this.applyQualitySettings()
+  }
+
+  /**
+   * Applies sender limits (bitrate share, frame rate, priorities).
+   *
+   * @memberof PeerConnectionClient
+   */
+  public applyQualitySettings(): void {
+    MediaQuality.applySenderParameters(this.peerConnection, this.peerCount)
   }
 
   public onRemoteIceComplete(candidateMessages: any[]) {
     Log.log('state', this.peerConnection.connectionState)
     Log.log('candidates', candidateMessages)
-  }
-
-  /**
-   * Updates outbound stream with a new bitrate level.
-   *
-   * @private
-   * @param {string} level
-   * @memberof PeerConnectionClient
-   */
-  private updateOutboundStream(level: string): void {
-    this.changeBandwidth(BandwidthLevel.getBitrate(level))
-  }
-
-  private updateInboundStream(level: string): void {
-    this.changeBandwidth(BandwidthLevel.getBitrate(level))
-    return
   }
 
   /**
@@ -666,6 +631,7 @@ export class PeerConnectionClient extends FormService {
    * @memberof PeerConnectionClient
    */
   private doAnswer(): void {
+    MediaQuality.preferAudioRedundancy(this.peerConnection)
     this.peerConnection
       .createAnswer()
       .then((sessionDescription: RTCSessionDescriptionInit): void => {
@@ -733,6 +699,7 @@ export class PeerConnectionClient extends FormService {
           Log.log(
             'PeerConnectionClient::setLocalSdpAndNotify Set session description success.'
           )
+          this.applyQualitySettings()
         })
         .catch((reason: string): void => {
           this.dispatchEvent(
@@ -809,6 +776,10 @@ export class PeerConnectionClient extends FormService {
       'PeerConnectionClient::onSignalingStateChanged ICE connection state changed to: ' +
         this.peerConnection.iceConnectionState
     )
+    const iceState: string = this.peerConnection.iceConnectionState
+    if (iceState === 'connected' || iceState === 'completed') {
+      this.applyQualitySettings()
+    }
     if (
       StringUtils.equals(this.peerConnection.iceConnectionState, 'completed')
     ) {

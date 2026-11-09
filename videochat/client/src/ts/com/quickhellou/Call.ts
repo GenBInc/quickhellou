@@ -17,6 +17,7 @@ import { SessionOptions } from './application/model/SessionOptions'
 import { VideoTrackEventOptions } from './application/model/VideoTrackEventOptions'
 import { RetryConsumeManager } from './application/controller/RetryConsumeManager'
 import { RetryJobEvent } from './application/events/RetryJobEvent'
+import { MediaQuality } from './application/controller/MediaQuality'
 
 /**
  * Call facade.
@@ -123,6 +124,8 @@ export class Call extends FormService {
       })
     this.localStream.addTrack(track)
     this.displayTrack = track
+    // Screen content: keep text sharp, allow higher bitrate / lower frame rate.
+    MediaQuality.setContentHint(this.displayTrack, true)
     this.dispatchEvent(
       CallEvent.LOCAL_VIDEO_MEDIA_CHANGE,
       new VideoTrackEventOptions(
@@ -500,6 +503,7 @@ export class Call extends FormService {
     // this.requestSessionUpdate();
     pcClient.close()
     this.pcClients.delete(sessionId)
+    this.updatePeerCount()
 
     const sessionInit: SessionInit = new SessionInit()
     sessionInit.addSession(
@@ -823,6 +827,7 @@ export class Call extends FormService {
       this.pcClients.set(session.id, pcClient)
       pcClient.init().then(() => {
         this.addPeerConnectionClientEvents(pcClient)
+        this.updatePeerCount()
         resolve(pcClient)
       })
     })
@@ -930,28 +935,18 @@ export class Call extends FormService {
   }
 
   /**
-   * Changes call bandwidth.
+   * Shares the upload budget across all peer connections (mesh topology:
+   * every peer gets its own encode, so the per-peer bitrate shrinks as the
+   * room grows).
    *
    * @private
-   * @param {string} bandwidth
-   * @returns
    * @memberof Call
    */
-  private changeBandwidth(bandwidth: string) {
-    if (
-      (adapter.browserDetails.browser === 'chrome' ||
-        adapter.browserDetails.browser === 'safari' ||
-        (adapter.browserDetails.browser === 'firefox' &&
-          adapter.browserDetails.version >= 64)) &&
-      'RTCRtpSender' in window &&
-      'setParameters' in window.RTCRtpSender.prototype
-    ) {
-      this.pcClients.forEach((pcClient: PeerConnectionClient) => {
-        pcClient.changeBandwidth(bandwidth)
-      })
-
-      return
-    }
+  private updatePeerCount(): void {
+    const count: number = this.pcClients.size
+    this.pcClients.forEach((pcClient: PeerConnectionClient) => {
+      pcClient.setPeerCount(count)
+    })
   }
 
   /**
