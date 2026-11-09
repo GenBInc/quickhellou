@@ -40,10 +40,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = str(os.environ.get('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Set DJANGO_DEBUG=True only for local development.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').strip().lower() in ('1', 'true', 'yes')
 WSTLS = True # Needs to be True to access camera/mic on production #
 
-ALLOWED_HOSTS = ['*']
+# Comma separated list, e.g. DJANGO_ALLOWED_HOSTS=qhellou.com,www.qhellou.com
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',') if h.strip()]
 
 if WSTLS:
     VERIFY = str(os.environ.get('CERT_CHAIN_FILE'))
@@ -150,7 +152,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# Serve app static files (admin, DRF) through WhiteNoise also when DEBUG is off.
+WHITENOISE_USE_FINDERS = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

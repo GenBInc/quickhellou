@@ -1,4 +1,5 @@
 import cgi
+from html import escape as html_escape
 import json
 import logging
 import os
@@ -28,16 +29,11 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
-from .main_classes  import Room
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
-try:
-    _create_unverified_https_context = ssl._create_unverified_context
-except AttributeError:
-    # Legacy Python that doesn't verify HTTPS certificates by default
-    pass
-else:
-    # Handle target environment that doesn't support HTTPS verification
-    ssl._create_default_https_context = _create_unverified_https_context
+from .main_classes  import Room
+from .security import is_rate_limited, client_ip, sanitize_message, clean_header
 
 ###
 
@@ -404,64 +400,106 @@ class ParamsPage(View):
 class SendInvitation(View):
   def get(self, request, *args, **kwargs):
     return HttpResponse("GET is not allowed.")
+  # Abuse limits: (scope, limit, window seconds)
+  IP_LIMITS = (('inv-ip-10m', 5, 600), ('inv-ip-day', 20, 86400))
+  RECIPIENT_LIMIT = ('inv-to-day', 5, 86400)
+  GLOBAL_LIMIT = ('inv-all-day', 300, 86400)
+  SUBJECTS = ('Quick Hellou - Invitation', 'Quick Hellou - Quick Talk Invitation')
+  MAX_MESSAGE = 5000
+  MAX_CALENDAR = 20000
+
+  def fail(self, text, status):
+    return HttpResponse(text, status=status, content_type='text/plain; charset=utf-8')
+
+  def allowed_link_hosts(self):
+    hosts = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
+             if h.strip() and h.strip() != '*']
+    app_host = os.environ.get('VIDEOCHAT_APP_HOST', '').strip()
+    if app_host:
+      hosts.append(app_host)
+    return hosts
+
   def post(self, request, *args, **kwargs):
-    request_post = self.request.POST
-    messageFromRequest = request_post.get('message')
-    receiver = request_post.get('email')
-    calendarData = request_post.get('calendar')
-    dateTime = request_post.get('dateTime')
-    attachCalendar = request_post.get('attachCalendar')
-    sender_address = 'Quick Hellou <no-reply@qhellou.com>'
-    subject = request_post.get('subject')
+    request_post = request.POST
+    receiver = (request_post.get('email') or '').strip()
+    message = request_post.get('message') or ''
+    calendar_data = request_post.get('calendar') or ''
+    date_time = clean_header(request_post.get('dateTime'), 100)
+    attach_calendar = (request_post.get('attachCalendar') or '').lower() == 'true'
+    subject = clean_header(request_post.get('subject'), 100)
+    if subject not in self.SUBJECTS:
+      subject = self.SUBJECTS[0]
+
+    # --- validation
+    try:
+      if not receiver or any(c in receiver for c in ',;\r\n'):
+        raise ValidationError('invalid')
+      validate_email(receiver)
+    except ValidationError:
+      return self.fail('Please enter a valid email address.', 400)
+    if not message.strip() or len(message) > self.MAX_MESSAGE:
+      return self.fail('The message is empty or too long.', 400)
+    if len(calendar_data) > self.MAX_CALENDAR:
+      return self.fail('The calendar data is too large.', 400)
+
+    # --- rate limits (shared by all workers via Redis)
+    ip = client_ip(request)
+    for scope, limit, window in self.IP_LIMITS:
+      if is_rate_limited(redis_client, scope, ip, limit, window):
+        logging.warning('SendInvitation: rate limit %s hit by %s' % (scope, ip))
+        return self.fail('Too many invitations sent. Please try again later.', 429)
+    scope, limit, window = self.RECIPIENT_LIMIT
+    if is_rate_limited(redis_client, scope, receiver.lower(), limit, window):
+      return self.fail('Too many invitations sent to this address today.', 429)
+    scope, limit, window = self.GLOBAL_LIMIT
+    if is_rate_limited(redis_client, scope, 'all', limit, window):
+      logging.error('SendInvitation: global daily limit reached')
+      return self.fail('Invitations are temporarily unavailable. Please try again later.', 429)
+
+    # --- build the email (user content sanitized, links only to our own app)
+    safe_message = sanitize_message(message, self.allowed_link_hosts())
+    if date_time:
+      body = ("<p>You've got a talk invitation.</p><br>"
+              "<div>Description: %s</div><br/>"
+              "<p>Scheduled time: %s</p><br/>") % (safe_message, html_escape(date_time))
+    else:
+      body = safe_message
+    html = '<html><head></head><body>%s</body></html>' % body
+
     msg = MIMEMultipart('mixed')
-    msg['From'] = sender_address
+    msg['From'] = 'Quick Hellou <no-reply@qhellou.com>'
     msg['To'] = receiver
     msg['Date'] = formatdate(localtime=True)
-    msg["Message-Id"] = make_msgid()  
-    msg['Subject'] = subject    
-    text = "You've got a Quick Hellou invitation."
-    html = """
-    <html><head></head><body>
-    """ +messageFromRequest.strip()+ """
-    </body></html>"""
-    if dateTime != "":
-      print("populating new html")
-      html = """
-      <html>
-      <head></head>
-      <body>
-        <p>You've got a talk invitation.</p><br>
-        <div>Description: """ +messageFromRequest.strip()+ """</div><br/>
-        <p>Scheduled time: """ +str(dateTime)+ """</p><br/>
-      </body>
-      </html>
-      """
+    msg['Message-Id'] = make_msgid()
+    msg['Subject'] = subject
     textual_message = MIMEMultipart('alternative')
-    part1 = MIMEText(text, 'plain')
-    part2 = MIMEText(html, 'html')
-    textual_message.attach(part1)
-    textual_message.attach(part2)
+    textual_message.attach(MIMEText("You've got a Quick Hellou invitation.", 'plain'))
+    textual_message.attach(MIMEText(html, 'html'))
     msg.attach(textual_message)
-    if attachCalendar.lower() in ("true"):
-      attachment = MIMEText(calendarData)
+    if attach_calendar and calendar_data:
+      attachment = MIMEText(calendar_data)
       attachment.add_header('Content-Disposition', 'attachment', filename='calendar.csv')
       msg.attach(attachment)
-    
-    if strtobool(os.environ.get('EMAIL_USE_SSL')):
-      smtp = smtplib.SMTP_SSL(str(os.environ.get('EMAIL_HOST')), int(os.environ.get('EMAIL_PORT')))
-    else:
-      smtp = smtplib.SMTP(str(os.environ.get('EMAIL_HOST')), int(os.environ.get('EMAIL_PORT')))
 
-    if str(os.environ.get('EMAIL_HOST_USER')) != "":
-      smtp.login(str(os.environ.get('EMAIL_HOST_USER')),str(os.environ.get('EMAIL_HOST_PASSWORD')))
-
-    smtp.set_debuglevel(True)
-    
+    # --- send
     try:
-      smtp.sendmail(str(os.environ.get('SUPPORT_EMAIL')), receiver, msg.as_string())
-    finally:
-      smtp.quit()
-      return HttpResponse("Invitation has been sent.")
+      host = str(os.environ.get('EMAIL_HOST'))
+      port = int(os.environ.get('EMAIL_PORT'))
+      if strtobool(os.environ.get('EMAIL_USE_SSL', 'False')):
+        smtp = smtplib.SMTP_SSL(host, port, timeout=15)
+      else:
+        smtp = smtplib.SMTP(host, port, timeout=15)
+      try:
+        if os.environ.get('EMAIL_HOST_USER'):
+          smtp.login(os.environ.get('EMAIL_HOST_USER'), os.environ.get('EMAIL_HOST_PASSWORD'))
+        smtp.sendmail(str(os.environ.get('SUPPORT_EMAIL')), receiver, msg.as_string())
+      finally:
+        smtp.quit()
+    except (smtplib.SMTPException, OSError) as e:
+      logging.error('SendInvitation: sending to %s failed: %s' % (receiver, e))
+      return self.fail('The invitation could not be sent. Please try again later.', 502)
+    print('SendInvitation: invitation sent from %s' % ip)
+    return HttpResponse("Invitation has been sent.")
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RemoveRoomPage(View):
@@ -476,10 +514,17 @@ class RemoveRoomPage(View):
     return HttpResponse(json.dumps(result))
   def remove_room(self, host, room_id):
     key = get_redis_key_for_room(host, room_id)
+    # Called by the collider when its room becomes empty. The endpoint is public,
+    # so never delete a room that still has clients (prevents killing live calls).
     with room_lock(key):
       if redis_client.get(key) is None:
         logging.warning('RemoveRoomPage: remove_room: Unknown room ' + room_id)
         return {'error': settings.RESPONSE_UNKNOWN_ROOM, 'room_state': None}
+      room = load_room(key)
+      if room is not None and len(room.get_clients()) > 0:
+        logging.warning('RemoveRoomPage: refusing to remove room %s with %d client(s)'
+                        % (room_id, len(room.get_clients())))
+        return {'error': settings.RESPONSE_ERROR, 'room_state': 'NOT_EMPTY'}
       redis_client.delete(key)
     return {'error': None}
 

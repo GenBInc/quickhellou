@@ -28,9 +28,11 @@ SECRET_KEY = str(os.environ.get('SECRET_KEY'))
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Set DJANGO_DEBUG=True only for local development.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').strip().lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = ['*']
+# Comma separated list, e.g. DJANGO_ALLOWED_HOSTS=qhellou.com,www.qhellou.com
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',') if h.strip()]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -214,7 +216,9 @@ DATETIME_FORMAT = '%Y-%m-%d %I:%M %p'
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-STATIC_ROOT = BASE_DIR / 'console/static'
+STATIC_ROOT = BASE_DIR / 'console/static'
+# Serve app static files (admin, DRF) through WhiteNoise also when DEBUG is off.
+WHITENOISE_USE_FINDERS = True
 STATICFILES_DIRS = []
 
 AUTH_USER_MODEL = 'accounts.User'

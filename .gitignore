@@ -4,3 +4,7 @@
 local.env
 debug.log
 *.pyc
+
+# Production secrets: never commit (.env holds dev defaults only)
+prod.env
+*.prod.env
