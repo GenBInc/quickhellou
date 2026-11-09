@@ -9,7 +9,7 @@ services:
       args:
         DJANGO_ALLOWED_HOSTS: '*'
         DJANGO_SECRET_KEY: '*'
-    command: bash -c "python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} --reload qhv2.wsgi --bind 0.0.0.0:${VIDEOCHAT_APP_PORT}"
+    command: bash -c "python manage.py migrate && gunicorn --certfile=${CERT_FILE} --keyfile=${KEY_FILE} ${GUNICORN_OPTS:---workers 4 --threads 4 --timeout 30} qhv2.wsgi --bind 0.0.0.0:${VIDEOCHAT_APP_PORT}"
     ports:
       - "${VIDEOCHAT_APP_PORT}:${VIDEOCHAT_APP_PORT}"
     volumes:

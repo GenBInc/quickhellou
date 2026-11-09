@@ -49,6 +49,25 @@ redis_port = int(os.environ.get('REDIS_PORT'))
 redis_password = os.environ.get('REDIS_PASSWORD') or None
 redis_client = redis.Redis(host=redis_host, port=redis_port, password=redis_password, db=0)
 
+# Rooms expire after this many seconds without any update (refreshed on every write).
+ROOM_TTL_SECONDS = int(os.environ.get('ROOM_TTL_SECONDS', 86400))
+
+# Reused HTTP connection pool for server -> collider requests (avoids a new TCP+TLS
+# handshake per signalling message).
+COLLIDER_TIMEOUT = (3, 10)  # (connect, read) seconds
+collider_session = requests.Session()
+
+def room_lock(key):
+  """Per-room lock so concurrent workers don't overwrite each other's room updates."""
+  return redis_client.lock('lock:' + key, timeout=10, blocking_timeout=10)
+
+def save_room(key, room):
+  """Store a room with a TTL, or delete the key when the room is gone."""
+  if room is None:
+    redis_client.delete(key)
+  else:
+    redis_client.set(key, pickle.dumps(room), ex=ROOM_TTL_SECONDS)
+
 class MainPage(View):
   def get(self, request, *args, **kwargs):   
     checkIfRedirect(request)
@@ -81,7 +100,7 @@ class JoinPage(View):
       retries = 0
       room = None
       # Compare and set retry loop.
-      with redis_client.pipeline() as pipe:
+      with room_lock(key), redis_client.pipeline() as pipe:
         while True:
           try:
             pipe.watch(key)
@@ -139,7 +158,7 @@ class JoinPage(View):
             print('return set', return_value)
             q.put(return_value)
             pipe.multi()
-            redis_client.set(key, pickle.dumps(room))
+            save_room(key, room)
             pipe.execute()
           except WatchError:
             retries = retries + 1
@@ -183,7 +202,7 @@ class SessionsGetterPage(View):
     host_url = request.META['HTTP_HOST']
     key = get_redis_key_for_room(host_url, room_id)
     retries = 0
-    with redis_client.pipeline() as pipe:
+    with room_lock(key), redis_client.pipeline() as pipe:
       while True:
         try:
           pipe.watch(key)
@@ -196,7 +215,7 @@ class SessionsGetterPage(View):
           if retries > 10:
             break
           pipe.multi()
-          redis_client.set(key, pickle.dumps(room))
+          save_room(key, room)
           pipe.execute()
           break
         except WatchError:
@@ -260,7 +279,7 @@ class LeavePage(View):
     key = get_redis_key_for_room(host, room_id)
     retries = 0
     # Compare and set retry loop.
-    with redis_client.pipeline() as pipe:
+    with room_lock(key), redis_client.pipeline() as pipe:
       while True:
         try:
           pipe.watch(key)
@@ -295,7 +314,7 @@ class LeavePage(View):
             print('LeavePage: removing room')
             room = None
           pipe.multi()
-          redis_client.set(key, pickle.dumps(room))
+          save_room(key, room)
           pipe.execute()
         except WatchError:
           retries = retries + 1
@@ -322,7 +341,6 @@ class LeavePage(View):
     if result.status_code != 200:
       logging.error(
         'LeavePage: Failed to send message to collider: %d' % (result.status_code))
-      self.error(500)
       return
 
 class SchedulerPage(View):
@@ -360,7 +378,7 @@ class ConsumePage(View):
     host_url = request.META['HTTP_HOST']
     key = get_redis_key_for_room(host_url, room_id)
     retries = 0
-    with redis_client.pipeline() as pipe:
+    with room_lock(key), redis_client.pipeline() as pipe:
       while True:
         try:
           pipe.watch(key)
@@ -370,7 +388,7 @@ class ConsumePage(View):
           room = pickle.loads(room_bytes)
           result = self.consume(room, session_id, client_id)
           pipe.multi()
-          redis_client.set(key, pickle.dumps(room))
+          save_room(key, room)
           pipe.execute()
         except WatchError:
           retries = retries + 1
@@ -431,13 +449,11 @@ class SessionMessagePage(View):
 
   def send_message_to_collider(self, room_id, client_id, message):
     result = send_message_to_collider(self.request, room_id, client_id, message)
-    if result.status_code != 200:
-      logging.error(
-        'Failed to send message to collider: %d' % (result.status_code))
-      # TODO(tkchin): better error handling.
-      self.error(500)
-      return
-    return self.write_response(constants.RESPONSE_SUCCESS)
+    if result is None or result.status_code != 200:
+      logging.error('Failed to send message to collider: %s' %
+        (result.status_code if result is not None else 'no response'))
+      return HttpResponse(json.dumps({'result': settings.RESPONSE_ERROR}), status=502)
+    return self.write_response(settings.RESPONSE_SUCCESS)
   def get(self, request, *args, **kwargs):
     return HttpResponse("GET is not allowed.")
   def post(self, request, *args, **kwargs):
@@ -465,7 +481,7 @@ class SessionMessagePage(View):
     key = get_redis_key_for_room(host, room_id)
     retries = 0
     # Compare and set retry loop.
-    with redis_client.pipeline() as pipe:
+    with room_lock(key), redis_client.pipeline() as pipe:
       while True:
         try:
           pipe.watch(key)   
@@ -492,7 +508,7 @@ class SessionMessagePage(View):
           pipe.multi()
           print('room:', room)
           print('client:', client)
-          redis_client.set(key, pickle.dumps(room))
+          save_room(key, room)
           pipe.execute()
         except WatchError:
           retries = retries + 1
@@ -584,7 +600,7 @@ class RemoveRoomPage(View):
   def remove_room(self, host, room_id):
     key = get_redis_key_for_room(host, room_id)
     retries = 0
-    with redis_client.pipeline() as pipe:
+    with room_lock(key), redis_client.pipeline() as pipe:
       while True:
         try:
           pipe.watch(key)   
@@ -946,16 +962,8 @@ def get_wss_parameters(request):
     wss_tls = settings.WSTLS
     
     if not wss_host_port_pair:
-        # Attempt to get a wss server from the status provided by prober,
-        # if that fails, use fallback value.
-        wss_active_host = redis_client.get(
-            settings.WSS_HOST_ACTIVE_HOST_KEY)
-        if wss_active_host in settings.WSS_HOST_PORT_PAIRS:
-            wss_host_port_pair = wss_active_host
-        else:
-            logging.warning(
-                'Invalid or no value returned from the Redis store, using fallback.')
-            wss_host_port_pair = settings.WSS_HOST_PORT_PAIRS[0]
+        # Single collider instance; no prober writes an active host to Redis.
+        wss_host_port_pair = settings.WSS_HOST_PORT_PAIRS[0]
     if wss_tls == False:
         wss_url = 'ws://' + wss_host_port_pair + '/ws'
         wss_post_url = 'http://' + wss_host_port_pair
@@ -964,7 +972,15 @@ def get_wss_parameters(request):
         wss_post_url = 'https://' + wss_host_port_pair
     return (wss_url, wss_post_url)
 
+_version_info_cache = []
+
 def get_version_info():
+    # Read version_info.json once per worker instead of on every request.
+    if not _version_info_cache:
+        _version_info_cache.append(_load_version_info())
+    return _version_info_cache[0]
+
+def _load_version_info():
     try:
         path = os.path.join(os.path.dirname(__file__), 'version_info.json')
         f = open(path)
@@ -1002,25 +1018,30 @@ def get_room(host, room_id):
   key = get_redis_key_for_room(host, room_id)
   room_bytes = redis_client.get(key)
   if room_bytes is None:
-    logging.warn("Room for key %s doesn't exists in the Redis store." % key)
+    logging.warning("Room for key %s doesn't exists in the Redis store." % key)
     return None
-  return pickle.loads(redis_client.get(key))
+  return pickle.loads(room_bytes)
 
-@method_decorator(csrf_exempt, name='dispatch')
+def _post_to_collider(url, message):
+  """POST to the collider over a pooled connection; returns None on network error/timeout."""
+  try:
+    return collider_session.post(url, data=message, timeout=COLLIDER_TIMEOUT, verify=settings.VERIFY)
+  except requests.RequestException as e:
+    logging.error('Collider request to %s failed: %s' % (url, e))
+    return None
+
 def post_request_to_collider(request, url, message):
   wss_url, wss_post_url = get_wss_parameters(request)
   post_url = wss_post_url + '/' + url + '?y=1'
   print('Post request to collider with url', post_url)
-  response = requests.post(post_url, data=message, timeout=10, verify=settings.VERIFY)
-  return response
+  return _post_to_collider(post_url, message)
 
-@method_decorator(csrf_exempt, name='dispatch')
 def send_message_to_collider(request, room_id, client_id, message):
   wss_url, wss_post_url = get_wss_parameters(request)
   url = wss_post_url + '/' + room_id + '/' + client_id + '?x=1'
   print('Forwarding message to collider for room ' + room_id +
          ' client ', client_id, 'with url', url )
-  return requests.post(url,data=message, verify=settings.VERIFY)
+  return _post_to_collider(url, message)
 
 def save_message_from_client(host, room_id, client_id, message):
   text = None
@@ -1033,7 +1054,7 @@ def save_message_from_client(host, room_id, client_id, message):
   memcache_client = memcache.Client()
   retries = 0
   # Compare and set retry loop.
-  with redis_client.pipeline() as pipe:
+  with room_lock(key), redis_client.pipeline() as pipe:
     while True:
       try:
         pipe.watch(key)
@@ -1055,7 +1076,7 @@ def save_message_from_client(host, room_id, client_id, message):
         print('session client: %s:%s' % (client_id, str(client)))
         client.add_message(text)
         pipe.multi()
-        redis_client.set(key, pickle.dumps(room))
+        save_room(key, room)
         pipe.execute()
       except WatchError:
         retries = retries + 1
